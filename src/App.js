@@ -1,25 +1,30 @@
-import logo from './logo.svg';
+import { Layout } from 'antd';
+import React, { useState } from 'react';
+import Header from './components/Header/Header';
+import 'antd/dist/antd.css';
 import './App.css';
+import { Typography } from 'antd';
+import SideNav from './components/SideNav/SideNav';
+import MyContent from './components/MyContent/MyContent';
+const { Sider } = Layout;
 
-function App() {
+const App = () => {
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Layout>
+      <Sider trigger={null} collapsible collapsed={collapsed} 
+        style={{
+          height: "100vh",
+        }}>
+        <SideNav collapsed={collapsed}></SideNav>
+      </Sider>
+      <Layout className="site-layout">
+        <Header collapsed={collapsed} setCollapsed={setCollapsed}></Header>
+        <MyContent></MyContent>
+      </Layout>
+    </Layout>
   );
-}
+};
 
 export default App;
