@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { Layout } from 'antd';
-import ListForm from '../ListForm/ListForm';
+import ListForm from '../listform/listform';
 const { Content } = Layout;
 
 

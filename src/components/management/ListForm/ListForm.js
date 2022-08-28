@@ -5,7 +5,7 @@ import {
 import { Button, Col, Row, Space } from 'antd';
 import { Typography } from 'antd';
 import React, { useState } from 'react';
-import MyTable from '../Table/Table';
+import MyTable from '../table/table';
 import './ListForm.css';
 const { Title } = Typography;
 
