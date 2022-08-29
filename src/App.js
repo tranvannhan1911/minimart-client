@@ -7,7 +7,8 @@ import Loading from './components/basic/loading';
 import 'antd/dist/antd.css';
 import './App.css';
 
-const Login = lazy(() => import("./components/login/login"));
+const ForgotPassword = lazy(() => import("./components/account/forgot"));
+const Login = lazy(() => import("./components/account/login"));
 const Management = lazy(() => import("./components/management/management"));
 
 const App = () => {
@@ -17,7 +18,8 @@ const App = () => {
     <Suspense fallback={<Loading />}>
       <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="" element={<Management />} />
+          <Route path="" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/management" element={<Management />} />
       </Routes>
     </Suspense>

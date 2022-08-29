@@ -6,7 +6,7 @@ function Loading(props) {
         <Row justify="space-around" align="middle" style={{
             height: '100vh'
         }}>
-            <Spin tip="Loading...">
+            <Spin tip="Đang tải...">
             </Spin>
         </Row>
     );
