@@ -6,7 +6,7 @@ import { Typography } from 'antd'
 import React, { useState, useRef, useEffect } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
-import AccountApi from "../../api/apis"
+import { AccountApi } from "../../api/apis"
 
 const { Title } = Typography;
 

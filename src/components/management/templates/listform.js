@@ -5,28 +5,26 @@ import {
 import { Button, Col, Row, Space } from 'antd';
 import { Typography } from 'antd';
 import React, { useState } from 'react';
-import MyTable from '../table/table';
-import './ListForm.css';
+import './listform.css';
 const { Title } = Typography;
 
-const ListForm = () => {
+const ListForm = (props) => {
     return (
         <div>
             <Row wrap={false} className="action">
                 <Col flex="null">
-                    <Title level={4}>Sản phẩm</Title>
+                    <Title level={4}>{props.title}</Title>
                 </Col>
                 <Col flex="auto">
-                        {/* <Space direction="horizontal" style={{width: '100%', justifyContent: 'center'}}></Space> */}
                     <Space direction="horizontal" style={{width: '100%', justifyContent: 'end'}}>
-                        <Button icon={<ReloadOutlined />}>Làm mới</Button>
-                        <Button icon={<ImportOutlined />}>Nhập excel</Button>
-                        <Button icon={<ExportOutlined />}>Xuất excel</Button>
-                        <Button type="primary" icon={<PlusOutlined />}>Thêm</Button>
+                        {props.actions}
                     </Space>
                 </Col>
             </Row>
-            <MyTable></MyTable>
+            <Space direction="horizontal" style={{width: '100%', justifyContent: 'start', marginBottom: '20px'}}>
+                {props.extra_actions}
+            </Space>
+            {props.table}
         </div>
     )
 }

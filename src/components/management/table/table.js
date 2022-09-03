@@ -1,4 +1,4 @@
-import { Button, Space, Table, Input } from 'antd';
+import { Button, Space, Table as AntdTable, Input } from 'antd';
 import React, { useState } from 'react';
 const { Search } = Input;
 
@@ -13,7 +13,7 @@ for (let i = 0; i < 46; i++) {
   });
 }
 
-const MyTable = () => {
+const Table = (props) => {
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortedInfo, setSortedInfo] = useState({});
 
@@ -101,9 +101,9 @@ const MyTable = () => {
     selectedRowKeys,
     onChange: onSelectChange,
     selections: [
-      Table.SELECTION_ALL,
-      Table.SELECTION_INVERT,
-      Table.SELECTION_NONE,
+      AntdTable.SELECTION_ALL,
+      AntdTable.SELECTION_INVERT,
+      AntdTable.SELECTION_NONE,
       {
         key: 'odd',
         text: 'Select Odd Row',
@@ -157,7 +157,7 @@ const MyTable = () => {
           }}
         />
       </Space>
-      <Table 
+      <AntdTable 
         rowSelection={rowSelection} 
         columns={columns} 
         dataSource={data} 
@@ -170,4 +170,4 @@ const MyTable = () => {
   );
 };
 
-export default MyTable;
+export default Table;

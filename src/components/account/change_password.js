@@ -1,19 +1,17 @@
 import {
     PhoneOutlined, LockOutlined
 } from '@ant-design/icons'
-import { Button, Col, Row, Checkbox, Form, Input, message } from 'antd'
+import { Button, Col, Row, Checkbox, Form, Input, message, Space } from 'antd'
 import { Typography } from 'antd'
 import React, { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { AccountApi } from "../../api/apis"
-import { setToken } from '../../store/store'
 
 const { Title } = Typography;
 
 
-const Login = () => {
-    // const dispatch = useDispatch();
+const ChangePassword = () => {
     // let history = useHistory();
     const navigate = useNavigate();
     const [loadings, setLoadings] = useState([]);
@@ -34,41 +32,43 @@ const Login = () => {
         });
     }
 
-
     const error_msg = () => {
-        message.error('Sai số điện thoại hoặc mật khẩu')
+        message.error('Sai số điện thoại hoặc mật khẩu');
     };
 
     const onFinish = async (values) => {
+        if(values.new_password != values.repeat_password){
+            
+            message.error('Mật khẩu mới và lặp lại mật ');
+            return;
+        }
+
         const params = {
             phone: values.phone,
-            password: values.password,
+            password: values.old_password,
+            new_password: values.new_password,
         };
-        const accountApi = new AccountApi()
+        const accountApi = new AccountApi();
         try {
             const response = await accountApi.login(params);
             console.log(response)
             if (response.data.code == 1) {
-                accountApi.save_token(response)
-
-                // const action = setToken(response.data.data)
-                // dispatch(action)
-
-                navigate('/quan-ly')
+                accountApi.save_token(response);
+                navigate('/management');
             } else {
-                error_msg()
+                message.error('Sai số điện thoại hoặc mật khẩu');
             }
         } catch (error) {
-            console.log('Failed:', error)
-            error_msg()
+            console.log('Failed:', error);
+            message.error('Sai số điện thoại hoặc mật khẩu');
         } finally{
             stopLoading(0)
         }
     };
 
     const onFinishFailed = (errorInfo) => {
-        console.log('Failed:', errorInfo)
-        error_msg()
+        console.log('Failed:', errorInfo);
+        message.error('Có lỗi xảy ra');
     };
 
     return (
@@ -77,7 +77,7 @@ const Login = () => {
         }}>
             <Col span={8} xs={18} sm={14} md={10} lg={8}>
                 <Title level={3} style={{marginBottom: '20px'}}>
-                    Đăng nhập
+                    Đổi mật khẩu
                 </Title>
                 <Form
                     name="normal_login"
@@ -102,32 +102,68 @@ const Login = () => {
                             autoFocus/>
                     </Form.Item>
                     <Form.Item
-                        name="password"
+                        name="old_password"
                         rules={[
                             {
                                 required: true,
-                                message: 'Vui lòng nhập mật khẩu!',
+                                message: 'Vui lòng nhập mật khẩu cũ!',
                             },
                         ]}
                     >
                         <Input
                             prefix={<LockOutlined className="site-form-item-icon" />}
                             type="password"
-                            placeholder="Mật khẩu"
+                            placeholder="Mật khẩu cũ"
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        name="new_password"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng nhập mật khẩu mới!',
+                            },
+                        ]}
+                    >
+                        <Input
+                            prefix={<LockOutlined className="site-form-item-icon" />}
+                            type="password"
+                            placeholder="Mật khẩu mới"
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        name="repeat_password"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng lặp lại mật khẩu mới!',
+                            },
+                        ]}
+                    >
+                        <Input
+                            prefix={<LockOutlined className="site-form-item-icon" />}
+                            type="password"
+                            placeholder="Lặp lại mật khẩu mới"
                         />
                     </Form.Item>
 
                     <Form.Item>
                         <Button type="primary" htmlType="submit" className="login-form-button"
                             loading={loadings[0]} onClick={() => enterLoading(0)}>
-                            Đăng nhập
+                            Đổi mật khẩu
                         </Button>
                     </Form.Item>
-                    <p>Quên mật khẩu ? <Link to="/forgot-password">Lấy lại mật khẩu</Link> </p>
+                    
+                    <p>
+                        <Space>
+                            <Link to="/login">Đăng nhập ngay</Link>
+                            <Link to="/forgot-password">Lấy lại mật khẩu</Link> 
+                        </Space>
+                    </p>
                 </Form>
             </Col>
         </Row >
     )
 }
 
-export default Login;
+export default ChangePassword;

@@ -64,3 +64,17 @@
   color: white;
   text-align: center;
 }
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px; /* The height is only seen on horizontal scrolling */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  padding: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #a9a3a3;
+}
