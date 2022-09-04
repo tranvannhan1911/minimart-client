@@ -5,7 +5,7 @@ import axiosRetry from 'axios-retry';
 
 
 
-const base_url = "http://localhost:8000/api"
+const base_url = process.env.REACT_APP_BASE_URL
 
 const validRefresh = new RegExp(".*/token/refresh/");
 // const base_usl = "http://34.87.181.95:8000/api"
