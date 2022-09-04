@@ -54,7 +54,7 @@ const Login = () => {
                 // const action = setToken(response.data.data)
                 // dispatch(action)
 
-                navigate('/quan-ly')
+                navigate('/quan-ly/khach-hang')
             } else {
                 error_msg()
             }
@@ -123,7 +123,7 @@ const Login = () => {
                             Đăng nhập
                         </Button>
                     </Form.Item>
-                    <p>Quên mật khẩu ? <Link to="/forgot-password">Lấy lại mật khẩu</Link> </p>
+                    <p>Quên mật khẩu ? <Link to="/quen-mat-khau">Lấy lại mật khẩu</Link> </p>
                 </Form>
             </Col>
         </Row >

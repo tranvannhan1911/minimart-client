@@ -39,7 +39,7 @@ const ChangePassword = () => {
     const onFinish = async (values) => {
         if(values.new_password != values.repeat_password){
             
-            message.error('Mật khẩu mới và lặp lại mật ');
+            message.error('Mật khẩu mới và lặp lại mật khẩu không trùng');
             return;
         }
 
@@ -50,11 +50,11 @@ const ChangePassword = () => {
         };
         const accountApi = new AccountApi();
         try {
-            const response = await accountApi.login(params);
+            const response = await accountApi.change_password(params);
             console.log(response)
             if (response.data.code == 1) {
-                accountApi.save_token(response);
-                navigate('/management');
+                message.success("Đổi mật khẩu thành công")
+                navigate('/dang-nhap');
             } else {
                 message.error('Sai số điện thoại hoặc mật khẩu');
             }
@@ -156,8 +156,9 @@ const ChangePassword = () => {
                     
                     <p>
                         <Space>
-                            <Link to="/login">Đăng nhập ngay</Link>
-                            <Link to="/forgot-password">Lấy lại mật khẩu</Link> 
+                            <Link to="/dang-nhap">Đăng nhập ngay</Link>
+                            hoặc
+                            <Link to="/quen-mat-khau">Lấy lại mật khẩu</Link> 
                         </Space>
                     </p>
                 </Form>

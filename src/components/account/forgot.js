@@ -174,7 +174,7 @@ const ForgotPassword = () => {
                             Lấy lại mật khẩu
                         </Button>
                     </Form.Item>
-                    <p><Link to="/login">Đăng nhập ngay</Link> </p>
+                    <p><Link to="/dang-nhap">Đăng nhập ngay</Link> </p>
                 </Form>
             </Col>
         </Row>

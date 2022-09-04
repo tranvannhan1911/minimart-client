@@ -1,12 +1,13 @@
 import {
-  PlusOutlined, EditOutlined
+  PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Space } from 'antd';
+import { Button, Form, Input, Select, message, Space, Popconfirm } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import { CustomerApi } from '../../../api/apis'
 import ChangeForm from '../templates/changeform';
 import { useNavigate, useParams } from 'react-router-dom'
+import Loading from '../../basic/loading';
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -15,12 +16,13 @@ const CustomerChangeForm = (props) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
+  const [loadingData, setLoadingData] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
   const [dataCustomerGroup, setDataCustomerGroup] = useState([]);
   const [idxBtnSave, setIdxBtnSave] = useState([]);
   let { customer_id } = useParams();
   const [is_create, setCreate] = useState(null); // create 
-  
+
   const fullnameRef = useRef()
 
   const enterLoading = (index) => {
@@ -40,22 +42,22 @@ const CustomerChangeForm = (props) => {
   }
 
   const directAfterSubmit = (response) => {
-    if(idxBtnSave == 0){
+    if (idxBtnSave == 0) {
       navigate("/quan-ly/khach-hang")
-    }else if(idxBtnSave == 1){
-      if(is_create){
-        navigate("/quan-ly/khach-hang/"+response.data.data.customer_id)
+    } else if (idxBtnSave == 1) {
+      if (is_create) {
+        navigate("/quan-ly/khach-hang/" + response.data.data.customer_id)
         setCreate(false)
       }
-    }else if(idxBtnSave == 2){
-      if(!is_create){
+    } else if (idxBtnSave == 2) {
+      if (!is_create) {
         navigate("/quan-ly/khach-hang/them-moi")
         setCreate(true)
       }
       form.resetFields()
       fullnameRef.current.focus()
     }
-    
+
   }
 
   const create = async (values) => {
@@ -95,13 +97,32 @@ const CustomerChangeForm = (props) => {
     }
     return false
   }
+  
+  const deleteCustomer = async () => {
+    try {
+      const response = await customerApi.delete(customer_id)
+      console.log("delete", response)
+      if (response.data.code == 1) {
+
+        message.success('Xóa khách hàng thành công')
+        navigate("/quan-ly/khach-hang")
+        return true
+      } else {
+        message.error("Không thể xóa khách hàng này")
+      }
+    } catch (error) {
+      message.error('Có lỗi xảy ra')
+      console.log('Failed:', error)
+    }
+    return false
+  };
 
   const onFinish = async (values) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
-    if(is_create){
+    if (is_create) {
       await create(values)
-    }else{
+    } else {
       await update(values)
     }
     stopLoading(idxBtnSave)
@@ -115,10 +136,17 @@ const CustomerChangeForm = (props) => {
   };
 
   const handleDataCustomer = async () => {
-    const response = await customerApi.get(customer_id);
-    const values = response.data.data
-    values.customer_group = values.customer_group.map(elm => elm.id.toString())
-    form.setFieldsValue(values)
+    setLoadingData(true)
+    try {
+      const response = await customerApi.get(customer_id);
+      const values = response.data.data
+      values.customer_group = values.customer_group.map(elm => elm.id.toString())
+      form.setFieldsValue(values)
+    } catch (error) {
+      message.error("Có lỗi xảy ra")
+    } finally {
+      setLoadingData(false)
+    }
   }
 
   const handleDataCustomerGroup = async () => {
@@ -131,123 +159,160 @@ const CustomerChangeForm = (props) => {
     setDataCustomerGroup(_dataCustomerGroup)
   }
 
+
   useEffect(() => {
     handleDataCustomerGroup()
-    if(is_create == null){
+    if (is_create == null) {
       setCreate(props.is_create)
-      if(!is_create){
+      if (!props.is_create) {
         handleDataCustomer()
         // props.setCreate(false)
         console.log("setCreate", false)
-      }else{
+      } else {
         // props.setCreate(true)
         console.log("setCreate", true)
       }
+      setLoadingData(false)
     }
+
+
   }, [])
 
   useEffect(() => {
     props.setBreadcrumb([
-      {title: "Khách hàng", href: "/quan-ly/khach-hang"}, 
-      {title: is_create ? "Thêm mới": "Chỉnh sửa"}])
+      { title: "Khách hàng", href: "/quan-ly/khach-hang" },
+      { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
+
+    if (is_create==false) {
+      props.setBreadcrumbExtras([
+        <Popconfirm
+          placement="bottomRight"
+          title="Xác nhận xóa khách hàng này"
+          onConfirm={deleteCustomer}
+          okText="Đồng ý"
+          okType="danger"
+          cancelText="Hủy bỏ"
+        >
+          <Button type="danger" icon={<DeleteOutlined />}
+          >Xóa</Button>
+        </Popconfirm>,
+        <Button type="info" icon={<HistoryOutlined />}
+        >Lịch sử chỉnh sửa</Button>
+      ])
+    } else {
+      props.setBreadcrumbExtras(null)
+    }
   }, [is_create])
 
+  // useEffect(() => {
+
+  // }, [breadcrumb_extras])
 
   return (
-    <ChangeForm
-      form={form}
-      setBreadcrumb={props.setBreadcrumb}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      forms={
-        <>
-          <Form.Item label="Tên khách hàng" name="fullname" required
-            rules={[
-              {
-                required: true,
-                message: 'Vui lòng nhập tên khách hàng!',
-              },
-            ]}
-          >
-            <Input ref={fullnameRef}/>
-          </Form.Item>
-          <Form.Item label="Số điện thoại" name="phone" required
-            rules={[
-              {
-                required: true,
-                message: 'Vui lòng nhập số điện thoại!',
-              },
-            ]}
-          >
-            <Input disabled={is_create ? false : true}/>
-          </Form.Item>
-          <Form.Item label="Nhóm khách hàng" name="customer_group" required
-          >
-            <Select
-              mode="multiple"
-              allowClear
-              style={{
-                width: '100%',
-              }}
-              // placeholder="Please select"
-            // defaultValue={['a10', 'c12']}
-            // onChange={handleChange}
-            >
-              {dataCustomerGroup}
-            </Select>
-          </Form.Item>
-          <Form.Item label="Địa chỉ" name="address">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Giới tính" name="gender"
-            style={{
-              textAlign: 'left'
-            }}>
-            <Select
-              defaultValue="U"
-              style={{
-                width: 200,
-              }}
-            >
-              <Option value="M">Nam</Option>
-              <Option value="F">Nữ</Option>
-              <Option value="U">Không xác định</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label="Ghi chú" name="note" >
-            <TextArea rows={4} />
-          </Form.Item>
-          <Form.Item>
-            <Space>
-              <Button
-                type="primary"
-                htmlType="submit"
-                icon={<PlusOutlined />}
-                loading={loadings[0]}
-                onClick={() => setIdxBtnSave(0)}
-                disabled={disableSubmit ? true : false}
-              >Lưu</Button>
-              <Button
-                htmlType="submit"
-                icon={<EditOutlined />}
-                loading={loadings[1]}
-                onClick={() => setIdxBtnSave(1)}
-                disabled={disableSubmit ? true : false}
-              >Lưu và tiếp tục chỉnh sửa</Button>
-              <Button
-                htmlType="submit"
-                icon={<PlusOutlined />}
-                loading={loadings[2]}
-                onClick={() => setIdxBtnSave(2)}
-                disabled={disableSubmit ? true : false}
-              >Lưu và thêm mới</Button>
-            </Space>
-          </Form.Item>
+    <>
+      {loadingData ? <Loading /> :
+        <ChangeForm
+          form={form}
+          setBreadcrumb={props.setBreadcrumb}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          forms={
+            <>
+              <Form.Item label="Tên khách hàng" name="fullname" required
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng nhập tên khách hàng!',
+                  },
+                ]}
+              >
+                <Input ref={fullnameRef} />
+              </Form.Item>
+              <Form.Item label="Số điện thoại" name="phone" required
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng nhập số điện thoại!',
+                  },
+                ]}
+              >
+                <Input disabled={is_create ? false : true} />
+              </Form.Item>
+              <Form.Item label="Nhóm khách hàng" name="customer_group" required
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng chọn ít nhất 1 nhóm khách hàng!',
+                  },
+                ]}
+              >
+                <Select
+                  mode="multiple"
+                  allowClear
+                  style={{
+                    width: '100%',
+                  }}
+                // placeholder="Please select"
+                // defaultValue={['a10', 'c12']}
+                // onChange={handleChange}
+                >
+                  {dataCustomerGroup}
+                </Select>
+              </Form.Item>
+              <Form.Item label="Địa chỉ" name="address">
+                <Input />
+              </Form.Item>
+              <Form.Item label="Giới tính" name="gender"
+                style={{
+                  textAlign: 'left'
+                }}>
+                <Select
+                  defaultValue="U"
+                  style={{
+                    width: 200,
+                  }}
+                >
+                  <Option value="M">Nam</Option>
+                  <Option value="F">Nữ</Option>
+                  <Option value="U">Không xác định</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item label="Ghi chú" name="note" >
+                <TextArea rows={4} />
+              </Form.Item>
+              <Form.Item>
+                <Space>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    icon={<PlusOutlined />}
+                    loading={loadings[0]}
+                    onClick={() => setIdxBtnSave(0)}
+                    disabled={disableSubmit ? true : false}
+                  >Lưu</Button>
+                  <Button
+                    htmlType="submit"
+                    icon={<EditOutlined />}
+                    loading={loadings[1]}
+                    onClick={() => setIdxBtnSave(1)}
+                    disabled={disableSubmit ? true : false}
+                  >Lưu và tiếp tục chỉnh sửa</Button>
+                  <Button
+                    htmlType="submit"
+                    icon={<PlusOutlined />}
+                    loading={loadings[2]}
+                    onClick={() => setIdxBtnSave(2)}
+                    disabled={disableSubmit ? true : false}
+                  >Lưu và thêm mới</Button>
+                </Space>
+              </Form.Item>
 
-        </>
-      }>
+            </>
+          }>
 
-    </ChangeForm>
+        </ChangeForm>
+      }
+    </>
   )
 
 }

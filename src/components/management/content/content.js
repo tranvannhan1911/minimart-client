@@ -1,4 +1,4 @@
-import { HomeOutlined, UserOutlined, PlusOutlined } from '@ant-design/icons';
+import { HomeOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import React, {Component, useState} from 'react';
 import { Breadcrumb, Layout, Affix, Space, Col, Row, Button } from 'antd';
 import { lazy, Suspense } from "react";
@@ -15,6 +15,7 @@ const StaffListForm = lazy(() => import("../staff/listform"));
 const MyContent = (props) => {
     const [container, setContainer] = useState(null);
     const [breadcrumb, setBreadcrumb] = useState(false);
+    const [breadcrumb_extras, setBreadcrumbExtras] = useState(null);
     const navigate = useNavigate();
 
     const breadcrumbComponent = () => {
@@ -41,13 +42,8 @@ const MyContent = (props) => {
                 margin: '5px 16px 0px',
                 padding: '20px 0px 0px',
             }}>
-                <Breadcrumb>
-                    <Breadcrumb.Item href="/quan-ly">
-                        <HomeOutlined />
-                    </Breadcrumb.Item>
-                    {items}
-                </Breadcrumb>
-                {/* <Row wrap={false} className="action">
+                
+                <Row wrap={false} className="action">
                     <Col flex="auto">
                         <Breadcrumb>
                             <Breadcrumb.Item href="/quan-ly">
@@ -58,10 +54,10 @@ const MyContent = (props) => {
                     </Col>
                     <Col flex="null">
                         <Space direction="horizontal" style={{width: '100%', justifyContent: 'end'}}>
-                            <Button type="primary" icon={<PlusOutlined />}>Thêm</Button>
+                            {breadcrumb_extras}
                         </Space>
                     </Col>
-                </Row> */}
+                </Row>
             </Affix>
         )
     }
@@ -84,9 +80,13 @@ const MyContent = (props) => {
                         <Route path="khach-hang" key="khach-hang" 
                             element={<CustomerListForm setBreadcrumb={setBreadcrumb}/>} />
                         <Route path="khach-hang/them-moi" key="khach-hang" 
-                            element={<CustomerChangeForm setBreadcrumb={setBreadcrumb} is_create={true}/>} />
+                            element={<CustomerChangeForm 
+                            breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras} 
+                            setBreadcrumb={setBreadcrumb} is_create={true}/>} />
                         <Route path="khach-hang/:customer_id" key="khach-hang" 
-                            element={<CustomerChangeForm setBreadcrumb={setBreadcrumb} is_create={false}/>} />
+                            element={<CustomerChangeForm
+                            breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                            setBreadcrumb={setBreadcrumb} is_create={false}/>} />
                         
                         <Route path="nhan-vien" key="nhan-vien" element={<StaffListForm/>} />
                     </Routes >

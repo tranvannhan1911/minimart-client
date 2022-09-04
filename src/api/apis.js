@@ -38,6 +38,11 @@ class AccountApi{
         );
     }
 
+    remove_token(response){
+        Cookies.remove("access")
+        Cookies.remove("refresh")
+    }
+
     get_token(){
         return {
             access: Cookies.get("access"),
@@ -52,6 +57,11 @@ class CustomerApi{
         return axiosApi.get(url, params)
     }
 
+    get(id, params){
+        const url = "/customer/"+id+"/"
+        return axiosApi.get(url, params)
+    }
+
     add(params){
         const url = "/customer/add/"
         return axiosApi.post(url, params)
@@ -61,11 +71,12 @@ class CustomerApi{
         const url = "/customer/"+id+"/update/"
         return axiosApi.put(url, params)
     }
-    
-    get(id, params){
-        const url = "/customer/"+id+"/"
-        return axiosApi.get(url, params)
+
+    delete(id, params){
+        const url = "/customer/"+id+"/delete/"
+        return axiosApi.delete(url, params)
     }
+    
 
     customer_group_list(params){
         const url = "/customer-group/"

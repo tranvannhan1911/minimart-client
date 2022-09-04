@@ -13,6 +13,7 @@ const Managememt = () => {
   const accountApi = new AccountApi();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const [hasPerms, setHasPerms] = useState(false);
 
   const handleAuthentication = async () => {
     const token = accountApi.get_token()
@@ -21,8 +22,17 @@ const Managememt = () => {
       return
     }
 
-    const account = await accountApi.get_info()
-    console.log(account)
+    try{
+      const response = await accountApi.get_info()
+      console.log("account", response)
+      if(response.data.code!=1 || !response.data.data.is_superuser){
+        navigate('/dang-nhap')
+      }else{
+        setHasPerms(true)
+      }
+    }catch(error){
+      navigate('/dang-nhap')
+    }
   }
 
   useEffect(() => {
@@ -30,22 +40,25 @@ const Managememt = () => {
   }, []);
 
   return (
-    <Layout>
-      <Sider trigger={null} collapsible collapsed={collapsed} 
-        style={{
-          height: "100vh",
-          overflow: 'auto',
-        }}>
-        <SideNav collapsed={collapsed}></SideNav>
-      </Sider>
-      <Layout className="site-layout" 
-        style={{
-          height: "100vh",
-          overflow: 'auto',
-        }}>
-        <Header collapsed={collapsed} setCollapsed={setCollapsed}></Header>
-        <MyContent></MyContent>
-      </Layout>
+    <Layout>{ hasPerms == false ? null :(
+        <>
+        <Sider trigger={null} collapsible collapsed={collapsed} 
+          style={{
+            height: "100vh",
+            overflow: 'auto',
+          }}>
+          <SideNav collapsed={collapsed}></SideNav>
+        </Sider>
+        <Layout className="site-layout" 
+          style={{
+            height: "100vh",
+            overflow: 'auto',
+          }}>
+          <Header collapsed={collapsed} setCollapsed={setCollapsed}></Header>
+          <MyContent></MyContent>
+        </Layout>
+      </>
+    )}
     </Layout>
   );
 };

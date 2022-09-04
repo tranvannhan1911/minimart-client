@@ -1,5 +1,5 @@
 import { SearchOutlined } from '@ant-design/icons';
-import { Button, Space, Table as AntdTable, Input, Tag } from 'antd';
+import { Button, Space, Table as AntdTable, Input, Tag, Pagination } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
@@ -27,17 +27,18 @@ const CustomerTable = (props) => {
   };
 
 
-  // const clearAll = () => {
-  //   setFilteredInfo({});
-  //   setSortedInfo({});
-  // };
-
-  // const setAgeSort = () => {
-  //   setSortedInfo({
-  //     order: 'descend',
-  //     columnKey: 'age',
-  //   });
-  // };
+  const renderSearch = () => ({render: (text) =>
+      <Highlighter
+        highlightStyle={{
+          backgroundColor: '#ffc069',
+          padding: 0,
+        }}
+        searchWords={[props.searchInfo[0]]}
+        autoEscape
+        textToHighlight={text ? text.toString() : ''}
+      />
+    })
+  
 
   const columns = [
     {
@@ -48,13 +49,13 @@ const CustomerTable = (props) => {
         compare: (a, b) => a.customer_id > b.customer_id,
         multiple: 1
       },
-      defaultSortOrder: 'descend'
-      // sortOrder: () => {
-      //   console.log("a", props.sortedInfo)
-      //   if(props.sortedInfo.length > 1)
-      //     return props.sortedInfo[0].columnKey === 'customer_id' ? props.sortedInfo[0].order : null
-      //   return props.sortedInfo.columnKey === 'customer_id' ? props.sortedInfo.order : null
-      // },
+      defaultSortOrder: 'descend',
+      filteredValue: props.searchInfo || null,
+      onFilter: (value, record) => {
+        return record.fullname.toLowerCase().includes(value.toLowerCase())
+          || record.customer_id.toString().toLowerCase().includes(value.toLowerCase())
+          || record.phone.toLowerCase().includes(value.toLowerCase())},
+      ...renderSearch()
     },
     {
       title: 'Tên',
@@ -64,12 +65,13 @@ const CustomerTable = (props) => {
         compare: (a, b) => a.fullname.toLowerCase().localeCompare(b.fullname.toLowerCase()),
         multiple: 2
       },
-      // sortOrder: props.sortedInfo[1].columnKey === 'fullname' ? props.sortedInfo[1].order : null,
+      ...renderSearch()
     },
     {
       title: 'Số điện thoại',
       dataIndex: 'phone',
       key: 'phone',
+      ...renderSearch()
     },
     {
       title: 'Giới tính',
@@ -78,15 +80,15 @@ const CustomerTable = (props) => {
       filters: [
         {
           text: 'Nam',
-          value: 'M',
+          value: 'Nam',
         },
         {
           text: 'Nữ',
-          value: 'F',
+          value: 'Nữ',
         },
         {
           text: 'Không xác định',
-          value: 'U',
+          value: 'Không xác định',
         },
       ],
       filteredValue: props.filteredInfo.gender || null,
@@ -124,68 +126,45 @@ const CustomerTable = (props) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   const onSelectChange = (newSelectedRowKeys) => {
-    console.log('selectedRowKeys changed: ', selectedRowKeys);
+    console.log('selectedRowKeys changed: ', newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-    selections: [
-      AntdTable.SELECTION_ALL,
-      AntdTable.SELECTION_INVERT,
-      AntdTable.SELECTION_NONE,
-      {
-        key: 'odd',
-        text: 'Select Odd Row',
-        onSelect: (changableRowKeys) => {
-          let newSelectedRowKeys = [];
-          newSelectedRowKeys = changableRowKeys.filter((_, index) => {
-            if (index % 2 !== 0) {
-              return false;
-            }
-
-            return true;
-          });
-          setSelectedRowKeys(newSelectedRowKeys);
-        },
-      },
-      {
-        key: 'even',
-        text: 'Select Even Row',
-        onSelect: (changableRowKeys) => {
-          let newSelectedRowKeys = [];
-          newSelectedRowKeys = changableRowKeys.filter((_, index) => {
-            if (index % 2 !== 0) {
-              return true;
-            }
-
-            return false;
-          });
-          setSelectedRowKeys(newSelectedRowKeys);
-        },
-      },
-    ],
-  };
-//   const onSearch = (value) => console.log(value);
-
   return (
     <AntdTable 
-      rowSelection={rowSelection} 
+      rowSelection={{
+        selectedRowKeys,
+        onChange: onSelectChange
+      }} 
       columns={columns} 
       dataSource={props.data} 
       onChange={handleChange}
       scroll={{
-          y: 240,
+          x: 'max-content',
       }} 
+      sticky
+      pagination={{
+        total: props.data.length,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        showTotal: (total) => `Tất cả ${total}`,
+      }}
       loading={props.loading}
       onRow={(record, rowIndex) => {
         return {
           onClick: event => {
+            // let _selectedRowKeys = Object.assign([], selectedRowKeys)
+            // if(selectedRowKeys.indexOf(record.customer_id) !== -1){
+            //   _selectedRowKeys.splice(_selectedRowKeys.indexOf(record.customer_id), 1)
+            // }else{
+            //   _selectedRowKeys.push(record.customer_id)
+            // }
+            // setSelectedRowKeys(_selectedRowKeys)
+          }, // click row
+          onDoubleClick: event => {
             console.log("onClick", record, rowIndex)
             navigate("/quan-ly/khach-hang/"+record.customer_id)
-          }, // click row
-          onDoubleClick: event => {}, // double click row
+          }, // double click row
           onContextMenu: event => {}, // right button click row
           onMouseEnter: event => {}, // mouse enter row
           onMouseLeave: event => {}, // mouse leave row
