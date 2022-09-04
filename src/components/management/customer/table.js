@@ -160,6 +160,8 @@ const CustomerTable = (props) => {
             //   _selectedRowKeys.push(record.customer_id)
             // }
             // setSelectedRowKeys(_selectedRowKeys)
+            console.log("onClick", record, rowIndex)
+            navigate("/quan-ly/khach-hang/"+record.customer_id)
           }, // click row
           onDoubleClick: event => {
             console.log("onClick", record, rowIndex)
