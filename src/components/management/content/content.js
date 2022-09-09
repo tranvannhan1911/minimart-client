@@ -12,6 +12,8 @@ const CustomerListForm = lazy(() => import("../customer/listform"));
 const CustomerChangeForm = lazy(() => import("../customer/changeform"));
 const StaffListForm = lazy(() => import("../staff/listform"));
 const StaffChangeForm = lazy(() => import("../staff/changeform"));
+const CustomerGroupListForm = lazy(() => import("../customer_group/listform"));
+const CustomerGroupChangeForm = lazy(() => import("../customer_group/changeform"));
 
 
 const MyContent = (props) => {
@@ -65,6 +67,10 @@ const MyContent = (props) => {
         )
     }
 
+    // const getRoutes = () => {
+
+    // }
+
     return (
         <div ref={setContainer}>  
             {breadcrumbComponent()}
@@ -99,6 +105,17 @@ const MyContent = (props) => {
                             setBreadcrumb={setBreadcrumb} is_create={true}/>} />
                         <Route path={paths.staff.rchange} key={paths.staff.key}
                             element={<StaffChangeForm
+                            breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                            setBreadcrumb={setBreadcrumb} is_create={false}/>} />
+
+                        <Route path={paths.customer_group.rlist} key={paths.customer_group.key}
+                            element={<CustomerGroupListForm  setBreadcrumb={setBreadcrumb}/>} />
+                        <Route path={paths.customer_group.radd} key={paths.customer_group.key}
+                            element={<CustomerGroupChangeForm 
+                            breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras} 
+                            setBreadcrumb={setBreadcrumb} is_create={true}/>} />
+                        <Route path={paths.customer_group.rchange} key={paths.customer_group.key}
+                            element={<CustomerGroupChangeForm
                             breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
                             setBreadcrumb={setBreadcrumb} is_create={false}/>} />
                     </Routes >

@@ -13,18 +13,70 @@ import messages from '../../../utils/messages'
 const { Option } = Select;
 const { TextArea } = Input;
 
-const CustomerChangeForm = (props) => {
+const CustomerGroupChangeForm = (props) => {
   const customerApi = new CustomerApi()
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
-  const [dataCustomerGroup, setDataCustomerGroup] = useState([]);
   const [idxBtnSave, setIdxBtnSave] = useState([]);
-  let { customer_id } = useParams();
+  let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const refAutoFocus = useRef(null)
+
+  useEffect(() => {
+    if (is_create == null) {
+      setCreate(props.is_create)
+      if (!props.is_create) {
+        handleData()
+      }
+      setLoadingData(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    props.setBreadcrumb([
+      { title: "Nhóm khách hàng", href: paths.customer_group.list },
+      { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
+
+    if (is_create==false) {
+      props.setBreadcrumbExtras([
+        <Popconfirm
+          placement="bottomRight"
+          title="Xác nhận xóa nhóm khách hàng này"
+          onConfirm={deleteCustomer}
+          okText="Đồng ý"
+          okType="danger"
+          cancelText="Hủy bỏ"
+        >
+          <Button type="danger" icon={<DeleteOutlined />}
+          >Xóa</Button>
+        </Popconfirm>,
+        <Button type="info" icon={<HistoryOutlined />}
+        >Lịch sử chỉnh sửa</Button>
+      ])
+    } else {
+      props.setBreadcrumbExtras(null)
+    }
+  }, [is_create])
+
+  useEffect(() => {
+    setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
+  }, [refAutoFocus])
+  
+  const handleData = async () => {
+    setLoadingData(true)
+    try {
+      const response = await customerApi.customer_group_get(id);
+      const values = response.data.data
+      form.setFieldsValue(values)
+    } catch (error) {
+      message.error(messages.ERROR)
+    } finally {
+      setLoadingData(false)
+    }
+  }
 
   const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
@@ -44,16 +96,16 @@ const CustomerChangeForm = (props) => {
 
   const directAfterSubmit = (response) => {
     if (idxBtnSave == 0) {
-      navigate(paths.customer.list)
+      navigate(paths.customer_group.list)
     } else if (idxBtnSave == 1) {
       if (is_create) {
-        navigate(paths.customer.change(response.data.data.id))
+        navigate(paths.customer_group.change(response.data.data.id))
         setCreate(false)
       }
       refAutoFocus.current && refAutoFocus.current.focus()
     } else if (idxBtnSave == 2) {
       if (!is_create) {
-        navigate(paths.customer.add)
+        navigate(paths.customer_group.add)
         setCreate(true)
       }
       form.resetFields()
@@ -64,9 +116,9 @@ const CustomerChangeForm = (props) => {
 
   const create = async (values) => {
     try {
-      const response = await customerApi.add(values);
+      const response = await customerApi.customer_group_add(values);
       if (response.data.code == 1) {
-        message.success(messages.SUCCESS_SAVE_CUSTOMER())
+        message.success(messages.SUCCESS_SAVE_CUSTOMER_GROUP())
         directAfterSubmit(response)
         return true
       } else {
@@ -81,10 +133,9 @@ const CustomerChangeForm = (props) => {
 
   const update = async (values) => {
     try {
-      const response = await customerApi.update(customer_id, values)
+      const response = await customerApi.customer_group_update(id, values)
       if (response.data.code == 1) {
-
-        message.success(messages.SUCCESS_SAVE_CUSTOMER(customer_id))
+        message.success(messages.SUCCESS_SAVE_CUSTOMER_GROUP(id))
         directAfterSubmit(response)
         return true
       } else {
@@ -99,13 +150,13 @@ const CustomerChangeForm = (props) => {
   
   const deleteCustomer = async () => {
     try {
-      const response = await customerApi.delete(customer_id)
+      const response = await customerApi.customer_group_delete(id)
       if (response.data.code == 1) {
-        message.success(messages.SUCCESS_DELETE_CUSTOMER(customer_id))
-        navigate(paths.customer.list)
+        message.success(messages.SUCCESS_DELETE_CUSTOMER_GROUP(id))
+        navigate(paths.customer_group.list)
         return true
       } else {
-        message.error(messages.ERROR_DELETE_CUSTOMER(customer_id))
+        message.error(messages.ERROR_DELETE_CUSTOMER_GROUP(id))
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -132,77 +183,6 @@ const CustomerChangeForm = (props) => {
     stopLoading(0)
   };
 
-  const handleDataCustomer = async () => {
-    setLoadingData(true)
-    try {
-      const response = await customerApi.get(customer_id);
-      const values = response.data.data
-      values.customer_group = values.customer_group.map(elm => elm.id.toString())
-      form.setFieldsValue(values)
-    } catch (error) {
-      message.error(messages.ERROR)
-    } finally {
-      setLoadingData(false)
-    }
-  }
-
-  const handleDataCustomerGroup = async () => {
-    const response = await customerApi.customer_group_list();
-    console.log("handleDataCustomerGroup", response)
-    const _dataCustomerGroup = []
-    response.data.data.results.forEach(cg => {
-      _dataCustomerGroup.push(<Option key={cg.id}>{cg.name}</Option>)
-    })
-    setDataCustomerGroup(_dataCustomerGroup)
-  }
-
-
-  useEffect(() => {
-    handleDataCustomerGroup()
-    if (is_create == null) {
-      setCreate(props.is_create)
-      if (!props.is_create) {
-        handleDataCustomer()
-        // props.setCreate(false)
-        console.log("setCreate", false)
-      } else {
-        // props.setCreate(true)
-        console.log("setCreate", true)
-      }
-      setLoadingData(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    props.setBreadcrumb([
-      { title: "Khách hàng", href: paths.customer.list },
-      { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
-
-    if (is_create==false) {
-      props.setBreadcrumbExtras([
-        <Popconfirm
-          placement="bottomRight"
-          title="Xác nhận xóa khách hàng này"
-          onConfirm={deleteCustomer}
-          okText="Đồng ý"
-          okType="danger"
-          cancelText="Hủy bỏ"
-        >
-          <Button type="danger" icon={<DeleteOutlined />}
-          >Xóa</Button>
-        </Popconfirm>,
-        <Button type="info" icon={<HistoryOutlined />}
-        >Lịch sử chỉnh sửa</Button>
-      ])
-    } else {
-      props.setBreadcrumbExtras(null)
-    }
-  }, [is_create])
-
-  useEffect(() => {
-    setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
-  }, [refAutoFocus])
-
   return (
     <>
       {loadingData ? <Loading /> :
@@ -213,58 +193,18 @@ const CustomerChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <>
-              <Form.Item label="Tên khách hàng" name="fullname" required
+              <Form.Item label="Tên nhóm khách hàng" name="name" required
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng nhập tên khách hàng!',
+                    message: 'Vui lòng nhập tên nhóm khách hàng!',
                   },
                 ]}
               >
                 <Input autoFocus ref={refAutoFocus} />
               </Form.Item>
-              <Form.Item label="Số điện thoại" name="phone" required
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng nhập số điện thoại!',
-                  },
-                ]}
-              >
-                <Input disabled={is_create ? false : true} />
-              </Form.Item>
-              <Form.Item label="Nhóm khách hàng" name="customer_group"
-              >
-                <Select
-                  mode="multiple"
-                  allowClear
-                  style={{
-                    width: '100%',
-                  }}
-                // placeholder="Please select"
-                // defaultValue={['a10', 'c12']}
-                // onChange={handleChange}
-                >
-                  {dataCustomerGroup}
-                </Select>
-              </Form.Item>
-              <Form.Item label="Địa chỉ" name="address">
-                <Input />
-              </Form.Item>
-              <Form.Item label="Giới tính" name="gender"
-                style={{
-                  textAlign: 'left'
-                }}>
-                <Select
-                  defaultValue="U"
-                  style={{
-                    width: 200,
-                  }}
-                >
-                  <Option value="M">Nam</Option>
-                  <Option value="F">Nữ</Option>
-                  <Option value="U">Không xác định</Option>
-                </Select>
+              <Form.Item label="Mô tả" name="description">
+                <TextArea rows={4} />
               </Form.Item>
               <Form.Item label="Ghi chú" name="note" >
                 <TextArea rows={4} />
@@ -306,4 +246,4 @@ const CustomerChangeForm = (props) => {
 
 }
 
-export default CustomerChangeForm;
+export default CustomerGroupChangeForm;

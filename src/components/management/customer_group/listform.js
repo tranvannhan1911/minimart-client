@@ -7,45 +7,26 @@ import { Button, Col, Row, Space, Input, message } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import ListForm from '../templates/listform';
-import CustomerTable from './table';
+import CustomerGroupTable from './table';
 import { CustomerApi } from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
-const { Title } = Typography;
-const { Search } = Input;
 
-const CustomerListForm = (props) => {
+const CustomerGroupListForm = (props) => {
     const customerApi = new CustomerApi()
     const [data, setData] = useState([])
-    const [dataCustomerGroup, setDataCustomerGroup] = useState([])
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
     const [sortedInfo, setSortedInfo] = useState({})
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
-    const refSearch = useRef()
 
     const handleGetData = async () => {
         setLoading(true)
         try{
-            const response = await customerApi.list()
+            const response = await customerApi.customer_group_list()
             const _data = response.data.data.results.map(elm => {
-                elm.key = elm.id
-                const _customer_groups = []
-                elm.customer_group.forEach(gr => _customer_groups.push(gr.name))
-                elm.customer_group = _customer_groups
-                switch(elm.gender){
-                    case "M":
-                        elm.gender = "Nam"
-                        break
-                    case "F":
-                        elm.gender = "Nữ"
-                        break
-                    case "U":
-                        elm.gender = "Không xác định"
-                        break
-                }
                 return elm
             })
             setData(_data)
@@ -56,19 +37,8 @@ const CustomerListForm = (props) => {
         setLoading(false)
     }
 
-    const handleGetDataCustomerGroup = async () => {
-        try{
-            const response = await customerApi.customer_group_list()
-            setDataCustomerGroup(response.data.data.results)
-        }catch(error){
-            console.log('Failed:', error)
-            message.error(messages.ERROR_REFRESH)
-        }
-    }
-
     useEffect(() => {
         handleGetData()
-        handleGetDataCustomerGroup()
         props.setBreadcrumb(false)
     }, []);
 
@@ -80,17 +50,14 @@ const CustomerListForm = (props) => {
 
     return (
         <ListForm 
-            title="Khách hàng" 
+            title="Nhóm khách hàng" 
             actions={[
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
-                // <Button icon={<ImportOutlined />}>Nhập excel</Button>,
-                // <Button icon={<ExportOutlined />}>Xuất excel</Button>,
-                <Button onClick={() => navigate(paths.customer.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
+                <Button onClick={() => navigate(paths.customer_group.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={
-                <CustomerTable 
+                <CustomerGroupTable 
                     data={data} 
-                    data_customer_group={dataCustomerGroup}
                     loading={loading} 
                     setLoading={setLoading}
                     filteredInfo={filteredInfo}
@@ -103,7 +70,7 @@ const CustomerListForm = (props) => {
             }
             extra_actions={[
                 <Input 
-                    placeholder="Tìm kiếm khách hàng" 
+                    placeholder="Tìm kiếm nhóm khách hàng" 
                     allowClear value={searchInfo[0]} 
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
@@ -116,4 +83,4 @@ const CustomerListForm = (props) => {
     )
 }
 
-export default CustomerListForm;
+export default CustomerGroupListForm;

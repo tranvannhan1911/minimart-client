@@ -11,6 +11,7 @@ import StaffTable from './table';
 import { StaffApi } from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
+import messages from '../../../utils/messages'
 
 const StaffListForm = (props) => {
     const staffApi = new StaffApi()
@@ -43,7 +44,7 @@ const StaffListForm = (props) => {
             setData(_data)
         }catch(error){
             console.log('Failed:', error)
-            message.error("Có lỗi xảy ra, vui lòng tải lại trang")
+            message.error(messages.ERROR_REFRESH)
         }
         setLoading(false)
     }

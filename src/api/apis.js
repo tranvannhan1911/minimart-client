@@ -82,6 +82,26 @@ class CustomerApi{
         const url = "/customer-group/"
         return axiosApi.get(url, params)
     }
+
+    customer_group_get(id, params){
+        const url = "/customer-group/"+id+"/"
+        return axiosApi.get(url, params)
+    }
+
+    customer_group_add(params){
+        const url = "/customer-group/"
+        return axiosApi.post(url, params)
+    }
+
+    customer_group_update(id, params){
+        const url = "/customer-group/"+id+"/"
+        return axiosApi.put(url, params)
+    }
+
+    customer_group_delete(id, params){
+        const url = "/customer-group/"+id+"/"
+        return axiosApi.delete(url, params)
+    }
 }
 
 class StaffApi{

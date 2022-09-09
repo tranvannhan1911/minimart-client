@@ -3,6 +3,7 @@ import { Button, Space, Table as AntdTable, Input, Tag, Pagination } from 'antd'
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
+import paths from '../../../utils/paths'
 const { Search } = Input;
 
 
@@ -165,12 +166,10 @@ const CustomerTable = (props) => {
             //   _selectedRowKeys.push(record.id)
             // }
             // setSelectedRowKeys(_selectedRowKeys)
-            console.log("onClick", record, rowIndex)
-            navigate("/quan-ly/khach-hang/"+record.id)
+            navigate(paths.customer.change(record.id))
           }, // click row
           onDoubleClick: event => {
-            console.log("onClick", record, rowIndex)
-            navigate("/quan-ly/khach-hang/"+record.id)
+            navigate(paths.customer.change(record.id))
           }, // double click row
           onContextMenu: event => {}, // right button click row
           onMouseEnter: event => {}, // mouse enter row

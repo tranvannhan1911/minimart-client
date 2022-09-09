@@ -9,6 +9,7 @@ import ChangeForm from '../templates/changeform';
 import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
+import messages from '../../../utils/messages'
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -19,7 +20,6 @@ const StaffChangeForm = (props) => {
   const [loadings, setLoadings] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
-  const [dataCustomerGroup, setDataCustomerGroup] = useState([]);
   const [idxBtnSave, setIdxBtnSave] = useState([]);
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
@@ -65,14 +65,14 @@ const StaffChangeForm = (props) => {
     try {
       const response = await staffApi.add(values);
       if (response.data.code == 1) {
-        message.success('Lưu nhân viên thành công')
+        message.success(messages.SUCCESS_SAVE_STAFF)
         directAfterSubmit(response)
         return true
       } else {
         message.error(response.data.message.toString())
       }
     } catch (error) {
-      message.error('Có lỗi xảy ra')
+      message.error(messages.ERROR)
       console.log('Failed:', error)
     }
     return false
@@ -81,17 +81,15 @@ const StaffChangeForm = (props) => {
   const update = async (values) => {
     try {
       const response = await staffApi.update(id, values)
-      console.log("update", response)
       if (response.data.code == 1) {
-
-        message.success('Lưu nhân viên thành công')
+        message.success(messages.SUCCESS_SAVE_STAFF(id))
         directAfterSubmit(response)
         return true
       } else {
         message.error(response.data.message.toString())
       }
     } catch (error) {
-      message.error('Có lỗi xảy ra')
+      message.error(messages.ERROR)
       console.log('Failed:', error)
     }
     return false
@@ -100,17 +98,15 @@ const StaffChangeForm = (props) => {
   const deleteCustomer = async () => {
     try {
       const response = await staffApi.delete(id)
-      console.log("delete", response)
       if (response.data.code == 1) {
-
-        message.success('Xóa nhân viên thành công')
+        message.success(messages.SUCCESS_DELETE_STAFF(id))
         navigate(paths.staff.list)
         return true
       } else {
-        message.error("Không thể xóa nhân viên này")
+        message.error(messages.ERROR_DELETE_STAFF(id))
       }
     } catch (error) {
-      message.error('Có lỗi xảy ra')
+      message.error(messages.ERROR)
       console.log('Failed:', error)
     }
     return false
@@ -141,7 +137,7 @@ const StaffChangeForm = (props) => {
       const values = response.data.data
       form.setFieldsValue(values)
     } catch (error) {
-      message.error("Có lỗi xảy ra")
+      message.error(messages.ERROR)
     } finally {
       setLoadingData(false)
     }

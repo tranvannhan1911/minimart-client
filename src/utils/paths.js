@@ -20,12 +20,7 @@ const Paths = {
     management: "/quan-ly",
     customer: getPaths("khach-hang", "customer_id"),
     staff: getPaths("nhan-vien", "id"),
-    // staff: {
-    //     key: "nhan-vien",
-    //     list: getListPath(paths.staff.key),
-    //     add: getAddPath(paths.staff.key),
-    //     change: (id) => getChangePath(paths.staff.key, id),
-    // }
+    customer_group: getPaths("nhom-khach-hang", "id"),
 }
 
 const paths = Paths;

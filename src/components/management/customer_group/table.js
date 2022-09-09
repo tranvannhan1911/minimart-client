@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
 const { Search } = Input;
 
-const StaffTable = (props) => {
+const CustomerGroupTable = (props) => {
   const navigate = useNavigate();
   const [currentCountData, SetCurrentCountData] = useState(0);
 
@@ -46,7 +46,7 @@ const StaffTable = (props) => {
 
   const columns = [
     {
-      title: 'Mã nhân viên',
+      title: 'Mã nhóm khách hàng',
       dataIndex: 'id',
       key: 'id',
       sorter: {
@@ -56,48 +56,34 @@ const StaffTable = (props) => {
       defaultSortOrder: 'descend',
       filteredValue: props.searchInfo || null,
       onFilter: (value, record) => {
-        return (record.fullname && record.fullname.toLowerCase().includes(value.toLowerCase()))
+        return (record.name && record.name.toLowerCase().includes(value.toLowerCase()))
           || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
-          || (record.phone && record.phone.toLowerCase().includes(value.toLowerCase()))},
+          || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))
+          || (record.description && record.description.toLowerCase().includes(value.toLowerCase()))},
       ...renderSearch()
     },
     {
-      title: 'Tên',
-      dataIndex: 'fullname',
-      key: 'fullname',
+      title: 'Tên nhóm',
+      dataIndex: 'name',
+      key: 'name',
       sorter: {
-        compare: (a, b) => a.fullname.toLowerCase().localeCompare(b.fullname.toLowerCase()),
+        compare: (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
         multiple: 2
       },
       ...renderSearch()
     },
     {
-      title: 'Số điện thoại',
-      dataIndex: 'phone',
-      key: 'phone',
+      title: 'Mô tả',
+      dataIndex: 'description',
+      key: 'description',
       ...renderSearch()
     },
     {
-      title: 'Giới tính',
-      dataIndex: 'gender',
-      key: 'gender',
-      filters: [
-        {
-          text: 'Nam',
-          value: 'Nam',
-        },
-        {
-          text: 'Nữ',
-          value: 'Nữ',
-        },
-        {
-          text: 'Không xác định',
-          value: 'Không xác định',
-        },
-      ],
-      filteredValue: props.filteredInfo.gender || null,
-      onFilter: (value, record) => record.gender.includes(value),
-    }
+      title: 'Ghi chú nội bộ',
+      dataIndex: 'note',
+      key: 'note',
+      ...renderSearch()
+    },
   ];
 
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -130,17 +116,10 @@ const StaffTable = (props) => {
       onRow={(record, rowIndex) => {
         return {
           onClick: event => {
-            // let _selectedRowKeys = Object.assign([], selectedRowKeys)
-            // if(selectedRowKeys.indexOf(record.id) !== -1){
-            //   _selectedRowKeys.splice(_selectedRowKeys.indexOf(record.id), 1)
-            // }else{
-            //   _selectedRowKeys.push(record.id)
-            // }
-            // setSelectedRowKeys(_selectedRowKeys)
-            navigate(paths.staff.change(record.id))
+            navigate(paths.customer_group.change(record.id))
           }, // click row
           onDoubleClick: event => {
-            navigate(paths.staff.change(record.id))
+            navigate(paths.customer_group.change(record.id))
           }, // double click row
           onContextMenu: event => {}, // right button click row
           onMouseEnter: event => {}, // mouse enter row
@@ -151,4 +130,4 @@ const StaffTable = (props) => {
   );
 };
 
-export default StaffTable;
+export default CustomerGroupTable;
