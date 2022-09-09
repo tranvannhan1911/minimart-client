@@ -1,92 +1,158 @@
-import { Table } from 'antd';
-import React from 'react';
-const columns = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    filters: [
-      {
-        text: 'Joe',
-        value: 'Joe',
-      },
-      {
-        text: 'Jim',
-        value: 'Jim',
-      },
-      {
-        text: 'Submenu',
-        value: 'Submenu',
-        children: [
-          {
-            text: 'Green',
-            value: 'Green',
-          },
-          {
-            text: 'Black',
-            value: 'Black',
-          },
-        ],
-      },
-    ],
-    // specify the condition of filtering result
-    // here is that finding the name started with `value`
-    onFilter: (value, record) => {console.log("onFilter", value, record); return record.name.indexOf(value) === 0},
-    sorter: (a, b) => a.name.length - b.name.length,
-    sortDirections: ['descend'],
-  },
-  {
-    title: 'Age',
-    dataIndex: 'age',
-    defaultSortOrder: 'descend',
-    sorter: (a, b) => a.age - b.age,
-  },
-  {
-    title: 'Address',
-    dataIndex: 'address',
-    filters: [
-      {
-        text: 'London',
-        value: 'London',
-      },
-      {
-        text: 'New York',
-        value: 'New York',
-      },
-    ],
-    onFilter: (value, record) => record.address.indexOf(value) === 0,
-  },
-];
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-  },
-  {
-    key: '4',
-    name: 'Jim Red',
-    age: 32,
-    address: 'London No. 2 Lake Park',
-  },
-];
+import { SearchOutlined } from '@ant-design/icons';
+import { Button, Space, Table as AntdTable, Input, Tag, Pagination } from 'antd';
+import React, { useState, useRef, useEffect } from 'react';
+import Highlighter from 'react-highlight-words';
+import { useNavigate } from 'react-router-dom';
+import paths from '../../../utils/paths'
+const { Search } = Input;
 
-const onChange = (pagination, filters, sorter, extra) => {
-  console.log('params', pagination, filters, sorter, extra);
+
+
+const StaffTable = (props) => {
+  const navigate = useNavigate();
+  const [currentCountData, SetCurrentCountData] = useState(0);
+
+  const handleChange = (pagination, filters, sorter, extras) => {
+    console.log('Various parameters\n', pagination, filters, sorter);
+    props.setFilteredInfo(filters); 
+    props.setSortedInfo(sorter);
+    SetCurrentCountData(extras.currentDataSource.length)
+  };
+
+  
+  useEffect(() => {
+    SetCurrentCountData(props.data.length)
+  }, [props.data]);
+  
+  useEffect(() => {
+    SetCurrentCountData(0)
+  }, [props.searchInfo]);
+
+  const handleLoadingChange = (enable) => {
+    props.setLoading(enable);
+  };
+
+
+  const renderSearch = () => ({render: (text) =>
+      <Highlighter
+        highlightStyle={{
+          backgroundColor: '#ffc069',
+          padding: 0,
+        }}
+        searchWords={[props.searchInfo[0]]}
+        autoEscape
+        textToHighlight={text ? text.toString() : ''}
+      />
+    })
+  
+
+  const columns = [
+    {
+      title: 'Mã nhân viên',
+      dataIndex: 'id',
+      key: 'id',
+      sorter: {
+        compare: (a, b) => a.id > b.id,
+        multiple: 1
+      },
+      defaultSortOrder: 'descend',
+      filteredValue: props.searchInfo || null,
+      onFilter: (value, record) => {
+        return (record.fullname && record.fullname.toLowerCase().includes(value.toLowerCase()))
+          || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
+          || (record.phone && record.phone.toLowerCase().includes(value.toLowerCase()))},
+      ...renderSearch()
+    },
+    {
+      title: 'Tên',
+      dataIndex: 'fullname',
+      key: 'fullname',
+      sorter: {
+        compare: (a, b) => a.fullname.toLowerCase().localeCompare(b.fullname.toLowerCase()),
+        multiple: 2
+      },
+      ...renderSearch()
+    },
+    {
+      title: 'Số điện thoại',
+      dataIndex: 'phone',
+      key: 'phone',
+      ...renderSearch()
+    },
+    {
+      title: 'Giới tính',
+      dataIndex: 'gender',
+      key: 'gender',
+      filters: [
+        {
+          text: 'Nam',
+          value: 'Nam',
+        },
+        {
+          text: 'Nữ',
+          value: 'Nữ',
+        },
+        {
+          text: 'Không xác định',
+          value: 'Không xác định',
+        },
+      ],
+      filteredValue: props.filteredInfo.gender || null,
+      onFilter: (value, record) => record.gender.includes(value),
+    }
+  ];
+
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
+  const onSelectChange = (newSelectedRowKeys) => {
+    console.log('selectedRowKeys changed: ', newSelectedRowKeys);
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  return (
+    <AntdTable 
+      rowSelection={{
+        selectedRowKeys,
+        onChange: onSelectChange
+      }} 
+      columns={columns} 
+      dataSource={props.data} 
+      onChange={handleChange}
+      scroll={{
+          x: 'max-content',
+      }} 
+      sticky
+      pagination={{
+        total: currentCountData,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        showTotal: (total) => `Tất cả ${total}`,
+      }}
+      loading={props.loading}
+      onRow={(record, rowIndex) => {
+        return {
+          onClick: event => {
+            // let _selectedRowKeys = Object.assign([], selectedRowKeys)
+            // if(selectedRowKeys.indexOf(record.id) !== -1){
+            //   _selectedRowKeys.splice(_selectedRowKeys.indexOf(record.id), 1)
+            // }else{
+            //   _selectedRowKeys.push(record.id)
+            // }
+            // setSelectedRowKeys(_selectedRowKeys)
+            console.log("onClick", record, rowIndex)
+            navigate(paths.staff.change(record.id))
+          }, // click row
+          onDoubleClick: event => {
+            console.log("onClick", record, rowIndex)
+            navigate(paths.staff.change(record.id))
+          }, // double click row
+          onContextMenu: event => {}, // right button click row
+          onMouseEnter: event => {}, // mouse enter row
+          onMouseLeave: event => {}, // mouse leave row
+        };
+      }}
+    />
+  );
 };
-
-const StaffTable = () => <Table columns={columns} dataSource={data} onChange={onChange} />;
 
 export default StaffTable;

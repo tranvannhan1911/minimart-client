@@ -1,65 +1,93 @@
 import {
     PlusOutlined, ImportOutlined,
-    ExportOutlined, ReloadOutlined
+    ExportOutlined, ReloadOutlined,
+    SearchOutlined
   } from '@ant-design/icons';
-import { Button, Col, Row, Space } from 'antd';
+import { Button, Col, Row, Space, Input, message } from 'antd';
 import { Typography } from 'antd';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ListForm from '../templates/listform';
 import StaffTable from './table';
-import { CustomerApi } from '../../../api/apis'
-const { Title } = Typography;
+import { StaffApi } from '../../../api/apis'
+import { useNavigate } from 'react-router-dom'
+import paths from '../../../utils/paths'
 
-// const data = [];
-
-// for (let i = 0; i < 46; i++) {
-//   data.push({
-//     key: i,
-//     name: `Edward King ${i+100}`,
-//     age: 32+i,
-//     address: `London, Park Lane no. ${i}`,
-//   });
-// }
-
-const StaffListForm = () => {
-    const customerApi = new CustomerApi()
-    // data = await customerApi.list()
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
+const StaffListForm = (props) => {
+    const staffApi = new StaffApi()
+    const [data, setData] = useState([])
+    const [filteredInfo, setFilteredInfo] = useState({})
+    const [searchInfo, setSearchInfo] = useState([])
+    const [sortedInfo, setSortedInfo] = useState({})
+    const [loading, setLoading] = useState(true)
+    const navigate = useNavigate()
 
     const handleGetData = async () => {
         setLoading(true)
-        const response = await customerApi.list()
-        console.log(response)
-        const _data = response.data.data.results.map(elm => {
-            elm.key = elm.customer_id
-            return elm
-        })
-
-        setData(_data)
+        try{
+            const response = await staffApi.list()
+            const _data = response.data.data.results.map(elm => {
+                elm.key = elm.id
+                switch(elm.gender){
+                    case "M":
+                        elm.gender = "Nam"
+                        break
+                    case "F":
+                        elm.gender = "Nữ"
+                        break
+                    case "U":
+                        elm.gender = "Không xác định"
+                        break
+                }
+                return elm
+            })
+            setData(_data)
+        }catch(error){
+            console.log('Failed:', error)
+            message.error("Có lỗi xảy ra, vui lòng tải lại trang")
+        }
         setLoading(false)
     }
 
     useEffect(() => {
-        handleGetData();
+        handleGetData()
+        props.setBreadcrumb(false)
     }, []);
+
+    const clearFiltersAndSort = () => {
+        setFilteredInfo({})
+        setSortedInfo({})
+        setSearchInfo([])
+    };
 
     return (
         <ListForm 
-            title="Khách hàng" 
+            title="Nhân viên" 
             actions={[
-                <Button icon={<ReloadOutlined />}>Làm mới</Button>,
-                <Button icon={<ImportOutlined />}>Nhập excel</Button>,
-                <Button icon={<ExportOutlined />}>Xuất excel</Button>,
-                <Button type="primary" icon={<PlusOutlined />}>Thêm</Button>,
+                <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
+                <Button onClick={() => navigate(paths.staff.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={
                 <StaffTable 
                     data={data} 
                     loading={loading} 
                     setLoading={setLoading}
+                    filteredInfo={filteredInfo}
+                    setFilteredInfo={setFilteredInfo}
+                    searchInfo={searchInfo}
+                    setSearchInfo={setSearchInfo}
+                    sortedInfo={sortedInfo}
+                    setSortedInfo={setSortedInfo}
                 />
             }
+            extra_actions={[
+                <Input 
+                    placeholder="Tìm kiếm nhân viên" 
+                    allowClear value={searchInfo[0]} 
+                    prefix={<SearchOutlined />}
+                    onChange={(e) => setSearchInfo([e.target.value])}
+                />,
+                <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
+            ]}
         >
 
         </ListForm>

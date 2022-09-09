@@ -4,15 +4,16 @@ import {
 import { Button, Form, Input, Select, message, Space, Popconfirm } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
-import { CustomerApi } from '../../../api/apis'
+import { StaffApi } from '../../../api/apis'
 import ChangeForm from '../templates/changeform';
 import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
+import paths from '../../../utils/paths'
 const { Option } = Select;
 const { TextArea } = Input;
 
-const CustomerChangeForm = (props) => {
-  const customerApi = new CustomerApi()
+const StaffChangeForm = (props) => {
+  const staffApi = new StaffApi()
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
@@ -20,7 +21,7 @@ const CustomerChangeForm = (props) => {
   const [disableSubmit, setDisableSubmit] = useState(false);
   const [dataCustomerGroup, setDataCustomerGroup] = useState([]);
   const [idxBtnSave, setIdxBtnSave] = useState([]);
-  let { customer_id } = useParams();
+  let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const refAutoFocus = useRef(null)
 
@@ -42,16 +43,16 @@ const CustomerChangeForm = (props) => {
 
   const directAfterSubmit = (response) => {
     if (idxBtnSave == 0) {
-      navigate("/quan-ly/khach-hang")
+      navigate(paths.staff.list)
     } else if (idxBtnSave == 1) {
       if (is_create) {
-        navigate("/quan-ly/khach-hang/" + response.data.data.id)
+        navigate(paths.staff.change(response.data.data.id))
         setCreate(false)
       }
       refAutoFocus.current && refAutoFocus.current.focus()
     } else if (idxBtnSave == 2) {
       if (!is_create) {
-        navigate("/quan-ly/khach-hang/them-moi")
+        navigate(paths.staff.add)
         setCreate(true)
       }
       form.resetFields()
@@ -62,11 +63,9 @@ const CustomerChangeForm = (props) => {
 
   const create = async (values) => {
     try {
-      const response = await customerApi.add(values);
-      console.log(response)
+      const response = await staffApi.add(values);
       if (response.data.code == 1) {
-
-        message.success('Lưu khách hàng thành công')
+        message.success('Lưu nhân viên thành công')
         directAfterSubmit(response)
         return true
       } else {
@@ -81,11 +80,11 @@ const CustomerChangeForm = (props) => {
 
   const update = async (values) => {
     try {
-      const response = await customerApi.update(customer_id, values)
+      const response = await staffApi.update(id, values)
       console.log("update", response)
       if (response.data.code == 1) {
 
-        message.success('Lưu khách hàng thành công')
+        message.success('Lưu nhân viên thành công')
         directAfterSubmit(response)
         return true
       } else {
@@ -100,15 +99,15 @@ const CustomerChangeForm = (props) => {
   
   const deleteCustomer = async () => {
     try {
-      const response = await customerApi.delete(customer_id)
+      const response = await staffApi.delete(id)
       console.log("delete", response)
       if (response.data.code == 1) {
 
-        message.success('Xóa khách hàng thành công')
-        navigate("/quan-ly/khach-hang")
+        message.success('Xóa nhân viên thành công')
+        navigate(paths.staff.list)
         return true
       } else {
-        message.error("Không thể xóa khách hàng này")
+        message.error("Không thể xóa nhân viên này")
       }
     } catch (error) {
       message.error('Có lỗi xảy ra')
@@ -135,12 +134,11 @@ const CustomerChangeForm = (props) => {
     stopLoading(0)
   };
 
-  const handleDataCustomer = async () => {
+  const handleData = async () => {
     setLoadingData(true)
     try {
-      const response = await customerApi.get(customer_id);
+      const response = await staffApi.get(id);
       const values = response.data.data
-      values.customer_group = values.customer_group.map(elm => elm.id.toString())
       form.setFieldsValue(values)
     } catch (error) {
       message.error("Có lỗi xảy ra")
@@ -149,28 +147,11 @@ const CustomerChangeForm = (props) => {
     }
   }
 
-  const handleDataCustomerGroup = async () => {
-    const response = await customerApi.customer_group_list();
-    console.log("handleDataCustomerGroup", response)
-    const _dataCustomerGroup = []
-    response.data.data.results.forEach(cg => {
-      _dataCustomerGroup.push(<Option key={cg.id}>{cg.name}</Option>)
-    })
-    setDataCustomerGroup(_dataCustomerGroup)
-  }
-
-
   useEffect(() => {
-    handleDataCustomerGroup()
     if (is_create == null) {
       setCreate(props.is_create)
       if (!props.is_create) {
-        handleDataCustomer()
-        // props.setCreate(false)
-        console.log("setCreate", false)
-      } else {
-        // props.setCreate(true)
-        console.log("setCreate", true)
+        handleData()
       }
       setLoadingData(false)
     }
@@ -178,14 +159,14 @@ const CustomerChangeForm = (props) => {
 
   useEffect(() => {
     props.setBreadcrumb([
-      { title: "Khách hàng", href: "/quan-ly/khach-hang" },
+      { title: "Nhân viên", href: paths.staff.list },
       { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
 
     if (is_create==false) {
       props.setBreadcrumbExtras([
         <Popconfirm
           placement="bottomRight"
-          title="Xác nhận xóa khách hàng này"
+          title="Xác nhận xóa nhân viên này"
           onConfirm={deleteCustomer}
           okText="Đồng ý"
           okType="danger"
@@ -216,11 +197,11 @@ const CustomerChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <>
-              <Form.Item label="Tên khách hàng" name="fullname" required
+              <Form.Item label="Tên nhân viên" name="fullname" required
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng nhập tên khách hàng!',
+                    message: 'Vui lòng nhập tên nhân viên!',
                   },
                 ]}
               >
@@ -235,21 +216,6 @@ const CustomerChangeForm = (props) => {
                 ]}
               >
                 <Input disabled={is_create ? false : true} />
-              </Form.Item>
-              <Form.Item label="Nhóm khách hàng" name="customer_group"
-              >
-                <Select
-                  mode="multiple"
-                  allowClear
-                  style={{
-                    width: '100%',
-                  }}
-                // placeholder="Please select"
-                // defaultValue={['a10', 'c12']}
-                // onChange={handleChange}
-                >
-                  {dataCustomerGroup}
-                </Select>
               </Form.Item>
               <Form.Item label="Địa chỉ" name="address">
                 <Input />
@@ -309,4 +275,4 @@ const CustomerChangeForm = (props) => {
 
 }
 
-export default CustomerChangeForm;
+export default StaffChangeForm;

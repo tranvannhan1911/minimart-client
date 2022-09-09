@@ -9,18 +9,23 @@ const { Search } = Input;
 
 const CustomerTable = (props) => {
   const navigate = useNavigate();
+  const [currentCountData, SetCurrentCountData] = useState(0);
 
-  const handleChange = (pagination, filters, sorter) => {
+  const handleChange = (pagination, filters, sorter, extras) => {
     console.log('Various parameters\n', pagination, filters, sorter);
     props.setFilteredInfo(filters); 
     props.setSortedInfo(sorter);
+    SetCurrentCountData(extras.currentDataSource.length)
   };
 
-  // useEffect(() => {
-    
-  //   console.log("handleChange", filteredInfo)
-  //   console.log("gender", filteredInfo.gender)
-  // }, [filteredInfo]);
+  
+  useEffect(() => {
+    SetCurrentCountData(props.data.length)
+  }, [props.data]);
+  
+  useEffect(() => {
+    SetCurrentCountData(0)
+  }, [props.searchInfo]);
 
   const handleLoadingChange = (enable) => {
     props.setLoading(enable);
@@ -43,17 +48,17 @@ const CustomerTable = (props) => {
   const columns = [
     {
       title: 'Mã khách hàng',
-      dataIndex: 'customer_id',
-      key: 'customer_id',
+      dataIndex: 'id',
+      key: 'id',
       sorter: {
-        compare: (a, b) => a.customer_id > b.customer_id,
+        compare: (a, b) => a.id > b.id,
         multiple: 1
       },
       defaultSortOrder: 'descend',
       filteredValue: props.searchInfo || null,
       onFilter: (value, record) => {
         return record.fullname.toLowerCase().includes(value.toLowerCase())
-          || record.customer_id.toString().toLowerCase().includes(value.toLowerCase())
+          || record.id.toString().toLowerCase().includes(value.toLowerCase())
           || record.phone.toLowerCase().includes(value.toLowerCase())},
       ...renderSearch()
     },
@@ -144,7 +149,7 @@ const CustomerTable = (props) => {
       }} 
       sticky
       pagination={{
-        total: props.data.length,
+        total: currentCountData,
         showSizeChanger: true,
         showQuickJumper: true,
         showTotal: (total) => `Tất cả ${total}`,
@@ -154,18 +159,18 @@ const CustomerTable = (props) => {
         return {
           onClick: event => {
             // let _selectedRowKeys = Object.assign([], selectedRowKeys)
-            // if(selectedRowKeys.indexOf(record.customer_id) !== -1){
-            //   _selectedRowKeys.splice(_selectedRowKeys.indexOf(record.customer_id), 1)
+            // if(selectedRowKeys.indexOf(record.id) !== -1){
+            //   _selectedRowKeys.splice(_selectedRowKeys.indexOf(record.id), 1)
             // }else{
-            //   _selectedRowKeys.push(record.customer_id)
+            //   _selectedRowKeys.push(record.id)
             // }
             // setSelectedRowKeys(_selectedRowKeys)
             console.log("onClick", record, rowIndex)
-            navigate("/quan-ly/khach-hang/"+record.customer_id)
+            navigate("/quan-ly/khach-hang/"+record.id)
           }, // click row
           onDoubleClick: event => {
             console.log("onClick", record, rowIndex)
-            navigate("/quan-ly/khach-hang/"+record.customer_id)
+            navigate("/quan-ly/khach-hang/"+record.id)
           }, // double click row
           onContextMenu: event => {}, // right button click row
           onMouseEnter: event => {}, // mouse enter row

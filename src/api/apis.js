@@ -63,17 +63,17 @@ class CustomerApi{
     }
 
     add(params){
-        const url = "/customer/add/"
+        const url = "/customer/"
         return axiosApi.post(url, params)
     }
 
     update(id, params){
-        const url = "/customer/"+id+"/update/"
+        const url = "/customer/"+id+"/"
         return axiosApi.put(url, params)
     }
 
     delete(id, params){
-        const url = "/customer/"+id+"/delete/"
+        const url = "/customer/"+id+"/"
         return axiosApi.delete(url, params)
     }
     
@@ -84,4 +84,31 @@ class CustomerApi{
     }
 }
 
-export {AccountApi, CustomerApi};
+class StaffApi{
+    list(params){
+        const url = "/staff/"
+        return axiosApi.get(url, params)
+    }
+
+    get(id, params){
+        const url = "/staff/"+id+"/"
+        return axiosApi.get(url, params)
+    }
+
+    add(params){
+        const url = "/staff/"
+        return axiosApi.post(url, params)
+    }
+
+    update(id, params){
+        const url = "/staff/"+id+"/"
+        return axiosApi.put(url, params)
+    }
+
+    delete(id, params){
+        const url = "/staff/"+id+"/"
+        return axiosApi.delete(url, params)
+    }
+}
+
+export {AccountApi, CustomerApi, StaffApi};

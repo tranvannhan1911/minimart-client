@@ -4,12 +4,14 @@ import { Breadcrumb, Layout, Affix, Space, Col, Row, Button } from 'antd';
 import { lazy, Suspense } from "react";
 import { Route, Routes , useMatch, useNavigate} from "react-router-dom";
 import Loading from '../../basic/loading';
+import paths from '../../../utils/paths'
 const { Content } = Layout;
 
 const ListForm = lazy(() => import("../templates/listform"));
 const CustomerListForm = lazy(() => import("../customer/listform"));
 const CustomerChangeForm = lazy(() => import("../customer/changeform"));
 const StaffListForm = lazy(() => import("../staff/listform"));
+const StaffChangeForm = lazy(() => import("../staff/changeform"));
 
 
 const MyContent = (props) => {
@@ -19,6 +21,7 @@ const MyContent = (props) => {
     const navigate = useNavigate();
 
     const breadcrumbComponent = () => {
+        console.log(paths.customer.list);
         if(!breadcrumb)
             return null
         
@@ -77,18 +80,27 @@ const MyContent = (props) => {
                 <Suspense fallback={<Loading />}>
                     <Routes >
                         <Route path="" key="" element={<ListForm title="Chung"/>}/>
-                        <Route path="khach-hang" key="khach-hang" 
+                        <Route path={paths.customer.rlist} key={paths.customer.key}
                             element={<CustomerListForm setBreadcrumb={setBreadcrumb}/>} />
-                        <Route path="khach-hang/them-moi" key="khach-hang" 
+                        <Route path={paths.customer.radd} key={paths.customer.key}
                             element={<CustomerChangeForm 
                             breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras} 
                             setBreadcrumb={setBreadcrumb} is_create={true}/>} />
-                        <Route path="khach-hang/:customer_id" key="khach-hang" 
+                        <Route path={paths.customer.rchange} key={paths.customer.key}
                             element={<CustomerChangeForm
                             breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
                             setBreadcrumb={setBreadcrumb} is_create={false}/>} />
                         
-                        <Route path="nhan-vien" key="nhan-vien" element={<StaffListForm/>} />
+                        <Route path={paths.staff.rlist} key={paths.staff.key}
+                            element={<StaffListForm  setBreadcrumb={setBreadcrumb}/>} />
+                        <Route path={paths.staff.radd} key={paths.staff.key}
+                            element={<StaffChangeForm 
+                            breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras} 
+                            setBreadcrumb={setBreadcrumb} is_create={true}/>} />
+                        <Route path={paths.staff.rchange} key={paths.staff.key}
+                            element={<StaffChangeForm
+                            breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                            setBreadcrumb={setBreadcrumb} is_create={false}/>} />
                     </Routes >
                 </Suspense>
             </Content>

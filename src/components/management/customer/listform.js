@@ -1,10 +1,11 @@
 import {
     PlusOutlined, ImportOutlined,
-    ExportOutlined, ReloadOutlined
+    ExportOutlined, ReloadOutlined,
+    SearchOutlined
   } from '@ant-design/icons';
 import { Button, Col, Row, Space, Input, message } from 'antd';
 import { Typography } from 'antd';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ListForm from '../templates/listform';
 import CustomerTable from './table';
 import { CustomerApi } from '../../../api/apis'
@@ -14,21 +15,21 @@ const { Search } = Input;
 
 const CustomerListForm = (props) => {
     const customerApi = new CustomerApi()
-    // data = await customerApi.list()
-    const [data, setData] = useState([]);
-    const [dataCustomerGroup, setDataCustomerGroup] = useState([]);
-    const [filteredInfo, setFilteredInfo] = useState({});
-    const [searchInfo, setSearchInfo] = useState([]);
-    const [sortedInfo, setSortedInfo] = useState({});
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
+    const [data, setData] = useState([])
+    const [dataCustomerGroup, setDataCustomerGroup] = useState([])
+    const [filteredInfo, setFilteredInfo] = useState({})
+    const [searchInfo, setSearchInfo] = useState([])
+    const [sortedInfo, setSortedInfo] = useState({})
+    const [loading, setLoading] = useState(true)
+    const navigate = useNavigate()
+    const refSearch = useRef()
 
     const handleGetData = async () => {
         setLoading(true)
         try{
             const response = await customerApi.list()
             const _data = response.data.data.results.map(elm => {
-                elm.key = elm.customer_id
+                elm.key = elm.id
                 const _customer_groups = []
                 elm.customer_group.forEach(gr => _customer_groups.push(gr.name))
                 elm.customer_group = _customer_groups
@@ -71,18 +72,15 @@ const CustomerListForm = (props) => {
         props.setBreadcrumb(false)
     }, []);
 
-    const onSearch = (value) => {
-        console.log(value)
-        // const _filteredInfo = Object.assign({}, filteredInfo)
-        // _filteredInfo.fullname = []
-        // _filteredInfo.fullname.push(value)
-        // setFilteredInfo(_filteredInfo)
-        setSearchInfo([value])
-    }
+    // const onSearch = (value) => {
+    //     setSearchInfo([value])
+    // }
 
     const clearFiltersAndSort = () => {
-        setFilteredInfo({});
-        setSortedInfo({});
+        setFilteredInfo({})
+        setSortedInfo({})
+        // ref.curent.
+        setSearchInfo([])
     };
 
     return (
@@ -90,8 +88,8 @@ const CustomerListForm = (props) => {
             title="Khách hàng" 
             actions={[
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
-                <Button icon={<ImportOutlined />}>Nhập excel</Button>,
-                <Button icon={<ExportOutlined />}>Xuất excel</Button>,
+                // <Button icon={<ImportOutlined />}>Nhập excel</Button>,
+                // <Button icon={<ExportOutlined />}>Xuất excel</Button>,
                 <Button onClick={() => navigate('/quan-ly/khach-hang/them-moi')} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={
@@ -109,14 +107,23 @@ const CustomerListForm = (props) => {
                 />
             }
             extra_actions={[
-                <Search
-                    placeholder="Tìm kiếm khách hàng"
-                    allowClear
-                    onSearch={onSearch}
-                    // style={{
-                    //     width: 200,
-                    // }}
+                <Input 
+                    placeholder="Tìm kiếm khách hàng" 
+                    allowClear value={searchInfo[0]} 
+                    prefix={<SearchOutlined />}
+                    onChange={(e) => setSearchInfo([e.target.value])}
                 />,
+                // <Search
+                //     ref={refSearch}
+                //     placeholder="Tìm kiếm khách hàng"
+                //     allowClear
+                //     value={searchInfo[0]}
+                //     // onSearch={onSearch}
+                //     onChange={(e) => setSearchInfo([e.target.value])}
+                //     // style={{
+                //     //     width: 200,
+                //     // }}
+                // />,
                 <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
             ]}
         >
