@@ -7,13 +7,13 @@ import { Button, Col, Row, Space, Input, message } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import ListForm from '../templates/listform';
-import StaffTable from './table';
+import ProductGroupTable from './table';
 import api from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 
-const StaffListForm = (props) => {
+const ProductGroupListForm = (props) => {
     const [data, setData] = useState([])
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
@@ -24,20 +24,8 @@ const StaffListForm = (props) => {
     const handleGetData = async () => {
         setLoading(true)
         try{
-            const response = await api.staff.list()
+            const response = await api.product_group.list()
             const _data = response.data.data.results.map(elm => {
-                elm.key = elm.id
-                switch(elm.gender){
-                    case "M":
-                        elm.gender = "Nam"
-                        break
-                    case "F":
-                        elm.gender = "Nữ"
-                        break
-                    case "U":
-                        elm.gender = "Không xác định"
-                        break
-                }
                 return elm
             })
             setData(_data)
@@ -61,13 +49,13 @@ const StaffListForm = (props) => {
 
     return (
         <ListForm 
-            title="Nhân viên" 
+            title="Nhóm sản phẩm" 
             actions={[
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
-                <Button onClick={() => navigate(paths.staff.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
+                <Button onClick={() => navigate(paths.product_group.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={
-                <StaffTable 
+                <ProductGroupTable 
                     data={data} 
                     loading={loading} 
                     setLoading={setLoading}
@@ -81,7 +69,7 @@ const StaffListForm = (props) => {
             }
             extra_actions={[
                 <Input 
-                    placeholder="Tìm kiếm nhân viên" 
+                    placeholder="Tìm kiếm nhóm sản phẩm" 
                     allowClear value={searchInfo[0]} 
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
@@ -94,4 +82,4 @@ const StaffListForm = (props) => {
     )
 }
 
-export default StaffListForm;
+export default ProductGroupListForm;

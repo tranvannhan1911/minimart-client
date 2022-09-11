@@ -4,7 +4,7 @@ import {
 import { Button, Form, Input, Select, message, Space, Popconfirm } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
-import { CustomerApi } from '../../../api/apis'
+import api from '../../../api/apis'
 import ChangeForm from '../templates/changeform';
 import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
@@ -14,7 +14,6 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 const CustomerGroupChangeForm = (props) => {
-  const customerApi = new CustomerApi()
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
@@ -45,7 +44,7 @@ const CustomerGroupChangeForm = (props) => {
         <Popconfirm
           placement="bottomRight"
           title="Xác nhận xóa nhóm khách hàng này"
-          onConfirm={deleteCustomer}
+          onConfirm={_delete}
           okText="Đồng ý"
           okType="danger"
           cancelText="Hủy bỏ"
@@ -68,7 +67,7 @@ const CustomerGroupChangeForm = (props) => {
   const handleData = async () => {
     setLoadingData(true)
     try {
-      const response = await customerApi.customer_group_get(id);
+      const response = await api.customer_group.get(id);
       const values = response.data.data
       form.setFieldsValue(values)
     } catch (error) {
@@ -116,9 +115,9 @@ const CustomerGroupChangeForm = (props) => {
 
   const create = async (values) => {
     try {
-      const response = await customerApi.customer_group_add(values);
+      const response = await api.customer_group.add(values);
       if (response.data.code == 1) {
-        message.success(messages.CUSTOMER_GROUP.SUCCESS_SAVE())
+        message.success(messages.customer_group.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
       } else {
@@ -133,9 +132,9 @@ const CustomerGroupChangeForm = (props) => {
 
   const update = async (values) => {
     try {
-      const response = await customerApi.customer_group_update(id, values)
+      const response = await api.customer_group.update(id, values)
       if (response.data.code == 1) {
-        message.success(messages.CUSTOMER_GROUP.SUCCESS_SAVE(id))
+        message.success(messages.customer_group.SUCCESS_SAVE(id))
         directAfterSubmit(response)
         return true
       } else {
@@ -148,15 +147,15 @@ const CustomerGroupChangeForm = (props) => {
     return false
   }
   
-  const deleteCustomer = async () => {
+  const _delete = async () => {
     try {
-      const response = await customerApi.customer_group_delete(id)
+      const response = await api.customer_group.delete(id)
       if (response.data.code == 1) {
-        message.success(messages.CUSTOMER_GROUP.SUCCESS_DELETE(id))
+        message.success(messages.customer_group.SUCCESS_DELETE(id))
         navigate(paths.customer_group.list)
         return true
       } else {
-        message.error(messages.CUSTOMER_GROUP.ERROR_DELETE(id))
+        message.error(messages.customer_group.ERROR_DELETE(id))
       }
     } catch (error) {
       message.error(messages.ERROR)

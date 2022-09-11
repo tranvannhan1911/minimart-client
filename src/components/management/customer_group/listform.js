@@ -8,13 +8,12 @@ import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import ListForm from '../templates/listform';
 import CustomerGroupTable from './table';
-import { CustomerApi } from '../../../api/apis'
+import api from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 
 const CustomerGroupListForm = (props) => {
-    const customerApi = new CustomerApi()
     const [data, setData] = useState([])
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
@@ -25,7 +24,7 @@ const CustomerGroupListForm = (props) => {
     const handleGetData = async () => {
         setLoading(true)
         try{
-            const response = await customerApi.customer_group_list()
+            const response = await api.customer_group.list()
             const _data = response.data.data.results.map(elm => {
                 return elm
             })

@@ -8,7 +8,7 @@ import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import ListForm from '../templates/listform';
 import CustomerTable from './table';
-import { CustomerApi } from '../../../api/apis'
+import api from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
@@ -16,7 +16,6 @@ const { Title } = Typography;
 const { Search } = Input;
 
 const CustomerListForm = (props) => {
-    const customerApi = new CustomerApi()
     const [data, setData] = useState([])
     const [dataCustomerGroup, setDataCustomerGroup] = useState([])
     const [filteredInfo, setFilteredInfo] = useState({})
@@ -29,7 +28,7 @@ const CustomerListForm = (props) => {
     const handleGetData = async () => {
         setLoading(true)
         try{
-            const response = await customerApi.list()
+            const response = await api.customer.list()
             const _data = response.data.data.results.map(elm => {
                 elm.key = elm.id
                 const _customer_groups = []
@@ -58,7 +57,7 @@ const CustomerListForm = (props) => {
 
     const handleGetDataCustomerGroup = async () => {
         try{
-            const response = await customerApi.customer_group_list()
+            const response = await api.customer_group.list()
             setDataCustomerGroup(response.data.data.results)
         }catch(error){
             console.log('Failed:', error)

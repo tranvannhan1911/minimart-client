@@ -26,11 +26,12 @@ const Messages = {
     ERROR_REFRESH: "Có lỗi xảy ra, vui lòng tải lại trang",
     SUCCESS_SAVE: (object, id) => getMessageSuccessSave(object, id),
     SUCCESS_DELETE: (object, id) => getMessageSuccessDelete(object, id),
-    
-    CUSTOMER: getMessage("khách hàng"),
-    CUSTOMER_GROUP: getMessage("nhóm khách hàng"),
-    STAFF: getMessage("nhân viên"),
-    SUPPLIER: getMessage("nhà cung cấp"),
+
+    customer: getMessage("khách hàng"),
+    customer_group: getMessage("nhóm khách hàng"),
+    staff: getMessage("nhân viên"),
+    supplier: getMessage("nhà cung cấp"),
+    product_group: getMessage("nhóm sản phẩm"),
 }
 
 const messages = Messages;

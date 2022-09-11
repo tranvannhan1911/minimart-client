@@ -13,7 +13,7 @@ import messages from '../../../utils/messages'
 const { Option } = Select;
 const { TextArea } = Input;
 
-const SupplierChangeForm = (props) => {
+const ProductGroupForm = (props) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
@@ -36,14 +36,14 @@ const SupplierChangeForm = (props) => {
 
   useEffect(() => {
     props.setBreadcrumb([
-      { title: "Nhà cung cấp", href: paths.supplier.list },
+      { title: "Nhóm sản phẩm", href: paths.product_group.list },
       { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
 
     if (is_create==false) {
       props.setBreadcrumbExtras([
         <Popconfirm
           placement="bottomRight"
-          title="Xác nhận xóa nhà cung cấp này"
+          title="Xác nhận xóa nhóm sản phẩm này"
           onConfirm={_delete}
           okText="Đồng ý"
           okType="danger"
@@ -67,7 +67,7 @@ const SupplierChangeForm = (props) => {
   const handleData = async () => {
     setLoadingData(true)
     try {
-      const response = await api.supplier.get(id);
+      const response = await api.product_group.get(id);
       const values = response.data.data
       form.setFieldsValue(values)
     } catch (error) {
@@ -95,16 +95,16 @@ const SupplierChangeForm = (props) => {
 
   const directAfterSubmit = (response) => {
     if (idxBtnSave == 0) {
-      navigate(paths.supplier.list)
+      navigate(paths.product_group.list)
     } else if (idxBtnSave == 1) {
       if (is_create) {
-        navigate(paths.supplier.change(response.data.data.id))
+        navigate(paths.product_group.change(response.data.data.id))
         setCreate(false)
       }
       refAutoFocus.current && refAutoFocus.current.focus()
     } else if (idxBtnSave == 2) {
       if (!is_create) {
-        navigate(paths.supplier.add)
+        navigate(paths.product_group.add)
         setCreate(true)
       }
       form.resetFields()
@@ -115,9 +115,9 @@ const SupplierChangeForm = (props) => {
 
   const create = async (values) => {
     try {
-      const response = await api.supplier.add(values);
+      const response = await api.product_group.add(values);
       if (response.data.code == 1) {
-        message.success(messages.supplier.SUCCESS_SAVE())
+        message.success(messages.product_group.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
       } else {
@@ -132,9 +132,9 @@ const SupplierChangeForm = (props) => {
 
   const update = async (values) => {
     try {
-      const response = await api.supplier.update(id, values)
+      const response = await api.product_group.update(id, values)
       if (response.data.code == 1) {
-        message.success(messages.supplier.SUCCESS_SAVE(id))
+        message.success(messages.product_group.SUCCESS_SAVE(id))
         directAfterSubmit(response)
         return true
       } else {
@@ -149,13 +149,13 @@ const SupplierChangeForm = (props) => {
   
   const _delete = async () => {
     try {
-      const response = await api.supplier.delete(id)
+      const response = await api.product_group.delete(id)
       if (response.data.code == 1) {
-        message.success(messages.supplier.SUCCESS_DELETE(id))
-        navigate(paths.supplier.list)
+        message.success(messages.product_group.SUCCESS_DELETE(id))
+        navigate(paths.product_group.list)
         return true
       } else {
-        message.error(messages.supplier.ERROR_DELETE(id))
+        message.error(messages.product_group.ERROR_DELETE(id))
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -192,31 +192,28 @@ const SupplierChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <>
-              <Form.Item label="Tên nhà cung cấp" name="name" required
+              <Form.Item label="Tên nhóm sản phẩm" name="name" required
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng nhập tên nhà cung cấp!',
+                    message: 'Vui lòng nhập tên nhóm sản phẩm!',
                   },
                 ]}
               >
                 <Input autoFocus ref={refAutoFocus} />
               </Form.Item>
-              <Form.Item label="Số điện thoại" name="phone" required
+              <Form.Item label="Code nhóm sản phẩm" name="product_group_code" required
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng nhập số điện thoại!',
+                    message: 'Vui lòng nhập code nhóm sản phẩm!',
                   },
                 ]}
               >
                 <Input />
               </Form.Item>
-              <Form.Item label="Địa chỉ email" name="email">
-                <Input />
-              </Form.Item>
-              <Form.Item label="Địa chỉ" name="address">
-                <Input />
+              <Form.Item label="Mô tả" name="description" >
+                <TextArea rows={4} />
               </Form.Item>
               <Form.Item label="Ghi chú" name="note" >
                 <TextArea rows={4} />
@@ -258,4 +255,4 @@ const SupplierChangeForm = (props) => {
 
 }
 
-export default SupplierChangeForm;
+export default ProductGroupForm;

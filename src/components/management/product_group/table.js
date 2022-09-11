@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
 const { Search } = Input;
 
-const SupplierTable = (props) => {
+const ProductGroupTable = (props) => {
   const navigate = useNavigate();
   const [currentCountData, SetCurrentCountData] = useState(0);
 
@@ -46,7 +46,7 @@ const SupplierTable = (props) => {
 
   const columns = [
     {
-      title: 'Mã nhà cung cấp',
+      title: 'Mã nhóm sản phẩm',
       dataIndex: 'id',
       key: 'id',
       sorter: {
@@ -58,14 +58,13 @@ const SupplierTable = (props) => {
       onFilter: (value, record) => {
         return (record.name && record.name.toLowerCase().includes(value.toLowerCase()))
           || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
-          || (record.phone && record.phone.toString().toLowerCase().includes(value.toLowerCase()))
-          || (record.email && record.email.toString().toLowerCase().includes(value.toLowerCase()))
-          || (record.address && record.address.toString().toLowerCase().includes(value.toLowerCase()))
-          || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))},
+          || (record.product_group_code && record.product_group_code.toString().toLowerCase().includes(value.toLowerCase()))
+          || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))
+          || (record.description && record.description.toLowerCase().includes(value.toLowerCase()))},
       ...renderSearch()
     },
     {
-      title: 'Tên nhà cung cấp',
+      title: 'Tên nhóm sản phẩm',
       dataIndex: 'name',
       key: 'name',
       sorter: {
@@ -75,21 +74,15 @@ const SupplierTable = (props) => {
       ...renderSearch()
     },
     {
-      title: 'Số điện thoại',
-      dataIndex: 'phone',
-      key: 'phone',
+      title: 'code nhóm sản phẩm',
+      dataIndex: 'product_group_code',
+      key: 'product_group_code',
       ...renderSearch()
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
-      ...renderSearch()
-    },
-    {
-      title: 'Địa chỉ',
-      dataIndex: 'address',
-      key: 'address',
+      title: 'Mô tả',
+      dataIndex: 'description',
+      key: 'description',
       ...renderSearch()
     },
     {
@@ -130,10 +123,10 @@ const SupplierTable = (props) => {
       onRow={(record, rowIndex) => {
         return {
           onClick: event => {
-            navigate(paths.supplier.change(record.id))
+            navigate(paths.product_group.change(record.id))
           }, // click row
           onDoubleClick: event => {
-            navigate(paths.supplier.change(record.id))
+            navigate(paths.product_group.change(record.id))
           }, // double click row
           onContextMenu: event => {}, // right button click row
           onMouseEnter: event => {}, // mouse enter row
@@ -144,4 +137,4 @@ const SupplierTable = (props) => {
   );
 };
 
-export default SupplierTable;
+export default ProductGroupTable;

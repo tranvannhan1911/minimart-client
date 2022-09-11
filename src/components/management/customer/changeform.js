@@ -4,7 +4,7 @@ import {
 import { Button, Form, Input, Select, message, Space, Popconfirm } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
-import { CustomerApi } from '../../../api/apis'
+import api from '../../../api/apis'
 import ChangeForm from '../templates/changeform';
 import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
@@ -14,7 +14,6 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 const CustomerChangeForm = (props) => {
-  const customerApi = new CustomerApi()
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
@@ -64,9 +63,9 @@ const CustomerChangeForm = (props) => {
 
   const create = async (values) => {
     try {
-      const response = await customerApi.add(values);
+      const response = await api.customer.add(values);
       if (response.data.code == 1) {
-        message.success(messages.CUSTOMER.SUCCESS_SAVE())
+        message.success(messages.customer.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
       } else {
@@ -81,10 +80,10 @@ const CustomerChangeForm = (props) => {
 
   const update = async (values) => {
     try {
-      const response = await customerApi.update(customer_id, values)
+      const response = await api.customer.update(customer_id, values)
       if (response.data.code == 1) {
 
-        message.success(messages.CUSTOMER.SUCCESS_SAVE(customer_id))
+        message.success(messages.customer.SUCCESS_SAVE(customer_id))
         directAfterSubmit(response)
         return true
       } else {
@@ -97,15 +96,15 @@ const CustomerChangeForm = (props) => {
     return false
   }
   
-  const deleteCustomer = async () => {
+  const _delete = async () => {
     try {
-      const response = await customerApi.delete(customer_id)
+      const response = await api.customer.delete(customer_id)
       if (response.data.code == 1) {
-        message.success(messages.CUSTOMER.SUCCESS_DELETE(customer_id))
+        message.success(messages.customer.SUCCESS_DELETE(customer_id))
         navigate(paths.customer.list)
         return true
       } else {
-        message.error(messages.CUSTOMER.ERROR_DELETE(customer_id))
+        message.error(messages.customer.ERROR_DELETE(customer_id))
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -135,7 +134,7 @@ const CustomerChangeForm = (props) => {
   const handleDataCustomer = async () => {
     setLoadingData(true)
     try {
-      const response = await customerApi.get(customer_id);
+      const response = await api.customer.get(customer_id);
       const values = response.data.data
       values.customer_group = values.customer_group.map(elm => elm.id.toString())
       form.setFieldsValue(values)
@@ -147,7 +146,7 @@ const CustomerChangeForm = (props) => {
   }
 
   const handleDataCustomerGroup = async () => {
-    const response = await customerApi.customer_group_list();
+    const response = await api.customer_group.list();
     console.log("handleDataCustomerGroup", response)
     const _dataCustomerGroup = []
     response.data.data.results.forEach(cg => {
@@ -163,11 +162,6 @@ const CustomerChangeForm = (props) => {
       setCreate(props.is_create)
       if (!props.is_create) {
         handleDataCustomer()
-        // props.setCreate(false)
-        console.log("setCreate", false)
-      } else {
-        // props.setCreate(true)
-        console.log("setCreate", true)
       }
       setLoadingData(false)
     }
@@ -183,7 +177,7 @@ const CustomerChangeForm = (props) => {
         <Popconfirm
           placement="bottomRight"
           title="Xác nhận xóa khách hàng này"
-          onConfirm={deleteCustomer}
+          onConfirm={_delete}
           okText="Đồng ý"
           okType="danger"
           cancelText="Hủy bỏ"

@@ -4,7 +4,7 @@ import {
 import { Button, Form, Input, Select, message, Space, Popconfirm } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
-import { StaffApi } from '../../../api/apis'
+import api from '../../../api/apis'
 import ChangeForm from '../templates/changeform';
 import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
@@ -14,7 +14,6 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 const StaffChangeForm = (props) => {
-  const staffApi = new StaffApi()
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
@@ -63,9 +62,9 @@ const StaffChangeForm = (props) => {
 
   const create = async (values) => {
     try {
-      const response = await staffApi.add(values);
+      const response = await api.staff.add(values);
       if (response.data.code == 1) {
-        message.success(messages.STAFF.SUCCESS_SAVE())
+        message.success(messages.staff.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
       } else {
@@ -80,9 +79,9 @@ const StaffChangeForm = (props) => {
 
   const update = async (values) => {
     try {
-      const response = await staffApi.update(id, values)
+      const response = await api.staff.update(id, values)
       if (response.data.code == 1) {
-        message.success(messages.STAFF.SUCCESS_SAVE(id))
+        message.success(messages.staff.SUCCESS_SAVE(id))
         directAfterSubmit(response)
         return true
       } else {
@@ -95,15 +94,15 @@ const StaffChangeForm = (props) => {
     return false
   }
   
-  const deleteCustomer = async () => {
+  const _delete = async () => {
     try {
-      const response = await staffApi.delete(id)
+      const response = await api.staff.delete(id)
       if (response.data.code == 1) {
-        message.success(messages.STAFF.SUCCESS_DELETE(id))
+        message.success(messages.staff.SUCCESS_DELETE(id))
         navigate(paths.staff.list)
         return true
       } else {
-        message.error(messages.STAFF.ERROR_DELETE(id))
+        message.error(messages.staff.ERROR_DELETE(id))
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -133,7 +132,7 @@ const StaffChangeForm = (props) => {
   const handleData = async () => {
     setLoadingData(true)
     try {
-      const response = await staffApi.get(id);
+      const response = await api.staff.get(id);
       const values = response.data.data
       form.setFieldsValue(values)
     } catch (error) {
@@ -163,7 +162,7 @@ const StaffChangeForm = (props) => {
         <Popconfirm
           placement="bottomRight"
           title="Xác nhận xóa nhân viên này"
-          onConfirm={deleteCustomer}
+          onConfirm={_delete}
           okText="Đồng ý"
           okType="danger"
           cancelText="Hủy bỏ"
