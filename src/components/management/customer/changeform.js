@@ -66,7 +66,7 @@ const CustomerChangeForm = (props) => {
     try {
       const response = await customerApi.add(values);
       if (response.data.code == 1) {
-        message.success(messages.SUCCESS_SAVE_CUSTOMER())
+        message.success(messages.CUSTOMER.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
       } else {
@@ -84,7 +84,7 @@ const CustomerChangeForm = (props) => {
       const response = await customerApi.update(customer_id, values)
       if (response.data.code == 1) {
 
-        message.success(messages.SUCCESS_SAVE_CUSTOMER(customer_id))
+        message.success(messages.CUSTOMER.SUCCESS_SAVE(customer_id))
         directAfterSubmit(response)
         return true
       } else {
@@ -101,11 +101,11 @@ const CustomerChangeForm = (props) => {
     try {
       const response = await customerApi.delete(customer_id)
       if (response.data.code == 1) {
-        message.success(messages.SUCCESS_DELETE_CUSTOMER(customer_id))
+        message.success(messages.CUSTOMER.SUCCESS_DELETE(customer_id))
         navigate(paths.customer.list)
         return true
       } else {
-        message.error(messages.ERROR_DELETE_CUSTOMER(customer_id))
+        message.error(messages.CUSTOMER.ERROR_DELETE(customer_id))
       }
     } catch (error) {
       message.error(messages.ERROR)

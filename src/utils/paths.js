@@ -21,6 +21,7 @@ const Paths = {
     customer: getPaths("khach-hang", "customer_id"),
     staff: getPaths("nhan-vien", "id"),
     customer_group: getPaths("nhom-khach-hang", "id"),
+    supplier: getPaths("nha-cung-cap", "id"),
 }
 
 const paths = Paths;

@@ -14,6 +14,8 @@ const StaffListForm = lazy(() => import("../staff/listform"));
 const StaffChangeForm = lazy(() => import("../staff/changeform"));
 const CustomerGroupListForm = lazy(() => import("../customer_group/listform"));
 const CustomerGroupChangeForm = lazy(() => import("../customer_group/changeform"));
+const SupplierListForm = lazy(() => import("../supplier/listform"));
+const SupplierChangeForm = lazy(() => import("../supplier/changeform"));
 
 
 const MyContent = (props) => {
@@ -116,6 +118,17 @@ const MyContent = (props) => {
                             setBreadcrumb={setBreadcrumb} is_create={true}/>} />
                         <Route path={paths.customer_group.rchange} key={paths.customer_group.key}
                             element={<CustomerGroupChangeForm
+                            breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                            setBreadcrumb={setBreadcrumb} is_create={false}/>} />
+                            
+                        <Route path={paths.supplier.rlist} key={paths.supplier.key}
+                            element={<SupplierListForm  setBreadcrumb={setBreadcrumb}/>} />
+                        <Route path={paths.supplier.radd} key={paths.supplier.key}
+                            element={<SupplierChangeForm 
+                            breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras} 
+                            setBreadcrumb={setBreadcrumb} is_create={true}/>} />
+                        <Route path={paths.supplier.rchange} key={paths.supplier.key}
+                            element={<SupplierChangeForm
                             breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
                             setBreadcrumb={setBreadcrumb} is_create={false}/>} />
                     </Routes >

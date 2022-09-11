@@ -4,7 +4,7 @@ import {
 import { Button, Form, Input, Select, message, Space, Popconfirm } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
-import { StaffApi } from '../../../api/apis'
+import { SupplierApi } from '../../../api/apis'
 import ChangeForm from '../templates/changeform';
 import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
@@ -13,8 +13,8 @@ import messages from '../../../utils/messages'
 const { Option } = Select;
 const { TextArea } = Input;
 
-const StaffChangeForm = (props) => {
-  const staffApi = new StaffApi()
+const SupplierChangeForm = (props) => {
+  const supplierApi = new SupplierApi()
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
@@ -24,6 +24,59 @@ const StaffChangeForm = (props) => {
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const refAutoFocus = useRef(null)
+
+  useEffect(() => {
+    if (is_create == null) {
+      setCreate(props.is_create)
+      if (!props.is_create) {
+        handleData()
+      }
+      setLoadingData(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    props.setBreadcrumb([
+      { title: "Nhà cung cấp", href: paths.supplier.list },
+      { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
+
+    if (is_create==false) {
+      props.setBreadcrumbExtras([
+        <Popconfirm
+          placement="bottomRight"
+          title="Xác nhận xóa nhà cung cấp này"
+          onConfirm={deleteCustomer}
+          okText="Đồng ý"
+          okType="danger"
+          cancelText="Hủy bỏ"
+        >
+          <Button type="danger" icon={<DeleteOutlined />}
+          >Xóa</Button>
+        </Popconfirm>,
+        <Button type="info" icon={<HistoryOutlined />}
+        >Lịch sử chỉnh sửa</Button>
+      ])
+    } else {
+      props.setBreadcrumbExtras(null)
+    }
+  }, [is_create])
+
+  useEffect(() => {
+    setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
+  }, [refAutoFocus])
+  
+  const handleData = async () => {
+    setLoadingData(true)
+    try {
+      const response = await supplierApi.get(id);
+      const values = response.data.data
+      form.setFieldsValue(values)
+    } catch (error) {
+      message.error(messages.ERROR)
+    } finally {
+      setLoadingData(false)
+    }
+  }
 
   const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
@@ -43,16 +96,16 @@ const StaffChangeForm = (props) => {
 
   const directAfterSubmit = (response) => {
     if (idxBtnSave == 0) {
-      navigate(paths.staff.list)
+      navigate(paths.supplier.list)
     } else if (idxBtnSave == 1) {
       if (is_create) {
-        navigate(paths.staff.change(response.data.data.id))
+        navigate(paths.supplier.change(response.data.data.id))
         setCreate(false)
       }
       refAutoFocus.current && refAutoFocus.current.focus()
     } else if (idxBtnSave == 2) {
       if (!is_create) {
-        navigate(paths.staff.add)
+        navigate(paths.supplier.add)
         setCreate(true)
       }
       form.resetFields()
@@ -63,9 +116,9 @@ const StaffChangeForm = (props) => {
 
   const create = async (values) => {
     try {
-      const response = await staffApi.add(values);
+      const response = await supplierApi.add(values);
       if (response.data.code == 1) {
-        message.success(messages.STAFF.SUCCESS_SAVE())
+        message.success(messages.SUPPLIER.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
       } else {
@@ -80,9 +133,9 @@ const StaffChangeForm = (props) => {
 
   const update = async (values) => {
     try {
-      const response = await staffApi.update(id, values)
+      const response = await supplierApi.update(id, values)
       if (response.data.code == 1) {
-        message.success(messages.STAFF.SUCCESS_SAVE(id))
+        message.success(messages.SUPPLIER.SUCCESS_SAVE(id))
         directAfterSubmit(response)
         return true
       } else {
@@ -97,13 +150,13 @@ const StaffChangeForm = (props) => {
   
   const deleteCustomer = async () => {
     try {
-      const response = await staffApi.delete(id)
+      const response = await supplierApi.delete(id)
       if (response.data.code == 1) {
-        message.success(messages.STAFF.SUCCESS_DELETE(id))
-        navigate(paths.staff.list)
+        message.success(messages.SUPPLIER.SUCCESS_DELETE(id))
+        navigate(paths.customer_group.list)
         return true
       } else {
-        message.error(messages.STAFF.ERROR_DELETE(id))
+        message.error(messages.SUPPLIER.ERROR_DELETE(id))
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -130,59 +183,6 @@ const StaffChangeForm = (props) => {
     stopLoading(0)
   };
 
-  const handleData = async () => {
-    setLoadingData(true)
-    try {
-      const response = await staffApi.get(id);
-      const values = response.data.data
-      form.setFieldsValue(values)
-    } catch (error) {
-      message.error(messages.ERROR)
-    } finally {
-      setLoadingData(false)
-    }
-  }
-
-  useEffect(() => {
-    if (is_create == null) {
-      setCreate(props.is_create)
-      if (!props.is_create) {
-        handleData()
-      }
-      setLoadingData(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    props.setBreadcrumb([
-      { title: "Nhân viên", href: paths.staff.list },
-      { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
-
-    if (is_create==false) {
-      props.setBreadcrumbExtras([
-        <Popconfirm
-          placement="bottomRight"
-          title="Xác nhận xóa nhân viên này"
-          onConfirm={deleteCustomer}
-          okText="Đồng ý"
-          okType="danger"
-          cancelText="Hủy bỏ"
-        >
-          <Button type="danger" icon={<DeleteOutlined />}
-          >Xóa</Button>
-        </Popconfirm>,
-        <Button type="info" icon={<HistoryOutlined />}
-        >Lịch sử chỉnh sửa</Button>
-      ])
-    } else {
-      props.setBreadcrumbExtras(null)
-    }
-  }, [is_create])
-
-  useEffect(() => {
-    setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
-  }, [refAutoFocus])
-
   return (
     <>
       {loadingData ? <Loading /> :
@@ -193,11 +193,11 @@ const StaffChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <>
-              <Form.Item label="Tên nhân viên" name="fullname" required
+              <Form.Item label="Tên nhà cung cấp" name="name" required
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng nhập tên nhân viên!',
+                    message: 'Vui lòng nhập tên nhà cung cấp!',
                   },
                 ]}
               >
@@ -211,25 +211,13 @@ const StaffChangeForm = (props) => {
                   },
                 ]}
               >
-                <Input disabled={is_create ? false : true} />
+                <Input />
+              </Form.Item>
+              <Form.Item label="Địa chỉ email" name="email">
+                <Input />
               </Form.Item>
               <Form.Item label="Địa chỉ" name="address">
                 <Input />
-              </Form.Item>
-              <Form.Item label="Giới tính" name="gender"
-                style={{
-                  textAlign: 'left'
-                }}>
-                <Select
-                  defaultValue="U"
-                  style={{
-                    width: 200,
-                  }}
-                >
-                  <Option value="M">Nam</Option>
-                  <Option value="F">Nữ</Option>
-                  <Option value="U">Không xác định</Option>
-                </Select>
               </Form.Item>
               <Form.Item label="Ghi chú" name="note" >
                 <TextArea rows={4} />
@@ -271,4 +259,4 @@ const StaffChangeForm = (props) => {
 
 }
 
-export default StaffChangeForm;
+export default SupplierChangeForm;

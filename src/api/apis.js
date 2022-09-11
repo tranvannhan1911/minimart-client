@@ -131,4 +131,30 @@ class StaffApi{
     }
 }
 
-export {AccountApi, CustomerApi, StaffApi};
+class SupplierApi{
+    list(params){
+        const url = "/supplier/"
+        return axiosApi.get(url, params)
+    }
+
+    get(id, params){
+        const url = "/supplier/"+id+"/"
+        return axiosApi.get(url, params)
+    }
+
+    add(params){
+        const url = "/supplier/"
+        return axiosApi.post(url, params)
+    }
+
+    update(id, params){
+        const url = "/supplier/"+id+"/"
+        return axiosApi.put(url, params)
+    }
+
+    delete(id, params){
+        const url = "/supplier/"+id+"/"
+        return axiosApi.delete(url, params)
+    }
+}
+export {AccountApi, CustomerApi, StaffApi, SupplierApi};

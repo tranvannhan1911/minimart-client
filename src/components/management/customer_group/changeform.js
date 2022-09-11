@@ -118,7 +118,7 @@ const CustomerGroupChangeForm = (props) => {
     try {
       const response = await customerApi.customer_group_add(values);
       if (response.data.code == 1) {
-        message.success(messages.SUCCESS_SAVE_CUSTOMER_GROUP())
+        message.success(messages.CUSTOMER_GROUP.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
       } else {
@@ -135,7 +135,7 @@ const CustomerGroupChangeForm = (props) => {
     try {
       const response = await customerApi.customer_group_update(id, values)
       if (response.data.code == 1) {
-        message.success(messages.SUCCESS_SAVE_CUSTOMER_GROUP(id))
+        message.success(messages.CUSTOMER_GROUP.SUCCESS_SAVE(id))
         directAfterSubmit(response)
         return true
       } else {
@@ -152,11 +152,11 @@ const CustomerGroupChangeForm = (props) => {
     try {
       const response = await customerApi.customer_group_delete(id)
       if (response.data.code == 1) {
-        message.success(messages.SUCCESS_DELETE_CUSTOMER_GROUP(id))
+        message.success(messages.CUSTOMER_GROUP.SUCCESS_DELETE(id))
         navigate(paths.customer_group.list)
         return true
       } else {
-        message.error(messages.ERROR_DELETE_CUSTOMER_GROUP(id))
+        message.error(messages.CUSTOMER_GROUP.ERROR_DELETE(id))
       }
     } catch (error) {
       message.error(messages.ERROR)

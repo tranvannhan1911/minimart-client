@@ -13,23 +13,24 @@ const getMessageErrorDelete = (object, id) => {
     return `Không thể xóa ${object} này!`
 }
 
+const getMessage = (object) => {
+    return {
+        SUCCESS_SAVE: (id) => getMessageSuccessSave(object, id),
+        SUCCESS_DELETE: (id) => getMessageSuccessDelete(object, id),
+        ERROR_DELETE: (id) => getMessageErrorDelete(object, id),
+    }
+}
+
 const Messages = {
     ERROR: "Có lỗi xảy ra, vui lòng thử lại",
     ERROR_REFRESH: "Có lỗi xảy ra, vui lòng tải lại trang",
     SUCCESS_SAVE: (object, id) => getMessageSuccessSave(object, id),
     SUCCESS_DELETE: (object, id) => getMessageSuccessDelete(object, id),
-
-    SUCCESS_SAVE_CUSTOMER: (id) => getMessageSuccessSave("khách hàng", id),
-    SUCCESS_DELETE_CUSTOMER: (id) => getMessageSuccessDelete("khách hàng", id),
-    ERROR_DELETE_CUSTOMER: (id) => getMessageErrorDelete("khách hàng", id),
-
-    SUCCESS_SAVE_CUSTOMER_GROUP: (id) => getMessageSuccessSave("nhóm khách hàng", id),
-    SUCCESS_DELETE_CUSTOMER_GROUP: (id) => getMessageSuccessDelete("nhóm khách hàng", id),
-    ERROR_DELETE_CUSTOMER_GROUP: (id) => getMessageErrorDelete("nhóm khách hàng", id),
-
-    SUCCESS_SAVE_STAFF: (id) => getMessageSuccessSave("nhân viên", id),
-    SUCCESS_DELETE_STAFF: (id) => getMessageSuccessDelete("nhân viên", id),
-    ERROR_DELETE_STAFF: (id) => getMessageErrorDelete("nhân viên", id),
+    
+    CUSTOMER: getMessage("khách hàng"),
+    CUSTOMER_GROUP: getMessage("nhóm khách hàng"),
+    STAFF: getMessage("nhân viên"),
+    SUPPLIER: getMessage("nhà cung cấp"),
 }
 
 const messages = Messages;
