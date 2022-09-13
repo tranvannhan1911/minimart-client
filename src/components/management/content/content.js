@@ -18,6 +18,10 @@ const SupplierListForm = lazy(() => import("../supplier/listform"));
 const SupplierChangeForm = lazy(() => import("../supplier/changeform"));
 const ProductGroupListForm = lazy(() => import("../product_group/listform"));
 const ProductGroupChangeForm = lazy(() => import("../product_group/changeform"));
+const UnitListForm = lazy(() => import("../unit/listform"));
+const UnitChangeForm = lazy(() => import("../unit/changeform"));
+const ProductListForm = lazy(() => import("../product/listform"));
+const ProductChangeForm = lazy(() => import("../product/changeform"));
 
 
 const MyContent = (props) => {
@@ -142,6 +146,28 @@ const MyContent = (props) => {
                             setBreadcrumb={setBreadcrumb} is_create={true}/>} />
                         <Route path={paths.product_group.rchange} key={paths.product_group.key}
                             element={<ProductGroupChangeForm
+                            breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                            setBreadcrumb={setBreadcrumb} is_create={false}/>} />
+
+                        <Route path={paths.unit.rlist} key={paths.unit.key}
+                            element={<UnitListForm  setBreadcrumb={setBreadcrumb}/>} />
+                        <Route path={paths.unit.radd} key={paths.unit.key}
+                            element={<UnitChangeForm 
+                            breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras} 
+                            setBreadcrumb={setBreadcrumb} is_create={true}/>} />
+                        <Route path={paths.unit.rchange} key={paths.unit.key}
+                            element={<UnitChangeForm
+                            breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                            setBreadcrumb={setBreadcrumb} is_create={false}/>} />
+                            
+                        <Route path={paths.product.rlist} key={paths.product.key}
+                            element={<ProductListForm  setBreadcrumb={setBreadcrumb}/>} />
+                        <Route path={paths.product.radd} key={paths.product.key}
+                            element={<ProductChangeForm 
+                            breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras} 
+                            setBreadcrumb={setBreadcrumb} is_create={true}/>} />
+                        <Route path={paths.product.rchange} key={paths.product.key}
+                            element={<ProductChangeForm
                             breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
                             setBreadcrumb={setBreadcrumb} is_create={false}/>} />
                     </Routes >

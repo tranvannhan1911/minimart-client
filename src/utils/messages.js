@@ -32,6 +32,8 @@ const Messages = {
     staff: getMessage("nhân viên"),
     supplier: getMessage("nhà cung cấp"),
     product_group: getMessage("nhóm sản phẩm"),
+    unit: getMessage("đơn vị tính"),
+    product: getMessage("sản phẩm"),
 }
 
 const messages = Messages;

@@ -23,6 +23,8 @@ const Paths = {
     customer_group: getPaths("nhom-khach-hang", "id"),
     supplier: getPaths("nha-cung-cap", "id"),
     product_group: getPaths("nhom-san-pham", "id"),
+    unit: getPaths("don-vi-tinh", "id"),
+    product: getPaths("san-pham", "id"),
 }
 
 const paths = Paths;

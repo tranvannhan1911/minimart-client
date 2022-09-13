@@ -82,6 +82,8 @@ const api = {
     staff: getApi("staff"),
     supplier: getApi("supplier"),
     product_group: getApi("product-group"),
+    unit: getApi("calculation-unit"),
+    product: getApi("product"),
 }
 
 export {AccountApi};
