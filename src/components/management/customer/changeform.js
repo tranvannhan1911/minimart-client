@@ -235,9 +235,7 @@ const CustomerChangeForm = (props) => {
                   style={{
                     width: '100%',
                   }}
-                // placeholder="Please select"
-                // defaultValue={['a10', 'c12']}
-                // onChange={handleChange}
+                  filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
                 >
                   {dataCustomerGroup}
                 </Select>

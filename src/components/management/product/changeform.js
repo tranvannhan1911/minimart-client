@@ -12,6 +12,7 @@ import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import ProductGroupModal from '../product_group/modal';
+import uploadFile from '../../../utils/s3';
 const { Option } = Select;
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -21,7 +22,6 @@ const ProductChangeForm = (props) => {
   const [form] = Form.useForm();
   const [baseUnitOptions, setBaseUnitOptions] = useState([]);
   const [productGroupOptions, setProductGroupOptions] = useState([]);
-  const [unitOptions, setUnitOptions] = useState([]);
   const [loadings, setLoadings] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
@@ -41,7 +41,6 @@ const ProductChangeForm = (props) => {
     }
     handleDataBaseUnit()
     handleDataProductGroup()
-    handleDataUnit()
   }, [])
 
   useEffect(() => {
@@ -80,6 +79,7 @@ const ProductChangeForm = (props) => {
       const response = await api.product.get(id);
       const values = response.data.data
       values.product_groups = values.product_groups.map(elm => elm.id.toString())
+      setImageUrl(values.image)
       form.setFieldsValue(values)
     } catch (error) {
       message.error(messages.ERROR)
@@ -112,27 +112,12 @@ const ProductChangeForm = (props) => {
       const response = await api.product_group.list();
       const options = response.data.data.results.map(elm => {
         return (
-          <Option key={elm.id}>{elm.name}</Option>
+          <Option 
+            title={elm.name}
+            key={elm.id}>{elm.name}</Option>
         )
       })
       setProductGroupOptions(options)
-    } catch (error) {
-      message.error(messages.ERROR)
-    } finally {
-      setLoadingData(false)
-    }
-  }
-
-  const handleDataUnit = async () => {
-    setLoadingData(true)
-    try {
-      const response = await api.unit.list();
-      const options = response.data.data.results.map(elm => {
-        return (
-          <Option key={elm.id}>{elm.name}</Option>
-        )
-      })
-      setUnitOptions(options)
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -230,6 +215,7 @@ const ProductChangeForm = (props) => {
   const onFinish = async (values) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
+    values.image = imageUrl
     if (is_create) {
       await create(values)
     } else {
@@ -274,16 +260,18 @@ const ProductChangeForm = (props) => {
   const handleChange = (info) => {
     console.log(info)
     if (info.file.status === 'uploading') {
+      setImageUrl(null);
       setLoadingImage(true);
       return;
     }
 
     if (info.file.status === 'done') {
+      setImageUrl(info.file.response);
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (url) => {
-        setLoadingImage(false);
-        setImageUrl(url);
-      });
+      // getBase64(info.file.originFileObj, (url) => {
+      //   setLoadingImage(false);
+      //   setImageUrl(url);
+      // });
     }
   };
 
@@ -358,6 +346,7 @@ const ProductChangeForm = (props) => {
                         style={{
                           width: '100%',
                         }}
+                        filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
                       >
                         {productGroupOptions}
                       </Select>
@@ -388,7 +377,7 @@ const ProductChangeForm = (props) => {
                     }}
                     placeholder="Tìm kiếm đơn vị tính"
                     optionFilterProp="children"
-                    filterOption={(input, option) => option.children.includes(input)}
+                    filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
                     filterSort={(optionA, optionB) =>
                       optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
                     }
@@ -399,16 +388,12 @@ const ProductChangeForm = (props) => {
                 <Form.List name="units" label="Đơn vị tính quy đổi">
                   {(fields, { add, remove }) => (
                     <>
-                      {/* {!!fields.length && (
-                        <Row align='middle'>
-                          <Col span={8} style={{ textAlign: 'center' }}>
-                            <Typography.Text>Đơn vị tính</Typography.Text>
-                          </Col>
-                          <Col span={8} style={{ textAlign: 'center' }}>
-                            <Typography.Text>Giá trị quy đổi</Typography.Text>
-                          </Col>
-                        </Row>
-                      )} */}
+                      <div style={{
+                          textAlign: 'left',
+                          paddingBottom: '7px'
+                      }}>
+                      <Typography.Text >Các đơn vị tính khác</Typography.Text>
+                      </div>
                       {fields.map(({ key, name, ...restField }) => (
                         <Space
                           key={key}
@@ -438,7 +423,7 @@ const ProductChangeForm = (props) => {
                               }}
                               placeholder="Đơn vị tính"
                               optionFilterProp="children"
-                              filterOption={(input, option) => option.children.includes(input)}
+                              filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
                               filterSort={(optionA, optionB) =>
                                 optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
                               }
@@ -465,16 +450,16 @@ const ProductChangeForm = (props) => {
                           >
                             <Checkbox >Cho phép bán hàng</Checkbox>
                           </Form.Item>
-                          <Popconfirm
+                          {/* <Popconfirm
                             placement="bottomRight"
-                            title="Xác nhận xóa sản phẩm này"
+                            title="Xác nhận xóa đơn vị tính này"
                             onConfirm={() => remove(name)}
                             okText="Đồng ý"
                             okType="danger"
                             cancelText="Hủy bỏ"
-                          >
-                            <MinusCircleOutlined  />
-                          </Popconfirm>
+                          > */}
+                            <MinusCircleOutlined onClick={() => remove(name)} />
+                          {/* </Popconfirm> */}
                         </Space>
                       ))}
                       <Form.Item>
@@ -491,13 +476,18 @@ const ProductChangeForm = (props) => {
                     textAlign: 'left'
                   }}>
                   <Upload
-                    name="avatar"
                     listType="picture-card"
                     className="avatar-uploader"
                     showUploadList={false}
-                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                     beforeUpload={beforeUpload}
                     onChange={handleChange}
+                    progress={{
+                      type:"circle"
+                    }}
+                    customRequest={(options) => {
+                      options.prefix="product"
+                      uploadFile(options)
+                    }}
                   >
                     {imageUrl ? (
                       <img
@@ -543,7 +533,12 @@ const ProductChangeForm = (props) => {
             }>
 
           </ChangeForm>
-          <ProductGroupModal open={open} setOpen={setOpen} />
+          <ProductGroupModal open={open} setOpen={setOpen} 
+            {...props} is_create={true} is_modal={true}
+            onFinishModal={() => {
+              // refAutoFocus.curent = 
+              handleDataProductGroup()
+            }}/>
         </>
       }
     </>

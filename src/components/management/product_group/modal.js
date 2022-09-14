@@ -1,9 +1,11 @@
-import { Button, Modal } from 'antd';
+import { Button, Modal, message } from 'antd';
 import React, { useRef, useState, useEffect } from 'react';
 import Draggable from 'react-draggable';
+import ProductGroupForm from './changeform'
 
 const ProductGroupModal = (props) => {
   const [disabled, setDisabled] = useState(false);
+  const [modalSubmit, setModalSubmit] = useState(false);
   const [bounds, setBounds] = useState({
     left: 0,
     top: 0,
@@ -19,7 +21,7 @@ const ProductGroupModal = (props) => {
 
   const handleOk = (e) => {
     console.log(e);
-    props.setOpen(false);
+    setModalSubmit(true)
   };
 
   const handleCancel = (e) => {
@@ -68,7 +70,7 @@ const ProductGroupModal = (props) => {
             onFocus={() => {}}
             onBlur={() => {}} // end
           >
-            Draggable Modal
+            Thêm nhóm sản phẩm mới
           </div>
         }
         visible={props.open}
@@ -84,11 +86,13 @@ const ProductGroupModal = (props) => {
           </Draggable>
         )}
       >
-        <p>
-          Just don&apos;t learn physics at school and your life will be full of magic and miracles.
-        </p>
-        <br />
-        <p>Day before yesterday I saw a rabbit, and yesterday a deer, and today, you.</p>
+        <ProductGroupForm {...props}
+          setModalSubmit={setModalSubmit}
+          modalSubmit={modalSubmit}
+          onFinishSave={() => {
+            props.setOpen(false);
+            props.onFinishModal()
+          }}/>
       </Modal>
     </>
   );
