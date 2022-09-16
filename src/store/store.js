@@ -1,21 +1,34 @@
 import { createSlice, configureStore } from '@reduxjs/toolkit'
+import { combineReducers } from "redux";
+import storage from "redux-persist/lib/storage";
+import { persistReducer } from "redux-persist";
 
-const tokenSlice = createSlice({
-  name: 'token',
-  initialState: {
-    access: "",
-    refresh: ""
-  },
+const drawerPlacement = createSlice({
+  name: 'drawerPlacement',
+  initialState: "right",
   reducers: {
-    setToken: (state, value) => {
+    setPlacement: (state, value) => {
         state = value
     },
-    getToken: state => state
+    getPlacement: state => state
   }
 })
 
-export const { setToken, getToken } = tokenSlice.actions
+// export const { setToken, getToken } = tokenSlice.actions
+
+const rootReducer = combineReducers({
+  drawerPlacement: drawerPlacement,
+});
+
+const persistConfig = {
+  key: "root",
+  storage,
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
-  reducer: tokenSlice.reducer
+  reducer: persistedReducer
 })
+
+export default store;
