@@ -34,6 +34,7 @@ const Messages = {
     product_group: getMessage("nhóm sản phẩm"),
     unit: getMessage("đơn vị tính"),
     product: getMessage("sản phẩm"),
+    price: getMessage("đơn giá"),
 }
 
 const messages = Messages;

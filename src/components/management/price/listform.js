@@ -24,25 +24,25 @@ const StaffListForm = (props) => {
     const handleGetData = async () => {
         setLoading(true)
         try{
-            const response = await api.staff.list()
+            const response = await api.price.list()
             const _data = response.data.data.results.map(elm => {
                 elm.key = elm.id
-                switch(elm.gender){
-                    case "M":
-                        elm.gender = "Nam"
-                        break
-                    case "F":
-                        elm.gender = "Nữ"
-                        break
-                    case "U":
-                        elm.gender = "Không xác định"
-                        break
-                }
-                if(elm.is_superuser==true){
-                    elm.is_superuser = "Quản lý";
-                }else{
-                    elm.is_superuser = "Nhân viên";
-                }
+                // switch(elm.gender){
+                //     case "M":
+                //         elm.gender = "Nam"
+                //         break
+                //     case "F":
+                //         elm.gender = "Nữ"
+                //         break
+                //     case "U":
+                //         elm.gender = "Không xác định"
+                //         break
+                // }
+                // if(elm.is_superuser==true){
+                //     elm.is_superuser = "Quản lý";
+                // }else{
+                //     elm.is_superuser = "Nhân viên";
+                // }
                 return elm
             })
             setData(_data)
@@ -66,14 +66,12 @@ const StaffListForm = (props) => {
 
     return (
         <>
-        {/* <ModalStaff >
-
-        </ModalStaff> */}
+        
         <ListForm
-            title="Nhân viên"
+            title="Bảng giá"
             actions={[
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                <Button onClick={() => navigate(paths.staff.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
+                <Button onClick={() => navigate(paths.price.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={<StaffTable
                 data={data}
@@ -87,7 +85,7 @@ const StaffListForm = (props) => {
                 setSortedInfo={setSortedInfo} />}
             extra_actions={[
                 <Input
-                    placeholder="Tìm kiếm nhân viên"
+                    placeholder="Tìm kiếm bảng giá"
                     allowClear value={searchInfo[0]}
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])} />,

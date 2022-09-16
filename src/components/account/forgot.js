@@ -7,6 +7,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { AccountApi } from "../../api/apis"
+import {validPhone} from '../../resources/regexp'
 
 const { Title } = Typography;
 
@@ -44,6 +45,13 @@ const ForgotPassword = () => {
 
     const sendOtp = async () => {
         enterLoading(0)
+        if(!validPhone.test(form.getFieldValue('phone'))){
+            message.error('Số điện thoại không hợp lệ! Số điện thoại bao gồm 10 ký tự số bắt đầu là 84 hoặc 03, 05, 07, 08, 09');
+            stopLoading(0);
+            phoneRef.current.focus();
+            // form.getFieldValue('phone').;
+            return;
+        }
         const params = {
             phone: form.getFieldValue('phone'),
         };
@@ -106,8 +114,8 @@ const ForgotPassword = () => {
         <Row justify="space-around" align="middle" style={{
             height: '100vh'
         }}>
-            <Col span={8} xs={18} sm={14} md={10} lg={8}>
-                <Title level={3} style={{marginBottom: '20px'}}>
+            <Col span={8} xs={18} sm={14} md={10} lg={8} style={{backgroundColor: "white", padding: "50px", borderRadius: "10px"}}>
+                <Title level={2} style={{marginBottom: '20px'}}>
                     Quên mật khẩu
                 </Title>
                 <Form
@@ -134,6 +142,7 @@ const ForgotPassword = () => {
                                 ]}
                             >
                                 <Input
+                                size='large'
                                     ref={phoneRef}
                                     prefix={<PhoneOutlined className="site-form-item-icon" />}
                                     placeholder="Số điện thoại"
@@ -142,7 +151,7 @@ const ForgotPassword = () => {
                         </Col>
                         <Col flex="none">
                             <Form.Item>
-                                <Button type="primary" htmlType="button" loading={loadings[0]} onClick={() => sendOtp()}>
+                                <Button type="primary" htmlType="button" size='large' loading={loadings[0]} onClick={() => sendOtp()}>
                                     Gửi mã OTP
                                 </Button>
                                 
@@ -160,6 +169,7 @@ const ForgotPassword = () => {
                         style={{display: sentOtp.value ? 'block' : 'none' }}
                     >
                         <Input
+                        size='large'
                             ref={codeRef}
                             prefix={<LockOutlined className="site-form-item-icon" />}
                             placeholder="Mã OTP" />
@@ -170,7 +180,7 @@ const ForgotPassword = () => {
                         }}
                         style={{display: sentOtp.value ? 'block' : 'none' }}
                     >
-                        <Button type="primary" htmlType="submit" loading={loadings[1]} >
+                        <Button type="primary" htmlType="submit" loading={loadings[1]} size='large'>
                             Lấy lại mật khẩu
                         </Button>
                     </Form.Item>

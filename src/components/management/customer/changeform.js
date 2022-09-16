@@ -10,6 +10,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
+import { validPhone, validName } from '../../../resources/regexp'
+
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -68,6 +70,8 @@ const CustomerChangeForm = (props) => {
         message.success(messages.customer.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
+      } else if (response.data.code == 0) {
+        message.error("Số điện thoại đã được sử dụng")
       } else {
         message.error(response.data.message.toString())
       }
@@ -116,6 +120,18 @@ const CustomerChangeForm = (props) => {
   const onFinish = async (values) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
+    if (!validName.test(values.fullname)) {
+      message.error('Tên không hợp lệ! Ký tự đầu mỗi từ phải viết hoa');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
+    if (!validPhone.test(values.phone)) {
+      message.error('Số điện thoại không hợp lệ! Số điện thoại bao gồm 10 ký tự số bắt đầu là 84 hoặc 03, 05, 07, 08, 09');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
     if (is_create) {
       await create(values)
     } else {
@@ -235,7 +251,9 @@ const CustomerChangeForm = (props) => {
                   style={{
                     width: '100%',
                   }}
-                  filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+                // placeholder="Please select"
+                // defaultValue={['a10', 'c12']}
+                // onChange={handleChange}
                 >
                   {dataCustomerGroup}
                 </Select>

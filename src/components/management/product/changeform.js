@@ -13,6 +13,8 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import ProductGroupModal from '../product_group/modal';
 import uploadFile from '../../../utils/s3';
+import { validName1, validBarCode, validCode } from '../../../resources/regexp'
+
 const { Option } = Select;
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -22,6 +24,7 @@ const ProductChangeForm = (props) => {
   const [form] = Form.useForm();
   const [baseUnitOptions, setBaseUnitOptions] = useState([]);
   const [productGroupOptions, setProductGroupOptions] = useState([]);
+  const [unitOptions, setUnitOptions] = useState([]);
   const [loadings, setLoadings] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
@@ -41,12 +44,8 @@ const ProductChangeForm = (props) => {
     }
     handleDataBaseUnit()
     handleDataProductGroup()
+    handleDataUnit()
   }, [])
-
-  useEffect(() => {
-    console.log(props)
-  }, [props])
-
 
   useEffect(() => {
     props.setBreadcrumb([
@@ -84,7 +83,6 @@ const ProductChangeForm = (props) => {
       const response = await api.product.get(id);
       const values = response.data.data
       values.product_groups = values.product_groups.map(elm => elm.id.toString())
-      setImageUrl(values.image)
       form.setFieldsValue(values)
     } catch (error) {
       message.error(messages.ERROR)
@@ -117,12 +115,27 @@ const ProductChangeForm = (props) => {
       const response = await api.product_group.list();
       const options = response.data.data.results.map(elm => {
         return (
-          <Option 
-            title={elm.name}
-            key={elm.id}>{elm.name}</Option>
+          <Option key={elm.id}>{elm.name}</Option>
         )
       })
       setProductGroupOptions(options)
+    } catch (error) {
+      message.error(messages.ERROR)
+    } finally {
+      setLoadingData(false)
+    }
+  }
+
+  const handleDataUnit = async () => {
+    setLoadingData(true)
+    try {
+      const response = await api.unit.list();
+      const options = response.data.data.results.map(elm => {
+        return (
+          <Option key={elm.id}>{elm.name}</Option>
+        )
+      })
+      setUnitOptions(options)
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -220,6 +233,24 @@ const ProductChangeForm = (props) => {
   const onFinish = async (values) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
+    if (!validName1.test(values.name)) {
+      message.error('Tên không hợp lệ! Chữ cái đầu của từ đầu tiên phải viết hoa');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
+    if (!validCode.test(values.product_code)) {
+      message.error('Code sản phẩm không hợp lệ! Code bao gồm 3 ký tự in hoa và 3 ký tự số phía sau (VD: AAA000)');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
+    if (!validBarCode.test(values.barcode)) {
+      message.error('Mã vạch không hợp lệ! Mã vạch bao gồm 13 ký tự số');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
     values.image = imageUrl
     if (is_create) {
       await create(values)
