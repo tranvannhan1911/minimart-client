@@ -166,9 +166,22 @@ const StaffChangeForm = (props) => {
       const response = await api.price.get(id);
       const values = response.data.data
       values.start_date = moment(values.start_date)
-
+      values.status=values.status.toString()
       values.end_date = moment(values.end_date)
-
+      ///
+      // values.pricedetails = values.pricedetails.map(async elm => {
+      //   const responseP = await api.product.get(elm.id);
+      //   if(responseP.data.data.units.length>0 && elm.unit_exchange!=null){
+      //     for (let index = 0; index < responseP.data.data.units.length; index++) {
+      //       if(responseP.data.data.units[index].id !== elm.unit_exchange){
+      //         elm.unit_exchange= responseP.data.data.units[index].unit_name.toString()
+      //         console.log("hhhh")
+      //         }
+            
+      //     }   
+      //   }     
+      // })
+      ////
       form.setFieldsValue(values)
     } catch (error) {
       message.error(messages.ERROR)
@@ -193,18 +206,23 @@ const StaffChangeForm = (props) => {
       setLoadingData(false)
     }
   }
-  const unit = []
+  // const unit = []
   const handleDataBaseUnit = async (unit_exchange) => {
     setLoadingData(true)
     try {
-        await unit_exchange.forEach(gr => dataBaseUnit(gr));
-        // console.log(unit,11111);
-         const options = unit.map(elm => {
+        // await unit_exchange.forEach(gr => dataBaseUnit(gr));
+        // // console.log(unit,11111);
+        //  const options = unit.map(elm => {
+        //   return (
+        //     <Option key={elm.unit_exchange} value={elm.unit_exchange}>{elm.nameUnit}</Option>
+        //   )
+        // })
+        const options = unit_exchange.map(elm => {
           return (
-            <Option key={elm.unit_exchange} value={elm.unit_exchange}>{elm.nameUnit}</Option>
+            <Option key={elm.id} value={elm.id}>{elm.unit_name}</Option>
           )
         })
-        console.log(unit);
+        // console.log(unit);
       setBaseUnitOptions(options);
     } catch (error) {
       message.error(messages.ERROR)
@@ -213,16 +231,16 @@ const StaffChangeForm = (props) => {
     }
   }
 
-  async function dataBaseUnit(params) {
-    console.log(params)
-    const response = await api.unit.get(params.unit);
-    const result={
-      unit_exchange: params.id,
-      nameUnit: response.data.data.name
-    }
-    unit.push(result)
-    return result;
-  }
+  // async function dataBaseUnit(params) {
+  //   console.log(params)
+  //   const response = await api.unit.get(params.unit);
+  //   const result={
+  //     unit_exchange: params.id,
+  //     nameUnit: response.data.data.name
+  //   }
+  //   unit.push(result)
+  //   return result;
+  // }
 
   const onUnitSelect = async (option) => {
     try {
@@ -395,6 +413,7 @@ const StaffChangeForm = (props) => {
                               filterSort={(optionA, optionB) =>
                                 optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
                               }
+                              disabled={is_create ? false : true} 
                             >
                               {baseProductOptions}
                             </Select>
@@ -423,6 +442,7 @@ const StaffChangeForm = (props) => {
                               filterSort={(optionA, optionB) =>
                                 optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
                               }
+                              disabled={is_create ? false : true} 
                             >
                               {baseUnitOptions}
                             </Select>
@@ -437,7 +457,7 @@ const StaffChangeForm = (props) => {
                               },
                             ]}
                           >
-                            <Input placeholder="Giá" type='number' />
+                            <Input placeholder="Giá" type='number' disabled={is_create ? false : true} />
                           </Form.Item>
 
                           <Popconfirm
@@ -447,13 +467,14 @@ const StaffChangeForm = (props) => {
                             okText="Đồng ý"
                             okType="danger"
                             cancelText="Hủy bỏ"
+                            disabled={is_create ? false : true}
                           >
                             <MinusCircleOutlined />
                           </Popconfirm>
                         </Space>
                       ))}
                       <Form.Item style={{width:'170px'}}>
-                        <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                        <Button type="dashed" disabled={is_create ? false : true} onClick={() => add()} block icon={<PlusOutlined />} >
                           Thêm giá sản phẩm
                         </Button>
                       </Form.Item>

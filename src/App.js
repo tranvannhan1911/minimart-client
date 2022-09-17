@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import Loading from './components/basic/loading';
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.min.css';
 import './App.css';
 
 const ForgotPassword = lazy(() => import("./components/account/forgot"));

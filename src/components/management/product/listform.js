@@ -66,7 +66,7 @@ const ProductListForm = (props) => {
 
     return (
         <ListForm 
-            title="Đơn vị tính" 
+            title="Sản phẩm" 
             actions={[
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
                 <Button onClick={() => navigate(paths.product.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
@@ -87,7 +87,7 @@ const ProductListForm = (props) => {
             }
             extra_actions={[
                 <Input 
-                    placeholder="Tìm kiếm đơn vị tính" 
+                    placeholder="Tìm kiếm sản phẩm" 
                     allowClear value={searchInfo[0]} 
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
