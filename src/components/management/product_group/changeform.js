@@ -37,9 +37,11 @@ const ProductGroupForm = (props) => {
   }, [])
 
   useEffect(() => {
-    props.setBreadcrumb([
-      { title: "Nhóm sản phẩm", href: paths.product_group.list },
-      { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
+    if (!props.is_modal){
+      props.setBreadcrumb([
+        { title: "Nhóm sản phẩm", href: paths.product_group.list },
+        { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
+    }
 
     if (is_create==false) {
       props.setBreadcrumbExtras([
@@ -61,6 +63,14 @@ const ProductGroupForm = (props) => {
       props.setBreadcrumbExtras(null)
     }
   }, [is_create])
+
+  useEffect(() => {
+    console.log("props.modalSubmit", props.modalSubmit)
+    if(props.modalSubmit){
+      form.submit()
+    }
+    props.setModalSubmit(false)
+  }, [props.modalSubmit])
 
   useEffect(() => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
@@ -96,6 +106,11 @@ const ProductGroupForm = (props) => {
   }
 
   const directAfterSubmit = (response) => {
+    if (props.is_modal){ // modal
+      form.resetFields()
+      props.onFinishSave()
+      return;
+    }
     if (idxBtnSave == 0) {
       navigate(paths.product_group.list)
     } else if (idxBtnSave == 1) {
@@ -232,32 +247,34 @@ const ProductGroupForm = (props) => {
               <Form.Item label="Ghi chú" name="note" >
                 <TextArea rows={4} />
               </Form.Item>
-              <Form.Item>
-                <Space>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    icon={<PlusOutlined />}
-                    loading={loadings[0]}
-                    onClick={() => setIdxBtnSave(0)}
-                    disabled={disableSubmit ? true : false}
-                  >Lưu</Button>
-                  <Button
-                    htmlType="submit"
-                    icon={<EditOutlined />}
-                    loading={loadings[1]}
-                    onClick={() => setIdxBtnSave(1)}
-                    disabled={disableSubmit ? true : false}
-                  >Lưu và tiếp tục chỉnh sửa</Button>
-                  <Button
-                    htmlType="submit"
-                    icon={<PlusOutlined />}
-                    loading={loadings[2]}
-                    onClick={() => setIdxBtnSave(2)}
-                    disabled={disableSubmit ? true : false}
-                  >Lưu và thêm mới</Button>
-                </Space>
-              </Form.Item>
+              {props.is_modal ? null :
+                <Form.Item>
+                  <Space>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      icon={<PlusOutlined />}
+                      loading={loadings[0]}
+                      onClick={() => setIdxBtnSave(0)}
+                      disabled={disableSubmit ? true : false}
+                    >Lưu</Button>
+                    <Button
+                      htmlType="submit"
+                      icon={<EditOutlined />}
+                      loading={loadings[1]}
+                      onClick={() => setIdxBtnSave(1)}
+                      disabled={disableSubmit ? true : false}
+                    >Lưu và tiếp tục chỉnh sửa</Button>
+                    <Button
+                      htmlType="submit"
+                      icon={<PlusOutlined />}
+                      loading={loadings[2]}
+                      onClick={() => setIdxBtnSave(2)}
+                      disabled={disableSubmit ? true : false}
+                    >Lưu và thêm mới</Button>
+                  </Space>
+                </Form.Item>
+              }
 
             </>
           }>

@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 ssh -i "~/.ssh/minimart.pem" ubuntu@13.214.169.137 '''/bin/bash -c "cd /home/ubuntu/minimart-client \
         && git pull origin main \
-        && sed -i "/REACT_APP_BASE_URL=/c\\REACT_APP_BASE_URL=http://13.214.169.137:8000/api" .env
-        && docker build -t tranvannhan1911/minimart-client . \
-        && (docker rm -f minimart-client || true) \
-        && docker run -d \
-            --restart on-failure:5 \
-            --name minimart-client \
-            --network="host" \
-            tranvannhan1911/minimart-client"'''
+        && sed -i "/REACT_APP_BASE_URL=/c\\REACT_APP_BASE_URL=http://13.214.169.137:8000/api" .env \
+        && npm install --force \
+        && npm start"'''
