@@ -84,6 +84,7 @@ const api = {
     product_group: getApi("product-group"),
     unit: getApi("calculation-unit"),
     product: getApi("product"),
+    price: getApi("price-list"),
 }
 
 export {AccountApi};

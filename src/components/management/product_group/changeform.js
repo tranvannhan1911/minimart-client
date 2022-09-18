@@ -10,6 +10,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
+import { validName1, validCode } from '../../../resources/regexp'
+
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -35,11 +37,10 @@ const ProductGroupForm = (props) => {
   }, [])
 
   useEffect(() => {
-    if (!props.is_modal){
-      props.setBreadcrumb([
-        { title: "Nhóm sản phẩm", href: paths.product_group.list },
-        { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
-    }
+    props.setBreadcrumb([
+      { title: "Nhóm sản phẩm", href: paths.product_group.list },
+      { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
+
     if (is_create==false) {
       props.setBreadcrumbExtras([
         <Popconfirm
@@ -64,14 +65,6 @@ const ProductGroupForm = (props) => {
   useEffect(() => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
-
-  useEffect(() => {
-    console.log("props.modalSubmit", props.modalSubmit)
-    if(props.modalSubmit){
-      form.submit()
-    }
-    props.setModalSubmit(false)
-  }, [props.modalSubmit])
   
   const handleData = async () => {
     setLoadingData(true)
@@ -103,12 +96,6 @@ const ProductGroupForm = (props) => {
   }
 
   const directAfterSubmit = (response) => {
-    
-    if (props.is_modal){ // modal
-      form.resetFields()
-      props.onFinishSave()
-      return;
-    }
     if (idxBtnSave == 0) {
       navigate(paths.product_group.list)
     } else if (idxBtnSave == 1) {
@@ -182,6 +169,18 @@ const ProductGroupForm = (props) => {
   const onFinish = async (values) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
+    if (!validName1.test(values.name)) {
+      message.error('Tên không hợp lệ! Chữ cái đầu của từ đầu tiên phải viết hoa');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
+    if (!validCode.test(values.product_group_code)) {
+      message.error('Code nhóm sản phẩm không hợp lệ! Code bao gồm 3 ký tự in hoa và 3 ký tự số phía sau (VD: AAA000)');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
     if (is_create) {
       await create(values)
     } else {
@@ -233,34 +232,32 @@ const ProductGroupForm = (props) => {
               <Form.Item label="Ghi chú" name="note" >
                 <TextArea rows={4} />
               </Form.Item>
-              {props.is_modal ? null :
-                <Form.Item>
-                  <Space>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      icon={<PlusOutlined />}
-                      loading={loadings[0]}
-                      onClick={() => setIdxBtnSave(0)}
-                      disabled={disableSubmit ? true : false}
-                    >Lưu</Button>
-                    <Button
-                      htmlType="submit"
-                      icon={<EditOutlined />}
-                      loading={loadings[1]}
-                      onClick={() => setIdxBtnSave(1)}
-                      disabled={disableSubmit ? true : false}
-                    >Lưu và tiếp tục chỉnh sửa</Button>
-                    <Button
-                      htmlType="submit"
-                      icon={<PlusOutlined />}
-                      loading={loadings[2]}
-                      onClick={() => setIdxBtnSave(2)}
-                      disabled={disableSubmit ? true : false}
-                    >Lưu và thêm mới</Button>
-                  </Space>
-                </Form.Item>
-              }
+              <Form.Item>
+                <Space>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    icon={<PlusOutlined />}
+                    loading={loadings[0]}
+                    onClick={() => setIdxBtnSave(0)}
+                    disabled={disableSubmit ? true : false}
+                  >Lưu</Button>
+                  <Button
+                    htmlType="submit"
+                    icon={<EditOutlined />}
+                    loading={loadings[1]}
+                    onClick={() => setIdxBtnSave(1)}
+                    disabled={disableSubmit ? true : false}
+                  >Lưu và tiếp tục chỉnh sửa</Button>
+                  <Button
+                    htmlType="submit"
+                    icon={<PlusOutlined />}
+                    loading={loadings[2]}
+                    onClick={() => setIdxBtnSave(2)}
+                    disabled={disableSubmit ? true : false}
+                  >Lưu và thêm mới</Button>
+                </Space>
+              </Form.Item>
 
             </>
           }>

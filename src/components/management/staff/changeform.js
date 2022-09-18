@@ -1,7 +1,7 @@
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Space, Popconfirm } from 'antd';
+import { Button, Form, Input, Select, message, Space, Popconfirm, Switch } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
@@ -10,8 +10,11 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
+import { validPhone, validName } from '../../../resources/regexp'
+
 const { Option } = Select;
 const { TextArea } = Input;
+const idCity = 0;
 
 const StaffChangeForm = (props) => {
   const navigate = useNavigate();
@@ -23,6 +26,10 @@ const StaffChangeForm = (props) => {
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const refAutoFocus = useRef(null)
+
+  // const onChange = (checked) => {
+  //   console.log(`switch to ${checked}`);
+  // };
 
   const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
@@ -67,6 +74,8 @@ const StaffChangeForm = (props) => {
         message.success(messages.staff.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
+      } else if (response.data.code == 0) {
+        message.error("Số điện thoại đã được sử dụng")
       } else {
         message.error(response.data.message.toString())
       }
@@ -93,7 +102,7 @@ const StaffChangeForm = (props) => {
     }
     return false
   }
-  
+
   const _delete = async () => {
     try {
       const response = await api.staff.delete(id)
@@ -114,6 +123,19 @@ const StaffChangeForm = (props) => {
   const onFinish = async (values) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
+    // console.log(state);
+    if (!validName.test(values.fullname)) {
+      message.error('Tên không hợp lệ! Ký tự đầu mỗi từ phải viết hoa');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
+    if (!validPhone.test(values.phone)) {
+      message.error('Số điện thoại không hợp lệ! Số điện thoại bao gồm 10 ký tự số bắt đầu là 84 hoặc 03, 05, 07, 08, 09');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
     if (is_create) {
       await create(values)
     } else {
@@ -134,6 +156,7 @@ const StaffChangeForm = (props) => {
     try {
       const response = await api.staff.get(id);
       const values = response.data.data
+      // console.log(values)
       form.setFieldsValue(values)
     } catch (error) {
       message.error(messages.ERROR)
@@ -157,7 +180,7 @@ const StaffChangeForm = (props) => {
       { title: "Nhân viên", href: paths.staff.list },
       { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
 
-    if (is_create==false) {
+    if (is_create == false) {
       props.setBreadcrumbExtras([
         <Popconfirm
           placement="bottomRight"
@@ -212,7 +235,7 @@ const StaffChangeForm = (props) => {
               >
                 <Input disabled={is_create ? false : true} />
               </Form.Item>
-              <Form.Item label="Địa chỉ" name="address">
+              <Form.Item label="Địa chỉ" name="address" >
                 <Input />
               </Form.Item>
               <Form.Item label="Giới tính" name="gender"
@@ -230,6 +253,21 @@ const StaffChangeForm = (props) => {
                   <Option value="U">Không xác định</Option>
                 </Select>
               </Form.Item>
+              {/* <Form.Item label="Vai trò" name="is_superuser"
+                style={{
+                  textAlign: 'left'
+                }}>
+                <Select
+                  defaultValue="false"
+                  style={{
+                    width: 200,
+                  }}
+                >
+                  <Option value="false">Nhân viên</Option>
+                  <Option value="true">Quản lý</Option>
+                  
+                </Select>
+              </Form.Item> */}
               <Form.Item label="Ghi chú" name="note" >
                 <TextArea rows={4} />
               </Form.Item>

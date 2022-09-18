@@ -10,6 +10,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
+import { validName1 } from '../../../resources/regexp'
+
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -167,6 +169,12 @@ const UnitChangeForm = (props) => {
   const onFinish = async (values) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
+    if (!validName1.test(values.name)) {
+      message.error('Tên không hợp lệ! Chữ cái đầu của từ đầu tiên phải viết hoa');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
     if (is_create) {
       await create(values)
     } else {

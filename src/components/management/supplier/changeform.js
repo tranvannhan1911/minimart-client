@@ -10,6 +10,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
+import { validPhone, validName1, validEmail } from '../../../resources/regexp'
+
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -39,7 +41,7 @@ const SupplierChangeForm = (props) => {
       { title: "Nhà cung cấp", href: paths.supplier.list },
       { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
 
-    if (is_create==false) {
+    if (is_create == false) {
       props.setBreadcrumbExtras([
         <Popconfirm
           placement="bottomRight"
@@ -63,7 +65,7 @@ const SupplierChangeForm = (props) => {
   useEffect(() => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
-  
+
   const handleData = async () => {
     setLoadingData(true)
     try {
@@ -146,7 +148,7 @@ const SupplierChangeForm = (props) => {
     }
     return false
   }
-  
+
   const _delete = async () => {
     try {
       const response = await api.supplier.delete(id)
@@ -167,6 +169,25 @@ const SupplierChangeForm = (props) => {
   const onFinish = async (values) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
+    if (!validName1.test(values.name)) {
+      message.error('Tên không hợp lệ! Chữ cái đầu của từ đầu tiên phải viết hoa');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
+    if (!validPhone.test(values.phone)) {
+      message.error('Số điện thoại không hợp lệ! Số điện thoại bao gồm 10 chữ số bắt đầu là 84 hoặc 03, 05, 07, 08, 09');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
+    if (!validEmail.test(values.email)) {
+      message.error('Email không hợp lệ');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
+
     if (is_create) {
       await create(values)
     } else {

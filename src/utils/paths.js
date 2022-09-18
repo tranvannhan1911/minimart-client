@@ -25,6 +25,7 @@ const Paths = {
     product_group: getPaths("nhom-san-pham", "id"),
     unit: getPaths("don-vi-tinh", "id"),
     product: getPaths("san-pham", "id"),
+    price: getPaths("bang-gia","id"),
     s3: (filename) => `https://minimart-tvn1911.s3.ap-southeast-1.amazonaws.com/${filename}`,
 }
 
