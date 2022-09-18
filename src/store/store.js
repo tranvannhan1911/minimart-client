@@ -17,7 +17,7 @@ const drawerPlacement = createSlice({
 // export const { setToken, getToken } = tokenSlice.actions
 
 const rootReducer = combineReducers({
-  drawerPlacement: drawerPlacement,
+  drawerPlacement,
 });
 
 const persistConfig = {

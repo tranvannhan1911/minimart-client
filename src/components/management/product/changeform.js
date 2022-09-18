@@ -44,7 +44,7 @@ const ProductChangeForm = (props) => {
   }, [])
 
   useEffect(() => {
-    console.log(props)
+    console.log("props", props)
   }, [props])
 
 
