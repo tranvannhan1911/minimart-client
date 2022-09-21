@@ -1,20 +1,36 @@
-import { SearchOutlined, FormOutlined,EyeOutlined } from '@ant-design/icons';
-import { Button, Space, Table as AntdTable, Input, Tag, Pagination } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import {
+  EyeOutlined, FormOutlined,DeleteOutlined
+} from '@ant-design/icons'
+import { Button, Space, Table as AntdTable, Input, Tag, Pagination, Switch, message, Popconfirm } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
-import ProductGroupModal from './modal';
+import { Col, Divider, Drawer, Row } from 'antd';
+import api from '../../../api/apis'
+import messages from '../../../utils/messages'
+import InventoryRecordModal from './modal';
 const { Search } = Input;
+// const idstaff=0;
 
-const ProductGroupTable = (props) => {
+const DescriptionItem = ({ title, content }) => (
+  <div className="site-description-item-profile-wrapper">
+    <p className="site-description-item-profile-p-label">{title}:</p>
+    {content}
+  </div>
+);
+
+const InventoryRecordTable = (props) => {
   const navigate = useNavigate();
-  const [currentCountData, SetCurrentCountData] = useState(0);
+  const [data1, setData1] = useState();
+  const [open, setOpen] = useState(false);
+  const [dataIndex, setDataIndex] = useState("");
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef(null);
-  const [open, setOpen] = useState(false);
-  const [dataIndex, setDataIndex] = useState("");
+  // const [isStatus, setStatus] = useState(false);
+  const [currentCountData, SetCurrentCountData] = useState(0);
 
   const handleChange = (pagination, filters, sorter, extras) => {
     console.log('Various parameters\n', pagination, filters, sorter);
@@ -23,10 +39,15 @@ const ProductGroupTable = (props) => {
     SetCurrentCountData(extras.currentDataSource.length)
   };
 
+  ///////
+
   const onOpen = async (id) => {
     props.data.forEach(element => {
       if(element.id==id){
-        console.log(element)
+        element.details.forEach(elementt => {
+          elementt.product=elementt.product.name;
+          return elementt;
+        });
         setDataIndex(element);
         // renderProfile(element)
         setOpen(true);
@@ -35,6 +56,34 @@ const ProductGroupTable = (props) => {
     });
   };
 
+  const tagStatus = (status) => {
+    if(status=='pending'){
+      return 'CHỜ XÁC NHẬN';
+    }else if(status=='complete'){
+      return 'HOÀN THÀNH';
+    }else if(status=='cancel'){
+      return 'HỦY';
+    }
+  };
+
+  const tagStatusColor = (status) => {
+    if(status=='pending'){
+      return 'processing';
+    }else if(status=='complete'){
+      return 'success';
+    }else{
+      return 'warning';
+    }
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+  //////
+
+  const setIdxBtn = (id) => {
+    navigate(paths.inventory_record.change(id))
+  };
 
   useEffect(() => {
     SetCurrentCountData(props.data.length)
@@ -46,9 +95,6 @@ const ProductGroupTable = (props) => {
 
   const handleLoadingChange = (enable) => {
     props.setLoading(enable);
-  };
-  const setIdxBtn = (id) => {
-    navigate(paths.product_group.change(id))
   };
 
   const renderSearch = () => ({
@@ -114,18 +160,18 @@ const ProductGroupTable = (props) => {
             Quay lại
           </Button>
           {/* <Button
-              type="link"
-              size="small"
-              onClick={() => {
-                confirm({
-                  closeDropdown: false,
-                });
-                setSearchText(selectedKeys[0]);
-                setSearchedColumn(dataIndex);
-              }}
-            >
-              Filter
-            </Button> */}
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({
+                closeDropdown: false,
+              });
+              setSearchText(selectedKeys[0]);
+              setSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button> */}
         </Space>
       </div>
     ),
@@ -159,9 +205,11 @@ const ProductGroupTable = (props) => {
       ),
   });
 
+
+
   const columns = [
     {
-      title: 'Mã nhóm sản phẩm',
+      title: 'Mã',
       dataIndex: 'id',
       key: 'id',
       sorter: {
@@ -171,47 +219,42 @@ const ProductGroupTable = (props) => {
       defaultSortOrder: 'descend',
       filteredValue: props.searchInfo || null,
       onFilter: (value, record) => {
-        return (record.name && record.name.toLowerCase().includes(value.toLowerCase()))
-          || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
-          || (record.product_group_code && record.product_group_code.toString().toLowerCase().includes(value.toLowerCase()))
-          || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))
-          || (record.description && record.description.toLowerCase().includes(value.toLowerCase()))
+        return (record.id && record.id.toLowerCase().includes(value.toLowerCase()))
       },
       ...renderSearch(),
       ...getColumnSearchProps('id'),
     },
     {
-      title: 'Tên nhóm sản phẩm',
-      dataIndex: 'name',
-      key: 'name',
-      sorter: {
-        compare: (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
-        multiple: 2
-      },
-      ...renderSearch(),
-      ...getColumnSearchProps('name'),
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'status',
+      // ...getColumnSearchProps('status'),
+      // filters: [
+      //   {
+      //     text: 'HOẠT ĐỘNG',
+      //     value: 'true',
+      //   },
+      //   {
+      //     text: 'KHÓA',
+      //     value: 'false',
+      //   },
+      // ],
+      // filteredValue: props.filteredInfo.status || null,
+      // onFilter: (value, record) => record.status.includes(value),
+      render: (status) => (
+        <span>  
+              <Tag color={tagStatusColor(status)} key={status}>
+                {tagStatus(status)}
+              </Tag>
+        </span>
+      ),
     },
     {
-      title: 'Code nhóm sản phẩm',
-      dataIndex: 'product_group_code',
-      key: 'product_group_code',
-      ...renderSearch(),
-      ...getColumnSearchProps('product_group_code'),
+      title: 'Ghi chú',
+      dataIndex: 'note',
+      key: 'note',
+      ...getColumnSearchProps('note'),
     },
-    // {
-    //   title: 'Mô tả',
-    //   dataIndex: 'description',
-    //   key: 'description',
-    //   ...renderSearch(),
-    //   ...getColumnSearchProps('description'),
-    // },
-    // {
-    //   title: 'Ghi chú nội bộ',
-    //   dataIndex: 'note',
-    //   key: 'note',
-    //   ...renderSearch(),
-    //   ...getColumnSearchProps('note'),
-    // },
     {
       title: '',
       dataIndex: 'id',
@@ -220,7 +263,7 @@ const ProductGroupTable = (props) => {
         <span>
           <a onClick={() => onOpen(id)} key={id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a>
           <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
-        </span>
+          </span>
       ),
     },
   ];
@@ -233,41 +276,30 @@ const ProductGroupTable = (props) => {
   };
 
   return (
-    <><AntdTable
-      // rowSelection={{
-      //   selectedRowKeys,
-      //   onChange: onSelectChange
-      // }} 
-      columns={columns}
-      dataSource={props.data}
-      onChange={handleChange}
-      scroll={{
-        x: 'max-content',
-      }}
-      sticky
-      pagination={{
-        total: currentCountData,
-        showSizeChanger: true,
-        showQuickJumper: true,
-        showTotal: (total) => `Tất cả ${total}`,
-      }}
-      loading={props.loading} />
-      <ProductGroupModal open={open} data={dataIndex} setOpen={setOpen} /></>
-    // onRow={(record, rowIndex) => {
-    //   return {
-    //     onClick: event => {
-    //       navigate(paths.product_group.change(record.id))
-    //     }, // click row
-    //     onDoubleClick: event => {
-    //       navigate(paths.product_group.change(record.id))
-    //     }, // double click row
-    //     onContextMenu: event => {}, // right button click row
-    //     onMouseEnter: event => {}, // mouse enter row
-    //     onMouseLeave: event => {}, // mouse leave row
-    //   };
-    // }}
-    
+    <>
+      <AntdTable
+        // rowSelection={{
+        //   selectedRowKeys,
+        //   onChange: onSelectChange
+        // }}
+        columns={columns}
+        dataSource={props.data}
+        onChange={handleChange}
+        scroll={{
+          x: 'max-content',
+        }}
+        sticky
+        pagination={{
+          total: currentCountData,
+          showSizeChanger: true,
+          showQuickJumper: true,
+          showTotal: (total) => `Tất cả ${total}`,
+        }}
+        loading={props.loading} />
+        <InventoryRecordModal open={open} data={dataIndex} setOpen={setOpen} />
+    </>
+
   );
 };
 
-export default ProductGroupTable;
+export default InventoryRecordTable;

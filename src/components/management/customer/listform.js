@@ -45,6 +45,9 @@ const CustomerListForm = (props) => {
                         elm.gender = "Không xác định"
                         break
                 }
+                // let date=elm.date_joined.slice(0, 10);
+                // let time=elm.date_joined.slice(12, 19);
+                // elm.date_joined=date+" "+time;
                 return elm
             })
             setData(_data)

@@ -9,6 +9,7 @@ const base_url = process.env.REACT_APP_BASE_URL
 
 const validRefresh = new RegExp(".*/token/refresh/");
 // const base_url = "https://minimart-server.tranvannhan1911.dev/api"
+// const base_url = "http://13.214.169.137:8000/api"
 
 const axiosApi = axios.create({
     baseURL: base_url,

@@ -19,8 +19,9 @@ const EditableContext = React.createContext(null);
 const dateFormat = "YYYY/MM/DD";
 
 const { Option } = Select;
+const { TextArea } = Input;
 
-const StaffChangeForm = (props) => {
+const InventoryRecordChangeForm = (props) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [formPrice] = Form.useForm();
@@ -58,16 +59,16 @@ const StaffChangeForm = (props) => {
 
   const directAfterSubmit = (response) => {
     if (idxBtnSave == 0) {
-      navigate(paths.price.list)
+      navigate(paths.inventory_record.list)
     } else if (idxBtnSave == 1) {
       if (is_create) {
-        navigate(paths.price.change(response.data.data.id))
+        navigate(paths.inventory_record.change(response.data.data.id))
         setCreate(false)
       }
       refAutoFocus.current && refAutoFocus.current.focus()
     } else if (idxBtnSave == 2) {
       if (!is_create) {
-        navigate(paths.price.add)
+        navigate(paths.inventory_record.add)
         setCreate(true)
       }
       form.resetFields()
@@ -78,13 +79,13 @@ const StaffChangeForm = (props) => {
 
   const create = async (values) => {
     try {
-      const response = await api.price.add(values);
+      const response = await api.inventory_record.add(values);
       if (response.data.code == 1) {
-        message.success(messages.price.SUCCESS_SAVE())
+        message.success(messages.inventory_record.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
       } else if (response.data.code == 0) {
-        message.error("Vui lòng nhập bảng giá từng sản phẩm")
+        message.error("Vui lòng nhập từng sản phẩm")
       } else {
         message.error(response.data.message.toString())
       }
@@ -97,9 +98,9 @@ const StaffChangeForm = (props) => {
 
   const update = async (values) => {
     try {
-      const response = await api.price.update(id, values)
+      const response = await api.inventory_record.update(id, values)
       if (response.data.code == 1) {
-        message.success(messages.price.SUCCESS_SAVE(id))
+        message.success(messages.inventory_record.SUCCESS_SAVE(id))
         directAfterSubmit(response)
         return true
       } else {
@@ -114,13 +115,13 @@ const StaffChangeForm = (props) => {
 
   const _delete = async () => {
     try {
-      const response = await api.price.delete(id)
+      const response = await api.inventory_record.delete(id)
       if (response.data.code == 1) {
-        message.success(messages.price.SUCCESS_DELETE(id))
-        navigate(paths.price.list)
+        message.success(messages.inventory_record.SUCCESS_DELETE(id))
+        navigate(paths.inventory_record.list)
         return true
       } else {
-        message.error(messages.price.ERROR_DELETE(id))
+        message.error(messages.inventory_record.ERROR_DELETE(id))
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -133,24 +134,24 @@ const StaffChangeForm = (props) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
     // console.log(state);
-    if (!validName1.test(values.name)) {
-      message.error('Tên không hợp lệ! Ký tự đầu của chữ đầu tiên phải viết hoa');
-      setDisableSubmit(false)
-      stopLoading(idxBtnSave)
-      return;
-    }
-    if (values.end_date < values.start_date) {
-      message.error('Ngày kết thúc phải sau ngày bắt đầu');
-      stopLoading(idxBtnSave)
-      setDisableSubmit(false)
-      return;
-    }
+    // if (!validName1.test(values.name)) {
+    //   message.error('Tên không hợp lệ! Ký tự đầu của chữ đầu tiên phải viết hoa');
+    //   setDisableSubmit(false)
+    //   stopLoading(idxBtnSave)
+    //   return;
+    // }
+    // if (values.end_date < values.start_date) {
+    //   message.error('Ngày kết thúc phải sau ngày bắt đầu');
+    //   stopLoading(idxBtnSave)
+    //   setDisableSubmit(false)
+    //   return;
+    // }
     if (is_create) {
       await create(values)
     } else {
-      console.log(values.start_date._i)
-      values.start_date = values.start_date._i;
-      values.end_date = values.end_date._i;
+      // console.log(values.start_date._i)
+      // values.start_date = values.start_date._i;
+      // values.end_date = values.end_date._i;
       // values.pricedetails=dataIndex.pricedetails;
       await update(values)
     }
@@ -167,23 +168,18 @@ const StaffChangeForm = (props) => {
   const handleData = async () => {
     setLoadingData(true)
     try {
-      const response = await api.price.get(id);
+      const response = await api.inventory_record.get(id);
       const values = response.data.data
-      values.start_date = moment(values.start_date)
-      values.status = values.status.toString()
-      values.end_date = moment(values.end_date)
+      // values.start_date = moment(values.start_date)
+      // values.status = values.status.toString()
+      // values.end_date = moment(values.end_date)
       ///
-      // values.pricedetails = values.pricedetails.map(async elm => {
-      //   const responseP = await api.product.get(elm.product);
-      //   for (let index = 0; index < responseP.data.data.units.length; index++) {
-      //     if (responseP.data.data.units[index].id == elm.unit_exchange) {
-      //       elm.unit_exchange = responseP.data.data.units[index].unit_name
-      //     }
+      values.details = values.details.map(elm => {
+        elm.product = elm.product.name;
+        return elm;
 
-      //   }
-      //   return elm;
-      // })
-      ////
+      })
+     
       form.setFieldsValue(values)
 
     } catch (error) {
@@ -274,14 +270,14 @@ const StaffChangeForm = (props) => {
 
   useEffect(() => {
     props.setBreadcrumb([
-      { title: "Bảng giá", href: paths.price.list },
-      { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
+      { title: "Phiếu kiểm kê", href: paths.inventory_record.list },
+      { title: is_create ? "Kiểm kê" : "Chỉnh sửa" }])
 
     if (is_create == false) {
       props.setBreadcrumbExtras([
         <Popconfirm
           placement="bottomRight"
-          title="Xác nhận xóa bảng giá này"
+          title="Xác nhận xóa phiếu kiểm kê này"
           onConfirm={_delete}
           okText="Đồng ý"
           okType="danger"
@@ -301,7 +297,6 @@ const StaffChangeForm = (props) => {
   useEffect(() => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
-  
 
   return (
     <>
@@ -313,70 +308,11 @@ const StaffChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <><>
-              <Form.Item label="Tên bảng giá" name="name" required
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng nhập tên bảng giá!',
-                  },
-                ]}
-              >
-                <Input autoFocus ref={refAutoFocus} />
-              </Form.Item>
-              <Row>
-                <Col span={8} xs={18} sm={14} md={10} lg={8} style={{ backgroundColor: "white" }}>
-                  <Form.Item label="Ngày bắt đầu" name="start_date" required
-                    style={{
-                      textAlign: "left",
-                      // width:'500px',
-                      marginLeft: '0px',
-                      // display:'inline-grid'
-                    }}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Vui lòng nhập ngày bắt đầu!',
-                      },
-                    ]}
-                  >
-                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '200px' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={8} xs={18} sm={14} md={10} lg={8} style={{ backgroundColor: "white" }}>
-                  <Form.Item label="Ngày kết thúc" name="end_date" required
-                    style={{
-                      textAlign: "left",
-                      // width:'500px',
-                      // display:'inline-grid'
-                    }}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Vui lòng nhập ngày kết thúc!',
-                      },
-                    ]}
-                  >
-                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '200px' }} />
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Form.Item label="Trạng thái" name="status"
-                style={{
-                  textAlign: 'left'
-                }}>
-                <Select
-                  defaultValue="true"
-                  style={{
-                    width: 200,
-                  }}
-                >
-                  <Option value="true">Hoạt động</Option>
-                  <Option value="false">Khóa</Option>
-                </Select>
-              </Form.Item>
+
+
             </>
               <Col>
-                <label><h2 style={{ marginTop: '10px', marginBottom: '30px', textAlign: 'center' }}>Bảng giá sản phẩm</h2></label>
+                <label><h2 style={{ marginTop: '10px', marginBottom: '30px', textAlign: 'center' }}>Kiểm kê</h2></label>
                 {/* <Button type="primary" onClick={showModal}>
                   Thêm giá sản phẩm
                 </Button>
@@ -386,7 +322,7 @@ const StaffChangeForm = (props) => {
                 >
 
                 </Table> */}
-                <Form.List name="pricedetails" label="Bảng giá sản phẩm">
+                <Form.List name="details" label="Bảng giá sản phẩm">
                   {(fields, { add, remove }) => (
                     <>
 
@@ -396,6 +332,7 @@ const StaffChangeForm = (props) => {
                           style={{
                             display: 'flex',
                             marginBottom: 0,
+                            width:'100%',
                           }}
                           align="baseline"
                         >
@@ -409,8 +346,8 @@ const StaffChangeForm = (props) => {
                               },
                             ]}
                             style={{
-                              textAlign: 'left'
-                            }}
+                              textAlign: 'left',
+                              width:'100%',                            }}
                           >
                             <Select
                               showSearch
@@ -431,46 +368,36 @@ const StaffChangeForm = (props) => {
                           </Form.Item>
                           <Form.Item
                             {...restField}
-                            name={[name, 'unit_exchange']}
-                            // rules={[
-                            //   {
-                            //     required: true,
-                            //     message: 'Vui lòng chọn đơn vị tính!',
-                            //   },
-                            // ]}
-                            style={{
-                              textAlign: 'left'
-                            }}
-                          >
-                            <Select
-                              showSearch
-                              style={{
-                                width: 200,
-                              }}
-                              placeholder="Đơn vị tính"
-                              optionFilterProp="children"
-                              filterOption={(input, option) => option.children.includes(input)}
-                              filterSort={(optionA, optionB) =>
-                                optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
-                              }
-                              disabled={is_create ? false : true}
-                            >
-                              {baseUnitOptions}
-                            </Select>
-                          </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'price']}
+                            name={[name, 'quantity_after']}
                             rules={[
                               {
                                 required: true,
-                                message: 'Vui lòng nhập giá!',
+                                message: 'Vui lòng nhập số lượng!',
+                              },
+                            ]}
+                            style={{
+                              textAlign: 'left',
+                              width:'100%'
+                            }}
+                          >
+                            <Input placeholder="Số lượng theo đơn vị tính cơ bản" type='number' disabled={is_create ? false : true} />
+                          </Form.Item>
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'note']}
+                            style={{
+                              textAlign: 'left',
+                              width:'100%'
+                            }}
+                            rules={[
+                              {
+                                required: true,
+                                message: 'Vui lòng nhập ghi chú!',
                               },
                             ]}
                           >
-                            <Input placeholder="Giá" type='number' disabled={is_create ? false : true} />
+                            <Input placeholder="Ghi chú" type='text' disabled={is_create ? false : true} />
                           </Form.Item>
-
                           <Popconfirm
                             placement="bottomRight"
                             title="Xác nhận xóa bảng giá này"
@@ -478,21 +405,48 @@ const StaffChangeForm = (props) => {
                             okText="Đồng ý"
                             okType="danger"
                             cancelText="Hủy bỏ"
+                            style={{width:'10%'}}
                             disabled={is_create ? false : true}
                           >
                             <MinusCircleOutlined />
                           </Popconfirm>
+                          
                         </Space>
                       ))}
                       <Form.Item style={{ width: '170px' }}>
                         <Button type="dashed" disabled={is_create ? false : true} onClick={() => add()} block icon={<PlusOutlined />} >
-                          Thêm giá sản phẩm
+                          Thêm sản phẩm
                         </Button>
                       </Form.Item>
                     </>
                   )}
                 </Form.List>
               </Col>
+              <Form.Item label="Trạng thái" name="status"
+                style={{
+                  textAlign: 'left'
+                }}>
+                <Select
+                  defaultValue="pending"
+                  style={{
+                    width: 200,
+                  }}
+                >
+                  <Option value="pending">Chờ xác nhận</Option>
+                  <Option value="complete">Hoàn thành</Option>
+                  <Option value="cancel">Hủy</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item label="Ghi chú" name="note"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Vui lòng nhập ghi chú!',
+              //   },
+              // ]}
+              >
+                <TextArea rows={4} />
+              </Form.Item>
               <Form.Item>
                 <Space>
                   <Button
@@ -525,77 +479,10 @@ const StaffChangeForm = (props) => {
         </ChangeForm>
       }
 
-      {/* <Modal title="Basic Modal" visible={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-        <ChangeForm
-          form={formPrice}
-          setBreadcrumb={props.setBreadcrumb}
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          forms={
-            <><><Form.Item label="Sản phẩm" name="product" required
-              style={{
-                textAlign: "left",
-                // width:'500px',
-                // display:'inline-grid'
-              }}
-              rules={[
-                {
-                  required: true,
-                  message: 'Vui lòng chọn sản phẩm!',
-                },
-              ]}
-            >
-              <Select
-                showSearch
-                onChange={(option) => onUnitSelect(option)}
-                // style={{
-                //   width: 200,
-                // }}
-                placeholder="Sản phẩm"
-                optionFilterProp="children"
-                filterOption={(input, option) => option.children.includes(input)}
-                filterSort={(optionA, optionB) => optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())}
-              >
-                {baseProductOptions}
-              </Select>
-            </Form.Item><Form.Item label="Đơn vị tính" name="unit_exchange" required
-              style={{
-                textAlign: "left",
-                // width:'500px',
-                // display:'inline-grid'
-              }}
-            >
-                <Select
-                  showSearch
-                  // style={{
-                  //   width: 200,
-                  // }}
-                  placeholder="Đơn vị tính"
-                  optionFilterProp="children"
-                  filterOption={(input, option) => option.children.includes(input)}
-                  filterSort={(optionA, optionB) => optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())}
-                >
-                  {baseUnitOptions}
-                </Select>
-              </Form.Item></>
-              <Form.Item label="Giá" name="price" required
-                style={{
-                  textAlign: "left",
-                  // width:'500px',
-                  // display:'inline-grid'
-                }}
-              >
-                <Input placeholder="Giá" type='number' />
-              </Form.Item>
-              <Button type="primary" onClick={() => addPrice()} block icon={<PlusOutlined />} >
-                Thêm giá sản phẩm
-              </Button></>
-          }>
-        </ChangeForm>
-      </Modal> */}
+
     </>
   )
 
 }
 
-export default StaffChangeForm;
+export default InventoryRecordChangeForm;

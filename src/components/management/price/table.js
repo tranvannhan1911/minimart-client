@@ -26,6 +26,9 @@ const StaffTable = (props) => {
   const [data1, setData1] = useState();
   const [open, setOpen] = useState(false);
   const [dataIndex, setDataIndex] = useState("");
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const searchInput = useRef(null);
   // const [isStatus, setStatus] = useState(false);
   const [currentCountData, SetCurrentCountData] = useState(0);
 
@@ -38,43 +41,18 @@ const StaffTable = (props) => {
 
   ///////
 
-  async function showDrawer(id) {
-    // setOpen(true);
-    // renderProfile()
-    // console.log(props);
-    props.data.forEach(element => {
-      if(element.id==id){
-        // if(element.is_superuser=="Nhân viên"){
-        //   element.is_superuser=false;
-        // }else{
-        //   element.is_superuser=true;
-        // }
-        setData1(element);
+  const onOpen = async (id) => {
+    const index={};
+    props.data.forEach(async element => {
+      if(element.price_list_id==id){
+        
+        
+        setDataIndex(element);
         // renderProfile(element)
-        console.log(element);
+        setOpen(true);
+        console.log(index);
       }
     });
-
-  };
-
-  // const renderProfile = (dataa) => ({
-  //   render: () =>
-  //     <Profile
-  //     data={dataa}
-  //     ></Profile>
-  // });
-
-  const onOpen = async (id) => {
-    try {
-      const response = await api.price.get(id);
-      const values = response.data.data
-      setDataIndex(values);
-    } catch (error) {
-      message.error(messages.ERROR)
-    } finally {
-    }
-    
-    setOpen(true);
   };
 
   const tagStatus = (status) => {
@@ -147,10 +125,106 @@ const StaffTable = (props) => {
       />
   })
 
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText('');
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Tìm kiếm`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Tìm kiếm
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Quay lại
+          </Button>
+          {/* <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({
+                closeDropdown: false,
+              });
+              setSearchText(selectedKeys[0]);
+              setSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button> */}
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1890ff' : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: '#ffc069',
+            padding: 0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ''}
+        />
+      ) : (
+        text
+      ),
+  });
+
+
 
   const columns = [
     {
-      title: 'Mã bảng giá',
+      title: 'Mã',
       dataIndex: 'price_list_id',
       key: 'price_list_id',
       sorter: {
@@ -163,7 +237,8 @@ const StaffTable = (props) => {
         return (record.name && record.name.toLowerCase().includes(value.toLowerCase()))
           || (record.price_list_id && record.price_list_id.toString().toLowerCase().includes(value.toLowerCase()))
       },
-      ...renderSearch()
+      ...renderSearch(),
+      ...getColumnSearchProps('price_list_id'),
     },
     {
       title: 'Tên',
@@ -173,22 +248,26 @@ const StaffTable = (props) => {
         compare: (a, b) => a.fullname.toLowerCase().localeCompare(b.fullname.toLowerCase()),
         multiple: 2
       },
-      ...renderSearch()
+      ...renderSearch(),
+      ...getColumnSearchProps('name'),
     },
     {
       title: 'Ngày bắt đầu',
       dataIndex: 'start_date',
       key: 'start_date',
+      ...getColumnSearchProps('start_date'),
     },
     {
       title: 'Ngày kết thúc',
       dataIndex: 'end_date',
       key: 'end_date',
+      ...getColumnSearchProps('end_date'),
     },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
+      // ...getColumnSearchProps('status'),
       // filters: [
       //   {
       //     text: 'HOẠT ĐỘNG',
@@ -232,10 +311,10 @@ const StaffTable = (props) => {
   return (
     <>
       <AntdTable
-        rowSelection={{
-          selectedRowKeys,
-          onChange: onSelectChange
-        }}
+        // rowSelection={{
+        //   selectedRowKeys,
+        //   onChange: onSelectChange
+        // }}
         columns={columns}
         dataSource={props.data}
         onChange={handleChange}

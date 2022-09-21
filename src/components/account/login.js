@@ -43,7 +43,7 @@ const Login = () => {
     };
 
     const onFinish = async (values) => {
-        
+
         if (!validPhone.test(values.phone)) {
             message.error('Số điện thoại không hợp lệ! Số điện thoại bao gồm 10 ký tự số bắt đầu là 84 hoặc 03, 05, 07, 08, 09');
             stopLoading(0);

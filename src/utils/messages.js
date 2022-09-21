@@ -35,6 +35,9 @@ const Messages = {
     unit: getMessage("đơn vị tính"),
     product: getMessage("sản phẩm"),
     price: getMessage("đơn giá"),
+    inventory_receiving: getMessage("phiếu nhập hàng"),
+    inventory_record: getMessage("phiếu kiểm kê"),
+    warehouse_transaction: getMessage("biến động kho"),
 }
 
 const messages = Messages;

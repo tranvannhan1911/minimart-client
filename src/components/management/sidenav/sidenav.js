@@ -82,7 +82,8 @@ const SideNav = (props) => {
   }
 
   return (
-    <div>
+    <div 
+    >
       <div className="logo">
         <Title level={5}>Quản lý siêu thị mini</Title>
       </div>

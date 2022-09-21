@@ -1,7 +1,7 @@
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Space, Popconfirm, Switch } from 'antd';
+import { Button, Form, Input, Select, message, Space, Popconfirm, Switch,Row,Col } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
@@ -238,6 +238,8 @@ const StaffChangeForm = (props) => {
               <Form.Item label="Địa chỉ" name="address" >
                 <Input />
               </Form.Item>
+              <Row>
+                <Col span={12}>
               <Form.Item label="Giới tính" name="gender"
                 style={{
                   textAlign: 'left'
@@ -253,6 +255,24 @@ const StaffChangeForm = (props) => {
                   <Option value="U">Không xác định</Option>
                 </Select>
               </Form.Item>
+              </Col>
+              <Col span={12}>
+              <Form.Item label="Trạng thái" name="status"
+                style={{
+                  textAlign: 'left'
+                }}>
+                <Select
+                  defaultValue='true'
+                  style={{
+                    width: 200,
+                  }}
+                >
+                  <Option value="true">Hoạt động</Option>
+                  <Option value="false">Khóa</Option>
+                </Select>
+              </Form.Item>
+              </Col>
+              </Row>
               {/* <Form.Item label="Vai trò" name="is_superuser"
                 style={{
                   textAlign: 'left'
