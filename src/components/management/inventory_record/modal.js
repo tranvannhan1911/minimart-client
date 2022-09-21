@@ -1,7 +1,7 @@
 import { Button, Drawer, Row, Col, Divider, Image, Table } from 'antd';
 import React, { useState,useEffect } from 'react';
 
-const PriceModal = (props) => {
+const InventoryRecordModal = (props) => {
   const [data, setData] = useState("");
   const [dataSource, setDataSource] = useState('');
 
@@ -28,9 +28,9 @@ const PriceModal = (props) => {
   // }
 
   useEffect(() => {
-    setDataSource(props.data.pricedetails)
-    console.log(dataSource,1111)
-    // setData(props.data.pricedetails)
+    setDataSource(props.data.details)
+    console.log(dataSource)
+    setData(props.data)
     // if(data.status == true){
     //   data.status = "Hoạt động"
     // }
@@ -43,7 +43,6 @@ const PriceModal = (props) => {
     // }else{
     //   props.data.status='Khóa';
     // }
-    
   });
   
   const showDrawer = () => {
@@ -61,14 +60,19 @@ const PriceModal = (props) => {
       key: 'name',
     },
     {
-      title: 'Đơn vị tính',
-      dataIndex: 'unit_exchange',
+      title: 'Số lượng trước',
+      dataIndex: 'quantity_before',
       key: 'age',
     },
     {
-      title: 'Giá',
-      dataIndex: 'price',
-      key: 'address',
+      title: 'Số lượng sau',
+      dataIndex: 'quantity_after',
+      key: 'age',
+    },
+    {
+      title: 'Ghi chú',
+      dataIndex: 'note',
+      key: 'age',
     },
   ];
 
@@ -79,50 +83,38 @@ const PriceModal = (props) => {
         style={{
           marginBottom: 24,
           fontSize: 25,
-           fontWeight:'bold'
+          fontWeight:'bold'
         }}
       >
-        Thông tin bảng giá
+        Thông tin phiếu kiểm kê
       </p>
-      
+      <Divider />
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight:'bold' }}>Thông tin cơ bản</p>
       <Row>
         <Col span={24}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Mã bảng giá: {props.data.price_list_id}</p>
-          </div>
-        </Col>
-        <Col span={24}>
-          <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Tên bảng giá: {props.data.name}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Mã phiếu kiểm kê: {props.data.id}</p>
           </div>
         </Col>
       </Row>
       <Row>
         <Col span={24}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Ngày bắt đầu: {props.data.start_date}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Trạng thái: {props.data.status == 'pending' ? 'Chờ xác nhận' :''}{props.data.status == 'complete' ? 'Hoàn thành':''}{props.data.status == 'cancel' ? 'Hủy':''}</p>
           </div>
         </Col>
       </Row>
       <Row>
         <Col span={24}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Ngày kết thúc: {props.data.end_date}</p>
-          </div>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={24}>
-          <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Trạng thái: {props.data.status ? "Hoạt động" : "Khóa"}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Ghi chú: {props.data.note}</p>
           </div>
         </Col>
       </Row>
       <Divider />
-      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight:'bold' }}>Danh sách giá sản phẩm</p>
+      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px' }}>Danh sách sản phẩm</p>
       <Table dataSource={dataSource} columns={columns}/>
     </Drawer>
   );
 };
-export default PriceModal;
+export default InventoryRecordModal;

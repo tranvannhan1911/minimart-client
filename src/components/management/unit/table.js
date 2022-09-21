@@ -1,4 +1,4 @@
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined,FormOutlined } from '@ant-design/icons';
 import { Button, Space, Table as AntdTable, Input, Tag, Pagination } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
@@ -9,6 +9,9 @@ const { Search } = Input;
 const UnitTable = (props) => {
   const navigate = useNavigate();
   const [currentCountData, SetCurrentCountData] = useState(0);
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const searchInput = useRef(null);
 
   const handleChange = (pagination, filters, sorter, extras) => {
     console.log('Various parameters\n', pagination, filters, sorter);
@@ -29,7 +32,9 @@ const UnitTable = (props) => {
   const handleLoadingChange = (enable) => {
     props.setLoading(enable);
   };
-
+  const setIdxBtn = (id) => {
+    navigate(paths.unit.change(id))
+  };
 
   const renderSearch = () => ({render: (text) =>
       <Highlighter
@@ -43,6 +48,100 @@ const UnitTable = (props) => {
       />
     })
   
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+      confirm();
+      setSearchText(selectedKeys[0]);
+      setSearchedColumn(dataIndex);
+    };
+  
+    const handleReset = (clearFilters) => {
+      clearFilters();
+      setSearchText('');
+    };
+    const getColumnSearchProps = (dataIndex) => ({
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div
+          style={{
+            padding: 8,
+          }}
+        >
+          <Input
+            ref={searchInput}
+            placeholder={`Tìm kiếm`}
+            value={selectedKeys[0]}
+            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            style={{
+              marginBottom: 8,
+              display: 'block',
+            }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{
+                width: 90,
+              }}
+            >
+              Tìm kiếm
+            </Button>
+            <Button
+              onClick={() => clearFilters && handleReset(clearFilters)}
+              size="small"
+              style={{
+                width: 90,
+              }}
+            >
+              Quay lại
+            </Button>
+            {/* <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                confirm({
+                  closeDropdown: false,
+                });
+                setSearchText(selectedKeys[0]);
+                setSearchedColumn(dataIndex);
+              }}
+            >
+              Filter
+            </Button> */}
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <SearchOutlined
+          style={{
+            color: filtered ? '#1890ff' : undefined,
+          }}
+        />
+      ),
+      onFilter: (value, record) =>
+        record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      onFilterDropdownOpenChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 100);
+        }
+      },
+      render: (text) =>
+        searchedColumn === dataIndex ? (
+          <Highlighter
+            highlightStyle={{
+              backgroundColor: '#ffc069',
+              padding: 0,
+            }}
+            searchWords={[searchText]}
+            autoEscape
+            textToHighlight={text ? text.toString() : ''}
+          />
+        ) : (
+          text
+        ),
+    });
 
   const columns = [
     {
@@ -59,7 +158,8 @@ const UnitTable = (props) => {
         return (record.name && record.name.toLowerCase().includes(value.toLowerCase()))
           || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))},
-      ...renderSearch()
+      ...renderSearch(),
+      ...getColumnSearchProps('id'),
     },
     {
       title: 'Tên đơn vị tính',
@@ -69,13 +169,25 @@ const UnitTable = (props) => {
         compare: (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
         multiple: 2
       },
-      ...renderSearch()
+      ...renderSearch(),
+      ...getColumnSearchProps('name'),
     },
     {
       title: 'Ghi chú nội bộ',
       dataIndex: 'note',
       key: 'note',
-      ...renderSearch()
+      ...renderSearch(),
+      ...getColumnSearchProps('note'),
+    },
+    {
+      title: '',
+      dataIndex: 'id',
+      key: 'id',
+      render: (id) => (
+        <span>
+          <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
+        </span>
+      ),
     },
   ];
 
@@ -88,10 +200,10 @@ const UnitTable = (props) => {
 
   return (
     <AntdTable 
-      rowSelection={{
-        selectedRowKeys,
-        onChange: onSelectChange
-      }} 
+      // rowSelection={{
+      //   selectedRowKeys,
+      //   onChange: onSelectChange
+      // }} 
       columns={columns} 
       dataSource={props.data} 
       onChange={handleChange}
@@ -106,19 +218,19 @@ const UnitTable = (props) => {
         showTotal: (total) => `Tất cả ${total}`,
       }}
       loading={props.loading}
-      onRow={(record, rowIndex) => {
-        return {
-          onClick: event => {
-            navigate(paths.unit.change(record.id))
-          }, // click row
-          onDoubleClick: event => {
-            navigate(paths.unit.change(record.id))
-          }, // double click row
-          onContextMenu: event => {}, // right button click row
-          onMouseEnter: event => {}, // mouse enter row
-          onMouseLeave: event => {}, // mouse leave row
-        };
-      }}
+      // onRow={(record, rowIndex) => {
+      //   return {
+      //     onClick: event => {
+      //       navigate(paths.unit.change(record.id))
+      //     }, // click row
+      //     onDoubleClick: event => {
+      //       navigate(paths.unit.change(record.id))
+      //     }, // double click row
+      //     onContextMenu: event => {}, // right button click row
+      //     onMouseEnter: event => {}, // mouse enter row
+      //     onMouseLeave: event => {}, // mouse leave row
+      //   };
+      // }}
     />
   );
 };

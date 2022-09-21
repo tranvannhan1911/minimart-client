@@ -1,7 +1,7 @@
 import { Button, Drawer, Row, Col, Divider } from 'antd';
 import React, { useState } from 'react';
 
-const ProductGroupModal = (props) => {
+const SupplierModal = (props) => {
   const [disabled, setDisabled] = useState(false);
 
   const showDrawer = () => {
@@ -19,28 +19,41 @@ const ProductGroupModal = (props) => {
           style={{
             marginBottom: 24,
             fontSize: 25,
-             fontWeight:'bold'
+            fontWeight:'bold'
           }}
         >
-          Thông tin nhóm sản phẩm
+          Thông tin nhà cung cấp
         </p>
+        <Divider />      
         <p className="site-description-item-profile-p" style={{fontSize:'20px', marginTop:'20px', fontWeight:'bold'}}>Thông tin cơ bản</p>
         <Row>
           <Col span={12}>
             <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Mã nhóm sản phẩm: {props.data.id}</p>
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Mã nhà cung cấp: {props.data.id}</p>
             </div>
           </Col>
-          <Col span={24}>
+          <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Tên nhóm sản phẩm: {props.data.name}</p>
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Tên nhà cung cấp: {props.data.name}</p>
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={12}>
+          <div className="site-description-item-profile-wrapper">
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Số điện thoại: {props.data.phone}</p>
+            </div>
+          </Col>
+          <Col span={12}>
+          <div className="site-description-item-profile-wrapper">
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Email: {props.data.email}</p>
             </div>
           </Col>
         </Row>
         <Row>
           <Col span={24}>
           <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Code nhóm sản phẩm: {props.data.product_group_code}</p>
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Địa chỉ: {props.data.address}</p>
             </div>
           </Col>
         </Row>
@@ -51,22 +64,8 @@ const ProductGroupModal = (props) => {
             </div>
           </Col>
         </Row>
-        <Row>
-          <Col span={24}>
-          <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Mô tả: {props.data.description}</p>
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={24}>
-          <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>{props.data.description}</p>
-            </div>
-          </Col>
-        </Row>
         <Divider />      
       </Drawer>
   );
 };
-export default ProductGroupModal;
+export default SupplierModal;

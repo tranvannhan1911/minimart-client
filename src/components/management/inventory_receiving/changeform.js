@@ -19,26 +19,21 @@ const EditableContext = React.createContext(null);
 const dateFormat = "YYYY/MM/DD";
 
 const { Option } = Select;
+const { TextArea } = Input;
 
-const StaffChangeForm = (props) => {
+const InventoryReceivingChangeForm = (props) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [formPrice] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
   const [baseProductOptions, setBaseProductOptions] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
   const [idxBtnSave, setIdxBtnSave] = useState([]);
   const [baseUnitOptions, setBaseUnitOptions] = useState([]);
-  const [priceList, setPriceList] = useState([]);
+  const [baseSupplierOptions, setBaseSupplierOptions] = useState([]);
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const refAutoFocus = useRef(null)
-  const listPrice = [];
-  // const onChange = (checked) => {
-  //   console.log(`switch to ${checked}`);
-  // };
 
   const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
@@ -58,16 +53,16 @@ const StaffChangeForm = (props) => {
 
   const directAfterSubmit = (response) => {
     if (idxBtnSave == 0) {
-      navigate(paths.price.list)
+      navigate(paths.inventory_receiving.list)
     } else if (idxBtnSave == 1) {
       if (is_create) {
-        navigate(paths.price.change(response.data.data.id))
+        navigate(paths.inventory_receiving.change(response.data.data.id))
         setCreate(false)
       }
       refAutoFocus.current && refAutoFocus.current.focus()
     } else if (idxBtnSave == 2) {
       if (!is_create) {
-        navigate(paths.price.add)
+        navigate(paths.inventory_receiving.add)
         setCreate(true)
       }
       form.resetFields()
@@ -78,13 +73,13 @@ const StaffChangeForm = (props) => {
 
   const create = async (values) => {
     try {
-      const response = await api.price.add(values);
+      const response = await api.inventory_receiving.add(values);
       if (response.data.code == 1) {
-        message.success(messages.price.SUCCESS_SAVE())
+        message.success(messages.inventory_receiving.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
       } else if (response.data.code == 0) {
-        message.error("Vui lòng nhập bảng giá từng sản phẩm")
+        message.error("Lỗi")
       } else {
         message.error(response.data.message.toString())
       }
@@ -97,9 +92,9 @@ const StaffChangeForm = (props) => {
 
   const update = async (values) => {
     try {
-      const response = await api.price.update(id, values)
+      const response = await api.inventory_receiving.update(id, values)
       if (response.data.code == 1) {
-        message.success(messages.price.SUCCESS_SAVE(id))
+        message.success(messages.inventory_receiving.SUCCESS_SAVE(id))
         directAfterSubmit(response)
         return true
       } else {
@@ -114,13 +109,13 @@ const StaffChangeForm = (props) => {
 
   const _delete = async () => {
     try {
-      const response = await api.price.delete(id)
+      const response = await api.inventory_receiving.delete(id)
       if (response.data.code == 1) {
-        message.success(messages.price.SUCCESS_DELETE(id))
-        navigate(paths.price.list)
+        message.success(messages.inventory_receiving.SUCCESS_DELETE(id))
+        navigate(paths.inventory_receiving.list)
         return true
       } else {
-        message.error(messages.price.ERROR_DELETE(id))
+        message.error(messages.inventory_receiving.ERROR_DELETE(id))
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -132,25 +127,40 @@ const StaffChangeForm = (props) => {
   const onFinish = async (values) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
-    // console.log(state);
-    if (!validName1.test(values.name)) {
-      message.error('Tên không hợp lệ! Ký tự đầu của chữ đầu tiên phải viết hoa');
-      setDisableSubmit(false)
-      stopLoading(idxBtnSave)
-      return;
+    
+    let index={
+      "details": [
+      ],
+      "status": values.status,
+      "note": values.note,
+      "total": 0,
+      "supplier": values.supplier
     }
-    if (values.end_date < values.start_date) {
-      message.error('Ngày kết thúc phải sau ngày bắt đầu');
-      stopLoading(idxBtnSave)
-      setDisableSubmit(false)
-      return;
-    }
+    let details=[];
+    values.details.forEach(async element => {
+        const response = await api.product.get(element.product);
+        response.data.data.units.forEach(elementt => {
+          if(element.unit_exchange == elementt.id){
+            let detail={
+              "quantity": elementt.value*element.quantity,
+              "price": element.price,
+              "note": element.note,
+              "product": element.product
+            }
+            
+            details.push(detail);
+          }
+        });
+      }); 
+      index.details=details;
+      console.log(index,1);
     if (is_create) {
-      await create(values)
+
+      await create(index)
     } else {
-      console.log(values.start_date._i)
-      values.start_date = values.start_date._i;
-      values.end_date = values.end_date._i;
+      // console.log(values.start_date._i)
+      // values.start_date = values.start_date._i;
+      // values.end_date = values.end_date._i;
       // values.pricedetails=dataIndex.pricedetails;
       await update(values)
     }
@@ -167,25 +177,35 @@ const StaffChangeForm = (props) => {
   const handleData = async () => {
     setLoadingData(true)
     try {
-      const response = await api.price.get(id);
-      const values = response.data.data
-      values.start_date = moment(values.start_date)
-      values.status = values.status.toString()
-      values.end_date = moment(values.end_date)
-      ///
-      // values.pricedetails = values.pricedetails.map(async elm => {
-      //   const responseP = await api.product.get(elm.product);
-      //   for (let index = 0; index < responseP.data.data.units.length; index++) {
-      //     if (responseP.data.data.units[index].id == elm.unit_exchange) {
-      //       elm.unit_exchange = responseP.data.data.units[index].unit_name
-      //     }
+      const response = await api.inventory_receiving.get(id);
+      const values = response.data.data;
+      values.supplier = values.supplier.name;
+      values.details = values.details.map(elm => {
+        elm.product = elm.product.id;
+        // elm.unit_exchange = elm.unit_exchange.unit_name;
+        return elm;
 
-      //   }
-      //   return elm;
-      // })
-      ////
+      })
+
       form.setFieldsValue(values)
 
+    } catch (error) {
+      message.error(messages.ERROR+"hhhh")
+    } finally {
+      setLoadingData(false)
+    }
+  }
+
+  const handleDataBaseSupplier = async () => {
+    setLoadingData(true)
+    try {
+      const response = await api.supplier.list();
+      const options = response.data.data.results.map(elm => {
+        return (
+          <Option key={elm.id} value={elm.id}>{elm.name}</Option>
+        )
+      })
+      setBaseSupplierOptions(options)
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -234,16 +254,6 @@ const StaffChangeForm = (props) => {
     }
   }
 
-  // async function dataBaseUnit(params) {
-  //   console.log(params)
-  //   const response = await api.unit.get(params.unit);
-  //   const result={
-  //     unit_exchange: params.id,
-  //     nameUnit: response.data.data.name
-  //   }
-  //   unit.push(result)
-  //   return result;
-  // }
 
   const onUnitSelect = async (option) => {
     try {
@@ -264,24 +274,24 @@ const StaffChangeForm = (props) => {
       if (!props.is_create) {
         handleData()
         handleDataBaseProduct();
-        // handleDataBaseUnit()
+        handleDataBaseSupplier()
       }
       setLoadingData(false)
     }
     handleDataBaseProduct();
-    // handleDataBaseUnit()
+    handleDataBaseSupplier()
   }, [])
 
   useEffect(() => {
     props.setBreadcrumb([
-      { title: "Bảng giá", href: paths.price.list },
+      { title: "Phiếu nhập hàng", href: paths.inventory_receiving.list },
       { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
 
     if (is_create == false) {
       props.setBreadcrumbExtras([
         <Popconfirm
           placement="bottomRight"
-          title="Xác nhận xóa bảng giá này"
+          title="Xác nhận xóa phiếu nhập hàng này"
           onConfirm={_delete}
           okText="Đồng ý"
           okType="danger"
@@ -301,7 +311,7 @@ const StaffChangeForm = (props) => {
   useEffect(() => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
-  
+
 
   return (
     <>
@@ -313,70 +323,74 @@ const StaffChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <><>
-              <Form.Item label="Tên bảng giá" name="name" required
+              <Form.Item label="Tên bảng giá" name="total" style={{ display: 'none' }}
+              >
+                <Input value={0} />
+              </Form.Item>
+
+              <Form.Item label="Ngày nhập" name="start_date" required
+                style={{
+                  textAlign: "left",
+                  // width:'500px',
+                  marginLeft: '0px',
+                  // display:'inline-grid'
+                }}
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Vui lòng chọn ngày nhập!',
+              //   },
+              // ]}
+              >
+                <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '200px' }} />
+              </Form.Item>
+
+              <Form.Item
+                label="Nhà cung cấp" name="supplier" required
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng nhập tên bảng giá!',
+                    message: 'Vui lòng chọn nhà cung cấp!',
                   },
                 ]}
+                style={{
+                  textAlign: 'left'
+                }}
               >
-                <Input autoFocus ref={refAutoFocus} />
+                <Select
+                  showSearch
+                  // onChange={(option) => onUnitSelect(option)}
+                  style={{
+                    width: 200,
+                  }}
+                  placeholder="Nhà cung cấp"
+                  optionFilterProp="children"
+                  filterOption={(input, option) => option.children.includes(input)}
+                  filterSort={(optionA, optionB) =>
+                    optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                  }
+                >
+                  {baseSupplierOptions}
+                </Select>
               </Form.Item>
-              <Row>
-                <Col span={8} xs={18} sm={14} md={10} lg={8} style={{ backgroundColor: "white" }}>
-                  <Form.Item label="Ngày bắt đầu" name="start_date" required
-                    style={{
-                      textAlign: "left",
-                      // width:'500px',
-                      marginLeft: '0px',
-                      // display:'inline-grid'
-                    }}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Vui lòng nhập ngày bắt đầu!',
-                      },
-                    ]}
-                  >
-                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '200px' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={8} xs={18} sm={14} md={10} lg={8} style={{ backgroundColor: "white" }}>
-                  <Form.Item label="Ngày kết thúc" name="end_date" required
-                    style={{
-                      textAlign: "left",
-                      // width:'500px',
-                      // display:'inline-grid'
-                    }}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Vui lòng nhập ngày kết thúc!',
-                      },
-                    ]}
-                  >
-                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '200px' }} />
-                  </Form.Item>
-                </Col>
-              </Row>
               <Form.Item label="Trạng thái" name="status"
                 style={{
                   textAlign: 'left'
                 }}>
                 <Select
-                  defaultValue="true"
+                  defaultValue="pending"
                   style={{
                     width: 200,
                   }}
                 >
-                  <Option value="true">Hoạt động</Option>
-                  <Option value="false">Khóa</Option>
+                  <Option value="pending">Chờ xác nhận</Option>
+                  <Option value="complete">Hoàn thành</Option>
+                  <Option value="cancel">Hủy</Option>
                 </Select>
               </Form.Item>
             </>
               <Col>
-                <label><h2 style={{ marginTop: '10px', marginBottom: '30px', textAlign: 'center' }}>Bảng giá sản phẩm</h2></label>
+                <label><h2 style={{ marginTop: '10px', marginBottom: '30px', textAlign: 'center' }}>Sản phẩm nhập</h2></label>
                 {/* <Button type="primary" onClick={showModal}>
                   Thêm giá sản phẩm
                 </Button>
@@ -386,7 +400,7 @@ const StaffChangeForm = (props) => {
                 >
 
                 </Table> */}
-                <Form.List name="pricedetails" label="Bảng giá sản phẩm">
+                <Form.List name="details" label="Sản phẩm nhập">
                   {(fields, { add, remove }) => (
                     <>
 
@@ -460,6 +474,19 @@ const StaffChangeForm = (props) => {
                           </Form.Item>
                           <Form.Item
                             {...restField}
+                            name={[name, 'quantity']}
+                            rules={[
+                              {
+                                required: true,
+                                message: 'Vui lòng nhập số lượng!',
+                              },
+                            ]}
+                          >
+                            <Input placeholder="Số lượng" type='number' disabled={is_create ? false : true} />
+                          </Form.Item>
+
+                          <Form.Item
+                            {...restField}
                             name={[name, 'price']}
                             rules={[
                               {
@@ -470,10 +497,23 @@ const StaffChangeForm = (props) => {
                           >
                             <Input placeholder="Giá" type='number' disabled={is_create ? false : true} />
                           </Form.Item>
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'note']}
+                            rules={[
+                              {
+                                required: true,
+                                message: 'Vui lòng nhập ghi chú!',
+                              },
+                            ]}
+                          >
+                            <Input placeholder="Ghi chú" disabled={is_create ? false : true} />
+                          </Form.Item>
+
 
                           <Popconfirm
                             placement="bottomRight"
-                            title="Xác nhận xóa bảng giá này"
+                            title="Xác nhận xóa sản phẩm này"
                             onConfirm={() => remove(name)}
                             okText="Đồng ý"
                             okType="danger"
@@ -493,6 +533,16 @@ const StaffChangeForm = (props) => {
                   )}
                 </Form.List>
               </Col>
+              <Form.Item label="Ghi chú" name="note"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Vui lòng nhập ghi chú!',
+              //   },
+              // ]}
+              >
+                <TextArea rows={4} />
+              </Form.Item>
               <Form.Item>
                 <Space>
                   <Button
@@ -525,77 +575,10 @@ const StaffChangeForm = (props) => {
         </ChangeForm>
       }
 
-      {/* <Modal title="Basic Modal" visible={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-        <ChangeForm
-          form={formPrice}
-          setBreadcrumb={props.setBreadcrumb}
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          forms={
-            <><><Form.Item label="Sản phẩm" name="product" required
-              style={{
-                textAlign: "left",
-                // width:'500px',
-                // display:'inline-grid'
-              }}
-              rules={[
-                {
-                  required: true,
-                  message: 'Vui lòng chọn sản phẩm!',
-                },
-              ]}
-            >
-              <Select
-                showSearch
-                onChange={(option) => onUnitSelect(option)}
-                // style={{
-                //   width: 200,
-                // }}
-                placeholder="Sản phẩm"
-                optionFilterProp="children"
-                filterOption={(input, option) => option.children.includes(input)}
-                filterSort={(optionA, optionB) => optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())}
-              >
-                {baseProductOptions}
-              </Select>
-            </Form.Item><Form.Item label="Đơn vị tính" name="unit_exchange" required
-              style={{
-                textAlign: "left",
-                // width:'500px',
-                // display:'inline-grid'
-              }}
-            >
-                <Select
-                  showSearch
-                  // style={{
-                  //   width: 200,
-                  // }}
-                  placeholder="Đơn vị tính"
-                  optionFilterProp="children"
-                  filterOption={(input, option) => option.children.includes(input)}
-                  filterSort={(optionA, optionB) => optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())}
-                >
-                  {baseUnitOptions}
-                </Select>
-              </Form.Item></>
-              <Form.Item label="Giá" name="price" required
-                style={{
-                  textAlign: "left",
-                  // width:'500px',
-                  // display:'inline-grid'
-                }}
-              >
-                <Input placeholder="Giá" type='number' />
-              </Form.Item>
-              <Button type="primary" onClick={() => addPrice()} block icon={<PlusOutlined />} >
-                Thêm giá sản phẩm
-              </Button></>
-          }>
-        </ChangeForm>
-      </Modal> */}
+
     </>
   )
 
 }
 
-export default StaffChangeForm;
+export default InventoryReceivingChangeForm;

@@ -24,6 +24,11 @@ const ProductListForm = lazy(() => import("../product/listform"));
 const ProductChangeForm = lazy(() => import("../product/changeform"));
 const PriceListForm = lazy(() => import("../price/listform"));
 const PriceChangeForm = lazy(() => import("../price/changeform"));
+const InventoryReceivingListForm = lazy(() => import("../inventory_receiving/listform"));
+const InventoryReceivingChangeForm = lazy(() => import("../inventory_receiving/changeform"));
+const InventoryRecordListForm = lazy(() => import("../inventory_record/listform"));
+const InventoryRecordChangeForm = lazy(() => import("../inventory_record/changeform"));
+const WarehouseTransactionListForm = lazy(() => import("../warehouse_transaction/listform"));
 
 
 const MyContent = (props) => {
@@ -184,6 +189,33 @@ const MyContent = (props) => {
                             element={<PriceChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
                                 setBreadcrumb={setBreadcrumb} is_create={false} />} />
+
+                        <Route path={paths.inventory_receiving.rlist} key={paths.inventory_receiving.key}
+                            element={<InventoryReceivingListForm setBreadcrumb={setBreadcrumb} />} />
+                        <Route path={paths.inventory_receiving.radd} key={paths.inventory_receiving.key}
+                            element={<InventoryReceivingChangeForm
+                                breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                                setBreadcrumb={setBreadcrumb} is_create={true} />} />
+                        <Route path={paths.inventory_receiving.rchange} key={paths.inventory_receiving.key}
+                            element={<InventoryReceivingChangeForm
+                                breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                                setBreadcrumb={setBreadcrumb} is_create={false} />} />
+
+                        <Route path={paths.inventory_record.rlist} key={paths.inventory_record.key}
+                            element={<InventoryRecordListForm setBreadcrumb={setBreadcrumb} />} />
+                        <Route path={paths.inventory_record.radd} key={paths.inventory_record.key}
+                            element={<InventoryRecordChangeForm
+                                breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                                setBreadcrumb={setBreadcrumb} is_create={true} />} />
+                        <Route path={paths.inventory_record.rchange} key={paths.inventory_record.key}
+                            element={<InventoryRecordChangeForm
+                                breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                                setBreadcrumb={setBreadcrumb} is_create={false} />} />
+
+                        <Route path={paths.warehouse_transaction.rlist} key={paths.warehouse_transaction.key}
+                            element={<WarehouseTransactionListForm setBreadcrumb={setBreadcrumb} />} />
+
+                        
                     </Routes >
                 </Suspense>
             </Content>

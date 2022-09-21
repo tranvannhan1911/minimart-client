@@ -2,57 +2,29 @@ import { SearchOutlined } from '@ant-design/icons';
 import {
   EyeOutlined, FormOutlined
 } from '@ant-design/icons'
-import { Button, Space, Table as AntdTable, Input, Tag, Pagination, Switch, message } from 'antd';
+import { Table as AntdTable, Input, Tag, Space,Button } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
-import { Col, Divider, Drawer, Row } from 'antd';
-import api from '../../../api/apis'
-import messages from '../../../utils/messages'
+import StaffModal from './modal';
 const { Search } = Input;
-// const idstaff=0;
-
-const DescriptionItem = ({ title, content }) => (
-  <div className="site-description-item-profile-wrapper">
-    <p className="site-description-item-profile-p-label">{title}:</p>
-    {content}
-  </div>
-);
 
 const StaffTable = (props) => {
   const navigate = useNavigate();
-  const [data1, setData1] = useState();
+  const [dataIndex, setDataIndex] = useState("");
   const [open, setOpen] = useState(false);
   // const [isStatus, setStatus] = useState(false);
   const [currentCountData, SetCurrentCountData] = useState(0);
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const searchInput = useRef(null);
 
   const handleChange = (pagination, filters, sorter, extras) => {
     console.log('Various parameters\n', pagination, filters, sorter);
     props.setFilteredInfo(filters);
     props.setSortedInfo(sorter);
     SetCurrentCountData(extras.currentDataSource.length)
-  };
-
-  ///////
-
-  async function showDrawer(id) {
-    // setOpen(true);
-    // renderProfile()
-    // console.log(props);
-    props.data.forEach(element => {
-      if(element.id==id){
-        // if(element.is_superuser=="Nhân viên"){
-        //   element.is_superuser=false;
-        // }else{
-        //   element.is_superuser=true;
-        // }
-        setData1(element);
-        // renderProfile(element)
-        console.log(element);
-      }
-    });
-
   };
 
   const tagStatus = (status) => {
@@ -71,17 +43,16 @@ const StaffTable = (props) => {
     }
   };
 
-  // const renderProfile = (dataa) => ({
-  //   render: () =>
-  //     <Profile
-  //     data={dataa}
-  //     ></Profile>
-  // });
-
-  const onOpen = (id) => {
-    // setData1(showDrawer(id));
-    showDrawer(id)
-    setOpen(true)
+  const onOpen = async (id) => {
+    props.data.forEach(element => {
+      if(element.id==id){
+        setDataIndex(element);
+        setOpen(true);
+        console.log(element);
+      }
+    });
+    
+    
   };
 
   const onClose = () => {
@@ -118,6 +89,101 @@ const StaffTable = (props) => {
       />
   })
 
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText('');
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Tìm kiếm`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Tìm kiếm
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Quay lại
+          </Button>
+          {/* <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({
+                closeDropdown: false,
+              });
+              setSearchText(selectedKeys[0]);
+              setSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button> */}
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1890ff' : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: '#ffc069',
+            padding: 0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ''}
+        />
+      ) : (
+        text
+      ),
+  });
+
 
   const columns = [
     {
@@ -135,7 +201,8 @@ const StaffTable = (props) => {
           || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.phone && record.phone.toLowerCase().includes(value.toLowerCase()))
       },
-      ...renderSearch()
+      ...renderSearch(),
+      ...getColumnSearchProps('id'),
     },
     {
       title: 'Tên',
@@ -145,13 +212,15 @@ const StaffTable = (props) => {
         compare: (a, b) => a.fullname.toLowerCase().localeCompare(b.fullname.toLowerCase()),
         multiple: 2
       },
-      ...renderSearch()
+      ...renderSearch(),
+      ...getColumnSearchProps('fullname'),
     },
     {
       title: 'Số điện thoại',
       dataIndex: 'phone',
       key: 'phone',
-      ...renderSearch()
+      ...renderSearch(),
+      ...getColumnSearchProps('phone'),
     },
     {
       title: 'Giới tính',
@@ -227,10 +296,10 @@ const StaffTable = (props) => {
   return (
     <>
       <AntdTable
-        rowSelection={{
-          selectedRowKeys,
-          onChange: onSelectChange
-        }}
+        // rowSelection={{
+        //   selectedRowKeys,
+        //   onChange: onSelectChange
+        // }}
         columns={columns}
         dataSource={props.data}
         onChange={handleChange}
@@ -245,106 +314,7 @@ const StaffTable = (props) => {
           showTotal: (total) => `Tất cả ${total}`,
         }}
         loading={props.loading} />
-      <Drawer width={640} placement="right" closable={false} onClose={onClose} visible={open}>
-        <p
-          className="site-description-item-profile-p"
-          style={{
-            marginBottom: 24,
-            fontSize: 25
-          }}
-        >
-          Thông tin nhân viên
-        </p>
-        <p className="site-description-item-profile-p">Thông tin cơ bản</p>
-        <Row>
-          <Col span={12}>
-            <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label">Họ tên:</p>
-            </div>
-          </Col>
-          <Col span={12}>
-          <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label">Số điện thoại:</p>
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={12}>
-          <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label">Số điện thoại:</p>
-            </div>
-          </Col>
-          <Col span={12}>
-          <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label">Số điện thoại:</p>
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem title="Birthday" content="February 2,1900" />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem title="Website" content="-" />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={24}>
-            <DescriptionItem
-              title="Message"
-              content="Make things as simple as possible but no simpler."
-            />
-          </Col>
-        </Row>
-        <Divider />
-        <p className="site-description-item-profile-p">Company</p>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem title="Position" content="Programmer" />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem title="Responsibilities" content="Coding" />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem title="Department" content="XTech" />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem title="Supervisor" content={<a>Lin</a>} />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={24}>
-            <DescriptionItem
-              title="Skills"
-              content="C / C + +, data structures, software engineering, operating systems, computer networks, databases, compiler theory, computer architecture, Microcomputer Principle and Interface Technology, Computer English, Java, ASP, etc."
-            />
-          </Col>
-        </Row>
-        <Divider />
-        <p className="site-description-item-profile-p">Contacts</p>
-        <Row>
-          <Col span={12}>
-            <DescriptionItem title="Email" content="AntDesign@example.com" />
-          </Col>
-          <Col span={12}>
-            <DescriptionItem title="Phone Number" content="+86 181 0000 0000" />
-          </Col>
-        </Row>
-        <Row>
-          <Col span={24}>
-            <DescriptionItem
-              title="Github"
-              content={
-                <a href="http://github.com/ant-design/ant-design/">
-                  github.com/ant-design/ant-design/
-                </a>
-              }
-            />
-          </Col>
-        </Row>
-      </Drawer>
+      <StaffModal open={open} data={dataIndex} setOpen={setOpen} />
 
     </>
 

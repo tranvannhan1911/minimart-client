@@ -26,6 +26,10 @@ const Paths = {
     unit: getPaths("don-vi-tinh", "id"),
     product: getPaths("san-pham", "id"),
     price: getPaths("bang-gia","id"),
+    inventory_receiving: getPaths("phieu-nhap-hang","id"),
+    inventory_record: getPaths("phieu-kiem-ke","id"),
+    warehouse_transaction: getPaths("bien-dong-kho","id"),
+    
     s3: (filename) => `https://minimart-tvn1911.s3.ap-southeast-1.amazonaws.com/${filename}`,
 }
 

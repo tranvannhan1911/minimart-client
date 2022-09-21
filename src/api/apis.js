@@ -85,6 +85,10 @@ const api = {
     unit: getApi("calculation-unit"),
     product: getApi("product"),
     price: getApi("price-list"),
+    inventory_receiving: getApi("inventory-receiving"),
+    inventory_record: getApi("inventory-record"),
+    warehouse_transaction: getApi("warehouse-transaction"),
+
 }
 
 export {AccountApi};

@@ -1,27 +1,44 @@
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined, FormOutlined, EyeOutlined } from '@ant-design/icons';
 import { Button, Space, Table as AntdTable, Input, Tag, Pagination } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
+import SupplierModal from './modal';
 import paths from '../../../utils/paths'
 const { Search } = Input;
 
 const SupplierTable = (props) => {
   const navigate = useNavigate();
   const [currentCountData, SetCurrentCountData] = useState(0);
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const searchInput = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [dataIndex, setDataIndex] = useState("");
 
   const handleChange = (pagination, filters, sorter, extras) => {
     console.log('Various parameters\n', pagination, filters, sorter);
-    props.setFilteredInfo(filters); 
+    props.setFilteredInfo(filters);
     props.setSortedInfo(sorter);
     SetCurrentCountData(extras.currentDataSource.length)
   };
 
-  
+  const onOpen = async (id) => {
+    props.data.forEach(element => {
+      if (element.id == id) {
+        console.log(element)
+        setDataIndex(element);
+        // renderProfile(element)
+        setOpen(true);
+        console.log(element);
+      }
+    });
+  };
+
   useEffect(() => {
     SetCurrentCountData(props.data.length)
   }, [props.data]);
-  
+
   useEffect(() => {
     SetCurrentCountData(0)
   }, [props.searchInfo]);
@@ -29,9 +46,12 @@ const SupplierTable = (props) => {
   const handleLoadingChange = (enable) => {
     props.setLoading(enable);
   };
+  const setIdxBtn = (id) => {
+    navigate(paths.supplier.change(id))
+  };
 
-
-  const renderSearch = () => ({render: (text) =>
+  const renderSearch = () => ({
+    render: (text) =>
       <Highlighter
         highlightStyle={{
           backgroundColor: '#ffc069',
@@ -41,12 +61,106 @@ const SupplierTable = (props) => {
         autoEscape
         textToHighlight={text ? text.toString() : ''}
       />
-    })
-  
+  })
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText('');
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Tìm kiếm`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Tìm kiếm
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Quay lại
+          </Button>
+          {/* <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                confirm({
+                  closeDropdown: false,
+                });
+                setSearchText(selectedKeys[0]);
+                setSearchedColumn(dataIndex);
+              }}
+            >
+              Filter
+            </Button> */}
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1890ff' : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: '#ffc069',
+            padding: 0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ''}
+        />
+      ) : (
+        text
+      ),
+  });
 
   const columns = [
     {
-      title: 'Mã nhà cung cấp',
+      title: 'Mã',
       dataIndex: 'id',
       key: 'id',
       sorter: {
@@ -61,8 +175,10 @@ const SupplierTable = (props) => {
           || (record.phone && record.phone.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.email && record.email.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.address && record.address.toString().toLowerCase().includes(value.toLowerCase()))
-          || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))},
-      ...renderSearch()
+          || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))
+      },
+      ...renderSearch(),
+      ...getColumnSearchProps('id'),
     },
     {
       title: 'Tên nhà cung cấp',
@@ -72,31 +188,47 @@ const SupplierTable = (props) => {
         compare: (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
         multiple: 2
       },
-      ...renderSearch()
+      ...renderSearch(),
+      ...getColumnSearchProps('name'),
     },
     {
       title: 'Số điện thoại',
       dataIndex: 'phone',
       key: 'phone',
-      ...renderSearch()
+      ...renderSearch(),
+      ...getColumnSearchProps('phone'),
     },
     {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
-      ...renderSearch()
+      ...renderSearch(),
+      ...getColumnSearchProps('email'),
     },
     {
       title: 'Địa chỉ',
       dataIndex: 'address',
       key: 'address',
-      ...renderSearch()
+      ...renderSearch(),
+      ...getColumnSearchProps('address'),
     },
+    // {
+    //   title: 'Ghi chú',
+    //   dataIndex: 'note',
+    //   key: 'note',
+    //   ...renderSearch(),
+    //   ...getColumnSearchProps('note'),
+    // },
     {
-      title: 'Ghi chú nội bộ',
-      dataIndex: 'note',
-      key: 'note',
-      ...renderSearch()
+      title: '',
+      dataIndex: 'id',
+      key: 'id',
+      render: (id) => (
+        <span>
+          <a onClick={() => onOpen(id)} key={id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a>
+          <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
+        </span>
+      ),
     },
   ];
 
@@ -108,17 +240,17 @@ const SupplierTable = (props) => {
   };
 
   return (
-    <AntdTable 
-      rowSelection={{
-        selectedRowKeys,
-        onChange: onSelectChange
-      }} 
-      columns={columns} 
-      dataSource={props.data} 
+    <><AntdTable
+      // rowSelection={{
+      //   selectedRowKeys,
+      //   onChange: onSelectChange
+      // }} 
+      columns={columns}
+      dataSource={props.data}
       onChange={handleChange}
       scroll={{
-          x: 'max-content',
-      }} 
+        x: 'max-content',
+      }}
       sticky
       pagination={{
         total: currentCountData,
@@ -126,21 +258,7 @@ const SupplierTable = (props) => {
         showQuickJumper: true,
         showTotal: (total) => `Tất cả ${total}`,
       }}
-      loading={props.loading}
-      onRow={(record, rowIndex) => {
-        return {
-          onClick: event => {
-            navigate(paths.supplier.change(record.id))
-          }, // click row
-          onDoubleClick: event => {
-            navigate(paths.supplier.change(record.id))
-          }, // double click row
-          onContextMenu: event => {}, // right button click row
-          onMouseEnter: event => {}, // mouse enter row
-          onMouseLeave: event => {}, // mouse leave row
-        };
-      }}
-    />
+      loading={props.loading} /><SupplierModal open={open} data={dataIndex} setOpen={setOpen} /></>
   );
 };
 

@@ -27,22 +27,15 @@ const StaffListForm = (props) => {
             const response = await api.price.list()
             const _data = response.data.data.results.map(elm => {
                 elm.key = elm.id
-                // switch(elm.gender){
-                //     case "M":
-                //         elm.gender = "Nam"
-                //         break
-                //     case "F":
-                //         elm.gender = "Nữ"
-                //         break
-                //     case "U":
-                //         elm.gender = "Không xác định"
-                //         break
-                // }
-                // if(elm.is_superuser==true){
-                //     elm.is_superuser = "Quản lý";
-                // }else{
-                //     elm.is_superuser = "Nhân viên";
-                // }
+    
+                let date=elm.start_date.slice(0, 10);
+                let time=elm.start_date.slice(12, 19);
+                elm.start_date=date+" "+time;
+
+                let date2=elm.end_date.slice(0, 10);
+                let time2=elm.end_date.slice(12, 19);
+                elm.end_date=date2+" "+time2;
+
                 return elm
             })
             setData(_data)
