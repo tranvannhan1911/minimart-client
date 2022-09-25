@@ -88,6 +88,8 @@ const api = {
     inventory_receiving: getApi("inventory-receiving"),
     inventory_record: getApi("inventory-record"),
     warehouse_transaction: getApi("warehouse-transaction"),
+    promotion: getApi("promotion"),
+    promotion_line: getApi("promotion-line"),
 
 }
 

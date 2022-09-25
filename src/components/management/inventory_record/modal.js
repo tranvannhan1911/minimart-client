@@ -29,7 +29,7 @@ const InventoryRecordModal = (props) => {
 
   useEffect(() => {
     setDataSource(props.data.details)
-    console.log(dataSource)
+    // console.log(dataSource)
     setData(props.data)
     // if(data.status == true){
     //   data.status = "Hoạt động"
@@ -100,6 +100,13 @@ const InventoryRecordModal = (props) => {
       <Row>
         <Col span={24}>
           <div className="site-description-item-profile-wrapper">
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Ngày kiểm kê: {props.data.date_created}</p>
+          </div>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={24}>
+          <div className="site-description-item-profile-wrapper">
             <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Trạng thái: {props.data.status == 'pending' ? 'Chờ xác nhận' :''}{props.data.status == 'complete' ? 'Hoàn thành':''}{props.data.status == 'cancel' ? 'Hủy':''}</p>
           </div>
         </Col>
@@ -114,6 +121,33 @@ const InventoryRecordModal = (props) => {
       <Divider />
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px' }}>Danh sách sản phẩm</p>
       <Table dataSource={dataSource} columns={columns}/>
+
+      <Divider />
+      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin lịch sử</p>
+      <Row>
+        <Col span={12}>
+          <div className="site-description-item-profile-wrapper">
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Ngày tạo: {props.data.date_created}</p>
+          </div>
+        </Col>
+        <Col span={12}>
+          <div className="site-description-item-profile-wrapper">
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người tạo: {props.data.user_created}</p>
+          </div>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={12}>
+          <div className="site-description-item-profile-wrapper">
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Ngày cập nhật: {props.data.date_updated}</p>
+          </div>
+        </Col>
+        <Col span={12}>
+          <div className="site-description-item-profile-wrapper">
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người cập nhật: {props.data.updated}</p>
+          </div>
+        </Col>
+      </Row>
     </Drawer>
   );
 };

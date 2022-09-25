@@ -14,32 +14,43 @@ import { validName1 } from '../../../resources/regexp'
 import moment from "moment";
 const { RangePicker } = DatePicker;
 
-
 const EditableContext = React.createContext(null);
 const dateFormat = "YYYY/MM/DD";
 
-const { Option } = Select;
 const { TextArea } = Input;
+const { Option } = Select;
 
-const InventoryRecordChangeForm = (props) => {
+const PromotionChangeForm = (props) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [formPrice] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
-  const [baseProductOptions, setBaseProductOptions] = useState([]);
+  const [customerGroupOptions, setCustomerGroupOptions] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
   const [idxBtnSave, setIdxBtnSave] = useState([]);
+  const [baseProductOptions, setBaseProductOptions] = useState([]);
   const [baseUnitOptions, setBaseUnitOptions] = useState([]);
-  const [priceList, setPriceList] = useState([]);
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const refAutoFocus = useRef(null)
-  const listPrice = [];
-  // const onChange = (checked) => {
-  //   console.log(`switch to ${checked}`);
-  // };
+
+  const handleDataCustomerGroup = async () => {
+    setLoadingData(true)
+    try {
+      const response = await api.customer_group.list();
+      const options = response.data.data.results.map(elm => {
+        return (
+          <Option key={elm.id}>{elm.name}</Option>
+        )
+      })
+      setCustomerGroupOptions(options)
+    } catch (error) {
+      message.error(messages.ERROR)
+    } finally {
+      setLoadingData(false)
+    }
+  }
 
   const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
@@ -59,16 +70,16 @@ const InventoryRecordChangeForm = (props) => {
 
   const directAfterSubmit = (response) => {
     if (idxBtnSave == 0) {
-      navigate(paths.inventory_record.list)
+      navigate(paths.promotion.list)
     } else if (idxBtnSave == 1) {
       if (is_create) {
-        navigate(paths.inventory_record.change(response.data.data.id))
+        navigate(paths.promotion.change(response.data.data.id))
         setCreate(false)
       }
       refAutoFocus.current && refAutoFocus.current.focus()
     } else if (idxBtnSave == 2) {
       if (!is_create) {
-        navigate(paths.inventory_record.add)
+        navigate(paths.promotion.add)
         setCreate(true)
       }
       form.resetFields()
@@ -79,13 +90,13 @@ const InventoryRecordChangeForm = (props) => {
 
   const create = async (values) => {
     try {
-      const response = await api.inventory_record.add(values);
+      const response = await api.promotion.add(values);
       if (response.data.code == 1) {
-        message.success(messages.inventory_record.SUCCESS_SAVE())
+        message.success(messages.promotion.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
       } else if (response.data.code == 0) {
-        message.error("Vui lòng nhập từng sản phẩm")
+        message.error("Vui lòng nhập bảng giá từng sản phẩm")
       } else {
         message.error(response.data.message.toString())
       }
@@ -98,9 +109,9 @@ const InventoryRecordChangeForm = (props) => {
 
   const update = async (values) => {
     try {
-      const response = await api.inventory_record.update(id, values)
+      const response = await api.promotion.update(id, values)
       if (response.data.code == 1) {
-        message.success(messages.inventory_record.SUCCESS_SAVE(id))
+        message.success(messages.promotion.SUCCESS_SAVE(id))
         directAfterSubmit(response)
         return true
       } else {
@@ -115,13 +126,13 @@ const InventoryRecordChangeForm = (props) => {
 
   const _delete = async () => {
     try {
-      const response = await api.inventory_record.delete(id)
+      const response = await api.promotion.delete(id)
       if (response.data.code == 1) {
-        message.success(messages.inventory_record.SUCCESS_DELETE(id))
-        navigate(paths.inventory_record.list)
+        message.success(messages.promotion.SUCCESS_DELETE(id))
+        navigate(paths.promotion.list)
         return true
       } else {
-        message.error(messages.inventory_record.ERROR_DELETE(id))
+        message.error(messages.promotion.ERROR_DELETE(id))
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -133,13 +144,25 @@ const InventoryRecordChangeForm = (props) => {
   const onFinish = async (values) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
-    if (values.status == null) {
-      values.status = "pending";
+    // console.log(state);
+    if (!validName1.test(values.title)) {
+      message.error('Tên không hợp lệ! Ký tự đầu của chữ đầu tiên phải viết hoa');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
+    if (values.end_date < values.start_date) {
+      message.error('Ngày kết thúc phải sau ngày bắt đầu');
+      stopLoading(idxBtnSave)
+      setDisableSubmit(false)
+      return;
     }
     if (is_create) {
       await create(values)
     } else {
-
+      console.log(values.start_date._i)
+      values.start_date = values.start_date._i;
+      values.end_date = values.end_date._i;
       await update(values)
     }
     stopLoading(idxBtnSave)
@@ -147,7 +170,6 @@ const InventoryRecordChangeForm = (props) => {
   }
 
   const onFinishFailed = (errorInfo) => {
-    // console.log("props.create", props.create)
     console.log('Failed:', errorInfo)
     stopLoading(0)
   };
@@ -155,19 +177,14 @@ const InventoryRecordChangeForm = (props) => {
   const handleData = async () => {
     setLoadingData(true)
     try {
-      const response = await api.inventory_record.get(id);
-      const values = response.data.data
-      // values.start_date = moment(values.start_date)
-      // values.status = values.status.toString()
-      // values.end_date = moment(values.end_date)
-      ///
-      values.details = values.details.map(elm => {
-        elm.product = elm.product.id;
-        return elm;
-
-      })
-
-      form.setFieldsValue(values)
+      const response = await api.promotion.get(id);
+      const values = response.data.data;
+      console.log(values)
+      values.start_date = moment(values.start_date);
+      values.status = values.status.toString();
+      values.end_date = moment(values.end_date);
+      values.applicable_customer_groups = values.applicable_customer_groups.map(elm => elm.toString());
+      form.setFieldsValue(values);
 
     } catch (error) {
       message.error(messages.ERROR)
@@ -192,23 +209,14 @@ const InventoryRecordChangeForm = (props) => {
       setLoadingData(false)
     }
   }
-  // const unit = []
   const handleDataBaseUnit = async (unit_exchange) => {
     setLoadingData(true)
     try {
-      // await unit_exchange.forEach(gr => dataBaseUnit(gr));
-      // // console.log(unit,11111);
-      //  const options = unit.map(elm => {
-      //   return (
-      //     <Option key={elm.unit_exchange} value={elm.unit_exchange}>{elm.nameUnit}</Option>
-      //   )
-      // })
       const options = unit_exchange.map(elm => {
         return (
           <Option key={elm.id} value={elm.id}>{elm.unit_name}</Option>
         )
       })
-      // console.log(unit);
       setBaseUnitOptions(options);
     } catch (error) {
       message.error(messages.ERROR)
@@ -216,17 +224,6 @@ const InventoryRecordChangeForm = (props) => {
       setLoadingData(false)
     }
   }
-
-  // async function dataBaseUnit(params) {
-  //   console.log(params)
-  //   const response = await api.unit.get(params.unit);
-  //   const result={
-  //     unit_exchange: params.id,
-  //     nameUnit: response.data.data.name
-  //   }
-  //   unit.push(result)
-  //   return result;
-  // }
 
   const onUnitSelect = async (option) => {
     try {
@@ -239,32 +236,30 @@ const InventoryRecordChangeForm = (props) => {
     }
   }
 
-
-
   useEffect(() => {
     if (is_create == null) {
       setCreate(props.is_create)
       if (!props.is_create) {
-        handleData()
         handleDataBaseProduct();
-        // handleDataBaseUnit()
+        handleDataCustomerGroup();
+        handleData();
       }
       setLoadingData(false)
     }
     handleDataBaseProduct();
-    // handleDataBaseUnit()
+    handleDataCustomerGroup();
   }, [])
 
   useEffect(() => {
     props.setBreadcrumb([
-      { title: "Phiếu kiểm kê", href: paths.inventory_record.list },
-      { title: is_create ? "Kiểm kê" : "Chỉnh sửa" }])
+      { title: "Chương trình khuyến mãi", href: paths.promotion.list },
+      { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
 
     if (is_create == false) {
       props.setBreadcrumbExtras([
         <Popconfirm
           placement="bottomRight"
-          title="Xác nhận xóa phiếu kiểm kê này"
+          title="Xác nhận xóa chương trình khuyến mãi này"
           onConfirm={_delete}
           okText="Đồng ý"
           okType="danger"
@@ -285,6 +280,7 @@ const InventoryRecordChangeForm = (props) => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
 
+
   return (
     <>
       {loadingData ? <Loading /> :
@@ -295,59 +291,171 @@ const InventoryRecordChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <><>
-            </>
               <Row>
-                <Col span={1}></Col>
-                <Col span={10}>
-                  <Form.Item label="Trạng thái" name="status"
+              <Col span={1}></Col>
+                <Col span={10} style={{ backgroundColor: "white" }}>
+                  <Form.Item label="Tiêu đề" name="title" required
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập tiêu đề khuyến mãi!',
+                      },
+                    ]}
+                  >
+                    <Input autoFocus ref={refAutoFocus} />
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10} style={{ backgroundColor: "white" }}>
+                  <Form.Item label="Ngày bắt đầu" name="start_date" required
+                    style={{
+                      textAlign: "left",
+                      width: '100%',
+                      marginLeft: '0px',
+                      // display:'inline-grid'
+                    }}
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập ngày bắt đầu!',
+                      },
+                    ]}
+                  >
+                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row>
+              <Col span={1}></Col>
+                <Col span={10} style={{ backgroundColor: "white" }}>
+                  <Form.Item label="Mô tả" name="description" required
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập mô tả khuyến mãi!',
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10} style={{ backgroundColor: "white" }}>
+                  <Form.Item label="Ngày kết thúc" name="end_date" required
+                    style={{
+                      textAlign: "left",
+                      // width:'500px',
+                      // display:'inline-grid'
+                    }}
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập ngày kết thúc!',
+                      },
+                    ]}
+                  >
+                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row>
+              <Col span={1}></Col>
+                <Col span={10} style={{ backgroundColor: "white" }}>
+                  <Form.Item label="Trạng thái" name="status" required
                     style={{
                       textAlign: 'left'
                     }}>
                     <Select
-                      defaultValue="pending"
+                      defaultValue="true"
                       style={{
                         width: '100%',
                       }}
                     >
-                      <Option value="pending">Chờ xác nhận</Option>
-                      <Option value="complete">Hoàn thành</Option>
-                      <Option value="cancel">Hủy</Option>
+                      <Option value="true">Hoạt động</Option>
+                      <Option value="false">Khóa</Option>
                     </Select>
                   </Form.Item>
                 </Col>
                 <Col span={2}></Col>
-                <Col span={10}>
+                <Col span={10} style={{ backgroundColor: "white" }}>
+                  <Form.Item label="Nhóm khách hàng áp dụng" name="applicable_customer_groups" required
+                  >
+                    <Select
+                      mode="multiple"
+                      allowClear
+                      style={{
+                        width: '100%',
+                      }}
+                      filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+                    >
+                      {customerGroupOptions}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row>
+              <Col span={1}></Col>
+                <Col span={10} style={{ backgroundColor: "white" }}>
+                  {/* <Form.Item label="Hình ảnh" name="image"
+                    style={{
+                      textAlign: 'left'
+                    }}>
+                    <Upload
+                      listType="picture-card"
+                      className="avatar-uploader"
+                      showUploadList={false}
+                      beforeUpload={beforeUpload}
+                      onChange={handleChange}
+                      progress={{
+                        type: "circle"
+                      }}
+                      customRequest={(options) => {
+                        options.prefix = "promotion"
+                        uploadFile(options)
+                      }}
+                    >
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt="avatar"
+                          style={{
+                            width: '100%',
+                          }}
+                        />
+                      ) : (
+                        uploadButton
+                      )}
+                    </Upload>
+                  </Form.Item> */}
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10} style={{ backgroundColor: "white" }}>
                   <Form.Item label="Ghi chú" name="note"
                   // rules={[
                   //   {
                   //     required: true,
-                  //     message: 'Vui lòng nhập ghi chú!',
+                  //     message: 'Vui lòng nhập tiêu đề khuyến mãi!',
                   //   },
                   // ]}
                   >
-                    <TextArea rows={1} />
+                    <Input />
                   </Form.Item>
                 </Col>
               </Row>
+            </>
+              {/* <Col>
+                <label><h2 style={{ marginTop: '10px', marginBottom: '30px', textAlign: 'center' }}>Bảng giá sản phẩm</h2></label>
 
-
-              <Col>
-                <label><h2 style={{ marginTop: '10px', marginBottom: '30px', textAlign: 'center' }}>Kiểm kê</h2></label>
-                
-                <Form.List name="details" label="Bảng giá sản phẩm">
+                <Form.List name="pricedetails" label="Bảng giá sản phẩm">
                   {(fields, { add, remove }) => (
                     <>
 
                       {fields.map(({ key, name, ...restField }) => (
-                        <Row>
-                        <Col span={5}></Col>
-                        <Col span={14}>
                         <Space
                           key={key}
                           style={{
                             display: 'flex',
                             marginBottom: 0,
-                            width: '100%',
                           }}
                           align="baseline"
                         >
@@ -361,15 +469,14 @@ const InventoryRecordChangeForm = (props) => {
                               },
                             ]}
                             style={{
-                              textAlign: 'left',
-                              width: '100%',
+                              textAlign: 'left'
                             }}
                           >
                             <Select
                               showSearch
                               onChange={(option) => onUnitSelect(option)}
                               style={{
-                                width: 250,
+                                width: 200,
                               }}
                               placeholder="Sản phẩm"
                               optionFilterProp="children"
@@ -384,36 +491,46 @@ const InventoryRecordChangeForm = (props) => {
                           </Form.Item>
                           <Form.Item
                             {...restField}
-                            name={[name, 'quantity_after']}
-                            rules={[
-                              {
-                                required: true,
-                                message: 'Vui lòng nhập số lượng!',
-                              },
-                            ]}
+                            name={[name, 'unit_exchange']}
+                            // rules={[
+                            //   {
+                            //     required: true,
+                            //     message: 'Vui lòng chọn đơn vị tính!',
+                            //   },
+                            // ]}
                             style={{
-                              textAlign: 'left',
-                              width: 200
+                              textAlign: 'left'
                             }}
                           >
-                            <Input placeholder="Số lượng theo đơn vị tính cơ bản" min='0' type='number' disabled={is_create ? false : true} />
+                            <Select
+                              showSearch
+                              style={{
+                                width: 200,
+                              }}
+                              placeholder="Đơn vị tính"
+                              optionFilterProp="children"
+                              filterOption={(input, option) => option.children.includes(input)}
+                              filterSort={(optionA, optionB) =>
+                                optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                              }
+                              disabled={is_create ? false : true}
+                            >
+                              {baseUnitOptions}
+                            </Select>
                           </Form.Item>
                           <Form.Item
                             {...restField}
-                            name={[name, 'note']}
-                            style={{
-                              textAlign: 'left',
-                              width: 200
-                            }}
+                            name={[name, 'price']}
                             rules={[
                               {
                                 required: true,
-                                message: 'Vui lòng nhập ghi chú!',
+                                message: 'Vui lòng nhập giá!',
                               },
                             ]}
                           >
-                            <Input placeholder="Ghi chú" type='text' disabled={is_create ? false : true} />
+                            <Input placeholder="Giá" type='number' min='0' disabled={is_create ? false : true} />
                           </Form.Item>
+
                           <Popconfirm
                             placement="bottomRight"
                             title="Xác nhận xóa bảng giá này"
@@ -421,28 +538,22 @@ const InventoryRecordChangeForm = (props) => {
                             okText="Đồng ý"
                             okType="danger"
                             cancelText="Hủy bỏ"
-                            style={{ width: '10%' }}
                             disabled={is_create ? false : true}
                           >
                             <MinusCircleOutlined />
                           </Popconfirm>
-
                         </Space>
-                        </Col>
-                          <Col span={5}></Col>
-                        </Row>
                       ))}
-                      <Form.Item style={{ width: '170px', margin: 'auto' }}>
+                      <Form.Item style={{ width: '170px' }}>
                         <Button type="dashed" disabled={is_create ? false : true} onClick={() => add()} block icon={<PlusOutlined />} >
-                          Thêm sản phẩm
+                          Thêm giá sản phẩm
                         </Button>
                       </Form.Item>
                     </>
                   )}
                 </Form.List>
-              </Col>
-
-              <Form.Item style={{ marginTop: '40px' }}>
+              </Col> */}
+              <Form.Item>
                 <Space>
                   <Button
                     type="primary"
@@ -468,16 +579,12 @@ const InventoryRecordChangeForm = (props) => {
                   >Lưu và thêm mới</Button>
                 </Space>
               </Form.Item></>
-
           }>
-
         </ChangeForm>
       }
-
-
     </>
   )
 
 }
 
-export default InventoryRecordChangeForm;
+export default PromotionChangeForm;

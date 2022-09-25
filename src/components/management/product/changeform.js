@@ -11,7 +11,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
-import ProductGroupModal from '../product_group/modal';
 import uploadFile from '../../../utils/s3';
 import { validName1, validBarCode, validCode } from '../../../resources/regexp'
 
@@ -19,7 +18,7 @@ const { Option } = Select;
 const { TextArea } = Input;
 const { Title } = Typography;
 
-const ProductChangeForm = (props) => {
+const PriceChangeForm = (props) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [baseUnitOptions, setBaseUnitOptions] = useState([]);
@@ -82,7 +81,7 @@ const ProductChangeForm = (props) => {
     try {
       const response = await api.product.get(id);
       const values = response.data.data
-      values.product_groups = values.product_groups.map(elm => elm.id.toString())
+      values.product_groups = values.product_groups.map(elm => elm.id.toString());
       form.setFieldsValue(values)
     } catch (error) {
       message.error(messages.ERROR)
@@ -251,6 +250,40 @@ const ProductChangeForm = (props) => {
       stopLoading(idxBtnSave)
       return;
     }
+    let units = [];
+    let i = 0;
+    values.units.forEach(element => {
+      let unit;
+      if (element.value == 1) {
+        unit = {
+          "value": element.value,
+          "allow_sale": element.allow_sale,
+          "is_base_unit": true,
+          "unit": element.unit
+        }
+        i++;
+      } else {
+        unit = {
+          "value": element.value,
+          "allow_sale": element.allow_sale,
+          "is_base_unit": false,
+          "unit": element.unit
+        }
+      }
+      units.push(unit);
+    });
+    if (i == 0) {
+      message.error('Vui lòng nhập đơn vị tính cơ bản cho sản phẩm');
+      stopLoading(idxBtnSave)
+      setDisableSubmit(false)
+      return;
+    } else if (i > 1) {
+      message.error('Vui lòng chỉ nhập một đơn vị tính cơ bản cho sản phẩm');
+      stopLoading(idxBtnSave)
+      setDisableSubmit(false)
+      return;
+    }
+    values.units = units;
     values.image = imageUrl
     if (is_create) {
       await create(values)
@@ -335,46 +368,62 @@ const ProductChangeForm = (props) => {
             onFinishFailed={onFinishFailed}
             forms={
               <>
-                <Form.Item label="Tên sản phẩm" name="name" required
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Vui lòng nhập tên sản phẩm!',
-                    },
-                  ]}
-                >
-                  <Input autoFocus ref={refAutoFocus} />
-                </Form.Item>
-                <Form.Item label="Code sản phẩm" name="product_code" required
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Vui lòng nhập code sản phẩm!',
-                    },
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
-                <Form.Item label="Mã vạch" name="barcode" required
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Vui lòng nhập mã vạch!',
-                    },
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
-                <Form.Item label="Mô tả sản phẩm" name="description" >
-                  <TextArea rows={4} />
-                </Form.Item>
-                <Form.Item label="Ghi chú" name="note" >
-                  <TextArea rows={4} />
-                </Form.Item>
+                <Row>
+                  <Col span={1}></Col>
+                  <Col span={10}>
+                    <Form.Item label="Tên sản phẩm" name="name" required
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng nhập tên sản phẩm!',
+                        },
+                      ]}
+                    >
+                      <Input autoFocus ref={refAutoFocus} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={2}></Col>
+                  <Col span={10}>
+                    <Form.Item label="Code sản phẩm" name="product_code" required
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng nhập code sản phẩm!',
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
 
                 <Row>
-                  <Col flex="auto">
-                    <Form.Item label="Nhóm sản phẩm" name="product_groups"
+                  <Col span={1}></Col>
+                  <Col span={10}>
+                    <Form.Item label="Mã vạch" name="barcode" required
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng nhập mã vạch!',
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col span={2}></Col>
+                  <Col span={10}>
+                    <Form.Item label="Mô tả sản phẩm" name="description" >
+                      <TextArea rows={1} />
+                    </Form.Item>
+
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col span={1}></Col>
+                  <Col span={10}>
+                    <Form.Item label="Nhóm sản phẩm" name="product_groups" required
                     >
                       <Select
                         mode="multiple"
@@ -387,6 +436,20 @@ const ProductChangeForm = (props) => {
                         {productGroupOptions}
                       </Select>
                     </Form.Item>
+                  </Col>
+                  <Col span={2}></Col>
+                  <Col span={10}>
+                    <Form.Item label="Ghi chú" name="note" >
+                      <TextArea rows={1} />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+
+
+                {/* <Row>
+                  <Col flex="auto">
+                    
                   </Col>
                   <Col flex="none"
                     style={{
@@ -401,92 +464,77 @@ const ProductChangeForm = (props) => {
                         setOpen(true)
                       }} />
                   </Col>
-                </Row>
-                <Form.Item label="Đơn vị cơ bản" name="base_unit"
-                  style={{
-                    textAlign: 'left'
-                  }}>
-                  <Select
-                    showSearch
-                    style={{
-                      width: 200,
-                    }}
-                    placeholder="Tìm kiếm đơn vị tính"
-                    optionFilterProp="children"
-                    filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
-                    filterSort={(optionA, optionB) =>
-                      optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
-                    }
-                  >
-                    {baseUnitOptions}
-                  </Select>
-                </Form.Item>
-                <Form.List name="units" label="Đơn vị tính quy đổi">
-                  {(fields, { add, remove }) => (
-                    <>
-                      <div style={{
-                          textAlign: 'left',
-                          paddingBottom: '7px'
-                      }}>
-                      <Typography.Text >Các đơn vị tính khác</Typography.Text>
-                      </div>
-                      {fields.map(({ key, name, ...restField }) => (
-                        <Space
-                          key={key}
-                          style={{
-                            display: 'flex',
-                            marginBottom: 0,
-                          }}
-                          align="baseline"
-                        >
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'unit']}
-                            rules={[
-                              {
-                                required: true,
-                                message: 'Vui lòng chọn đơn vị tính!',
-                              },
-                            ]}
-                            style={{
-                              textAlign: 'left'
-                            }}
-                          >
-                            <Select
-                              showSearch
+                </Row> */}
+                <Row>
+                  <Col span={1}></Col>
+                  <Col span={10}>
+                    <Form.List name="units" label="Đơn vị tính quy đổi">
+                      {(fields, { add, remove }) => (
+                        <>
+                          <div style={{
+                            textAlign: 'left',
+                            paddingBottom: '7px'
+                          }}>
+                            <Typography.Text >Các đơn vị tính</Typography.Text>
+                          </div>
+                          {fields.map(({ key, name, ...restField }) => (
+                            <Space
+                              key={key}
                               style={{
-                                width: 200,
+                                display: 'flex',
+                                marginBottom: 0,
                               }}
-                              placeholder="Đơn vị tính"
-                              optionFilterProp="children"
-                              filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
-                              filterSort={(optionA, optionB) =>
-                                optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
-                              }
+                              align="baseline"
                             >
-                              {baseUnitOptions}
-                            </Select>
-                          </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'value']}
-                            rules={[
-                              {
-                                required: true,
-                                message: 'Vui lòng nhập giá trị quy đổi!',
-                              },
-                            ]}
-                          >
-                            <Input placeholder="Giá trị quy đổi" />
-                          </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            valuePropName="checked"
-                            name={[name, 'allow_sale']}
-                          >
-                            <Checkbox >Cho phép bán hàng</Checkbox>
-                          </Form.Item>
-                          {/* <Popconfirm
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'unit']}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: 'Vui lòng chọn đơn vị tính!',
+                                  },
+                                ]}
+                                style={{
+                                  textAlign: 'left'
+                                }}
+                              >
+                                <Select
+                                  showSearch
+                                  style={{
+                                    width: 150,
+                                  }}
+                                  placeholder="Đơn vị tính"
+                                  optionFilterProp="children"
+                                  filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+                                  filterSort={(optionA, optionB) =>
+                                    optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                                  }
+                                >
+                                  {baseUnitOptions}
+                                </Select>
+                              </Form.Item>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'value']}
+                                style={{width: 150}}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: 'Vui lòng nhập giá trị quy đổi!',
+                                  },
+                                ]}
+                              >
+                                <Input placeholder="Giá trị quy đổi" />
+                              </Form.Item>
+                              <Form.Item
+                                {...restField}
+                                valuePropName="checked"
+                                name={[name, 'allow_sale']}
+                              >
+                                <Checkbox >Cho phép bán hàng</Checkbox>
+                              </Form.Item>
+                              {/* <Popconfirm
                             placement="bottomRight"
                             title="Xác nhận xóa đơn vị tính này"
                             onConfirm={() => remove(name)}
@@ -494,50 +542,57 @@ const ProductChangeForm = (props) => {
                             okType="danger"
                             cancelText="Hủy bỏ"
                           > */}
-                            <MinusCircleOutlined onClick={() => remove(name)} />
-                          {/* </Popconfirm> */}
-                        </Space>
-                      ))}
-                      <Form.Item>
-                        <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                          Thêm đơn vị tính
-                        </Button>
-                      </Form.Item>
-                    </>
-                  )}
-                </Form.List>
+                              <MinusCircleOutlined onClick={() => remove(name)} />
+                              {/* </Popconfirm> */}
+                            </Space>
+                          ))}
+                          <Form.Item>
+                            <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                              Thêm đơn vị tính
+                            </Button>
+                          </Form.Item>
+                        </>
+                      )}
+                    </Form.List>
 
-                <Form.Item label="Hình ảnh" name="image"
-                  style={{
-                    textAlign: 'left'
-                  }}>
-                  <Upload
-                    listType="picture-card"
-                    className="avatar-uploader"
-                    showUploadList={false}
-                    beforeUpload={beforeUpload}
-                    onChange={handleChange}
-                    progress={{
-                      type:"circle"
-                    }}
-                    customRequest={(options) => {
-                      options.prefix="product"
-                      uploadFile(options)
-                    }}
-                  >
-                    {imageUrl ? (
-                      <img
-                        src={imageUrl}
-                        alt="avatar"
-                        style={{
-                          width: '100%',
+                  </Col>
+                  <Col span={2}></Col>
+                  <Col>
+                    <Form.Item label="Hình ảnh" name="image"
+                      style={{
+                        textAlign: 'left'
+                      }}>
+                      <Upload
+                        listType="picture-card"
+                        className="avatar-uploader"
+                        showUploadList={false}
+                        beforeUpload={beforeUpload}
+                        onChange={handleChange}
+                        progress={{
+                          type: "circle"
                         }}
-                      />
-                    ) : (
-                      uploadButton
-                    )}
-                  </Upload>
-                </Form.Item>
+                        customRequest={(options) => {
+                          options.prefix = "product"
+                          uploadFile(options)
+                        }}
+                      >
+                        {imageUrl ? (
+                          <img
+                            src={imageUrl}
+                            alt="avatar"
+                            style={{
+                              width: '100%',
+                            }}
+                          />
+                        ) : (
+                          uploadButton
+                        )}
+                      </Upload>
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+
                 <Form.Item>
                   <Space>
                     <Button
@@ -569,12 +624,6 @@ const ProductChangeForm = (props) => {
             }>
 
           </ChangeForm>
-          <ProductGroupModal open={open} setOpen={setOpen} 
-            {...props} is_create={true} is_modal={true}
-            onFinishModal={() => {
-              // refAutoFocus.curent = 
-              handleDataProductGroup()
-            }}/>
         </>
       }
     </>
@@ -582,4 +631,4 @@ const ProductChangeForm = (props) => {
 
 }
 
-export default ProductChangeForm;
+export default PriceChangeForm;

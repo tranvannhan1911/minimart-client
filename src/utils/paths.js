@@ -3,6 +3,10 @@ const getChangePath = (key, id) => {
     return `/quan-ly/${key}/${id}`
 }
 
+const getChangeLinePath = (key, id) => {
+    return `/quan-ly/${key}/them-khuyen-mai/${id}`
+}
+
 const getPaths = (key, id) => {
     return {
         key: key,
@@ -12,6 +16,8 @@ const getPaths = (key, id) => {
         radd: `${key}/them-moi`,
         change: (id) => getChangePath(key, id),
         rchange: `${key}/:${id}`,
+        addline: (id) => getChangeLinePath(key, id),
+        raddline: `${key}/them-khuyen-mai/:${id}`,
     }
 }
 
@@ -29,6 +35,7 @@ const Paths = {
     inventory_receiving: getPaths("phieu-nhap-hang","id"),
     inventory_record: getPaths("phieu-kiem-ke","id"),
     warehouse_transaction: getPaths("bien-dong-kho","id"),
+    promotion: getPaths("khuyen-mai","id"),
     
     s3: (filename) => `https://minimart-tvn1911.s3.ap-southeast-1.amazonaws.com/${filename}`,
 }

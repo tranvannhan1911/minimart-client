@@ -262,7 +262,7 @@ const CustomerChangeForm = (props) => {
                 <Input />
               </Form.Item>
               <Row>
-                <Col span={12}>
+                <Col span={11}>
               <Form.Item label="Giới tính" name="gender"
                 style={{
                   textAlign: 'left'
@@ -270,7 +270,7 @@ const CustomerChangeForm = (props) => {
                 <Select
                   defaultValue="U"
                   style={{
-                    width: 200,
+                    width: '100%',
                   }}
                 >
                   <Option value="M">Nam</Option>
@@ -279,7 +279,8 @@ const CustomerChangeForm = (props) => {
                 </Select>
               </Form.Item>
               </Col>
-              <Col span={12}>
+              <Col span={2}></Col>
+              <Col span={11}>
               <Form.Item label="Trạng thái" name="status"
                 style={{
                   textAlign: 'left'
@@ -287,7 +288,7 @@ const CustomerChangeForm = (props) => {
                 <Select
                   defaultValue='true'
                   style={{
-                    width: 200,
+                    width: '100%',
                   }}
                 >
                   <Option value="true">Hoạt động</Option>

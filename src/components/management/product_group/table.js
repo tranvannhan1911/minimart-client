@@ -26,11 +26,8 @@ const ProductGroupTable = (props) => {
   const onOpen = async (id) => {
     props.data.forEach(element => {
       if(element.id==id){
-        console.log(element)
         setDataIndex(element);
-        // renderProfile(element)
         setOpen(true);
-        console.log(element);
       }
     });
   };

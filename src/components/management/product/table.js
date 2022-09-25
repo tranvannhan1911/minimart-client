@@ -6,10 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
 import api from '../../../api/apis'
 import messages from '../../../utils/messages'
-import ProductModal from './modal';
+import PriceModal from './modal';
 const { Search } = Input;
 
-const ProductTable = (props) => {
+const PriceTable = (props) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [dataIndex, setDataIndex] = useState("");
@@ -271,6 +271,7 @@ const ProductTable = (props) => {
       //   selectedRowKeys,
       //   onChange: onSelectChange
       // }}
+      bordered
       columns={columns}
       dataSource={props.data}
       onChange={handleChange}
@@ -285,8 +286,8 @@ const ProductTable = (props) => {
         showTotal: (total) => `Tất cả ${total}`,
       }}
       loading={props.loading} />
-      <ProductModal open={open} data={dataIndex} setOpen={setOpen} /></>
+      <PriceModal open={open} data={dataIndex} setOpen={setOpen} /></>
   );
 };
 
-export default ProductTable;
+export default PriceTable;

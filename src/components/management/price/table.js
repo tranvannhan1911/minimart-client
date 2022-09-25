@@ -1,6 +1,6 @@
 import { SearchOutlined } from '@ant-design/icons';
 import {
-  EyeOutlined, FormOutlined,DeleteOutlined
+  EyeOutlined, FormOutlined, DeleteOutlined
 } from '@ant-design/icons'
 import { Button, Space, Table as AntdTable, Input, Tag, Pagination, Switch, message, Popconfirm } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
@@ -21,7 +21,7 @@ const DescriptionItem = ({ title, content }) => (
   </div>
 );
 
-const StaffTable = (props) => {
+const PriceTable = (props) => {
   const navigate = useNavigate();
   const [data1, setData1] = useState();
   const [open, setOpen] = useState(false);
@@ -42,31 +42,57 @@ const StaffTable = (props) => {
   ///////
 
   const onOpen = async (id) => {
-    const index={};
+    let detail = [];
     props.data.forEach(async element => {
-      if(element.price_list_id==id){
-        
-        
-        setDataIndex(element);
-        // renderProfile(element)
+      if (element.price_list_id == id) {
+        let index = {
+          "pricedetails": [],
+          "name": element.name,
+          "start_date": element.start_date,
+          "end_date": element.end_date,
+          "status": element.status,
+          "note": element.note,
+          "price_list_id": element.price_list_id
+        }
+        element.pricedetails.forEach(elementt => {
+          if (elementt.unit_exchange == null) {
+            let ind = {
+              "note": elementt.note,
+              "product": elementt.product.name,
+              "price": elementt.price,
+              "unit_exchange": elementt.product.base_unit
+            }
+            detail.push(ind);
+          } else {
+            let ind = {
+              "note": elementt.note,
+              "product": elementt.product.name,
+              "price": elementt.price,
+              "unit_exchange": elementt.unit_exchange.unit_name
+            }
+            detail.push(ind);
+          }
+        });
+        index.pricedetails = detail;
+        setDataIndex(index);
         setOpen(true);
-        console.log(index);
+
       }
     });
   };
 
   const tagStatus = (status) => {
-    if(status==true){
+    if (status == true) {
       return 'HOẠT ĐỘNG';
-    }else{
+    } else {
       return 'KHÓA';
     }
   };
 
   const tagStatusColor = (status) => {
-    if(status==true){
+    if (status == true) {
       return 'geekblue';
-    }else{
+    } else {
       return 'volcano';
     }
   };
@@ -281,10 +307,10 @@ const StaffTable = (props) => {
       // filteredValue: props.filteredInfo.status || null,
       // onFilter: (value, record) => record.status.includes(value),
       render: (status) => (
-        <span>  
-              <Tag color={tagStatusColor(status)} key={status}>
-                {tagStatus(status)}
-              </Tag>
+        <span>
+          <Tag color={tagStatusColor(status)} key={status}>
+            {tagStatus(status)}
+          </Tag>
         </span>
       ),
     },
@@ -296,7 +322,7 @@ const StaffTable = (props) => {
         <span>
           <a onClick={() => onOpen(price_list_id)} key={price_list_id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a>
           <a onClick={() => setIdxBtn(price_list_id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
-          </span>
+        </span>
       ),
     },
   ];
@@ -329,10 +355,10 @@ const StaffTable = (props) => {
           showTotal: (total) => `Tất cả ${total}`,
         }}
         loading={props.loading} />
-        <PriceModal open={open} data={dataIndex} setOpen={setOpen} />
+      <PriceModal open={open} data={dataIndex} setOpen={setOpen} />
     </>
 
   );
 };
 
-export default StaffTable;
+export default PriceTable;

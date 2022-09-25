@@ -38,6 +38,8 @@ const Messages = {
     inventory_receiving: getMessage("phiếu nhập hàng"),
     inventory_record: getMessage("phiếu kiểm kê"),
     warehouse_transaction: getMessage("biến động kho"),
+    promotion: getMessage("chương trình khuyến mãi"),
+    promotion_line: getMessage("khuyến mãi"),
 }
 
 const messages = Messages;

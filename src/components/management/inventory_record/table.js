@@ -1,6 +1,6 @@
 import { SearchOutlined } from '@ant-design/icons';
 import {
-  EyeOutlined, FormOutlined,DeleteOutlined
+  EyeOutlined, FormOutlined, DeleteOutlined
 } from '@ant-design/icons'
 import { Button, Space, Table as AntdTable, Input, Tag, Pagination, Switch, message, Popconfirm } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
@@ -42,36 +42,50 @@ const InventoryRecordTable = (props) => {
   ///////
 
   const onOpen = async (id) => {
+    let detail = [];  
     props.data.forEach(element => {
-      if(element.id==id){
+      if (element.id == id) {
+        let index = {
+          "details": [
+          ],
+          "status": element.status,
+          "note": element.note,
+          "id": element.id,
+          "date_created": element.date_created
+        }
         element.details.forEach(elementt => {
-          elementt.product=elementt.product.name;
-          return elementt;
+          let ind = {
+            "quantity": elementt.quantity,
+            "note": elementt.note,
+            "product": elementt.product.name,
+            "quantity_after": elementt.quantity_after,
+            "quantity_before": elementt.quantity_before
+          }
+          detail.push(ind);
         });
-        setDataIndex(element);
-        // renderProfile(element)
+        index.details = detail;
+        setDataIndex(index);
         setOpen(true);
-        console.log(element);
       }
     });
   };
 
   const tagStatus = (status) => {
-    if(status=='pending'){
+    if (status == 'pending') {
       return 'CHỜ XÁC NHẬN';
-    }else if(status=='complete'){
+    } else if (status == 'complete') {
       return 'HOÀN THÀNH';
-    }else if(status=='cancel'){
+    } else if (status == 'cancel') {
       return 'HỦY';
     }
   };
 
   const tagStatusColor = (status) => {
-    if(status=='pending'){
+    if (status == 'pending') {
       return 'processing';
-    }else if(status=='complete'){
+    } else if (status == 'complete') {
       return 'success';
-    }else{
+    } else {
       return 'warning';
     }
   };
@@ -225,6 +239,12 @@ const InventoryRecordTable = (props) => {
       ...getColumnSearchProps('id'),
     },
     {
+      title: 'Ngày kiểm kê',
+      dataIndex: 'date_created',
+      key: 'date_created',
+      ...getColumnSearchProps('date_created'),
+    },
+    {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
@@ -242,10 +262,10 @@ const InventoryRecordTable = (props) => {
       // filteredValue: props.filteredInfo.status || null,
       // onFilter: (value, record) => record.status.includes(value),
       render: (status) => (
-        <span>  
-              <Tag color={tagStatusColor(status)} key={status}>
-                {tagStatus(status)}
-              </Tag>
+        <span>
+          <Tag color={tagStatusColor(status)} key={status}>
+            {tagStatus(status)}
+          </Tag>
         </span>
       ),
     },
@@ -263,7 +283,7 @@ const InventoryRecordTable = (props) => {
         <span>
           <a onClick={() => onOpen(id)} key={id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a>
           <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
-          </span>
+        </span>
       ),
     },
   ];
@@ -296,7 +316,7 @@ const InventoryRecordTable = (props) => {
           showTotal: (total) => `Tất cả ${total}`,
         }}
         loading={props.loading} />
-        <InventoryRecordModal open={open} data={dataIndex} setOpen={setOpen} />
+      <InventoryRecordModal open={open} data={dataIndex} setOpen={setOpen} />
     </>
 
   );

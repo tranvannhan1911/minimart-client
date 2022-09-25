@@ -1,7 +1,7 @@
 import { Button, Drawer, Row, Col, Divider, Image } from 'antd';
 import React, { useState } from 'react';
 
-const ProductModal = (props) => {
+const PriceModal = (props) => {
   const [disabled, setDisabled] = useState(false);
 
   const showDrawer = () => {
@@ -83,4 +83,4 @@ const ProductModal = (props) => {
     
   );
 };
-export default ProductModal;
+export default PriceModal;

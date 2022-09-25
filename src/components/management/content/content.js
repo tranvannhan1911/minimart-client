@@ -29,6 +29,9 @@ const InventoryReceivingChangeForm = lazy(() => import("../inventory_receiving/c
 const InventoryRecordListForm = lazy(() => import("../inventory_record/listform"));
 const InventoryRecordChangeForm = lazy(() => import("../inventory_record/changeform"));
 const WarehouseTransactionListForm = lazy(() => import("../warehouse_transaction/listform"));
+const PromotionListForm = lazy(() => import("../promotion/listform"));
+const PromotionChangeForm = lazy(() => import("../promotion/changeform"));
+const PromotionLineChangeForm = lazy(() => import("../promotion/promotion_line/changeform"));
 
 
 const MyContent = (props) => {
@@ -215,7 +218,22 @@ const MyContent = (props) => {
                         <Route path={paths.warehouse_transaction.rlist} key={paths.warehouse_transaction.key}
                             element={<WarehouseTransactionListForm setBreadcrumb={setBreadcrumb} />} />
 
-                        
+                        <Route path={paths.promotion.rlist} key={paths.promotion.key}
+                            element={<PromotionListForm setBreadcrumb={setBreadcrumb} />} />
+                        <Route path={paths.promotion.radd} key={paths.promotion.key}
+                            element={<PromotionChangeForm
+                                breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                                setBreadcrumb={setBreadcrumb} is_create={true} />} />
+                        <Route path={paths.promotion.rchange} key={paths.promotion.key}
+                            element={<PromotionChangeForm
+                                breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                                setBreadcrumb={setBreadcrumb} is_create={false} />} />
+
+                        <Route path={paths.promotion.raddline} key={paths.promotion.key}
+                            element={<PromotionLineChangeForm
+                                breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                                setBreadcrumb={setBreadcrumb} is_create={true} />} />
+
                     </Routes >
                 </Suspense>
             </Content>
