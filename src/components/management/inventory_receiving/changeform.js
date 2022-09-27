@@ -144,9 +144,20 @@ const InventoryReceivingChangeForm = (props) => {
       return new Promise(async (resolve) => {
         const response = await api.product.get(element.product);
         response.data.data.units.forEach(elementt => {
+          if(element.unit_exchange == null && elementt.is_base_unit ==true){
+            let detail = {
+              "quantity": element.quantity,
+              "price": element.price,
+              "note": element.note,
+              "product": element.product
+            }
+
+            details.push(detail);
+            resolve()
+          }
           if (element.unit_exchange == elementt.id) {
             let detail = {
-              "quantity": elementt.value * element.quantity,
+              "quantity": elementt.value *  element.quantity,
               "price": element.price,
               "note": element.note,
               "product": element.product
@@ -165,7 +176,7 @@ const InventoryReceivingChangeForm = (props) => {
 
         await create(index)
       } else {
-        await update(values)
+        await update(index)
       }
       stopLoading(idxBtnSave)
       setDisableSubmit(false)
@@ -184,7 +195,7 @@ const InventoryReceivingChangeForm = (props) => {
     try {
       const response = await api.inventory_receiving.get(id);
       const values = response.data.data;
-      values.supplier = values.supplier.name;
+      values.supplier = values.supplier.id;
       values.details = values.details.map(elm => {
         elm.product = elm.product.id;
         return elm;
@@ -194,7 +205,7 @@ const InventoryReceivingChangeForm = (props) => {
       form.setFieldsValue(values)
 
     } catch (error) {
-      message.error(messages.ERROR + "hhhh")
+      message.error(messages.ERROR)
     } finally {
       setLoadingData(false)
     }
@@ -482,6 +493,7 @@ const InventoryReceivingChangeForm = (props) => {
                                   showSearch
                                   style={{
                                     width: 150,
+                                    display: is_create==true ? "block":"none"
                                   }}
                                   placeholder="Đơn vị tính"
                                   optionFilterProp="children"

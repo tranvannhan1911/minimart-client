@@ -1,5 +1,5 @@
 import {
-  PlusOutlined, FormOutlined, DeleteOutlined, HistoryOutlined, EyeOutlined,ReloadOutlined
+  PlusOutlined, FormOutlined, DeleteOutlined, HistoryOutlined, EyeOutlined, ReloadOutlined
 } from '@ant-design/icons';
 import { Button, Form, Input, Select, message, Space, Popconfirm, Switch, DatePicker, Col, Row, Table, Checkbox, Modal, Divider } from 'antd';
 import { Typography } from 'antd';
@@ -41,7 +41,7 @@ const PromotionChangeForm = (props) => {
   const [end_date, setEndDate] = useState('');
   const [products, setProducts] = useState([]);
   const [productGroup, setProductGroup] = useState([]);
-
+  const [dataLine, setDataLine] = useState([]);
 
   const handleDataCustomerGroup = async () => {
     setLoadingData(true)
@@ -102,7 +102,7 @@ const PromotionChangeForm = (props) => {
   };
 
   const onFinish = async (values) => {
-    
+
   }
 
   const onFinishFailed = (errorInfo) => {
@@ -113,6 +113,8 @@ const PromotionChangeForm = (props) => {
   const handleData = async () => {
     setLoadingData(true)
     try {
+      let dataline = [];
+      let loai = '';
       const response = await api.promotion.get(id);
       const values = response.data.data;
       // console.log(values)
@@ -121,8 +123,34 @@ const PromotionChangeForm = (props) => {
       values.end_date = moment(values.end_date);
       values.applicable_customer_groups = values.applicable_customer_groups.map(elm => elm.toString());
       form.setFieldsValue(values);
+
+      values.lines.forEach(element => {
+        if (element.type == 'Product') {
+          loai = 'Sản phẩm';
+        } else if (element.type == 'Fixed') {
+          loai = 'Tiền';
+        } else {
+          loai = 'Chiết khấu';
+        }
+
+        let date = element.start_date.slice(0, 10);
+
+        let date2 = element.end_date.slice(0, 10);
+
+        let lineIndex = {
+          promotion_code: element.promotion_code,
+          description: element.description,
+          type: loai,
+          start_date: date,
+          end_date: date2,
+          id: element.id,
+          status:element.status ? 'Hoạt động': 'Khóa'
+        }
+        dataline.push(lineIndex);
+      });
+      setDataLine(dataline);
+      // console.log(values.lines)
       setData(values.lines);
-      console.log(values)
       setStartDate(values.start_date);
       setEndDate(values.end_date);
     } catch (error) {
@@ -167,7 +195,7 @@ const PromotionChangeForm = (props) => {
 
   const onOpen = () => {
     setCreate(true);
-    setDataUpdate();
+    setDataUpdate([]);
     setOpen(true);
   };
 
@@ -178,17 +206,18 @@ const PromotionChangeForm = (props) => {
       if (element.id == id) {
         let index = {
           "detail": {
-            "quantity_buy": element.quantity_buy,
-            "quantity_received": element.quantity_received,
-            "minimum_total": element.minimum_total,
-            "percent": element.percent,
-            "maximum_reduction_amount": element.maximum_reduction_amount,
-            "reduction_amount": element.reduction_amount,
-            "promotion_line": element.promotion_line,
-            "product_received": element.product_received,
-            "applicable_products": element.applicable_products,
-            "applicable_product_groups": element.applicable_customer_groups
+            "quantity_buy": element.detail.quantity_buy,
+            "quantity_received": element.detail.quantity_received,
+            "minimum_total": element.detail.minimum_total,
+            "percent": element.detail.percent,
+            "maximum_reduction_amount": element.detail.maximum_reduction_amount,
+            "reduction_amount": element.detail.reduction_amount,
+            "promotion_line": element.detail.promotion_line,
+            "product_received": element.detail.product_received,
+            "applicable_products": element.detail.applicable_products,
+            "applicable_product_groups": element.detail.applicable_product_groups
           },
+          "id": element.id,
           "title": element.title,
           "description": element.description,
           "promotion_code": element.promotion_code,
@@ -239,16 +268,16 @@ const PromotionChangeForm = (props) => {
       { title: "Chương trình khuyến mãi", href: paths.promotion.list },
       { title: is_create ? "Khuyến mãi" : "Khuyến mãi " }])
 
-    if (is_create == true) {
+    // if (is_create == true) {
       props.setBreadcrumbExtras([
         <Button type="info" icon={<ReloadOutlined />} onClick={() => handleData()}
         >Làm mới</Button>,
         <Button type="info" icon={<HistoryOutlined />}
         >Lịch sử chỉnh sửa</Button>
       ])
-    } else {
-      props.setBreadcrumbExtras(null)
-    }
+    // } else {
+    //   props.setBreadcrumbExtras(null)
+    // }
   }, [is_create])
 
   useEffect(() => {
@@ -286,7 +315,11 @@ const PromotionChangeForm = (props) => {
       dataIndex: 'end_date',
       key: 'address',
     },
-
+    {
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'address',
+    },
     {
       title: '',
       dataIndex: 'id',
@@ -424,37 +457,7 @@ const PromotionChangeForm = (props) => {
             <Row>
               <Col span={1}></Col>
               <Col span={10} style={{ backgroundColor: "white" }}>
-                {/* <Form.Item label="Hình ảnh" name="image"
-              style={{
-                textAlign: 'left'
-              }}>
-              <Upload
-                listType="picture-card"
-                className="avatar-uploader"
-                showUploadList={false}
-                beforeUpload={beforeUpload}
-                onChange={handleChange}
-                progress={{
-                  type: "circle"
-                }}
-                customRequest={(options) => {
-                  options.prefix = "promotion"
-                  uploadFile(options)
-                }}
-              >
-                {imageUrl ? (
-                  <img
-                    src={imageUrl}
-                    alt="avatar"
-                    style={{
-                      width: '100%',
-                    }}
-                  />
-                ) : (
-                  uploadButton
-                )}
-              </Upload>
-            </Form.Item> */}
+
               </Col>
               <Col span={2}></Col>
               <Col span={10} style={{ backgroundColor: "white" }}>
@@ -471,40 +474,10 @@ const PromotionChangeForm = (props) => {
               <Button type="primary" onClick={() => onOpen()}>Thêm mới</Button>
             </Row>
             <Col>
-              <Table columns={columns} dataSource={data}>
+              <Table columns={columns} dataSource={dataLine}>
 
               </Table>
-              {/* <PromotionLineTable
-                data={data}
-                loading={loadingData}
-                setLoading={setLoadingData} /> */}
             </Col>
-            {/* <Form.Item>
-              <Space>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  icon={<PlusOutlined />}
-                  loading={loadings[0]}
-                  onClick={() => setIdxBtnSave(0)}
-                  disabled={disableSubmit ? true : false}
-                >Lưu</Button>
-                <Button
-                  htmlType="submit"
-                  icon={<EditOutlined />}
-                  loading={loadings[1]}
-                  onClick={() => setIdxBtnSave(1)}
-                  disabled={disableSubmit ? true : false}
-                >Lưu và tiếp tục chỉnh sửa</Button>
-                <Button
-                  htmlType="submit"
-                  icon={<PlusOutlined />}
-                  loading={loadings[2]}
-                  onClick={() => setIdxBtnSave(2)}
-                  disabled={disableSubmit ? true : false}
-                >Lưu và thêm mới</Button>
-              </Space>
-            </Form.Item> */}
           </>}>
         </ChangeForm>
 
