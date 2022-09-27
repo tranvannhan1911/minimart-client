@@ -32,7 +32,7 @@ const PriceChangeForm = (props) => {
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const refAutoFocus = useRef(null)
-
+  let dataDetails=[];
   const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
       const newLoadings = [...prevLoadings];
@@ -141,9 +141,7 @@ const PriceChangeForm = (props) => {
     if (is_create) {
       await create(values)
     } else {
-      console.log(values.start_date._i)
-      values.start_date = values.start_date._i;
-      values.end_date = values.end_date._i;
+      
       await update(values)
     }
     stopLoading(idxBtnSave)
@@ -172,8 +170,8 @@ const PriceChangeForm = (props) => {
         }
         return elm;
       });
+      
       form.setFieldsValue(values)
-
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -442,7 +440,7 @@ const PriceChangeForm = (props) => {
                                   },
                                 ]}
                               >
-                                <Input placeholder="Giá" type='number' min='0' disabled={is_create ? false : true} />
+                                <Input placeholder="Giá" type='number' style={{width:150}} min='0' disabled={is_create ? false : true} />
                               </Form.Item>
 
                               <Popconfirm
