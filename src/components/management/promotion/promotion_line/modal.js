@@ -7,6 +7,7 @@ import messages from '../../../../utils/messages'
 import api from '../../../../api/apis'
 import paths from '../../../../utils/paths'
 import { useNavigate} from 'react-router-dom'
+import {validCode} from '../../../../resources/regexp'
 
 const { Option } = Select;
 const dateFormat = "YYYY/MM/DD";
@@ -26,9 +27,9 @@ const PromotionLineModal = (props) => {
     setCreate(props.setCreate);
     if (props.data != null) {
       form.setFieldsValue(props.data);
+      setTypeIndex(props.data.type);
     }
     // setDataSource(props.data.pricedetails)
-    // console.log(props)
   });
 
   const create = async (values) => {
@@ -51,18 +52,21 @@ const PromotionLineModal = (props) => {
 
   const update = async (values) => {
     try {
-      const response = await api.promotion_line.update(props.data.id, values)
+      const response = await api.promotion_line.update(props.data.id, values);
       if (response.data.code == 1) {
-        message.success(messages.promotion_line.SUCCESS_SAVE(props.data.id))
-        return true
+        message.success(messages.promotion_line.SUCCESS_SAVE(props.data.id));
+        setTimeout(window.location.reload(), 1000);
+        return true;
       } else {
-        message.error(response.data.message.toString())
+        message.error(response.data.message.toString());
+        // window.location.reload();
       }
     } catch (error) {
-      message.error(messages.ERROR)
-      console.log('Failed:', error)
+      message.error(messages.ERROR);
+      setTimeout(window.location.reload(), 1000);
+      console.log('Failed:', error);
     }
-    return false
+    return false;
   }
 
   const showDrawer = () => {
@@ -75,9 +79,30 @@ const PromotionLineModal = (props) => {
 
   const onReset = () => {
     form.resetFields();
+    setTypeIndex("Product");
   };
 
   const onSaveAndClose = async () => {
+    if(form.getFieldValue("title") == null || form.getFieldValue("title")== ''){
+      message.error("Vui lòng nhập tiêu đề khuyến mãi");
+      return;
+    }
+    if(form.getFieldValue("promotion_code") == null || form.getFieldValue("promotion_code") == ''){
+      message.error("Vui lòng nhập mã khuyến mãi");
+      return;
+    }
+    if(form.getFieldValue("description") == null || form.getFieldValue("description") == ''){
+      message.error("Vui lòng nhập diễn giải");
+      return;
+    }
+    if(form.getFieldValue("start_date") == null){
+      message.error("Vui lòng chọn ngày bắt đầu khuyến mãi");
+      return;
+    }
+    if(form.getFieldValue("end_date") == null){
+      message.error("Vui lòng chọn ngày kết thúc khuyến mãi");
+      return;
+    }
     if (form.getFieldValue("start_date") < props.start_date._d - 1 || form.getFieldValue("start_date") > props.end_date._d + 1) {
       message.error("Ngày bắt đầu phải trong thời gian chương trình khuyến mãi");
       return;
@@ -86,13 +111,18 @@ const PromotionLineModal = (props) => {
       message.error("Ngày kết thúc phải trong thời gian chương trình khuyến mãi và trước thời gian bắt đầu");
       return;
     }
+    if (!validCode.test(form.getFieldValue("promotion_code"))) {
+      message.error("Mã khuyến mãi không hợp lệ! Mã bao gồm 3 ký tự in hoa và 3 ký tự số phía sau (VD: AAA000)");
+      return;
+    }
+    
     // console.log(form.getFieldValue("title"))
     let sta = "";
     let typ = "";
     if (form.getFieldValue("status") == null) {
       sta = true;
     } else {
-      sta = false;
+      sta = form.getFieldValue("status");
     }
     if (form.getFieldValue("type") == null) {
       typ = 'Product';
@@ -107,7 +137,7 @@ const PromotionLineModal = (props) => {
         "percent": form.getFieldValue("percent"),
         "maximum_reduction_amount": form.getFieldValue("maximum_reduction_amount"),
         "reduction_amount": form.getFieldValue("reduction_amount"),
-        "promotion_line": null,
+        // "promotion_line": null,
         "product_received": form.getFieldValue("product_received"),
         "applicable_products": form.getFieldValue("applicable_products"),
         "applicable_product_groups": form.getFieldValue("applicable_product_groups")
@@ -128,11 +158,33 @@ const PromotionLineModal = (props) => {
       "user_created": null,
       "user_updated": null
     }
+    if(typ =='Product'){
+      index.detail.minimum_total=null;
+      index.detail.percent=null;
+      index.detail.maximum_reduction_amount=null;
+      index.detail.reduction_amount=null;
+      
+    }else if(typ == "Percent"){
+      index.detail.quantity_buy=null;
+      index.detail.quantity_received=null;
+      index.detail.product_received=null;
+      index.detail.applicable_products=[];
+      index.detail.applicable_product_groups=[];
+      index.detail.reduction_amount=null;
+    }else{
+      index.detail.quantity_buy=null;
+      index.detail.quantity_received=null;
+      index.detail.product_received=null;
+      index.detail.applicable_products=[];
+      index.detail.applicable_product_groups=[];
+      index.detail.percent=null;
+    }
     console.log(index)
     let kq;
     if (is_create == true) {
       kq = await create(index);
     } else {
+      index.detail.promotion_line=props.data.id;
       kq = await update(index);
     }
     if (kq == true) {
