@@ -80,3 +80,9 @@
 ::-webkit-scrollbar-thumb {
   background-color: #a9a3a3;
 }
+
+.inputDisableText{
+  background-color: white!important;
+  color: black!important;
+  border: none!important;
+}
