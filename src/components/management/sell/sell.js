@@ -1,5 +1,8 @@
+import {
+    ExpandOutlined
+  } from '@ant-design/icons';
 import React, { useEffect, useRef, useState } from 'react';
-import { Tabs, Form, Input, Select, message, Space, Popconfirm, Upload, Row, Col, Checkbox } from 'antd';
+import { Tabs, Form, Input, Select, message, Space, Popconfirm, Upload, Row, Col, Checkbox, Button } from 'antd';
 import OrderItem from './item';
 import api from '../../../api/apis';
 import messages from '../../../utils/messages';
@@ -11,26 +14,28 @@ const { Option } = Select;
 const SellPage = () => {
     const [baseUnitOptions, setBaseUnitOptions] = useState([])
     const [customerOptions, setCustomerOptions] = useState([])
+    const [staffOptions, setStaffOptions] = useState([])
     const [activeKey, setActiveKey] = useState();
-    const [items, setItems] = useState();
+    const [items, setItems] = useState([]);
     const newTabIndex = useRef(0);
+    let init = false;
     
-    const initialItems = [
-        {
-            label: 'Đơn hàng 1',
-            children: <TabContent 
-                baseUnitOptions={baseUnitOptions}
-                setBaseUnitOptions={setBaseUnitOptions}
-                customerOptions={customerOptions}
-                setCustomerOptions={setCustomerOptions}/>,
-            key: '1',
-        },
-    ];
+    // const initialItems = [
+    //     {
+    //         label: 'Đơn hàng 1',
+    //         children: <TabContent 
+    //             baseUnitOptions={baseUnitOptions}
+    //             setBaseUnitOptions={setBaseUnitOptions}
+    //             customerOptions={customerOptions}
+    //             setCustomerOptions={setCustomerOptions}/>,
+    //         key: '1',
+    //     },
+    // ];
 
-    const init = () => {
-        setActiveKey(initialItems[0].key)
-        setItems(initialItems)
-    }
+    // const init = () => {
+    //     setActiveKey(initialItems[0].key)
+    //     setItems(initialItems)
+    // }
 
     const onChange = (newActiveKey) => {
         console.log(newActiveKey)
@@ -42,12 +47,15 @@ const SellPage = () => {
         const newActiveKey = `newTab${newTabIndex.current++}`;
         const newPanes = [...items];
         newPanes.push({
-            label: `Đơn hàng ${newTabIndex.current+1}`,
+            label: `Đơn hàng ${newTabIndex.current}`,
             children: <TabContent 
                 baseUnitOptions={baseUnitOptions}
                 setBaseUnitOptions={setBaseUnitOptions}
                 customerOptions={customerOptions}
-                setCustomerOptions={setCustomerOptions}/>,
+                setCustomerOptions={setCustomerOptions}
+                staffOptions={staffOptions}
+                setStaffOptions={setStaffOptions}
+                />,
             key: newActiveKey,
         });
         setItems(newPanes);
@@ -106,10 +114,25 @@ const SellPage = () => {
             console.log(response.data)
             const options = response.data.data.results.map(elm => {
                 return (
-                    <Option key={elm.id} value={elm.id}>{elm.fullname}</Option>
+                    <Option key={elm.id} value={elm.id}>{elm.fullname} - {elm.phone}</Option>
                 )
             })
             setCustomerOptions(options);
+        } catch (error) {
+            message.error(messages.ERROR)
+        }
+    }
+    
+    const handleDataStaff = async () => {
+        try {
+            const response = await api.staff.list()
+            console.log(response.data)
+            const options = response.data.data.results.map(elm => {
+                return (
+                    <Option key={elm.id} value={elm.id}>{elm.fullname} - {elm.phone}</Option>
+                )
+            })
+            setStaffOptions(options);
         } catch (error) {
             message.error(messages.ERROR)
         }
@@ -118,10 +141,16 @@ const SellPage = () => {
     useEffect(() => {
         handleDataBaseUnit();
         handleDataCustomer();
-        if(activeKey == null){
-            init()
+        handleDataStaff();
+        if(!init){
+            init = true
+            add()
         }
     }, [])
+    
+    useEffect(() => {
+        console.log("customerOptions", customerOptions)
+    }, [customerOptions])
 
     return (
         <Tabs
@@ -130,9 +159,9 @@ const SellPage = () => {
             activeKey={activeKey}
             onEdit={onEdit}
             items={items}
-            // tabBarExtraContent={{
-            //     right: <ProductSelect />
-            // }}
+            tabBarExtraContent={{
+                right: <Button type="info" icon={<ExpandOutlined />}>Mở rộng</Button>
+            }}
         />
     );
 };

@@ -86,3 +86,8 @@
   color: black!important;
   border: none!important;
 }
+
+.sb{
+  display: flex;
+  justify-content: space-between;
+}

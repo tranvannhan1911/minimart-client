@@ -1,9 +1,9 @@
 import {
     PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined,
-    LoadingOutlined, MinusCircleOutlined
+    LoadingOutlined, MinusCircleOutlined, TagOutlined
 } from '@ant-design/icons';
 import React, { useRef, useState } from 'react';
-import { Button, Form, Input, Select, message, Space, Popconfirm, Upload, Row, Col, Checkbox, Typography } from 'antd';
+import { Button, Form, Input, Select, message, Space, Popconfirm, Upload, Row, Col, Checkbox, Typography, Popover } from 'antd';
 import ProductSelect from '../barcode/input';
 import api from '../../../api/apis';
 import messages from '../../../utils/messages';
@@ -22,29 +22,20 @@ const titleCol = {
 
 const OrderItem = (props) => {
     const [productData, setProductData] = useState()
-    const [baseUnit, setBaseUnit] = useState()
-    const [curentUnit, setCurentUnit] = useState()
-    var _base_unit;
+    const [openPopover, setOpenPopover] = useState([])
 
     const onSelectProduct = async (product_id, add) => {
         const response = await api.product.get(product_id)
         console.log(response.data.data)
         if (response.data.code == 1) {
             setProductData(response.data.data)
-            _base_unit = response.data.data.base_unit
-            console.log(_base_unit)
-            // await response.data.data.units.forEach(element => {
-            //     if (element.is_base_unit == true){
-            //         setBaseUnit(element)
-            //         setCurentUnit(element)
-            //         _base_unit = element;
-            //     }
-            // });
-            add({ 
+            add({
                 product: response.data.data.name,
-                unit_exchange: _base_unit.id,
+                unit_exchange: response.data.data.base_unit.id,
                 price: response.data.data.price_detail.price
             })
+            const _open = [...openPopover, false]
+            setOpenPopover(_open)
         } else {
             message.error(messages.ERROR_REFRESH)
         }
@@ -53,24 +44,24 @@ const OrderItem = (props) => {
     return (
         <Form.List name="units" label="Đơn vị tính quy đổi">
             {(fields, { add, remove }) => (
-                <>  
-                    <Row style={{textAlign: 'left', marginBottom: '10px'}}>
-                        <Col style={titleCol} span={8}>
+                <>
+                    <Row style={{ textAlign: 'left', marginBottom: '10px' }}>
+                        <Col style={titleCol} span={7}>
                             <Typography.Text >Sản phẩm</Typography.Text>
                         </Col>
                         <Col style={titleCol} span={4}>
                             <Typography.Text >Đơn vị</Typography.Text>
                         </Col>
-                        <Col style={titleCol} span={3}>
+                        <Col style={titleCol} span={4}>
                             <Typography.Text >Giá</Typography.Text>
                         </Col>
-                        <Col style={titleCol} span={4}>
+                        <Col style={titleCol} span={3}>
                             <Typography.Text >Số lượng</Typography.Text>
                         </Col>
                         <Col style={titleCol} span={4}>
                             <Typography.Text >Thành tiền</Typography.Text>
                         </Col>
-                        <Col span={1}></Col>
+                        <Col span={2}></Col>
                     </Row>
                     {fields.map(({ key, name, ...restField }) => (
                         <Row>
@@ -82,7 +73,7 @@ const OrderItem = (props) => {
                             }}
                             align="baseline"
                         > */}
-                            <Col span={8} style={{paddingRight: '5px'}}>
+                            <Col span={7} style={{ paddingRight: '5px' }}>
                                 <Form.Item
                                     {...restField}
                                     name={[name, 'product']}
@@ -90,10 +81,10 @@ const OrderItem = (props) => {
                                         textAlign: 'left'
                                     }}
                                 >
-                                    <Input 
-                                        disabled={true} 
+                                    <Input
+                                        disabled={true}
                                         placeholder="Sản phẩm"
-                                        className='inputDisableText'/>
+                                        className='inputDisableText' />
                                 </Form.Item>
                             </Col>
                             <Col span={4} style={col}>
@@ -115,15 +106,15 @@ const OrderItem = (props) => {
                                         placeholder="Đơn vị tính"
                                         optionFilterProp="children"
                                         filterOption={(input, option) => option.children.includes(input)}
-                                        // filterSort={(optionA, optionB) =>
-                                        //     optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
-                                        // }
+                                    // filterSort={(optionA, optionB) =>
+                                    //     optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                                    // }
                                     >
                                         {props.baseUnitOptions}
                                     </Select>
                                 </Form.Item>
                             </Col>
-                            <Col span={3} style={col}>
+                            <Col span={4} style={col}>
                                 <Form.Item
                                     {...restField}
                                     name={[name, 'price']}
@@ -134,13 +125,13 @@ const OrderItem = (props) => {
                                         },
                                     ]}
                                 >
-                                    <Input 
+                                    <Input
                                         placeholder="Giá"
                                         disabled={true}
                                         className='inputDisableText' />
                                 </Form.Item>
                             </Col>
-                            <Col span={4} style={col}>
+                            <Col span={3} style={col}>
                                 <Form.Item
                                     {...restField}
                                     name={[name, 'quantity']}
@@ -163,7 +154,31 @@ const OrderItem = (props) => {
                                         className='inputDisableText' />
                                 </Form.Item>
                             </Col>
-                            <Col span={1}>
+                            <Col span={2}>
+                                <Popover
+                                    content={
+                                    <div>
+                                        <div className='sb'>
+                                            <span>Mã KM</span>
+                                            <span>9818128128</span>
+                                        </div>
+                                        <div className='sb'>
+                                            <span>Chi tiết</span>
+                                            <span>Mua 5 tặng 1</span>
+                                        </div>
+                                        <div>
+                                            <span>Được tặng 2 gói netcafe</span>
+                                        </div>
+                                    </div>
+                                    }
+                                    title="Khuyến mãi tặng sản phẩm"
+                                    trigger="click"
+                                    onOpenChange={() => {}}
+                                >
+                                    <TagOutlined
+                                        twoToneColor="#eb2f96"
+                                        style={{ marginRight: 10 }}/>
+                                </Popover>
                                 <MinusCircleOutlined onClick={() => remove(name)} />
                             </Col>
                             {/* </Space> */}
