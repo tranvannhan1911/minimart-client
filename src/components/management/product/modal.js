@@ -1,8 +1,19 @@
 import { Button, Drawer, Row, Col, Divider, Image } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 
 const PriceModal = (props) => {
   const [disabled, setDisabled] = useState(false);
+  const [baseUnit, setBaseUnit] = useState('');
+
+  useEffect(() => {
+    if (props.data.length != 0) {
+      props.data.units.forEach(element => {
+        if (element.is_base_unit == true) {
+          setBaseUnit(element.unit_name);
+        }
+      });
+    }
+  });
 
   const showDrawer = () => {
     props.setOpen(true);
@@ -19,7 +30,7 @@ const PriceModal = (props) => {
         style={{
           marginBottom: 24,
           fontSize: 25,
-          fontWeight:'bold'
+          fontWeight: 'bold'
         }}
       >
         Thông tin sản phẩm
@@ -30,43 +41,48 @@ const PriceModal = (props) => {
             <Image
               width={200}
               height={200}
-              src="https://satrafoods.com.vn/uploads/san-pham-cung-loai/8934588012228.jpg"
+              src={props.data.image}
             />
           </div>
         </Col>
-      {/* </Row> */}
-      <Col span={12}>
-      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '0px', fontWeight:'bold' }}>Thông tin cơ bản</p>
-      <Row>
-        <Col span={24}>
-          <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{fontWeight:'bold'}}>Mã sản phẩm:</span> {props.data.product_code}</p>
-          </div>
-        </Col>
-        <Col span={24}>
-          <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{fontWeight:'bold'}}>Tên sản phẩm:</span> {props.data.name}</p>
-          </div>
+        {/* </Row> */}
+        <Col span={12}>
+          <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '0px', fontWeight: 'bold' }}>Thông tin cơ bản</p>
+          <Row>
+            <Col span={24}>
+              <div className="site-description-item-profile-wrapper">
+                <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{ fontWeight: 'bold' }}>Mã sản phẩm:</span> {props.data.product_code}</p>
+              </div>
+            </Col>
+            <Col span={24}>
+              <div className="site-description-item-profile-wrapper">
+                <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{ fontWeight: 'bold' }}>Tên sản phẩm:</span> {props.data.name}</p>
+              </div>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <div className="site-description-item-profile-wrapper">
+                <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{ fontWeight: 'bold' }}>BarCode:</span> {props.data.barcode}</p>
+              </div>
+            </Col>
+            <Col span={24}>
+              <div className="site-description-item-profile-wrapper">
+                <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{ fontWeight: 'bold' }}>Nhóm sản phẩm:</span> {props.data.product_groups}</p>
+              </div>
+            </Col>
+            <Col span={24}>
+              <div className="site-description-item-profile-wrapper">
+                <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{ fontWeight: 'bold' }}>Số lượng còn trong kho:</span> {props.data.stock} {baseUnit}</p>
+              </div>
+            </Col>
+          </Row>
         </Col>
       </Row>
       <Row>
         <Col span={24}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{fontWeight:'bold'}}>BarCode:</span> {props.data.barcode}</p>
-          </div>
-        </Col>
-        <Col span={24}>
-          <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{fontWeight:'bold'}}>Nhóm sản phẩm:</span> {props.data.product_groups}</p>
-          </div>
-        </Col>
-      </Row>
-      </Col>
-      </Row>
-      <Row>
-        <Col span={24}>
-          <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{fontWeight:'bold'}}>Mô tả sản phẩm:</span></p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{ fontWeight: 'bold' }}>Mô tả sản phẩm:</span></p>
           </div>
         </Col>
       </Row>
@@ -78,9 +94,9 @@ const PriceModal = (props) => {
         </Col>
       </Row>
       <Divider />
-      
+
     </Drawer>
-    
+
   );
 };
 export default PriceModal;

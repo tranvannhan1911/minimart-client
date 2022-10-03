@@ -197,7 +197,6 @@ const PromotionLineModal = (props) => {
         "percent": form.getFieldValue("percent"),
         "maximum_reduction_amount": form.getFieldValue("maximum_reduction_amount"),
         "reduction_amount": form.getFieldValue("reduction_amount"),
-        "promotion_line": props.data.id,
         "product_received": form.getFieldValue("product_received"),
         "applicable_products": form.getFieldValue("applicable_products"),
         "applicable_product_groups": form.getFieldValue("applicable_product_groups")
@@ -606,9 +605,7 @@ const PromotionLineModal = (props) => {
         {/* <Form.List name="detail" label="Bảng khuyến mãi">
           {(fields, { add, remove }) => (
             <>
-
               {fields.map(({ key, name, ...restField }) => (
-
                 <Space
                   key={key}
                   style={{
@@ -618,7 +615,6 @@ const PromotionLineModal = (props) => {
                   }}
                   align="baseline"
                 >
-
                   <Form.Item
                     {...restField}
                     name={[name, 'applicable_product_groups']}
@@ -643,7 +639,6 @@ const PromotionLineModal = (props) => {
                       {baseProductGroupOptions}
                     </Select>
                   </Form.Item>
-
                   <Form.Item
                     {...restField}
                     name={[name, 'applicable_products']}
@@ -668,7 +663,6 @@ const PromotionLineModal = (props) => {
                       {baseProductOptions}
                     </Select>
                   </Form.Item>
-
                   <Form.Item
                     {...restField}
                     name={[name, 'percent']}
@@ -682,8 +676,6 @@ const PromotionLineModal = (props) => {
                   >
                     <Input placeholder="Số chiết khấu" type='number' min='0' disabled={is_create ? false : true} />
                   </Form.Item>
-
-
                   <Form.Item
                     {...restField}
                     name={[name, 'quantity_buy']}
@@ -697,8 +689,6 @@ const PromotionLineModal = (props) => {
                   >
                     <Input placeholder="Số lượng mua" type='number' min='0' disabled={is_create ? false : true} />
                   </Form.Item>
-
-
                   <Form.Item
                     {...restField}
                     name={[name, 'product']}
@@ -727,7 +717,6 @@ const PromotionLineModal = (props) => {
                       {baseProductOptions}
                     </Select>
                   </Form.Item>
-
                   <Form.Item
                     {...restField}
                     name={[name, 'quantity_received']}
@@ -741,8 +730,6 @@ const PromotionLineModal = (props) => {
                   >
                     <Input placeholder="Số lượng nhận" type='number' min='0' disabled={is_create ? false : true} />
                   </Form.Item>
-
-
                   <Form.Item
                     {...restField}
                     name={[name, 'minimum_total']}
@@ -756,7 +743,6 @@ const PromotionLineModal = (props) => {
                   >
                     <Input placeholder="Số tiền ít nhất" type='number' min='0' disabled={is_create ? false : true} />
                   </Form.Item>
-
                   <Form.Item
                     {...restField}
                     name={[name, 'reduction_amount']}
@@ -770,7 +756,6 @@ const PromotionLineModal = (props) => {
                   >
                     <Input placeholder="Số lượng giảm giá" type='number' min='0' disabled={is_create ? false : true} />
                   </Form.Item>
-
                   <Form.Item
                     {...restField}
                     name={[name, 'maximum_reduction_amount']}
@@ -784,7 +769,6 @@ const PromotionLineModal = (props) => {
                   >
                     <Input placeholder="Số tiền giảm tối đa" type='number' min='0' disabled={is_create ? false : true} />
                   </Form.Item>
-
                   <Popconfirm
                     placement="bottomRight"
                     title="Xác nhận xóa khuyến mãi này"
@@ -797,16 +781,13 @@ const PromotionLineModal = (props) => {
                     <MinusCircleOutlined />
                   </Popconfirm>
                 </Space>
-
               ))}
               <Row>
-
                 <Form.Item style={{ width: '170px', margin: 'auto' }}>
                   <Button type="dashed" disabled={is_create ? false : true} onClick={() => add()} block icon={<PlusOutlined />} >
                     Thêm khuyến mãi
                   </Button>
                 </Form.Item>
-
               </Row>
             </>
           )}

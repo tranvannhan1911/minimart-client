@@ -76,6 +76,13 @@ const getApi = (resource) => {
     }
 }
 
+const promotion_line_extras = {
+    by_order: (params) => {
+        const url = `/promotion-line/by_order/`
+        return axiosApi.get(url, params)
+    }
+}
+
 const api = {
     customer: getApi("customer"),
     customer_group: getApi("customer-group"),
@@ -90,6 +97,8 @@ const api = {
     warehouse_transaction: getApi("warehouse-transaction"),
     promotion: getApi("promotion"),
     promotion_line: getApi("promotion-line"),
+    order: getApi("order"),
+    order_refund: getApi("refund"),
 
 }
 

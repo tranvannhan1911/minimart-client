@@ -1,7 +1,7 @@
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Space, Popconfirm } from 'antd';
+import { Button, Form, Input, Select, message, Space, Popconfirm,Row,Col } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
@@ -213,35 +213,57 @@ const SupplierChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <>
-              <Form.Item label="Tên nhà cung cấp" name="name" required
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng nhập tên nhà cung cấp!',
-                  },
-                ]}
-              >
-                <Input autoFocus ref={refAutoFocus} />
-              </Form.Item>
-              <Form.Item label="Số điện thoại" name="phone" required
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng nhập số điện thoại!',
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item label="Địa chỉ email" name="email">
-                <Input />
-              </Form.Item>
-              <Form.Item label="Địa chỉ" name="address">
-                <Input />
-              </Form.Item>
-              <Form.Item label="Ghi chú" name="note" >
-                <TextArea rows={4} />
-              </Form.Item>
+              <Row>
+                <Col span={1}></Col>
+                <Col span={10}>
+                  <Form.Item label="Tên nhà cung cấp" name="name" required
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập tên nhà cung cấp!',
+                      },
+                    ]}
+                  >
+                    <Input autoFocus ref={refAutoFocus} />
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10}>
+                  <Form.Item label="Số điện thoại" name="phone" required
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập số điện thoại!',
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={1}></Col>
+                <Col span={10}>
+                  <Form.Item label="Địa chỉ email" name="email">
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10}>
+                  <Form.Item label="Địa chỉ" name="address">
+                    <Input />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={1}></Col>
+                <Col span={22}>
+                  <Form.Item label="Ghi chú" name="note" >
+                    <TextArea rows={4} />
+                  </Form.Item>
+                </Col>
+              </Row>
+
               <Form.Item>
                 <Space>
                   <Button

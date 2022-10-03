@@ -40,6 +40,8 @@ const Messages = {
     warehouse_transaction: getMessage("biến động kho"),
     promotion: getMessage("chương trình khuyến mãi"),
     promotion_line: getMessage("khuyến mãi"),
+    order: getMessage("đơn bán hàng"),
+    order_refund: getMessage("đơn trả hàng"),
 }
 
 const messages = Messages;

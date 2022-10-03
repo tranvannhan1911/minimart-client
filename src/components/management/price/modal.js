@@ -109,7 +109,7 @@ const PriceModal = (props) => {
         </Col>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người cập nhật: {props.data.updated}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người cập nhật: {props.data.user_updated}</p>
           </div>
         </Col>
       </Row>

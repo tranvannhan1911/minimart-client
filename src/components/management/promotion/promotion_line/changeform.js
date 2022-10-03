@@ -284,6 +284,7 @@ const PromotionChangeForm = (props) => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
 
+
   const columns = [
     // {
     //   title: 'Loại',
@@ -481,7 +482,7 @@ const PromotionChangeForm = (props) => {
           </>}>
         </ChangeForm>
 
-          <PromotionLineModal data={dataUpdate} open={open} start_date={start_date} end_date={end_date} id={id} dataProduct={products} dataGroupProduct={productGroup} setOpen={setOpen} setCreate={is_create} /></>
+          <PromotionLineModal data={dataUpdate} open={open} start_date={start_date} end_date={end_date} id={id} dataProduct={products} dataGroupProduct={productGroup} setOpen={setOpen} setCreate={is_create} handleData={handleData}/></>
       }
     </>
   )

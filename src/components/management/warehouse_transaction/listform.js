@@ -12,6 +12,8 @@ import api from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
+import axios from 'axios';
+
 
 const WarehouseTransactionListForm = (props) => {
     const [data, setData] = useState([])
@@ -24,28 +26,17 @@ const WarehouseTransactionListForm = (props) => {
     const handleGetData = async () => {
         setLoading(true)
         try{
-            const response = await api.warehouse_transaction.list()
-            const _data = response.data.data.results.map(elm => {
-                elm.key = elm.id
-                // switch(elm.gender){
-                //     case "M":
-                //         elm.gender = "Nam"
-                //         break
-                //     case "F":
-                //         elm.gender = "Nữ"
-                //         break
-                //     case "U":
-                //         elm.gender = "Không xác định"
-                //         break
-                // }
-                // if(elm.is_superuser==true){
-                //     elm.is_superuser = "Quản lý";
-                // }else{
-                //     elm.is_superuser = "Nhân viên";
-                // }
+            const response = (await axios.get('https://63252b299075b9cbee471829.mockapi.io/api/warehouse-transaction')).data;
+            const _data = response.map(elm => {
+            // const response = await api.warehouse_transaction.list()
+            // const _data = response.data.data.results.map(elm => {
+                elm.key = elm.id;
                 let date=elm.date_created.slice(0, 10);
                 let time=elm.date_created.slice(12, 19);
                 elm.date_created=date+" "+time;
+                elm.product= elm.product.name;
+                elm.reference= elm.reference.quantity;
+                elm.type= elm.type.type_name;
                 return elm
             })
             setData(_data)

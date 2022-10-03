@@ -41,11 +41,8 @@ const PriceTable = (props) => {
   const onOpen = async (id) => {
     props.data.forEach(element => {
       if(element.id==id){
-        console.log(element)
         setDataIndex(element);
-        // renderProfile(element)
         setOpen(true);
-        console.log(element);
       }
     });
   };
@@ -175,9 +172,21 @@ const PriceTable = (props) => {
       onFilter: (value, record) => {
         return (record.name && record.name.toLowerCase().includes(value.toLowerCase()))
           || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
+          || (record.product_code && record.product_code.toString().toLowerCase().includes(value.toLowerCase()))
+          || (record.barcode && record.barcode.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))},
       ...renderSearch(),
       ...getColumnSearchProps('id'),
+    },
+    {
+      title: 'Hình ảnh',
+      dataIndex: 'image',
+      key: 'image',
+      render: (image) => (
+        <span>
+          <img src={image} style={{width:'50px', height:'50px'}}></img>
+        </span>
+      ),
     },
     {
       title: 'Tên sản phẩm',
