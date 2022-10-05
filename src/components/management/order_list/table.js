@@ -7,11 +7,13 @@ import paths from '../../../utils/paths'
 import api from '../../../api/apis'
 import messages from '../../../utils/messages'
 import OrderModal from './modal';
+import OrderDetailModal from './modal_details';
 const { Search } = Input;
 
 const OrderTable = (props) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [openDetails, setOpenDetails] = useState(false);
   const [dataIndex, setDataIndex] = useState("");
   const [currentCountData, SetCurrentCountData] = useState(0);
   const [searchText, setSearchText] = useState('');
@@ -23,31 +25,6 @@ const OrderTable = (props) => {
     props.setFilteredInfo(filters);
     props.setSortedInfo(sorter);
     SetCurrentCountData(extras.currentDataSource.length)
-  };
-
-  const tagStatus = (status) => {
-    if (status == 'pending') {
-      return 'CHỜ XÁC NHẬN';
-    } else if (status == 'complete') {
-      return 'HOÀN THÀNH';
-    } else if (status == 'cancel') {
-      return 'HỦY';
-    }
-  };
-
-  const tagStatusColor = (status) => {
-    if (status == 'pending') {
-      return 'processing';
-    } else if (status == 'complete') {
-      return 'success';
-    } else {
-      return 'warning';
-    }
-    // if(status==true){
-    //   return 'geekblue';
-    // }else{
-    //   return 'volcano';
-    // }
   };
 
   useEffect(() => {
@@ -67,6 +44,16 @@ const OrderTable = (props) => {
       if (element.key == id) {
         setDataIndex(element);
         setOpen(true);
+      }
+    });
+  };
+
+  const onOpenDetails = async (id) => {
+    props.data.forEach(element => {
+      if (element.key == id) {
+        setDataIndex(element);
+        setOpenDetails(true);
+        console.log(element)
       }
     });
   };
@@ -179,40 +166,6 @@ const OrderTable = (props) => {
       ),
   });
 
-  const columnsCon = [
-    {
-      title: '#',
-      dataIndex: 'id',
-      key: 'id',
-    },
-    {
-      title: 'Tên sản phẩm',
-      dataIndex: 'product',
-      key: 'product',
-    },
-    {
-      title: 'Đơn vị',
-      dataIndex: 'unit_exchange',
-      key: 'unit',
-    },
-    {
-      title: 'Số lượng',
-      dataIndex: 'quantity',
-      key: 'quantity',
-    },
-    {
-      title: 'Giá',
-      dataIndex: 'price',
-      key: 'price',
-    },
-    {
-      title: 'Thành tiền',
-      dataIndex: 'total',
-      key: 'total',
-    },
-  ];
-
-
   const columns = [
     {
       title: 'Mã hóa đơn',
@@ -228,10 +181,11 @@ const OrderTable = (props) => {
       onFilter: (value, record) => {
         return (record.customer && record.customer.toLowerCase().includes(value.toLowerCase()))
           || (record.key && record.key.toString().toLowerCase().includes(value.toLowerCase()))
-          || (record.user_created && record.user_created.toString().toLowerCase().includes(value.toLowerCase()))
+          || (record.user_created && record.user_created.toLowerCase().includes(value.toLowerCase()))
+          || (record.total && record.total.toString().toLowerCase().includes(value.toLowerCase())) 
       },
       ...renderSearch(),
-      ...getColumnSearchProps('id'),
+      ...getColumnSearchProps('key'),
     },
     {
       title: 'Người tạo',
@@ -272,19 +226,7 @@ const OrderTable = (props) => {
       ...renderSearch(),
       ...getColumnSearchProps('total'),
     },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => (
-        <span>
-          <Tag color={tagStatusColor(status)} key={status}>
-            {tagStatus(status)}
-          </Tag>
-        </span>
-      ),
-    },
-
+    
     {
       title: '',
       dataIndex: 'key',
@@ -292,9 +234,13 @@ const OrderTable = (props) => {
       with:'10%',
       render: (key) => (
         <span>
-          <Button type="primary" danger onClick={() => onOpen(key)}>
+          <Button type="primary" onClick={() => onOpenDetails(key)}>
+            Xem chi tiết
+          </Button>
+          <Button type="primary" style={{marginLeft:'10px'}} danger onClick={() => onOpen(key)}>
             Trả hàng
           </Button>
+          
         </span>
       ),
     },
@@ -313,15 +259,6 @@ const OrderTable = (props) => {
       //   selectedRowKeys,
       //   onChange: onSelectChange
       // }}
-      expandable={{
-        expandedRowRender: (record) => (
-
-          <Table columns={columnsCon} dataSource={record.details}>
-          </Table>
-          
-        ),
-        rowExpandable: (record) => record.id !== 'Not Expandable',
-      }}
       bordered
       columns={columns}
       dataSource={props.data}
@@ -337,7 +274,9 @@ const OrderTable = (props) => {
         showTotal: (total) => `Tất cả ${total}`,
       }}
       loading={props.loading} />
-      <OrderModal open={open} data={dataIndex} setOpen={setOpen} /></>
+      <OrderModal open={open} data={dataIndex} setOpen={setOpen} />
+      <OrderDetailModal openDetails={openDetails} data={dataIndex} setOpenDetails={setOpenDetails} />
+      </>
   );
 };
 

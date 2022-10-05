@@ -48,10 +48,11 @@ const PriceTable = (props) => {
         let date = element.date_created.slice(0, 10);
         let time = element.date_created.slice(12, 19);
         element.date_created = date + " " + time;
-
-        let date2 = element.date_updated.slice(0, 10);
-        let time2 = element.date_updated.slice(12, 19);
-        element.date_updated = date + " " + time;
+        if (element.date_updated != null) {
+          let date2 = element.date_updated.slice(0, 10);
+          let time2 = element.date_updated.slice(12, 19);
+          element.date_updated = date + " " + time;
+        }
 
         let index = {
           "pricedetails": [],
@@ -108,7 +109,7 @@ const PriceTable = (props) => {
   const setIdxBtn = (id) => {
     navigate(paths.price.change(id))
   };
-  
+
   useEffect(() => {
     SetCurrentCountData(props.data.length)
   }, [props.data]);

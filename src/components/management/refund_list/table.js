@@ -25,30 +25,26 @@ const RefundTable = (props) => {
     SetCurrentCountData(extras.currentDataSource.length)
   };
 
-  const tagStatus = (status) => {
-    if (status == 'pending') {
-      return 'CHỜ XÁC NHẬN';
-    } else if (status == 'complete') {
-      return 'HOÀN THÀNH';
-    } else if (status == 'cancel') {
-      return 'HỦY';
-    }
-  };
+  // const tagStatus = (status) => {
+  //   if (status == 'pending') {
+  //     return 'CHỜ XÁC NHẬN';
+  //   } else if (status == 'complete') {
+  //     return 'HOÀN THÀNH';
+  //   } else if (status == 'cancel') {
+  //     return 'HỦY';
+  //   }
+  // };
 
-  const tagStatusColor = (status) => {
-    if (status == 'pending') {
-      return 'processing';
-    } else if (status == 'complete') {
-      return 'success';
-    } else {
-      return 'warning';
-    }
-    // if(status==true){
-    //   return 'geekblue';
-    // }else{
-    //   return 'volcano';
-    // }
-  };
+  // const tagStatusColor = (status) => {
+  //   if (status == 'pending') {
+  //     return 'processing';
+  //   } else if (status == 'complete') {
+  //     return 'success';
+  //   } else {
+  //     return 'warning';
+  //   }
+    
+  // };
 
   useEffect(() => {
     SetCurrentCountData(props.data.length)
@@ -179,39 +175,6 @@ const RefundTable = (props) => {
       ),
   });
 
-  const columnsCon = [
-    {
-      title: '#',
-      dataIndex: 'id',
-      key: 'id',
-    },
-    {
-      title: 'Tên sản phẩm',
-      dataIndex: 'product',
-      key: 'product',
-    },
-    {
-      title: 'Đơn vị',
-      dataIndex: 'unit_exchange',
-      key: 'unit',
-    },
-    {
-      title: 'Số lượng',
-      dataIndex: 'quantity',
-      key: 'quantity',
-    },
-    {
-      title: 'Giá',
-      dataIndex: 'price',
-      key: 'price',
-    },
-    {
-      title: 'Thành tiền',
-      dataIndex: 'total',
-      key: 'total',
-    },
-  ];
-
 
   const columns = [
     {
@@ -267,18 +230,18 @@ const RefundTable = (props) => {
       ...renderSearch(),
       ...getColumnSearchProps('total'),
     },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => (
-        <span>
-          <Tag color={tagStatusColor(status)} key={status}>
-            {tagStatus(status)}
-          </Tag>
-        </span>
-      ),
-    },
+    // {
+    //   title: 'Trạng thái',
+    //   dataIndex: 'status',
+    //   key: 'status',
+    //   render: (status) => (
+    //     <span>
+    //       <Tag color={tagStatusColor(status)} key={status}>
+    //         {tagStatus(status)}
+    //       </Tag>
+    //     </span>
+    //   ),
+    // },
 
     // {
     //   title: '',
@@ -308,15 +271,15 @@ const RefundTable = (props) => {
       //   selectedRowKeys,
       //   onChange: onSelectChange
       // }}
-      expandable={{
-        expandedRowRender: (record) => (
+      // expandable={{
+      //   expandedRowRender: (record) => (
 
-          <Table columns={columnsCon} dataSource={record.details}>
-          </Table>
+      //     <Table columns={columnsCon} dataSource={record.details}>
+      //     </Table>
           
-        ),
-        rowExpandable: (record) => record.id !== 'Not Expandable',
-      }}
+      //   ),
+      //   rowExpandable: (record) => record.id !== 'Not Expandable',
+      // }}
       bordered
       columns={columns}
       dataSource={props.data}

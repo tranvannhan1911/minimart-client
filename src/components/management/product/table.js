@@ -159,6 +159,7 @@ const PriceTable = (props) => {
   
 
   const columns = [
+    
     {
       title: 'Mã sản phẩm',
       dataIndex: 'id',

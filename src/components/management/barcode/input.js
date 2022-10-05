@@ -2,6 +2,8 @@ import { Input, message, Select, Tabs } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../../../api/apis';
 import messages from '../../../utils/messages';
+import axios from 'axios';
+
 const { Option } = Select;
 
 const ProductSelect = (props) => {
@@ -20,6 +22,7 @@ const ProductSelect = (props) => {
     const handleDataProduct = async () => {
         try {
           const response = await api.product.list();
+          console.log(response.data.data.results)
           const options = response.data.data.results.map(elm => {
             return (
               <Option key={elm.id} value={elm.id}>{elm.name}</Option>

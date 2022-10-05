@@ -53,6 +53,18 @@ class AccountApi{
 
 const getApi = (resource) => {
     return {
+        listBuy: (params) => {
+            const url = `/${resource}/?sellable=true`
+            return axiosApi.get(url, params)
+        },
+        listPromotionByOrder: (params) => {
+            const url = `/${resource}/by_order/`
+            return axiosApi.get(url, params)
+        },
+        listPromotionByProduct: (params) => {
+            const url = `/${resource}/by_product/`
+            return axiosApi.get(url, params)
+        },
         list: (params) => {
             const url = `/${resource}/`
             return axiosApi.get(url, params)
@@ -99,7 +111,6 @@ const api = {
     promotion_line: getApi("promotion-line"),
     order: getApi("order"),
     order_refund: getApi("refund"),
-
 }
 
 export {AccountApi};

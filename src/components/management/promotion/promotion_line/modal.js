@@ -361,7 +361,7 @@ const PromotionLineModal = (props) => {
           <Col span={12}>
             <Form.Item
               name="max_quantity"
-              label="Số lượng tối đa"
+              label="Ngân sách khuyến mãi"
             // rules={[
             //   {
             //     required: true,
@@ -540,7 +540,7 @@ const PromotionLineModal = (props) => {
 
             <Form.Item
               name='maximum_reduction_amount' label='Số tiền giảm tối đa'
-              style={{ display: typeIndex == 'Product' ? 'none' : "" || typeIndex == 'Fixed' ? 'block' : "" || typeIndex == 'Percent' ? 'block' : "" }}
+              style={{ display: typeIndex == 'Product' ? 'none' : "" || typeIndex == 'Fixed' ? 'none' : "" || typeIndex == 'Percent' ? 'block' : "" }}
               rules={[
                 {
                   required: true,
