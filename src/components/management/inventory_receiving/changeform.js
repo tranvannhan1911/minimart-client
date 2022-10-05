@@ -561,9 +561,9 @@ const InventoryReceivingChangeForm = (props) => {
                           <Col span={5}></Col>
                         </Row>
                       ))}
-                      <Form.Item style={{ width: '170px', margin: 'auto' }}>
+                      <Form.Item style={{ width: '180px', margin: 'auto' }}>
                         <Button type="dashed" disabled={is_create ? false : true} onClick={() => add()} block icon={<PlusOutlined />} >
-                          Thêm giá sản phẩm
+                          Thêm sản phẩm nhập
                         </Button>
                       </Form.Item>
                     </>

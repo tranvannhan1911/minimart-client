@@ -83,6 +83,7 @@ const PriceChangeForm = (props) => {
       const values = response.data.data
       values.product_groups = values.product_groups.map(elm => elm.id.toString());
       form.setFieldsValue(values)
+      setImageUrl(values.image)
     } catch (error) {
       message.error(messages.ERROR)
     } finally {

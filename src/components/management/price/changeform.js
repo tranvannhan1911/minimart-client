@@ -31,8 +31,9 @@ const PriceChangeForm = (props) => {
   const [baseUnitOptions, setBaseUnitOptions] = useState([]);
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
+  const [priceDetails, setPriceDetails] = useState([]);
   const refAutoFocus = useRef(null)
-  let dataDetails=[];
+  let dataDetails = [];
   const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
       const newLoadings = [...prevLoadings];
@@ -141,7 +142,7 @@ const PriceChangeForm = (props) => {
     if (is_create) {
       await create(values)
     } else {
-      
+      values.pricedetails = priceDetails;
       await update(values)
     }
     stopLoading(idxBtnSave)
@@ -158,9 +159,19 @@ const PriceChangeForm = (props) => {
     try {
       const response = await api.price.get(id);
       const values = response.data.data
+      let details = values.pricedetails.map(elm => {
+        let i = {
+          "price": elm.price,
+          "note": elm.note,
+          "product": elm.product.id,
+          "unit_exchange": elm.unit_exchange.id
+        }
+        return i;
+      });
       values.start_date = moment(values.start_date)
       values.status = values.status.toString()
       values.end_date = moment(values.end_date)
+      setPriceDetails(details);
       values.pricedetails = values.pricedetails.map(elm => {
         elm.product = elm.product.id;
         if (elm.unit_exchange == null) {
@@ -170,7 +181,7 @@ const PriceChangeForm = (props) => {
         }
         return elm;
       });
-      
+
       form.setFieldsValue(values)
     } catch (error) {
       message.error(messages.ERROR)
@@ -178,7 +189,6 @@ const PriceChangeForm = (props) => {
       setLoadingData(false)
     }
   }
-
   const handleDataBaseProduct = async () => {
     setLoadingData(true)
     try {
@@ -440,7 +450,7 @@ const PriceChangeForm = (props) => {
                                   },
                                 ]}
                               >
-                                <Input placeholder="Giá" type='number' style={{width:150}} min='0' disabled={is_create ? false : true} />
+                                <Input placeholder="Giá" type='number' style={{ width: 150 }} min='0' disabled={is_create ? false : true} />
                               </Form.Item>
 
                               <Popconfirm

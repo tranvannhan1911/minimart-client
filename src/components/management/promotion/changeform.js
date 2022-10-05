@@ -1,7 +1,7 @@
 import {
-  PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined, MinusCircleOutlined
+  PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined, MinusCircleOutlined, LoadingOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Space, Popconfirm, Switch, DatePicker, Col, Row, Table, Checkbox, Modal } from 'antd';
+import { Button, Form, Input, Select, message, Space, Popconfirm, Switch, DatePicker, Col, Row, Table, Upload, Modal } from 'antd';
 import { Typography } from 'antd';
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
@@ -10,6 +10,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
+import uploadFile from '../../../utils/s3';
 import { validName1 } from '../../../resources/regexp'
 import moment from "moment";
 const { RangePicker } = DatePicker;
@@ -157,6 +158,7 @@ const PromotionChangeForm = (props) => {
       setDisableSubmit(false)
       return;
     }
+    values.image = imageUrl;
     if (is_create) {
       await create(values)
     } else {
@@ -185,7 +187,7 @@ const PromotionChangeForm = (props) => {
       values.end_date = moment(values.end_date);
       values.applicable_customer_groups = values.applicable_customer_groups.map(elm => elm.toString());
       form.setFieldsValue(values);
-
+      setImageUrl(values.image)
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -280,6 +282,56 @@ const PromotionChangeForm = (props) => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
 
+  const beforeUpload = (file) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+
+    if (!isJpgOrPng) {
+      message.error('Chỉ tải lên các file JPG/PNG!');
+    }
+
+    const isLt2M = file.size / 1024 / 1024 < 2;
+
+    if (!isLt2M) {
+      message.error('File phải nhỏ hơn 2MB!');
+    }
+
+    return isJpgOrPng && isLt2M;
+  };
+
+
+  const [loadingImage, setLoadingImage] = useState(false);
+  const [imageUrl, setImageUrl] = useState();
+
+  const handleChange = (info) => {
+    console.log(info)
+    if (info.file.status === 'uploading') {
+      setImageUrl(null);
+      setLoadingImage(true);
+      return;
+    }
+
+    if (info.file.status === 'done') {
+      setImageUrl(info.file.response);
+      // Get this url from response in real world.
+      // getBase64(info.file.originFileObj, (url) => {
+      //   setLoadingImage(false);
+      //   setImageUrl(url);
+      // });
+    }
+  };
+
+  const uploadButton = (
+    <div>
+      {loadingImage ? <LoadingOutlined /> : <PlusOutlined />}
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -396,9 +448,9 @@ const PromotionChangeForm = (props) => {
               <Row>
               <Col span={1}></Col>
                 <Col span={10} style={{ backgroundColor: "white" }}>
-                  {/* <Form.Item label="Hình ảnh" name="image"
+                  <Form.Item label="Hình ảnh" name="image"
                     style={{
-                      textAlign: 'left'
+                      textAlign: 'left' 
                     }}>
                     <Upload
                       listType="picture-card"
@@ -426,7 +478,7 @@ const PromotionChangeForm = (props) => {
                         uploadButton
                       )}
                     </Upload>
-                  </Form.Item> */}
+                  </Form.Item>
                 </Col>
                 <Col span={2}></Col>
                 <Col span={10} style={{ backgroundColor: "white" }}>

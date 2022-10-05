@@ -45,6 +45,15 @@ const PriceTable = (props) => {
     let detail = [];
     props.data.forEach(async element => {
       if (element.price_list_id == id) {
+        let date = element.date_created.slice(0, 10);
+        let time = element.date_created.slice(12, 19);
+        element.date_created = date + " " + time;
+        if (element.date_updated != null) {
+          let date2 = element.date_updated.slice(0, 10);
+          let time2 = element.date_updated.slice(12, 19);
+          element.date_updated = date + " " + time;
+        }
+
         let index = {
           "pricedetails": [],
           "name": element.name,
@@ -52,26 +61,21 @@ const PriceTable = (props) => {
           "end_date": element.end_date,
           "status": element.status,
           "note": element.note,
-          "price_list_id": element.price_list_id
+          "price_list_id": element.price_list_id,
+          "date_created": element.date_created,
+          "date_updated": element.date_updated,
+          "user_created": element.user_created,
+          "user_updated": element.user_updated,
+
         }
         element.pricedetails.forEach(elementt => {
-          if (elementt.unit_exchange == null) {
-            let ind = {
-              "note": elementt.note,
-              "product": elementt.product.name,
-              "price": elementt.price,
-              "unit_exchange": elementt.product.base_unit
-            }
-            detail.push(ind);
-          } else {
-            let ind = {
-              "note": elementt.note,
-              "product": elementt.product.name,
-              "price": elementt.price,
-              "unit_exchange": elementt.unit_exchange.unit_name
-            }
-            detail.push(ind);
+          let ind = {
+            "note": elementt.note,
+            "product": elementt.product.name,
+            "price": elementt.price,
+            "unit_exchange": elementt.unit_exchange.unit_name
           }
+          detail.push(ind);
         });
         index.pricedetails = detail;
         setDataIndex(index);
@@ -105,26 +109,6 @@ const PriceTable = (props) => {
   const setIdxBtn = (id) => {
     navigate(paths.price.change(id))
   };
-  // const _delete = async (id) => {
-  //   try {
-  //     const response = await api.price.delete(id)
-  //     if (response.data.code == 1) {
-  //       message.success(messages.price.SUCCESS_DELETE(id))
-  //       navigate(paths.staff.list)
-  //       return true
-  //     } else {
-  //       message.error(messages.staff.ERROR_DELETE(id))
-  //     }
-  //   } catch (error) {
-  //     message.error(messages.ERROR)
-  //     console.log('Failed:', error)
-  //   }
-  //   return false
-  // };
-  // const setIdxBtnDelete = (id) => {
-  //   // _delete(id)
-  //   console.log(id)
-  // };
 
   useEffect(() => {
     SetCurrentCountData(props.data.length)

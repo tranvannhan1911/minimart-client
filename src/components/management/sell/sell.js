@@ -1,15 +1,15 @@
 import {
-    ExpandOutlined
-  } from '@ant-design/icons';
+    ExpandOutlined,ExclamationCircleOutlined
+} from '@ant-design/icons';
 import React, { useEffect, useRef, useState } from 'react';
-import { Tabs, Form, Input, Select, message, Space, Popconfirm, Upload, Row, Col, Checkbox, Button } from 'antd';
+import { Tabs, Form, Input, Select, message, Space, Popconfirm, Upload, Row, Col, Modal, Button } from 'antd';
 import OrderItem from './item';
 import api from '../../../api/apis';
 import messages from '../../../utils/messages';
 import ProductSelect from '../barcode/input';
 import TabContent from './tabcontent';
 const { Option } = Select;
-
+const { confirm } = Modal;
 
 const SellPage = () => {
     const [baseUnitOptions, setBaseUnitOptions] = useState([])
@@ -19,7 +19,6 @@ const SellPage = () => {
     const [items, setItems] = useState([]);
     const newTabIndex = useRef(0);
     let init = false;
-    
     // const initialItems = [
     //     {
     //         label: 'Đơn hàng 1',
@@ -48,21 +47,21 @@ const SellPage = () => {
         const newPanes = [...items];
         newPanes.push({
             label: `Đơn hàng ${newTabIndex.current}`,
-            children: <TabContent 
+            children: <TabContent
                 baseUnitOptions={baseUnitOptions}
                 setBaseUnitOptions={setBaseUnitOptions}
                 customerOptions={customerOptions}
                 setCustomerOptions={setCustomerOptions}
                 staffOptions={staffOptions}
                 setStaffOptions={setStaffOptions}
-                />,
+            />,
             key: newActiveKey,
         });
         setItems(newPanes);
         setActiveKey(newActiveKey);
     };
 
-    const remove = (targetKey) => {
+    const removeTab = (targetKey) => {
         let newActiveKey = activeKey;
         let lastIndex = -1;
         items.forEach((item, i) => {
@@ -84,8 +83,21 @@ const SellPage = () => {
         setActiveKey(newActiveKey);
     };
 
+    const remove = (key) => {
+        confirm({
+            title: 'Bạn có chắc chắn muốn đóng hóa đơn này?',
+            icon: <ExclamationCircleOutlined />,
+            content: '',
+            onOk() {
+                removeTab(key);
+            },
+            onCancel() {
+            },
+        });
+    };
+
     const onEdit = (targetKey, action) => {
-        console.log(targetKey, action)
+        // console.log(targetKey, action)
         if (action === 'add') {
             add();
         } else {
@@ -93,7 +105,6 @@ const SellPage = () => {
         }
     };
 
-    
     const handleDataBaseUnit = async () => {
         try {
             const response = await api.unit.list()
@@ -107,11 +118,11 @@ const SellPage = () => {
             message.error(messages.ERROR)
         }
     }
-    
+
     const handleDataCustomer = async () => {
         try {
             const response = await api.customer.list()
-            console.log(response.data)
+            // console.log(response.data)
             const options = response.data.data.results.map(elm => {
                 return (
                     <Option key={elm.id} value={elm.id}>{elm.fullname} - {elm.phone}</Option>
@@ -122,11 +133,11 @@ const SellPage = () => {
             message.error(messages.ERROR)
         }
     }
-    
+
     const handleDataStaff = async () => {
         try {
             const response = await api.staff.list()
-            console.log(response.data)
+            // console.log(response.data)
             const options = response.data.data.results.map(elm => {
                 return (
                     <Option key={elm.id} value={elm.id}>{elm.fullname} - {elm.phone}</Option>
@@ -142,14 +153,14 @@ const SellPage = () => {
         handleDataBaseUnit();
         handleDataCustomer();
         handleDataStaff();
-        if(!init){
+        if (!init) {
             init = true
             add()
         }
     }, [])
-    
+
     useEffect(() => {
-        console.log("customerOptions", customerOptions)
+        // console.log("customerOptions", customerOptions)
     }, [customerOptions])
 
     return (

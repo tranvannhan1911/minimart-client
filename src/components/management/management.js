@@ -29,6 +29,9 @@ const Managememt = () => {
         navigate('/dang-nhap')
       }else{
         setHasPerms(true)
+        sessionStorage.setItem("idStaff", response.data.data.id);
+        sessionStorage.setItem("nameStaff", response.data.data.fullname);
+        sessionStorage.setItem("phoneStaff", response.data.data.phone);
       }
     }catch(error){
       navigate('/dang-nhap')

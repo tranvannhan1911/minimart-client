@@ -31,19 +31,19 @@ const WarehouseTransactionModal = (props) => {
           </Col>
           <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Họ tên: {props.data.fullname}</p>
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Sản phẩm: {props.data.product}</p>
             </div>
           </Col>
         </Row>
         <Row>
           <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Giới tính: {props.data.gender}</p>
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Số lượng thay đổi: {props.data.change}</p>
             </div>
           </Col>
           <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Số điện thoại: {props.data.phone}</p>
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Số lượng kho: {props.data.reference}</p>
             </div>
           </Col>
         </Row>
@@ -56,25 +56,11 @@ const WarehouseTransactionModal = (props) => {
           </Col>
         </Row>
         <Divider />
-        <p className="site-description-item-profile-p" style={{fontSize:'20px'}}>Tài khoản</p>
-        <Row>
-          <Col span={12}>
-          <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Trạng thái: {props.data.is_active ? 'Hoạt động':'Khóa'}</p>
-            </div>
-          </Col>
-          <Col span={12}>
-          <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Vị trí: {props.data.is_superuser}</p>
-            </div>
-          </Col>
-        </Row>
-        <Divider />
-        <p className="site-description-item-profile-p" style={{fontSize:'20px'}}>Lịch sử truy cập</p>
+        <p className="site-description-item-profile-p" style={{fontSize:'20px'}}>Lịch sử thay đổi</p>
         <Row>
           <Col span={24}>
           <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Ngày tạo: {props.data.date_joined}</p>
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Ngày biến động: {props.data.date_created}</p>
             </div>
           </Col>
         </Row>
