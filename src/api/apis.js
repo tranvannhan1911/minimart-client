@@ -93,6 +93,10 @@ const promotion_line_extras = {
     by_order: (params) => {
         const url = `/promotion-line/by_order/`
         return axiosApi.get(url, params)
+    },
+    by_type: (params) => {
+        const url = `/promotion-line/by_type/`
+        return axiosApi.get(url, params)
     }
 }
 

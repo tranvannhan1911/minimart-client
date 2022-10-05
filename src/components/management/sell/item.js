@@ -51,8 +51,6 @@ const OrderItem = (props) => {
         setIsModalOpen(false);
     };
 
-  
-
     useEffect(() => {
         if (props.is_reset == true) {
             form.resetFields();
