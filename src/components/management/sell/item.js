@@ -7,6 +7,7 @@ import { Button, Form, Input, Select, message, Space, Popconfirm, Upload, Row, C
 import ProductSelect from '../barcode/input';
 import api from '../../../api/apis';
 import messages from '../../../utils/messages';
+import PromotionPicker from './promotion/modal';
 const { Option } = Select;
 const { Title } = Typography;
 
@@ -22,6 +23,7 @@ const titleCol = {
 
 const OrderItem = (props) => {
 
+    const [openPromotionPicker, setOpenPromotionPicker] = useState(false);
     const [form] = Form.useForm();
     const [formQuantity] = Form.useForm();
     const [productData, setProductData] = useState([])
@@ -31,6 +33,7 @@ const OrderItem = (props) => {
     const [baseUnitOptions, setBaseUnitOptions] = useState([])
     const [idProduct, setIdProduct] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [plProduct, setPlProduct] = useState();
     const quantityBuy = useRef();
 
     const showModal = () => {
@@ -44,7 +47,7 @@ const OrderItem = (props) => {
     const handleOk = () => {
         setIsModalOpen(false);
         enterQuantity(formQuantity.getFieldValue("quantityBuy"));
-        
+
     };
 
     const handleCancel = () => {
@@ -134,11 +137,11 @@ const OrderItem = (props) => {
                         element.quantity = value;
                     } else {
                         message.error("Số sản phẩm mua lớn hơn số lượng tồn");
-                        element.quantity=element.stock;
+                        element.quantity = element.stock;
                         element.total = Number(element.stock) * Number(element.price);
                     }
                 }
-                checkPromotion(element.id,2);
+                // checkPromotion(element.id, 2);
 
             }
 
@@ -157,7 +160,7 @@ const OrderItem = (props) => {
                         element.quantity = 2;
                     } else {
                         message.error("Số sản phẩm mua lớn hơn số lượng tồn");
-                        element.quantity=element.stock;
+                        element.quantity = element.stock;
                         element.total = Number(element.stock) * Number(element.price);
                     }
                 } else {
@@ -166,7 +169,7 @@ const OrderItem = (props) => {
                         element.quantity = Number(element.quantity) + 1;
                     } else {
                         message.error("Số sản phẩm mua lớn hơn số lượng tồn");
-                        element.quantity=element.stock;
+                        element.quantity = element.stock;
                         element.total = Number(element.stock) * Number(element.price);
                     }
                 }
@@ -189,7 +192,7 @@ const OrderItem = (props) => {
                     element.total = Number(sl) * Number(element.price);
                 } else {
                     message.error("Số sản phẩm mua lớn hơn số lượng tồn");
-                    element.quantity=element.stock;
+                    element.quantity = element.stock;
                     element.total = Number(element.stock) * Number(element.price);
                 }
             }
@@ -241,9 +244,18 @@ const OrderItem = (props) => {
     }
 
     const checkPromotion = async (idCustomer, idProduct) => {
-        const response = await api.promotion_line.listPromotionByProduct(idProduct,idCustomer);
-        console.log(123,response);
+        const response = await api.promotion_line.listPromotionByProduct(idProduct, idCustomer);
+        console.log(123, response);
     }
+
+    const pickPromotionProduct = (pl) => {
+        console.log("pickPromotionProduct", pl)
+        setPlProduct(pl)
+    }
+
+    useEffect(() => {
+
+    }, [plProduct])
 
     return (
         <><Form layout="vertical" hideRequiredMark form={form}>
@@ -363,7 +375,7 @@ const OrderItem = (props) => {
                                     </Form.Item>
                                 </Col>
                                 <Col span={2}>
-                                    <Popover
+                                    {/* <Popover
                                         content={<div>
                                             <div className='sb'>
                                                 <span>Mã KM</span>
@@ -380,11 +392,15 @@ const OrderItem = (props) => {
                                         title="Khuyến mãi tặng sản phẩm"
                                         trigger="click"
                                         onOpenChange={() => { }}
-                                    >
+                                    > */}
                                         <TagOutlined
                                             twoToneColor="#eb2f96"
-                                            style={{ marginRight: 10 }} />
-                                    </Popover>
+                                            style={{ marginRight: 10 }} 
+                                            onClick={() => {
+                                                setIdProduct(form.getFieldValue("productlist")[name].id)
+                                                setOpenPromotionPicker(true)
+                                            }}/>
+                                    {/* </Popover> */}
                                     <Popconfirm title="Bạn có chắc chắn muốn xóa?" onConfirm={() => { remove(name); updateTotalDelete(); }}>
                                         <MinusCircleOutlined />
                                     </Popconfirm>
@@ -397,19 +413,29 @@ const OrderItem = (props) => {
                     </>
                 )}
             </Form.List>
-        </Form><Modal title="Số lượng mua" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-                <Form layout="vertical" hideRequiredMark form={formQuantity}>
-                    <Form.Item name='quantityBuy' 
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Vui lòng nhập số lượng mua!',
-                            },
-                        ]}>
-                        <Input placeholder='Số lượng mua' ref={quantityBuy} onPressEnter={(e) => enterQuantity(e.target.value)} defaultValue='1' ></Input>
-                    </Form.Item>
-                </Form>
-            </Modal></>
+        </Form>
+        <Modal title="Số lượng mua" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+            <Form layout="vertical" hideRequiredMark form={formQuantity}>
+                <Form.Item name='quantityBuy'
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Vui lòng nhập số lượng mua!',
+                        },
+                    ]}>
+                    <Input placeholder='Số lượng mua' ref={quantityBuy} onPressEnter={(e) => enterQuantity(e.target.value)} defaultValue='1' ></Input>
+                </Form.Item>
+            </Form>
+        </Modal>
+        
+        <PromotionPicker
+            open={openPromotionPicker} 
+            setOpen={setOpenPromotionPicker}
+            onFinish={(pl) => pickPromotionProduct(pl)}
+            customerId={props.customerId}
+            productId={idProduct}
+            type="Product"/>
+    </>
     );
 };
 

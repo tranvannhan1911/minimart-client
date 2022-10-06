@@ -149,6 +149,7 @@ const TabContent = (props) => {
             // không thể sử dụng voucher
             // show alert or something
             setPlOrder(null)
+            setVoucher(0)
             return
         }
         if(plOrder.type == "Fixed"){
@@ -170,7 +171,6 @@ const TabContent = (props) => {
     }
 
     useEffect(() => {
-
         if(plOrder){
             ApplyPromotionOrder()
         }
@@ -178,7 +178,6 @@ const TabContent = (props) => {
 
     
     useEffect(() => {
-
         if(plOrder){
             ApplyPromotionOrder()
         }
@@ -206,7 +205,11 @@ const TabContent = (props) => {
         >
             <Row>
                 <Col span={18} style={{ paddingRight: '10px' }}>
-                    <OrderItem is_reset={reset} baseUnitOptions={props.baseUnitOptions} parentCallbackTotal={callbackTotalFunction} parentCallbackListProduct={callbackListProductFunction} parentCallbackReset={callbackResetFunction} />
+                    <OrderItem is_reset={reset} baseUnitOptions={props.baseUnitOptions} 
+                        parentCallbackTotal={callbackTotalFunction} 
+                        parentCallbackListProduct={callbackListProductFunction} 
+                        parentCallbackReset={callbackResetFunction}
+                        customerId={customerId}/>
                 </Col>
                 <Col span={6} style={{ paddingLeft: '10px', borderLeft: '1px solid #eee' }}>
                     <Form.Item label="Nhân viên bán hàng" name="user_created" >
@@ -247,7 +250,9 @@ const TabContent = (props) => {
                         <span style={{
                             cursor: 'pointer',
                             color: '#1890ff'
-                        }} onClick={addPromotionOrder}>
+                        }} onClick={() => {
+                            setOpenPromotionPicker(true)
+                        }}>
                             <TagOutlined
                                 twoToneColor="#eb2f96"
                                 /> Thêm khuyến mãi</span>
@@ -314,7 +319,9 @@ const TabContent = (props) => {
                 setOpen={setOpenPromotionPicker}
                 totalProduct={totalProduct}
                 onFinish={(pl) => pickPromotionOrder(pl)}
-                customerId={customerId}/>
+                customerId={customerId}
+                plOrder={plOrder}
+                type="Order"/>
         </Form>
     );
 };

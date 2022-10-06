@@ -1,7 +1,9 @@
-import { Avatar, Button, Drawer, Input, List, Space } from 'antd';
+import { Avatar, Button, Drawer, Image, Input, List, Typography  } from 'antd';
 import React, { useEffect, useState } from 'react';
 import api from '../../../../api/apis';
+import { formater } from '../../../../utils/util';
 const { Search } = Input;
+const { Text } = Typography;
 
 // const data = [
 //     {
@@ -21,6 +23,7 @@ const { Search } = Input;
 const PromotionPicker = (props) => {
     const [placement, setPlacement] = useState('right');
     const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const showDrawer = () => {
         props.setOpen(true);
@@ -35,19 +38,60 @@ const PromotionPicker = (props) => {
     };
 
     useEffect(() => {
-        handlePromotionLineByTypeOrder()
+        if(props.type == "Order"){
+            handlePromotionLineByTypeOrder()
+        }
+        if(props.type == "Product"){
+            handlePromotionLineByTypeProduct()
+        }
     }, [props.customerId])
+
+    useEffect(() => {
+        handlePromotionLineByTypeOrder()
+    }, [props.totalProduct])
+
+    useEffect(() => {
+        handlePromotionLineByTypeProduct()
+    }, [props.productId])
 
     
     const handlePromotionLineByTypeOrder = async () => {
-        const params = {
-            params: {
-                type: "Order",
-                customer_id: props.customerId
+        setLoading(true)
+        try{
+            const params = {
+                params: {
+                    type: "Order",
+                    customer_id: props.customerId,
+                    amount: props.totalProduct
+                }
             }
+            const response = await api.promotion_line.by_type(params)
+            setData(response.data.data.results)
+        }catch{
+            
         }
-        const response = await api.promotion_line.by_type(params)
-        setData(response.data.data.results)
+        
+        setLoading(false)
+    }
+
+    const handlePromotionLineByTypeProduct = async () => {
+        console.log("handlePromotionLineByTypeProduct")
+        setLoading(true)
+        // try{
+            const params = {
+                params: {
+                    product_id: props.productId,
+                    customer_id: props.customerId,
+                }
+            }
+            const response = await api.promotion_line.by_product(params)
+            console.log("response", response)
+            setData(response.data.data.results)
+        // }catch{
+            
+        // }
+        
+        setLoading(false)
     }
 
     return (
@@ -63,21 +107,42 @@ const PromotionPicker = (props) => {
                 <List
                     itemLayout="horizontal"
                     dataSource={data}
-                    renderItem={(item) => (
-                        <List.Item
-                            extra={
-                                <Button type="primary" onClick={() => {
-                                    props.onFinish(item)
-                                    props.setOpen(false);
-                                }}>Sử dụng</Button>
-                            }>
-                            <List.Item.Meta
-                                avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                                title={<span>{item.title}</span>}
-                                description={item.description}
-                            />
-                        </List.Item>
-                    )}
+                    loading={loading}
+                    renderItem={(item) => {
+                        var useable = props.type == "Order" && 
+                            (false | (item.benefit <= 0) | (props.plOrder && props.plOrder.id == item.id))
+                        const isUse = props.type == "Order" && (props.plOrder && props.plOrder.id == item.id)
+
+                        return (
+                            <List.Item
+                                extra={
+                                    <Button type="primary" disabled={useable} onClick={() => {
+                                        props.onFinish(item)
+                                        props.setOpen(false);
+                                    }}>{isUse ? "Đang sử dụng": "Sử dụng"}</Button>
+                                }>
+                                <List.Item.Meta
+                                    avatar={
+                                        <div style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center'
+                                        }}>
+                                            <img style={{width: '50px'}} src={require("../../../../assets/voucher.png")} />
+                                            <Text>{item.promotion_code}</Text>
+                                        </div>}
+                                    title={<span>{item.title}</span>}
+                                    description={
+                                        <p>
+                                            <Text>{item.description}</Text><br/>
+                                            <Text type='success'>Được giảm: {item.benefit}</Text><br/>
+                                            <Text>Còn lại {item.remain == -1 ? "Không giới hạn": item.remain}, HSD: {formater(item.end_date)}</Text>
+                                        </p>
+                                    }
+                                />
+                            </List.Item>
+                        )
+                    }}
                 />
             </Drawer>
         </>

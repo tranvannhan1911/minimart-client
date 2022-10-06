@@ -90,6 +90,11 @@ const getApi = (resource, extras) => {
 }
 
 const promotion_line_extras = {
+    by_product: (params) => {
+        console.log("by_product", params)
+        const url = `/promotion-line/by_product/`
+        return axiosApi.get(url, params)
+    },
     by_order: (params) => {
         const url = `/promotion-line/by_order/`
         return axiosApi.get(url, params)
