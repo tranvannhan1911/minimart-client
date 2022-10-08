@@ -8,6 +8,7 @@ import api from '../../../api/apis';
 import messages from '../../../utils/messages';
 import Promotion from './promotion';
 import PromotionPicker from './promotion/modal';
+import SuccessModal from './modal_success';
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -23,7 +24,11 @@ const TabContent = (props) => {
     const [staffOptions, setStaffOptions] = useState([]);
     const [customerOptions, setCustomerOptions] = useState([]);
     const [customerId, setCustomerId] = useState();
+    const [listProduct, setListProduct] = useState([]);
+    const [disabledCreateOrder, setDisabledCreateOrder] = useState(false);
     const [staff, setStaff] = useState(sessionStorage.getItem("nameStaff") + ' - ' + sessionStorage.getItem("phoneStaff"));
+    
+    const [openSuccessModal, setOpenSuccessModal] = useState(false);
 
 
     const handleDataStaff = async () => {
@@ -112,16 +117,45 @@ const TabContent = (props) => {
         setMoneyChange(Number(value) - Number(totalProduct));
     };
 
-    const onFinish = () => {
+    const onFinish = async () => {
         // console.log(form.getFieldValue("note"));
         // console.log(props)
+        setDisabledCreateOrder(true)
+        const info = {
+            customer: form.getFieldValue("customer"),
+            note: form.getFieldValue("note"),
+            promotion: (plOrder ? plOrder.id : null),
+        }
+        const _listProduct = listProduct.map(item => {
+            const _item = {
+                product: item.id,
+                quantity: Number(item.quantity),
+                unit_exchange: item.unit_exchange,
+                promotion_line: item.promotion_line
+            }
+            return _item
+        })
+        info["details"] = _listProduct
+        console.log("info", info)
+        const response = await api.order.add(info);
+        console.log(response)
+        if(response.data.code == 1){
+            setOpenSuccessModal(true)
+        }else{
+            message.error("Có lỗi xảy ra!")
+            setDisabledCreateOrder(false)
+        }
+    };
+
+    const clearOrder = () => {
         form.resetFields();
         setMoneyChange(0)
         setTotal(0)
         setTotalProduct(0)
         setVoucher(0)
         setReset(true);
-    };
+        setDisabledCreateOrder(false)
+    }
 
     const callbackTotalFunction = (total) => {
         setTotal(total)
@@ -129,7 +163,7 @@ const TabContent = (props) => {
     };
 
     const callbackListProductFunction = (data) => {
-        // console.log(data)
+        setListProduct(data)
     };
 
     const callbackResetFunction = (data) => {
@@ -209,7 +243,8 @@ const TabContent = (props) => {
                         parentCallbackTotal={callbackTotalFunction} 
                         parentCallbackListProduct={callbackListProductFunction} 
                         parentCallbackReset={callbackResetFunction}
-                        customerId={customerId}/>
+                        customerId={customerId}
+                        disabledCreateOrder={disabledCreateOrder}/>
                 </Col>
                 <Col span={6} style={{ paddingLeft: '10px', borderLeft: '1px solid #eee' }}>
                     <Form.Item label="Nhân viên bán hàng" name="user_created" >
@@ -222,6 +257,7 @@ const TabContent = (props) => {
                             defaultValue={staff}
                             filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
                             key={staffOptions}
+                            disabled={disabledCreateOrder}
                         >
                             {staffOptions}
                         </Select>
@@ -239,6 +275,7 @@ const TabContent = (props) => {
                                 console.log(value)
                                 setCustomerId(value)
                             }}
+                            disabled={disabledCreateOrder}
                         >
                             {customerOptions}
                         </Select>
@@ -273,7 +310,8 @@ const TabContent = (props) => {
                     </Form.Item>
 
                     <Form.Item label="Ghi chú" name="note" >
-                        <TextArea rows={1} />
+                        <TextArea rows={1} 
+                            disabled={disabledCreateOrder}/>
                     </Form.Item>
                     <Form.Item>
                         <div className='sb'>
@@ -292,7 +330,7 @@ const TabContent = (props) => {
                     <div className='sb'>
                         <div>
                             <Form.Item label="Tiền khách đưa" name='money_given'>
-                                <Input type='number' min='0' onPressEnter={(e) => calculateMoneyChange(e.target.value)} />
+                                <Input type='number' min='0' onChange={(e) => calculateMoneyChange(e.target.value)} />
                             </Form.Item>
                         </div>
                         <div>
@@ -301,8 +339,8 @@ const TabContent = (props) => {
                             </Form.Item>
                         </div>
                     </div>
-                    <Form.Item style={{ width: '100%' }}>
-
+                    {/* <Form.Item style={{ width: '100%' }}> */}
+                    <Space>
                         <Button
                             type="primary"
                             // htmlType="submit"
@@ -310,8 +348,10 @@ const TabContent = (props) => {
                             onPressEnter={() => onFinish()}
                             style={{ width: '100%' }}
                             icon={<ShoppingCartOutlined />}
-                        >Thêm hóa đơn</Button>
-                    </Form.Item>
+                            disabled={disabledCreateOrder}
+                        >Tạo hóa đơn</Button>
+                    </Space>
+                    {/* </Form.Item> */}
                 </Col>
             </Row>
             <PromotionPicker 
@@ -322,6 +362,10 @@ const TabContent = (props) => {
                 customerId={customerId}
                 plOrder={plOrder}
                 type="Order"/>
+            <SuccessModal 
+                open={openSuccessModal}
+                setOpen={setOpenSuccessModal}
+                onFinish={clearOrder}/>
         </Form>
     );
 };

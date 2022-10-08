@@ -52,7 +52,7 @@ const PromotionPicker = (props) => {
 
     useEffect(() => {
         handlePromotionLineByTypeProduct()
-    }, [props.productId])
+    }, [props.product])
 
     
     const handlePromotionLineByTypeOrder = async () => {
@@ -75,17 +75,17 @@ const PromotionPicker = (props) => {
     }
 
     const handlePromotionLineByTypeProduct = async () => {
-        console.log("handlePromotionLineByTypeProduct")
         setLoading(true)
         // try{
             const params = {
                 params: {
-                    product_id: props.productId,
+                    product_id: props.product.id,
                     customer_id: props.customerId,
+                    quantity: Number(props.quantity)
                 }
             }
             const response = await api.promotion_line.by_product(params)
-            console.log("response", response)
+            console.log("handlePromotionLineByTypeProduct", response)
             setData(response.data.data.results)
         // }catch{
             
@@ -93,6 +93,8 @@ const PromotionPicker = (props) => {
         
         setLoading(false)
     }
+
+
 
     return (
         <>
@@ -109,17 +111,54 @@ const PromotionPicker = (props) => {
                     dataSource={data}
                     loading={loading}
                     renderItem={(item) => {
-                        var useable = props.type == "Order" && 
-                            (false | (item.benefit <= 0) | (props.plOrder && props.plOrder.id == item.id))
-                        const isUse = props.type == "Order" && (props.plOrder && props.plOrder.id == item.id)
+                        var disabled = false;
+                        var btnText = "Sử dụng";
+                        var benefitText = "Không thể áp dụng";
+                        console.log(item)
+                        
+                        if (props.type == "Order"){     
+                            if (item.benefit <= 0){
+                                if(props.totalProduct < item.detail.minimum_total){
+                                    disabled = true
+                                    if(item.type == "Fixed")
+                                        benefitText = `Mua thêm ${item.detail.minimum_total-props.totalProduct} để nhận khuyến mãi ${item.detail.reduction_amount}`
+                                    else{
+                                        var _received = item.detail.minimum_total*item.detail.percent/100
+                                        if (item.detail.maximum_reduction_amount)
+                                            _received = Math.min(_received, item.detail.maximum_reduction_amount)
+                                        benefitText = `Mua thêm ${item.detail.minimum_total-props.totalProduct} để nhận khuyến mãi ${_received}`
 
+                                    }
+                                }
+                            }else if(props.plOrder && props.plOrder.id == item.id){
+                                disabled = true;
+                                btnText = "Đang sử dụng"
+                            }else
+                                benefitText = `Được giảm: ${item.benefit}`
+                        }else if(props.type == "Product"){
+                            if (item.benefit <= 0)
+                                disabled = true;
+                            else{
+                                // const res = await api.product.get(item.detail.product_received)
+                                // console.log("res", res)
+                                // const product_received = res.data.data
+                                // console.log("product_received", product_received)
+                                benefitText = `Nhận ${item.actual_received} ${item.detail.product_received.base_unit.name} ${item.detail.product_received.name} trị giá ${item.benefit}`
+                            }
+                        }
+                        
+                        if(!props.customerId){
+                            disabled = true;
+                            btnText = "Chọn khách hàng"
+                        }
+                        benefitText = benefitText[0].toUpperCase() + benefitText.slice(1).toLowerCase()
                         return (
                             <List.Item
                                 extra={
-                                    <Button type="primary" disabled={useable} onClick={() => {
+                                    <Button type="primary" disabled={disabled} onClick={() => {
                                         props.onFinish(item)
                                         props.setOpen(false);
-                                    }}>{isUse ? "Đang sử dụng": "Sử dụng"}</Button>
+                                    }}>{btnText}</Button>
                                 }>
                                 <List.Item.Meta
                                     avatar={
@@ -135,7 +174,7 @@ const PromotionPicker = (props) => {
                                     description={
                                         <p>
                                             <Text>{item.description}</Text><br/>
-                                            <Text type='success'>Được giảm: {item.benefit}</Text><br/>
+                                            <Text type='success'>{benefitText}</Text><br/>
                                             <Text>Còn lại {item.remain == -1 ? "Không giới hạn": item.remain}, HSD: {formater(item.end_date)}</Text>
                                         </p>
                                     }
