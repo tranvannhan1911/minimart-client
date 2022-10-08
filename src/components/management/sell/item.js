@@ -265,7 +265,9 @@ const OrderItem = (props) => {
                 {(fields, { add, remove }) => (
                     <>
                         <Form.Item>
-                            <ProductSelect onSelectProduct={(value) => onSelectProduct(value, add)} />
+                            <ProductSelect 
+                                onSelectProduct={(value) => onSelectProduct(value, add)}
+                                sellable={true}/>
                             {/* <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
             Thêm đơn vị tính
         </Button> */}

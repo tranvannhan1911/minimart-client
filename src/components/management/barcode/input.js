@@ -25,7 +25,13 @@ const ProductSelect = (props) => {
     const handleDataProduct = async () => {
         try {
           const response = await api.product.list();
-          const options = response.data.data.results.map(elm => {
+          var results = response.data.data.results
+          if(props.sellable){
+            results = results.filter(elm => {
+              return elm.have_price;
+            })
+          }
+          const options = results.map(elm => {
             return (
               <Option key={elm.id} value={elm.id} barcode={elm.barcode}>{elm.name}</Option>
             )

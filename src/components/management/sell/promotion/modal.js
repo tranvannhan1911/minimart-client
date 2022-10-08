@@ -23,7 +23,9 @@ const { Text } = Typography;
 const PromotionPicker = (props) => {
     const [placement, setPlacement] = useState('right');
     const [data, setData] = useState([]);
+    const [stableData, setStableData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchValue, setSearchValue] = useState("");
 
     const showDrawer = () => {
         props.setOpen(true);
@@ -67,6 +69,7 @@ const PromotionPicker = (props) => {
             }
             const response = await api.promotion_line.by_type(params)
             setData(response.data.data.results)
+            setStableData(response.data.data.results)
         }catch{
             
         }
@@ -85,8 +88,8 @@ const PromotionPicker = (props) => {
                 }
             }
             const response = await api.promotion_line.by_product(params)
-            console.log("handlePromotionLineByTypeProduct", response)
             setData(response.data.data.results)
+            setStableData(response.data.data.results)
         // }catch{
             
         // }
@@ -94,6 +97,14 @@ const PromotionPicker = (props) => {
         setLoading(false)
     }
 
+    const searchPromotion = () => {
+        const _data = stableData.filter((elm) => {
+            return elm.promotion_code.toLowerCase().includes(searchValue.toLowerCase())
+                    || elm.title.toLowerCase().includes(searchValue.toLowerCase())
+                    || elm.description.toLowerCase().includes(searchValue.toLowerCase());
+        })
+        setData(_data);
+    }
 
 
     return (
@@ -105,7 +116,12 @@ const PromotionPicker = (props) => {
                 onClose={onClose}
                 open={props.open}
             >
-                <Search placeholder="Tìm kiếm mã giảm giá" enterButton />
+                <Search 
+                    placeholder="Tìm kiếm mã giảm giá"
+                    enterButton
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    onPressEnter={searchPromotion} />
                 <List
                     itemLayout="horizontal"
                     dataSource={data}

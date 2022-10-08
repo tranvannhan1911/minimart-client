@@ -24,12 +24,13 @@ const SuccessModal = (props) => {
     props.setOpen(false);
   };
 
+
   useEffect(() => {
     setTimeout(() => {
         if(refBtnPrint.current){
             refBtnPrint.current.focus()
         }
-    }, 100)
+    }, 200)
     
   }, [props.open])
 

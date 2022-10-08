@@ -121,28 +121,32 @@ const TabContent = (props) => {
         // console.log(form.getFieldValue("note"));
         // console.log(props)
         setDisabledCreateOrder(true)
-        const info = {
-            customer: form.getFieldValue("customer"),
-            note: form.getFieldValue("note"),
-            promotion: (plOrder ? plOrder.id : null),
-        }
-        const _listProduct = listProduct.map(item => {
-            const _item = {
-                product: item.id,
-                quantity: Number(item.quantity),
-                unit_exchange: item.unit_exchange,
-                promotion_line: item.promotion_line
+        try{
+            const info = {
+                customer: form.getFieldValue("customer"),
+                note: form.getFieldValue("note"),
+                promotion: (plOrder ? plOrder.id : null),
             }
-            return _item
-        })
-        info["details"] = _listProduct
-        console.log("info", info)
-        const response = await api.order.add(info);
-        console.log(response)
-        if(response.data.code == 1){
-            setOpenSuccessModal(true)
-        }else{
-            message.error("Có lỗi xảy ra!")
+            const _listProduct = listProduct.map(item => {
+                const _item = {
+                    product: item.id,
+                    quantity: Number(item.quantity),
+                    unit_exchange: item.unit_exchange,
+                    promotion_line: item.promotion_line
+                }
+                return _item
+            })
+            info["details"] = _listProduct
+            console.log("info", info)
+            const response = await api.order.add(info);
+            console.log(response)
+            if(response.data.code == 1){
+                setOpenSuccessModal(true)
+            }else{
+                message.error("Có lỗi xảy ra!")
+                setDisabledCreateOrder(false)
+            }
+        }catch{
             setDisabledCreateOrder(false)
         }
     };
