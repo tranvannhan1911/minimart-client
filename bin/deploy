@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
-ssh -i "~/.ssh/minimart.pem" ubuntu@13.214.169.137 '''/bin/bash -c "cd /home/ubuntu/minimart-client \
-        && git pull origin main \
-        && sed -i "/REACT_APP_BASE_URL=/c\\REACT_APP_BASE_URL=http://13.214.169.137:8000/api" .env \
-        && npm install --force \
-        && npm start"'''
+REACT_APP_BASE_URL=http://13.214.169.137:8000/api
+sed -i "/REACT_APP_BASE_URL=/c\\REACT_APP_BASE_URL=$REACT_APP_BASE_URL" .env
+npm run build
+scp -i "~/.ssh/minimart.pem" -r ./build/ ubuntu@13.214.169.137:/home/ubuntu/minimart-client/
+
+# cp -r . /tmp/minimart-client
+# ssh -i "~/.ssh/minimart.pem" ubuntu@13.214.169.137 '''/bin/bash -c "cd /home/ubuntu/minimart-client \
+#         && git pull origin main \
+#         && sed -i "/REACT_APP_BASE_URL=/c\\REACT_APP_BASE_URL=http://13.214.169.137:8000/api" .env \
+#         && npm install --force \
+#         && npm start"'''
+
+
+REACT_APP_BASE_URL=http://localhost:8000/api
+sed -i "/REACT_APP_BASE_URL=/c\\REACT_APP_BASE_URL=$REACT_APP_BASE_URL" .env

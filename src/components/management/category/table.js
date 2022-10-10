@@ -1,18 +1,25 @@
-import { SearchOutlined,EyeOutlined, FormOutlined } from '@ant-design/icons';
-import { Button, Space, Table as AntdTable, Input, Tag, Pagination,message } from 'antd';
+import { SearchOutlined,FormOutlined } from '@ant-design/icons';
+import { Button, Space, Table as AntdTable, Input, Tag, Pagination } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
-import api from '../../../api/apis'
-import messages from '../../../utils/messages'
-import PriceModal from './modal';
 const { Search } = Input;
 
-const PriceTable = (props) => {
+const rowSelection = {
+  onChange: (selectedRowKeys, selectedRows) => {
+    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+  },
+  onSelect: (record, selected, selectedRows) => {
+    console.log(record, selected, selectedRows);
+  },
+  onSelectAll: (selected, selectedRows, changeRows) => {
+    console.log(selected, selectedRows, changeRows);
+  },
+};
+
+const CategoryTable = (props) => {
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-  const [dataIndex, setDataIndex] = useState("");
   const [currentCountData, SetCurrentCountData] = useState(0);
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
@@ -37,17 +44,8 @@ const PriceTable = (props) => {
   const handleLoadingChange = (enable) => {
     props.setLoading(enable);
   };
-
-  const onOpen = async (id) => {
-    props.data.forEach(element => {
-      if(element.id==id){
-        setDataIndex(element);
-        setOpen(true);
-      }
-    });
-  };
   const setIdxBtn = (id) => {
-    navigate(paths.product.change(id))
+    navigate(paths.category.change(id))
   };
 
   const renderSearch = () => ({render: (text) =>
@@ -61,7 +59,7 @@ const PriceTable = (props) => {
         textToHighlight={text ? text.toString() : ''}
       />
     })
-
+  
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
       confirm();
       setSearchText(selectedKeys[0]);
@@ -156,112 +154,32 @@ const PriceTable = (props) => {
           text
         ),
     });
-  
 
   const columns = [
-    
     {
-      title: 'Mã sản phẩm',
-      dataIndex: 'id',
-      key: 'id',
-      sorter: {
-        compare: (a, b) => a.id > b.id,
-        multiple: 1
-      },
-      defaultSortOrder: 'descend',
-      filteredValue: props.searchInfo || null,
-      onFilter: (value, record) => {
-        return (record.name && record.name.toLowerCase().includes(value.toLowerCase()))
-          || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
-          || (record.product_code && record.product_code.toString().toLowerCase().includes(value.toLowerCase()))
-          || (record.barcode && record.barcode.toString().toLowerCase().includes(value.toLowerCase()))
-          || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))},
-      ...renderSearch(),
-      ...getColumnSearchProps('id'),
-    },
-    {
-      title: 'Hình ảnh',
-      dataIndex: 'image',
-      key: 'image',
-      render: (image) => (
-        <span>
-          <img src={image} style={{width:'50px', height:'50px'}}></img>
-        </span>
-      ),
-    },
-    {
-      title: 'Tên sản phẩm',
+      title: 'Tên ngành hàng',
       dataIndex: 'name',
       key: 'name',
       sorter: {
         compare: (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
         multiple: 2
       },
-      ...renderSearch(),
-      ...getColumnSearchProps('name'),
+      // ...renderSearch(),
+      // ...getColumnSearchProps('name'),
     },
     {
-      title: 'Code sản phẩm',
-      dataIndex: 'product_code',
-      key: 'product_code',
-      ...renderSearch(),
-      ...getColumnSearchProps('product_code'),
+      title: 'Ghi chú nội bộ',
+      dataIndex: 'note',
+      key: 'note',
+      // ...renderSearch(),
+      // ...getColumnSearchProps('note'),
     },
-    {
-      title: 'Mã vạch',
-      dataIndex: 'barcode',
-      key: 'barcode',
-      ...renderSearch(),
-      ...getColumnSearchProps('barcode'),
-    },
-    {
-      title: 'Số lượng',
-      dataIndex: 'stock',
-      key: 'stock',
-      ...renderSearch(),
-      ...getColumnSearchProps('stock'),
-    },
-    {
-      title: 'Nhóm sản phẩm',
-      dataIndex: 'product_groups',
-      key: 'product_groups',
-      filters: props.dataProductGroups.map(elm => {
-        const _elm = {
-          "text": elm.name,
-          "value": elm.name,
-        }
-        return _elm
-      }),
-      filteredValue: props.filteredInfo.product_groups || null,
-      onFilter: (value, record) => record.product_groups && record.product_groups.toString().includes(value),
-      render: (groups) => (
-        <span>
-          {groups.map((group) => {
-            let color = 'geekblue';
-  
-            return (
-              <Tag color={color} key={group}>
-                {group.toString().toUpperCase()}
-              </Tag>
-            );
-          })}
-        </span>
-      ),
-    },
-    // {
-    //   title: 'Ghi chú nội bộ',
-    //   dataIndex: 'note',
-    //   key: 'note',
-    //   ...renderSearch(),
-    //   ...getColumnSearchProps('note'),
-    // },
     {
       title: '',
       dataIndex: 'id',
       key: 'id',
       render: (id) => (
         <span>
-          <a onClick={() => onOpen(id)} key={id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a>
           <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
         </span>
       ),
@@ -276,18 +194,17 @@ const PriceTable = (props) => {
   };
 
   return (
-    <><AntdTable
+    <AntdTable 
       // rowSelection={{
       //   selectedRowKeys,
       //   onChange: onSelectChange
-      // }}
-      bordered
-      columns={columns}
-      dataSource={props.data}
+      // }} 
+      columns={columns} 
+      dataSource={props.data} 
       onChange={handleChange}
       scroll={{
-        x: 'max-content',
-      }}
+          x: 'max-content',
+      }} 
       sticky
       pagination={{
         total: currentCountData,
@@ -295,9 +212,9 @@ const PriceTable = (props) => {
         showQuickJumper: true,
         showTotal: (total) => `Tất cả ${total}`,
       }}
-      loading={props.loading} />
-      <PriceModal open={open} data={dataIndex} setOpen={setOpen} /></>
+      loading={props.loading}
+    />
   );
 };
 
-export default PriceTable;
+export default CategoryTable;

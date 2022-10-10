@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
 import api from '../../../api/apis'
 import messages from '../../../utils/messages'
+import OrderRefundDetailModal from './modal_details';
 // import OrderModal from './modal';
 const { Search } = Input;
 
@@ -43,7 +44,7 @@ const RefundTable = (props) => {
   //   } else {
   //     return 'warning';
   //   }
-    
+
   // };
 
   useEffect(() => {
@@ -243,19 +244,20 @@ const RefundTable = (props) => {
     //   ),
     // },
 
-    // {
-    //   title: '',
-    //   dataIndex: 'key',
-    //   key: 'key',
-    //   with:'10%',
-    //   render: (key) => (
-    //     <span>
-    //       <Button type="primary" danger onClick={() => onOpen(key)}>
-    //         Trả hàng
-    //       </Button>
-    //     </span>
-    //   ),
-    // },
+    {
+      title: '',
+      dataIndex: 'key',
+      key: 'key',
+      with:'10%',
+      render: (key) => (
+        <span>
+          <Button type="primary" onClick={() => onOpen(key)}>
+            Xem chi tiết
+          </Button>
+          
+        </span>
+      ),
+    },
   ];
 
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -276,7 +278,7 @@ const RefundTable = (props) => {
 
       //     <Table columns={columnsCon} dataSource={record.details}>
       //     </Table>
-          
+
       //   ),
       //   rowExpandable: (record) => record.id !== 'Not Expandable',
       // }}
@@ -295,8 +297,7 @@ const RefundTable = (props) => {
         showTotal: (total) => `Tất cả ${total}`,
       }}
       loading={props.loading} />
-      {/* <OrderModal open={open} data={dataIndex} setOpen={setOpen} /> */}
-      </>
+      <OrderRefundDetailModal open={open} data={dataIndex} setOpen={setOpen} />      </>
   );
 };
 

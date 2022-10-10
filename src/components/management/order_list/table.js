@@ -15,6 +15,7 @@ const OrderTable = (props) => {
   const [open, setOpen] = useState(false);
   const [openDetails, setOpenDetails] = useState(false);
   const [dataIndex, setDataIndex] = useState("");
+  const [idIndex, setIdIndex] = useState("");
   const [currentCountData, SetCurrentCountData] = useState(0);
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
@@ -43,6 +44,7 @@ const OrderTable = (props) => {
     props.data.forEach(element => {
       if (element.key == id) {
         setDataIndex(element);
+        setIdIndex(element.id);
         setOpen(true);
       }
     });
@@ -216,15 +218,15 @@ const OrderTable = (props) => {
     },
     {
       title: 'Tổng tiền',
-      dataIndex: 'total',
-      key: 'total',
+      dataIndex: 'final_total',
+      key: 'final_total',
       sorter: {
-        compare: (a, b) => a.total > b.total,
+        compare: (a, b) => a.final_total > b.final_total,
         multiple: 1
       },
       defaultSortOrder: 'descend',
       ...renderSearch(),
-      ...getColumnSearchProps('total'),
+      ...getColumnSearchProps('final_total'),
     },
     
     {
@@ -274,7 +276,7 @@ const OrderTable = (props) => {
         showTotal: (total) => `Tất cả ${total}`,
       }}
       loading={props.loading} />
-      <OrderModal open={open} data={dataIndex} setOpen={setOpen} />
+      <OrderModal open={open} data={dataIndex} setOpen={setOpen} idOrder={idIndex}/>
       <OrderDetailModal openDetails={openDetails} data={dataIndex} setOpenDetails={setOpenDetails} />
       </>
   );

@@ -7,45 +7,29 @@ import { Button, Col, Row, Space, Input, message } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import ListForm from '../templates/listform';
-import PriceTable from './table';
+import CategoryTable from './table';
 import api from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
-import { ExportReactCSV } from '../../../utils/exportExcel';
+import ParentSelect from './category_select';
 
-const PriceListForm = (props) => {
+
+const CategoryListForm = (props) => {
     const [data, setData] = useState([])
-    const [dataProductGroups, setDataProductGroups] = useState([])
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
     const [sortedInfo, setSortedInfo] = useState({})
     const [loading, setLoading] = useState(true)
+    const [categoryParent, setCategoryParent] = useState();
     const navigate = useNavigate()
 
     const handleGetData = async () => {
         setLoading(true)
         try{
-            const response = await api.product.list()
-            const _data = response.data.data.results.map(elm => {
-                const _product_groups = []
-                elm.product_groups.forEach(gr => _product_groups.push(gr.name))
-                elm.product_groups = _product_groups
-                return elm
-            })
+            const response = await api.category.list()
+            const _data = response.data.data.results
             setData(_data)
-        }catch(error){
-            console.log('Failed:', error)
-            message.error(messages.ERROR_REFRESH)
-        }
-        setLoading(false)
-    }
-
-    const handleGetDataProductGroups = async () => {
-        setLoading(true)
-        try{
-            const response = await api.product_group.list()
-            setDataProductGroups(response.data.data.results)
         }catch(error){
             console.log('Failed:', error)
             message.error(messages.ERROR_REFRESH)
@@ -55,7 +39,6 @@ const PriceListForm = (props) => {
 
     useEffect(() => {
         handleGetData()
-        handleGetDataProductGroups()
         props.setBreadcrumb(false)
     }, []);
 
@@ -65,19 +48,17 @@ const PriceListForm = (props) => {
         setSearchInfo([])
     };
 
+
     return (
         <ListForm 
-            title="Sản phẩm" 
+            title="Ngành hàng" 
             actions={[
-                
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
-                <ExportReactCSV csvData={data} fileName='product' />,
-                <Button onClick={() => navigate(paths.product.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
+                <Button onClick={() => navigate(paths.category.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={
-                <PriceTable 
+                <CategoryTable 
                     data={data} 
-                    dataProductGroups={dataProductGroups} 
                     loading={loading} 
                     setLoading={setLoading}
                     filteredInfo={filteredInfo}
@@ -89,13 +70,14 @@ const PriceListForm = (props) => {
                 />
             }
             extra_actions={[
-                <Input 
-                    placeholder="Tìm kiếm sản phẩm" 
-                    allowClear value={searchInfo[0]} 
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => setSearchInfo([e.target.value])}
-                />,
-                <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
+                // <Input 
+                //     placeholder="Tìm kiếm ngành hàng" 
+                //     allowClear value={searchInfo[0]} 
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => setSearchInfo([e.target.value])}
+                // />,
+                <ParentSelect categoryParent={categoryParent} setCategoryParent={setCategoryParent}/>,
+                // <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
             ]}
         >
 
@@ -103,4 +85,4 @@ const PriceListForm = (props) => {
     )
 }
 
-export default PriceListForm;
+export default CategoryListForm;

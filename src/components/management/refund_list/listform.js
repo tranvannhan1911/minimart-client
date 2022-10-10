@@ -27,10 +27,10 @@ const RefundListForm = (props) => {
     const handleGetData = async () => {
         setLoading(true)
         try {
-            // const response = await api.order_refund.list()
-            const response = (await axios.get('https://63252b299075b9cbee471829.mockapi.io/api/order')).data;
-            const _data = response.map(elm => {
-            // const _data = response.data.data.results.map(elm => {
+            const response = await api.order_refund.list()
+            // const response = (await axios.get('https://63252b299075b9cbee471829.mockapi.io/api/order')).data;
+            // const _data = response.map(elm => {
+            const _data = response.data.data.results.map(elm => {
                 elm.details = elm.details.map(element => {
                     element.product = element.product.name;
                     element.price = element.price.price;

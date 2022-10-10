@@ -11,17 +11,19 @@ import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { validName1 } from '../../../resources/regexp'
+import ParentSelect from './category_select'
 
 const { Option } = Select;
 const { TextArea } = Input;
 
-const UnitChangeForm = (props) => {
+const CategoryChangeForm = (props) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
   const [idxBtnSave, setIdxBtnSave] = useState([]);
+  const [categoryParent, setCategoryParent] = useState();
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const refAutoFocus = useRef(null)
@@ -38,14 +40,14 @@ const UnitChangeForm = (props) => {
 
   useEffect(() => {
     props.setBreadcrumb([
-      { title: "Đơn vị tính", href: paths.unit.list },
+      { title: "Ngành hàng", href: paths.category.list },
       { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
 
     if (is_create==false) {
       props.setBreadcrumbExtras([
         <Popconfirm
           placement="bottomRight"
-          title="Xác nhận xóa đơn vị tính này"
+          title="Xác nhận xóa ngành hàng này"
           onConfirm={_delete}
           okText="Đồng ý"
           okType="danger"
@@ -69,9 +71,13 @@ const UnitChangeForm = (props) => {
   const handleData = async () => {
     setLoadingData(true)
     try {
-      const response = await api.unit.get(id);
+      const response = await api.category.get(id);
       const values = response.data.data
+      console.log(values)
       form.setFieldsValue(values)
+      
+      const response2 = await api.category.get_parent(values.parent);
+      setCategoryParent(response2.data.data.tree)
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -97,16 +103,16 @@ const UnitChangeForm = (props) => {
 
   const directAfterSubmit = (response) => {
     if (idxBtnSave == 0) {
-      navigate(paths.unit.list)
+      navigate(paths.category.list)
     } else if (idxBtnSave == 1) {
       if (is_create) {
-        navigate(paths.unit.change(response.data.data.id))
+        navigate(paths.category.change(response.data.data.id))
         setCreate(false)
       }
       refAutoFocus.current && refAutoFocus.current.focus()
     } else if (idxBtnSave == 2) {
       if (!is_create) {
-        navigate(paths.unit.add)
+        navigate(paths.category.add)
         setCreate(true)
       }
       form.resetFields()
@@ -116,10 +122,11 @@ const UnitChangeForm = (props) => {
   }
 
   const create = async (values) => {
+    values["parent"] = categoryParent.length > 0 ? categoryParent.at(-1) : undefined
     try {
-      const response = await api.unit.add(values);
+      const response = await api.category.add(values);
       if (response.data.code == 1) {
-        message.success(messages.unit.SUCCESS_SAVE())
+        message.success(messages.category.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
       } else {
@@ -133,10 +140,11 @@ const UnitChangeForm = (props) => {
   }
 
   const update = async (values) => {
+    values["parent"] = categoryParent.length > 0 ? categoryParent.at(-1) : undefined
     try {
-      const response = await api.unit.update(id, values)
+      const response = await api.category.update(id, values)
       if (response.data.code == 1) {
-        message.success(messages.unit.SUCCESS_SAVE(id))
+        message.success(messages.category.SUCCESS_SAVE(id))
         directAfterSubmit(response)
         return true
       } else {
@@ -151,13 +159,13 @@ const UnitChangeForm = (props) => {
   
   const _delete = async () => {
     try {
-      const response = await api.unit.delete(id)
+      const response = await api.category.delete(id)
       if (response.data.code == 1) {
-        message.success(messages.unit.SUCCESS_DELETE(id))
-        navigate(paths.unit.list)
+        message.success(messages.category.SUCCESS_DELETE(id))
+        navigate(paths.category.list)
         return true
       } else {
-        message.error(messages.unit.ERROR_DELETE(id))
+        message.error(messages.category.ERROR_DELETE(id))
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -169,12 +177,6 @@ const UnitChangeForm = (props) => {
   const onFinish = async (values) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
-    if (!validName1.test(values.name)) {
-      message.error('Tên không hợp lệ! Chữ cái đầu của từ đầu tiên phải viết hoa');
-      setDisableSubmit(false)
-      stopLoading(idxBtnSave)
-      return;
-    }
     if (is_create) {
       await create(values)
     } else {
@@ -200,15 +202,18 @@ const UnitChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <>
-              <Form.Item label="Tên đơn vị tính" name="name" required
+              <Form.Item label="Tên ngành hàng" name="name" required
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng nhập tên đơn vị tính!',
+                    message: 'Vui lòng nhập tên ngành hàng!',
                   },
                 ]}
               >
                 <Input autoFocus ref={refAutoFocus} />
+              </Form.Item>
+              <Form.Item label="Ngành hàng cha" name="parent">
+                <ParentSelect categoryParent={categoryParent} setCategoryParent={setCategoryParent}/>
               </Form.Item>
               <Form.Item label="Ghi chú" name="note" >
                 <TextArea rows={4} />
@@ -250,4 +255,4 @@ const UnitChangeForm = (props) => {
 
 }
 
-export default UnitChangeForm;
+export default CategoryChangeForm;

@@ -328,7 +328,7 @@ const PromotionChangeForm = (props) => {
       width: "11%",
       render: (id) => (
         <span>
-          <a onClick={() => onOpenPromotionLine(id)} key={id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a>
+          {/* <a onClick={() => onOpenPromotionLine(id)} key={id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a> */}
           <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
           <Popconfirm
             title="Bạn có chắc chắn muốn xóa dòng khuyến mãi này?"

@@ -1,15 +1,15 @@
 import { Button, Drawer, Row, Col, Divider, Image, Table } from 'antd';
 import React, { useState, useEffect } from 'react';
 
-const OrderDetailModal = (props) => {
+const OrderRefundDetailModal = (props) => {
   const [dataSourceIndex, setDataSourceindex] = useState("");
 
   const showDrawer = () => {
-    props.setOpenDetails(true);
+    props.setOpen(true);
   };
 
   const onClose = () => {
-    props.setOpenDetails(false);
+    props.setOpen(false);
   };
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const OrderDetailModal = (props) => {
   ];
 
   return (
-    <Drawer width={640} placement="right" closable={false} onClose={onClose} visible={props.openDetails}>
+    <Drawer width={640} placement="right" closable={false} onClose={onClose} visible={props.open}>
       <p
         className="site-description-item-profile-p"
         style={{
@@ -115,13 +115,13 @@ const OrderDetailModal = (props) => {
       </Row>
       <Divider />
 
-      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Danh sách sản phẩm mua</p>
+      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Danh sách sản phẩm trả</p>
       <Table dataSource={dataSourceIndex} columns={columns} />
 
       <Divider />
-      <p className="site-description-item-profile-p" style={{ fontSize: '15px', marginTop: '20px', fontWeight: 'bold',color:'red', textAlign:'right' }}>Tổng tiền: {props.data.final_total} đ</p>
+      <p className="site-description-item-profile-p" style={{ fontSize: '15px', marginTop: '20px', fontWeight: 'bold',color:'red', textAlign:'right' }}>Tổng tiền: {props.data.total} đ</p>
       
     </Drawer>
   );
 };
-export default OrderDetailModal;
+export default OrderRefundDetailModal;

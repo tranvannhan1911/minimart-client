@@ -39,6 +39,12 @@ const Paths = {
     order: getPaths("don-ban-hang","id"),
     order_refund: getPaths("don-tra-hang","id"),
     sell: getPaths("ban-hang","id"),
+    category: getPaths("nganh-hang", "id"),
+    statistics_order_refund: getPaths("ban-hang-tra-hang","id"),
+    statistics_profit_revenue: getPaths("loi-nhuan-doanh-thu","id"),
+    statistics_received: getPaths("nhap-hang","id"),
+    statistics_record: getPaths("kiem-ke","id"),
+
     
     s3: (filename) => `https://minimart-tvn1911.s3.ap-southeast-1.amazonaws.com/${filename}`,
 }
