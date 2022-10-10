@@ -47,6 +47,11 @@ const PriceChangeForm = (props) => {
   }, [])
 
   useEffect(() => {
+    console.log("props", props)
+  }, [props])
+
+
+  useEffect(() => {
     props.setBreadcrumb([
       { title: "Sản phẩm", href: paths.product.list },
       { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])

@@ -37,9 +37,11 @@ const ProductGroupForm = (props) => {
   }, [])
 
   useEffect(() => {
-    props.setBreadcrumb([
-      { title: "Nhóm sản phẩm", href: paths.product_group.list },
-      { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
+    if (!props.is_modal){
+      props.setBreadcrumb([
+        { title: "Nhóm sản phẩm", href: paths.product_group.list },
+        { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
+    }
 
     if (is_create == false) {
       props.setBreadcrumbExtras([
@@ -61,6 +63,14 @@ const ProductGroupForm = (props) => {
       props.setBreadcrumbExtras(null)
     }
   }, [is_create])
+
+  useEffect(() => {
+    console.log("props.modalSubmit", props.modalSubmit)
+    if(props.modalSubmit){
+      form.submit()
+    }
+    props.setModalSubmit(false)
+  }, [props.modalSubmit])
 
   useEffect(() => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
@@ -96,6 +106,11 @@ const ProductGroupForm = (props) => {
   }
 
   const directAfterSubmit = (response) => {
+    if (props.is_modal){ // modal
+      form.resetFields()
+      props.onFinishSave()
+      return;
+    }
     if (idxBtnSave == 0) {
       navigate(paths.product_group.list)
     } else if (idxBtnSave == 1) {
