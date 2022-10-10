@@ -265,12 +265,19 @@ const PriceChangeForm = (props) => {
     }
     let units = [];
     let i = 0;
+    console.log(values.units)
+    if(values.units == null){
+      message.error('Vui lòng nhập đơn vị tính cơ bản cho sản phẩm');
+      stopLoading(idxBtnSave)
+      setDisableSubmit(false)
+      return;
+    }
     values.units.forEach(element => {
       let unit;
       if (element.value == 1) {
         unit = {
           "value": element.value,
-          "allow_sale": element.allow_sale,
+          "allow_sale": true,
           "is_base_unit": true,
           "unit": element.unit
         }

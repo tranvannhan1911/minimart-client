@@ -1,5 +1,8 @@
 import { Button, Modal, Row, Col, Divider, Image, Input, Table, Form, message } from 'antd';
 import React, { useState, useEffect, useRef, useContext } from 'react';
+import messages from '../../../utils/messages'
+import api from '../../../api/apis'
+
 const EditableContext = React.createContext(null);
 
 const EditableRow = ({ index, ...props }) => {
@@ -64,7 +67,7 @@ const EditableCell = ({
           },
         ]}
       >
-        <Input ref={inputRef} onPressEnter={save} onBlur={save} min='0' type='number' style={{width:'100px'}}/>
+        <Input ref={inputRef} onPressEnter={save} onBlur={save} min='0' type='number' style={{ width: '100px' }} />
       </Form.Item>
     ) : (
       <div
@@ -91,8 +94,8 @@ const OrderModal = (props) => {
 
   useEffect(() => {
     if (props.data.length != 0) {
-      if(props.open == true){
-      // if (idOrder == 0 || idOrder != props.data.key) {
+      if (props.open == true) {
+        // if (idOrder == 0 || idOrder != props.data.key) {
         setTotal(props.data.total);
         setIdOrder(props.data.key);
         setDataSource([]);
@@ -108,19 +111,52 @@ const OrderModal = (props) => {
           }
           setDataSource([...dataSource, dataIndex]);
         });
-        
+
       }
     }
-  },[props.open]);
+  }, [props.open]);
 
   const onExit = () => {
     props.setOpen(false);
     setDataSource([]);
   };
 
-  const onSave = () => {
-    // props.setOpen(false);
-    setDataSource([]);
+  const onSave = async () => {
+    let details = [];
+    dataSource.forEach(element => {
+      let index = {
+        "quantity": element.quantity,
+        "note": element.note,
+        "product": element.idProduct,
+        "unit_exchange": element.idUnit
+      }
+      details.push(index);
+    });
+    let values = {
+      "details": details,
+      "note": formRefund.getFieldValue("note"),
+      "status": "complete",
+      "order": props.idIndex
+    }
+    try {
+      const response = await api.order_refund.add(values);
+      if (response.data.code == 1) {
+        message.success(messages.order_refund.SUCCESS_SAVE())
+        props.setOpen(false);
+        console.log(dataSource);
+        setDataSource([]);
+        return true
+      } else if (response.data.code == 0) {
+        message.error("Lỗi")
+      } else {
+        message.error(response.data.message.toString())
+      }
+    } catch (error) {
+      message.error(messages.ERROR)
+      console.log('Failed:', error)
+    }
+    return false
+
   };
 
   const calculateTotal = (value) => {
@@ -160,11 +196,11 @@ const OrderModal = (props) => {
     const index = newData.findIndex((item) => row.key === item.key);
     const item = newData[index];
     newData.splice(index, 1, { ...item, ...row });
-    if(newData[index].total < newData[index].quantity*newData[index].price){
+    if (newData[index].total < newData[index].quantity * newData[index].price) {
       message.error('Lỗi! Số lượng sản phẩm trả lớn hơn số sản phẩm mua trong hóa đơn!!');
       return;
     }
-    newData[index].total= newData[index].quantity*newData[index].price;
+    newData[index].total = newData[index].quantity * newData[index].price;
     setDataSource(newData);
     calculateTotalAmount(newData);
   };
@@ -173,7 +209,7 @@ const OrderModal = (props) => {
     let tong = 0;
     data.forEach(element => {
       // if (element.note == "") {
-        tong += Number(element.total);
+      tong += Number(element.total);
       // } else {
       // }
     });
@@ -214,15 +250,15 @@ const OrderModal = (props) => {
       heigh={500}
     >
 
-<Form layout="vertical" hideRequiredMark form={formRefund}>
-      <Row>
-        <Col span={12}>
-          <label>Ghi chú:</label>
-          <Input></Input>
-        </Col>
+      <Form layout="vertical" hideRequiredMark form={formRefund}>
+        <Row>
+          <Col span={12}>
+            <label>Ghi chú:</label>
+            <Input></Input>
+          </Col>
 
-      </Row>
-</Form>
+        </Row>
+      </Form>
       <Row style={{ marginTop: '20px' }}>
         <Col span={24}>
           <label>Thông tin hàng trả:</label>
@@ -257,7 +293,7 @@ const OrderModal = (props) => {
 
         </Col>
         <Col span={8}>
-          <span style={{ fontWeight: 'bold', fontSize: '15px' }}>Tổng tiền trả khách: <span style={{color:'red'}}>{total}</span> VND</span>
+          <span style={{ fontWeight: 'bold', fontSize: '15px' }}>Tổng tiền trả khách: <span style={{ color: 'red' }}>{total}</span> VND</span>
         </Col>
 
       </Row>

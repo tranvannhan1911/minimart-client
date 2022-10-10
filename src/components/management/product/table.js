@@ -214,13 +214,13 @@ const PriceTable = (props) => {
       ...renderSearch(),
       ...getColumnSearchProps('barcode'),
     },
-    // {
-    //   title: 'Mô tả',
-    //   dataIndex: 'description',
-    //   key: 'description',
-    //   ...renderSearch(),
-    //   ...getColumnSearchProps('description'),
-    // },
+    {
+      title: 'Số lượng',
+      dataIndex: 'stock',
+      key: 'stock',
+      ...renderSearch(),
+      ...getColumnSearchProps('stock'),
+    },
     {
       title: 'Nhóm sản phẩm',
       dataIndex: 'product_groups',

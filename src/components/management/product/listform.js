@@ -12,6 +12,7 @@ import api from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
+import { ExportReactCSV } from '../../../utils/exportExcel';
 
 const PriceListForm = (props) => {
     const [data, setData] = useState([])
@@ -68,7 +69,9 @@ const PriceListForm = (props) => {
         <ListForm 
             title="Sản phẩm" 
             actions={[
+                
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
+                <ExportReactCSV csvData={data} fileName='product' />,
                 <Button onClick={() => navigate(paths.product.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={
