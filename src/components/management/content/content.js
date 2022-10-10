@@ -36,6 +36,9 @@ const OrderListForm = lazy(() => import("../order_list/listform"));
 const RefundListForm = lazy(() => import("../refund_list/listform"));
 const SellPage = lazy(() => import("../sell/sell"));
 
+const CategoryListForm = lazy(() => import("../category/listform"));
+const CategoryChangeForm = lazy(() => import("../category/changeform"));
+
 const MyContent = (props) => {
     const [container, setContainer] = useState(null);
     const [breadcrumb, setBreadcrumb] = useState(false);
@@ -244,6 +247,20 @@ const MyContent = (props) => {
 
                         <Route path={paths.sell.rlist} key={paths.sell.key}
                             element={<SellPage setBreadcrumb={setBreadcrumb}/>} />
+
+                            
+
+                        <Route path={paths.category.rlist} key={paths.category.key}
+                            element={<CategoryListForm setBreadcrumb={setBreadcrumb} />} />
+                        <Route path={paths.category.radd} key={paths.category.key}
+                            element={<CategoryChangeForm
+                                breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                                setBreadcrumb={setBreadcrumb} is_create={true} />} />
+                        <Route path={paths.category.rchange} key={paths.category.key}
+                            element={<CategoryChangeForm
+                                breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                                setBreadcrumb={setBreadcrumb} is_create={false} />} />
+
                     </Routes >
                 </Suspense>
             </Content>

@@ -39,6 +39,7 @@ const Paths = {
     order: getPaths("don-ban-hang","id"),
     order_refund: getPaths("don-tra-hang","id"),
     sell: getPaths("ban-hang","id"),
+    category: getPaths("nganh-hang", "id"),
     
     s3: (filename) => `https://minimart-tvn1911.s3.ap-southeast-1.amazonaws.com/${filename}`,
 }

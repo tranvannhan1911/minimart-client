@@ -13,6 +13,7 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import uploadFile from '../../../utils/s3';
 import { validName1, validBarCode, validCode } from '../../../resources/regexp'
+import ParentSelect from '../category/category_select';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -32,6 +33,7 @@ const PriceChangeForm = (props) => {
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const refAutoFocus = useRef(null)
+  const [categoryParent, setCategoryParent] = useState();
 
   useEffect(() => {
     if (is_create == null) {
@@ -89,6 +91,9 @@ const PriceChangeForm = (props) => {
       values.product_groups = values.product_groups.map(elm => elm.id.toString());
       form.setFieldsValue(values)
       setImageUrl(values.image)
+
+      const response2 = await api.category.get_parent(values.product_category.id);
+      setCategoryParent(response2.data.data.tree)
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -185,6 +190,7 @@ const PriceChangeForm = (props) => {
   }
 
   const create = async (values) => {
+    values["product_category"] = categoryParent.length > 0 ? categoryParent.at(-1) : undefined
     try {
       const response = await api.product.add(values);
       if (response.data.code == 1) {
@@ -202,6 +208,7 @@ const PriceChangeForm = (props) => {
   }
 
   const update = async (values) => {
+    values["product_category"] = categoryParent.length > 0 ? categoryParent.at(-1) : undefined
     try {
       const response = await api.product.update(id, values)
       if (response.data.code == 1) {
@@ -429,7 +436,7 @@ const PriceChangeForm = (props) => {
                 <Row>
                   <Col span={1}></Col>
                   <Col span={10}>
-                    <Form.Item label="Nhóm sản phẩm" name="product_groups" required
+                    <Form.Item label="Nhóm sản phẩm" name="product_groups"
                     >
                       <Select
                         mode="multiple"
@@ -445,9 +452,12 @@ const PriceChangeForm = (props) => {
                   </Col>
                   <Col span={2}></Col>
                   <Col span={10}>
-                    <Form.Item label="Ghi chú" name="note" >
-                      <TextArea rows={1} />
+                    <Form.Item label="Ngành hàng" name="product_category" >
+                      <ParentSelect categoryParent={categoryParent} setCategoryParent={setCategoryParent}/>
                     </Form.Item>
+                    {/* <Form.Item label="Ghi chú" name="note" >
+                      <TextArea rows={1} />
+                    </Form.Item> */}
                   </Col>
                 </Row>
 
