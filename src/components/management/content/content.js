@@ -35,6 +35,10 @@ const PromotionLineChangeForm = lazy(() => import("../promotion/promotion_line/c
 const OrderListForm = lazy(() => import("../order_list/listform"));
 const RefundListForm = lazy(() => import("../refund_list/listform"));
 const SellPage = lazy(() => import("../sell/sell"));
+const StatisticsOrderRefund = lazy(() => import("../statistics/order_refund"));
+const StatisticsProfitRevenue = lazy(() => import("../statistics/profit_revenue"));
+const StatisticsReceived = lazy(() => import("../statistics/received"));
+const StatisticsRecord = lazy(() => import("../statistics/record"));
 
 const MyContent = (props) => {
     const [container, setContainer] = useState(null);
@@ -243,7 +247,19 @@ const MyContent = (props) => {
                             element={<RefundListForm setBreadcrumb={setBreadcrumb} />} />
 
                         <Route path={paths.sell.rlist} key={paths.sell.key}
-                            element={<SellPage setBreadcrumb={setBreadcrumb}/>} />
+                            element={<SellPage setBreadcrumb={setBreadcrumb} />} />
+
+                        <Route path={paths.statistics_order_refund.rlist} key={paths.statistics_order_refund.key}
+                            element={<StatisticsOrderRefund setBreadcrumb={setBreadcrumb} />} />
+
+                        <Route path={paths.statistics_profit_revenue.rlist} key={paths.statistics_profit_revenue.key}
+                            element={<StatisticsProfitRevenue setBreadcrumb={setBreadcrumb} />} />
+
+                        <Route path={paths.statistics_received.rlist} key={paths.statistics_received.key}
+                            element={<StatisticsReceived setBreadcrumb={setBreadcrumb} />} />
+
+                        <Route path={paths.statistics_record.rlist} key={paths.statistics_record.key}
+                            element={<StatisticsRecord setBreadcrumb={setBreadcrumb} />} />
                     </Routes >
                 </Suspense>
             </Content>

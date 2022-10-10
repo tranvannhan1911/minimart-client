@@ -27,15 +27,30 @@ const OrderListForm = (props) => {
     const handleGetData = async () => {
         setLoading(true)
         try {
-            // const response = await api.order.list()
-            const response = (await axios.get('https://63252b299075b9cbee471829.mockapi.io/api/order')).data;
-            const _data = response.map(elm => {
-            // const _data = response.data.data.results.map(elm => {
+            const response = await api.order.list()
+            // const response = (await axios.get('https://63252b299075b9cbee471829.mockapi.io/api/order')).data;
+            // const _data = response.map(elm => {
+            const _data = response.data.data.results.map(elm => {
+            
                 elm.details = elm.details.map(element => {
-                    element.product = element.product.name;
-                    element.price = element.price.price;
-                    element.unit_exchange = element.unit_exchange.unit_name;
-                    return element;
+                    // idProduct=element.product.id;
+                    // idUnit= element.unit_exchange.id;
+                    // element.product = element.product.name;
+                    // element.price = element.price.price;
+                    // element.unit_exchange = element.unit_exchange.unit_name;
+                    let index = {
+                        "id": element.id,
+                        "product": element.product.name,
+                        "unit_exchange": element.unit_exchange.unit_name,
+                        "price": element.price.price,
+                        "quantity": element.quantity,
+                        "total": element.total,
+                        "note": element.note,
+                        "order": element.order,
+                        "idProduct": element.product.id,
+                        "idUnit": element.unit_exchange.id
+                    }
+                    return index;
                 });
                 let date = elm.date_created.slice(0, 10);
                 let time = elm.date_created.slice(12, 19);
@@ -46,10 +61,11 @@ const OrderListForm = (props) => {
                     "details": elm.details,
                     "note": elm.note,
                     "total": elm.total,
+                    "final_total": elm.final_total,
                     "status": elm.status,
                     "date_created": elm.date_created,
                     "date_updated": elm.date_updated,
-                    "customer": elm.customer,
+                    "customer": elm.customer == null ? "Khách hàng lẻ" : elm.customer,
                     "user_created": elm.user_created,
                     "user_updated": elm.user_updated,
                 };

@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import api from '../../../api/apis';
 import messages from '../../../utils/messages';
 import axios from 'axios';
+import { validBarCode } from '../../../resources/regexp';
 
 const { Option } = Select;
 
@@ -13,6 +14,8 @@ const ProductSelect = (props) => {
         console.log(`selected ${value}`);
         setValue(null)
         props.onSelectProduct(value)
+        const audio = new Audio(require("../../../assets/beep.mp3"))
+        audio.play()
     };
 
     const onSearch = (value) => {
@@ -22,10 +25,15 @@ const ProductSelect = (props) => {
     const handleDataProduct = async () => {
         try {
           const response = await api.product.list();
-          console.log(response.data.data.results)
-          const options = response.data.data.results.map(elm => {
+          var results = response.data.data.results
+          if(props.sellable){
+            results = results.filter(elm => {
+              return elm.have_price;
+            })
+          }
+          const options = results.map(elm => {
             return (
-              <Option key={elm.id} value={elm.id}>{elm.name}</Option>
+              <Option key={elm.id} value={elm.id} barcode={elm.barcode}>{elm.name}</Option>
             )
           })
           setProductOptions(options)
@@ -48,8 +56,10 @@ const ProductSelect = (props) => {
             placeholder="Thêm sản phẩm vào đơn hàng"
             optionFilterProp="children"
             onChange={onChange}
-            onSearch={onSearch}
-            filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+            filterOption={(input, option) => {
+              return option.children.toLowerCase().includes(input.toLowerCase())
+                | option.barcode.trim() == input.trim()
+            }}
             value={value}
         >
             {productOptions}

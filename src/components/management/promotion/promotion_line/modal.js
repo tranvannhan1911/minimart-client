@@ -36,6 +36,10 @@ const PromotionLineModal = (props) => {
         setIdIndex(props.data.id);
       }
     }
+    if (props.setCreate == true) {
+      form.setFieldValue("start_date", props.start_date);
+      form.setFieldValue("end_date", props.end_date);
+    }
     // setDataSource(props.data.pricedetails)
   });
 
@@ -62,7 +66,6 @@ const PromotionLineModal = (props) => {
       const response = await api.promotion_line.update(props.data.id, values);
       if (response.data.code == 1) {
         message.success(messages.promotion_line.SUCCESS_SAVE(props.data.id));
-        setTimeout(window.location.reload(), 1000);
         return true;
       } else {
         message.error(response.data.message.toString());
@@ -70,7 +73,6 @@ const PromotionLineModal = (props) => {
       }
     } catch (error) {
       message.error(messages.ERROR);
-      setTimeout(window.location.reload(), 1000);
       console.log('Failed:', error);
     }
     return false;
@@ -86,6 +88,8 @@ const PromotionLineModal = (props) => {
 
   const onReset = () => {
     form.resetFields();
+    form.setFieldValue("start_date", props.start_date);
+    form.setFieldValue("end_date", props.end_date);
     setTypeIndex("Product");
   };
 
@@ -155,9 +159,9 @@ const PromotionLineModal = (props) => {
       "start_date": form.getFieldValue("start_date"),
       "end_date": form.getFieldValue("end_date"),
       "status": sta,
-      "max_quantity": form.getFieldValue("max_quantity"),
-      "max_quantity_per_customer": form.getFieldValue("max_quantity_per_customer"),
-      "max_quantity_per_customer_per_day": form.getFieldValue("max_quantity_per_customer_per_day"),
+      "max_quantity": form.getFieldValue("max_quantity") == "" ? null : form.getFieldValue("max_quantity"),
+      "max_quantity_per_customer": form.getFieldValue("max_quantity_per_customer") == "" ? null: form.getFieldValue("max_quantity_per_customer"),
+      "max_quantity_per_customer_per_day": form.getFieldValue("max_quantity_per_customer_per_day") == "" ? null : form.getFieldValue("max_quantity_per_customer_per_day"),
       "note": form.getFieldValue("note"),
       "date_updated": null,
       "promotion": props.id,
@@ -208,7 +212,7 @@ const PromotionLineModal = (props) => {
     if (kq == true) {
       form.resetFields();
       props.setOpen(false);
-      navigate(paths.promotion.addline(props.id));
+      props.handleData();
     } else {
     }
   };

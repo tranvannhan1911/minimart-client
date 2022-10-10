@@ -51,7 +51,7 @@ class AccountApi{
     }
 }
 
-const getApi = (resource) => {
+const getApi = (resource, extras) => {
     return {
         listBuy: (params) => {
             const url = `/${resource}/?sellable=true`
@@ -84,13 +84,23 @@ const getApi = (resource) => {
         delete: (id, params) => {
             const url = `/${resource}/${id}/`
             return axiosApi.delete(url, params)
-        }
+        },
+        ...extras
     }
 }
 
 const promotion_line_extras = {
+    by_product: (params) => {
+        console.log("by_product", params)
+        const url = `/promotion-line/by_product/`
+        return axiosApi.get(url, params)
+    },
     by_order: (params) => {
         const url = `/promotion-line/by_order/`
+        return axiosApi.get(url, params)
+    },
+    by_type: (params) => {
+        const url = `/promotion-line/by_type/`
         return axiosApi.get(url, params)
     }
 }
@@ -108,7 +118,7 @@ const api = {
     inventory_record: getApi("inventory-record"),
     warehouse_transaction: getApi("warehouse-transaction"),
     promotion: getApi("promotion"),
-    promotion_line: getApi("promotion-line"),
+    promotion_line: getApi("promotion-line", promotion_line_extras),
     order: getApi("order"),
     order_refund: getApi("refund"),
 }

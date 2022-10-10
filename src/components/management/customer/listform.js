@@ -1,9 +1,9 @@
 import {
-    PlusOutlined, ImportOutlined,
+    PlusOutlined, UploadOutlined,
     ExportOutlined, ReloadOutlined,
     SearchOutlined
-  } from '@ant-design/icons';
-import { Button, Col, Row, Space, Input, message } from 'antd';
+} from '@ant-design/icons';
+import { Button, Col, Row, Space, Input, message, Upload } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import ListForm from '../templates/listform';
@@ -12,6 +12,9 @@ import api from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
+import { ExportReactCSV } from '../../../utils/exportExcel';
+import * as XLSX from 'xlsx';
+
 const { Title } = Typography;
 const { Search } = Input;
 
@@ -25,16 +28,55 @@ const CustomerListForm = (props) => {
     const navigate = useNavigate()
     const refSearch = useRef()
 
+    const uploadData = {
+        async beforeUpload(file) {
+            // console.log(file.name)
+            var typeFile = file.name.split('.').pop().toLowerCase();
+            if (typeFile == "xlsx" || typeFile == "csv") {
+                setLoading(true);
+                const data = await file.arrayBuffer();
+                const workbook = XLSX.read(data);
+
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                for (let index = 0; index < jsonData.length; index++) {
+                    const element = jsonData[index];
+                    const response = await api.customer.add({
+                        "phone": "0"+element.phone,
+                        "fullname": element.fullname,
+                        "gender": element.gender,
+                        "address": element.address,
+                        "note": element.note,
+                        "is_active": element.is_active,
+                        "customer_group": [
+                            
+                        ]
+                    });
+                    if (index == jsonData.length - 1) {
+                        console.log(index)
+                        message.success("Xong quá trình thêm dữ liệu");
+                        setLoading(false);
+                        handleGetData();
+                    }
+                }
+            } else {
+                message.error("Chỉ nhập dữ liệu bằng file .csv, .xlsx");
+                return;
+            }
+
+        }
+    };
+
     const handleGetData = async () => {
         setLoading(true)
-        try{
+        try {
             const response = await api.customer.list()
             const _data = response.data.data.results.map(elm => {
                 elm.key = elm.id
                 const _customer_groups = []
                 elm.customer_group.forEach(gr => _customer_groups.push(gr.name))
                 elm.customer_group = _customer_groups
-                switch(elm.gender){
+                switch (elm.gender) {
                     case "M":
                         elm.gender = "Nam"
                         break
@@ -51,7 +93,7 @@ const CustomerListForm = (props) => {
                 return elm
             })
             setData(_data)
-        }catch(error){
+        } catch (error) {
             console.log('Failed:', error)
             message.error(messages.ERROR_REFRESH)
         }
@@ -59,10 +101,10 @@ const CustomerListForm = (props) => {
     }
 
     const handleGetDataCustomerGroup = async () => {
-        try{
+        try {
             const response = await api.customer_group.list()
             setDataCustomerGroup(response.data.data.results)
-        }catch(error){
+        } catch (error) {
             console.log('Failed:', error)
             message.error(messages.ERROR_REFRESH)
         }
@@ -81,19 +123,21 @@ const CustomerListForm = (props) => {
     };
 
     return (
-        <ListForm 
-            title="Khách hàng" 
+        <ListForm
+            title="Khách hàng"
             actions={[
-                <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
-                // <Button icon={<ImportOutlined />}>Nhập excel</Button>,
-                // <Button icon={<ExportOutlined />}>Xuất excel</Button>,
+                <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
+                <Upload showUploadList={false} {...uploadData}>
+                    <Button icon={<UploadOutlined />}>Nhập Excel</Button>
+                </Upload>,
+                <ExportReactCSV csvData={data} fileName='customer' />,
                 <Button onClick={() => navigate(paths.customer.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={
-                <CustomerTable 
-                    data={data} 
+                <CustomerTable
+                    data={data}
                     data_customer_group={dataCustomerGroup}
-                    loading={loading} 
+                    loading={loading}
                     setLoading={setLoading}
                     filteredInfo={filteredInfo}
                     setFilteredInfo={setFilteredInfo}
@@ -104,9 +148,9 @@ const CustomerListForm = (props) => {
                 />
             }
             extra_actions={[
-                <Input 
-                    placeholder="Tìm kiếm khách hàng" 
-                    allowClear value={searchInfo[0]} 
+                <Input
+                    placeholder="Tìm kiếm khách hàng"
+                    allowClear value={searchInfo[0]}
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
                 />,
