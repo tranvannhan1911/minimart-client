@@ -10,12 +10,20 @@ import paths from '../../../utils/paths'
 import { Col, Divider, Drawer, Row } from 'antd';
 import api from '../../../api/apis'
 import messages from '../../../utils/messages'
-import InventoryReceivingModal from './modal';
+// import PromotionModal from './modal';
 const { Search } = Input;
 // const idstaff=0;
 
-const InventoryReceivingTable = (props) => {
+const DescriptionItem = ({ title, content }) => (
+  <div className="site-description-item-profile-wrapper">
+    <p className="site-description-item-profile-p-label">{title}:</p>
+    {content}
+  </div>
+);
+
+const PromotionTable = (props) => {
   const navigate = useNavigate();
+  const [data1, setData1] = useState();
   const [open, setOpen] = useState(false);
   const [dataIndex, setDataIndex] = useState("");
   const [searchText, setSearchText] = useState('');
@@ -31,61 +39,26 @@ const InventoryReceivingTable = (props) => {
     SetCurrentCountData(extras.currentDataSource.length)
   };
 
+  ///////
 
-  const onOpen = (id) => {
-    
-    let detail = [];
-    props.data.forEach(element => {
-      if (element.id == id) {
-        let index={
-          "details": [
-          ],
-          "status": element.status,
-          "note": element.note,
-          "total": element.total,
-          "supplier": element.supplier,
-          "id": element.id,
-          "date_created": element.date_created
-        }
-        element.details.forEach(elementt => {
-          let ind = {
-            "quantity": elementt.quantity,
-            "price": elementt.price,
-            "note": elementt.note,
-            "product": elementt.product.name
-          }
-          detail.push(ind);
-        });
-        index.details=detail;
-        setDataIndex(index);
-        setOpen(true);
-      }
-    });
+  const onOpen = async (id) => {
+    navigate(paths.promotion.addline(id))
   };
 
   const tagStatus = (status) => {
-    if (status == 'pending') {
-      return 'CHỜ XÁC NHẬN';
-    } else if (status == 'complete') {
-      return 'HOÀN THÀNH';
-    } else if (status == 'cancel') {
-      return 'HỦY';
+    if (status == true) {
+      return 'HOẠT ĐỘNG';
+    } else {
+      return 'KHÓA';
     }
   };
 
   const tagStatusColor = (status) => {
-    if (status == 'pending') {
-      return 'processing';
-    } else if (status == 'complete') {
-      return 'success';
+    if (status == true) {
+      return 'geekblue';
     } else {
-      return 'warning';
+      return 'volcano';
     }
-    // if(status==true){
-    //   return 'geekblue';
-    // }else{
-    //   return 'volcano';
-    // }
   };
 
   const onClose = () => {
@@ -94,7 +67,7 @@ const InventoryReceivingTable = (props) => {
   //////
 
   const setIdxBtn = (id) => {
-    navigate(paths.inventory_receiving.change(id))
+    navigate(paths.promotion.change(id))
   };
 
   useEffect(() => {
@@ -218,11 +191,13 @@ const InventoryReceivingTable = (props) => {
   });
 
 
+
   const columns = [
     {
-      title: 'Mã phiếu nhập hàng',
+      title: 'Mã',
       dataIndex: 'id',
       key: 'id',
+      width: "5%",
       sorter: {
         compare: (a, b) => a.id > b.id,
         multiple: 1
@@ -230,55 +205,65 @@ const InventoryReceivingTable = (props) => {
       defaultSortOrder: 'descend',
       filteredValue: props.searchInfo || null,
       onFilter: (value, record) => {
-        return (record.supplier && record.supplier.toLowerCase().includes(value.toLowerCase()))
+        return (record.title && record.title.toLowerCase().includes(value.toLowerCase()))
           || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
       },
       ...renderSearch(),
       ...getColumnSearchProps('id'),
     },
     {
-      title: 'Nhà cung cấp',
-      dataIndex: 'supplier',
-      key: 'name',
+      title: 'Hình ảnh',
+      dataIndex: 'image',
+      key: 'image',
+      render: (image) => (
+        <span>
+          <img src={image} style={{width:'50px', height:'50px'}}></img>
+        </span>
+      ),
+    },
+    {
+      title: 'Tiêu đề',
+      dataIndex: 'title',
+      key: 'title',
+      width: "15%",
       sorter: {
-        compare: (a, b) => a.supplier.toLowerCase().localeCompare(b.supplier.toLowerCase()),
+        compare: (a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()),
         multiple: 2
       },
       ...renderSearch(),
-      ...getColumnSearchProps('supplier'),
+      ...getColumnSearchProps('title'),
     },
     {
-      title: 'Ngày nhập',
-      dataIndex: 'date_created',
-      key: 'date_created',
-      ...getColumnSearchProps('date_created'),
-    },
-    {
-      title: 'Tổng tiền',
-      dataIndex: 'total',
-      key: 'total',
+      title: 'Mô tả',
+      dataIndex: 'description',
+      key: 'description',
+      width: "35%",
       sorter: {
-        compare: (a, b) => a.total > b.total,
-        multiple: 1
+        compare: (a, b) => a.description.toLowerCase().localeCompare(b.description.toLowerCase()),
+        multiple: 2
       },
-      ...getColumnSearchProps('total'),
+      ...renderSearch(),
+      ...getColumnSearchProps('description'),
+    },
+    {
+      title: 'Ngày bắt đầu',
+      dataIndex: 'start_date',
+      key: 'start_date',
+      width: "12%",
+      ...getColumnSearchProps('start_date'),
+    },
+    {
+      title: 'Ngày kết thúc',
+      dataIndex: 'end_date',
+      key: 'end_date',
+      width: "12%",
+      ...getColumnSearchProps('end_date'),
     },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
-      // filters: [
-      //   {
-      //     text: 'HOẠT ĐỘNG',
-      //     value: 'true',
-      //   },
-      //   {
-      //     text: 'KHÓA',
-      //     value: 'false',
-      //   },
-      // ],
-      // filteredValue: props.filteredInfo.status || null,
-      // onFilter: (value, record) => record.status.includes(value),
+      width: "10%",
       render: (status) => (
         <span>
           <Tag color={tagStatusColor(status)} key={status}>
@@ -291,6 +276,7 @@ const InventoryReceivingTable = (props) => {
       title: '',
       dataIndex: 'id',
       key: 'id',
+      width: "11%",
       render: (id) => (
         <span>
           <a onClick={() => onOpen(id)} key={id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a>
@@ -328,10 +314,10 @@ const InventoryReceivingTable = (props) => {
           showTotal: (total) => `Tất cả ${total}`,
         }}
         loading={props.loading} />
-      <InventoryReceivingModal open={open} data={dataIndex} setOpen={setOpen} />
+      {/* <PromotionModal open={open} data={dataIndex} setOpen={setOpen} /> */}
     </>
 
   );
 };
 
-export default InventoryReceivingTable;
+export default PromotionTable;

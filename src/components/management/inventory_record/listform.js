@@ -27,22 +27,11 @@ const InventoryRecordListForm = (props) => {
             const response = await api.inventory_record.list()
             const _data = response.data.data.results.map(elm => {
                 elm.key = elm.id
-                // switch(elm.gender){
-                //     case "M":
-                //         elm.gender = "Nam"
-                //         break
-                //     case "F":
-                //         elm.gender = "Nữ"
-                //         break
-                //     case "U":
-                //         elm.gender = "Không xác định"
-                //         break
-                // }
-                // if(elm.is_superuser==true){
-                //     elm.is_superuser = "Quản lý";
-                // }else{
-                //     elm.is_superuser = "Nhân viên";
-                // }
+                
+                let date=elm.date_created.slice(0, 10);
+                let time=elm.date_created.slice(12, 19);
+                elm.date_created=date+" "+time;
+                
                 return elm
             })
             setData(_data)

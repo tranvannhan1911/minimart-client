@@ -133,26 +133,13 @@ const InventoryRecordChangeForm = (props) => {
   const onFinish = async (values) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
-    // console.log(state);
-    // if (!validName1.test(values.name)) {
-    //   message.error('Tên không hợp lệ! Ký tự đầu của chữ đầu tiên phải viết hoa');
-    //   setDisableSubmit(false)
-    //   stopLoading(idxBtnSave)
-    //   return;
-    // }
-    // if (values.end_date < values.start_date) {
-    //   message.error('Ngày kết thúc phải sau ngày bắt đầu');
-    //   stopLoading(idxBtnSave)
-    //   setDisableSubmit(false)
-    //   return;
-    // }
+    if (values.status == null) {
+      values.status = "pending";
+    }
     if (is_create) {
       await create(values)
     } else {
-      // console.log(values.start_date._i)
-      // values.start_date = values.start_date._i;
-      // values.end_date = values.end_date._i;
-      // values.pricedetails=dataIndex.pricedetails;
+
       await update(values)
     }
     stopLoading(idxBtnSave)
@@ -175,11 +162,11 @@ const InventoryRecordChangeForm = (props) => {
       // values.end_date = moment(values.end_date)
       ///
       values.details = values.details.map(elm => {
-        elm.product = elm.product.name;
+        elm.product = elm.product.id;
         return elm;
 
       })
-     
+
       form.setFieldsValue(values)
 
     } catch (error) {
@@ -308,31 +295,59 @@ const InventoryRecordChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <><>
-
-
             </>
+              <Row>
+                <Col span={1}></Col>
+                <Col span={10}>
+                  <Form.Item label="Trạng thái" name="status"
+                    style={{
+                      textAlign: 'left'
+                    }}>
+                    <Select
+                      defaultValue="pending"
+                      style={{
+                        width: '100%',
+                      }}
+                    >
+                      <Option value="pending">Chờ xác nhận</Option>
+                      <Option value="complete">Hoàn thành</Option>
+                      <Option value="cancel">Hủy</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10}>
+                  <Form.Item label="Ghi chú" name="note"
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: 'Vui lòng nhập ghi chú!',
+                  //   },
+                  // ]}
+                  >
+                    <TextArea rows={1} />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+
               <Col>
                 <label><h2 style={{ marginTop: '10px', marginBottom: '30px', textAlign: 'center' }}>Kiểm kê</h2></label>
-                {/* <Button type="primary" onClick={showModal}>
-                  Thêm giá sản phẩm
-                </Button>
-                <Table
-                  columns={columns}
-                  dataSource={priceList}
-                >
-
-                </Table> */}
+                
                 <Form.List name="details" label="Bảng giá sản phẩm">
                   {(fields, { add, remove }) => (
                     <>
 
                       {fields.map(({ key, name, ...restField }) => (
+                        <Row>
+                        <Col span={5}></Col>
+                        <Col span={14}>
                         <Space
                           key={key}
                           style={{
                             display: 'flex',
                             marginBottom: 0,
-                            width:'100%',
+                            width: '100%',
                           }}
                           align="baseline"
                         >
@@ -347,13 +362,14 @@ const InventoryRecordChangeForm = (props) => {
                             ]}
                             style={{
                               textAlign: 'left',
-                              width:'100%',                            }}
+                              width: '100%',
+                            }}
                           >
                             <Select
                               showSearch
                               onChange={(option) => onUnitSelect(option)}
                               style={{
-                                width: 200,
+                                width: 250,
                               }}
                               placeholder="Sản phẩm"
                               optionFilterProp="children"
@@ -377,17 +393,17 @@ const InventoryRecordChangeForm = (props) => {
                             ]}
                             style={{
                               textAlign: 'left',
-                              width:'100%'
+                              width: 200
                             }}
                           >
-                            <Input placeholder="Số lượng theo đơn vị tính cơ bản" type='number' disabled={is_create ? false : true} />
+                            <Input placeholder="Số lượng theo đơn vị tính cơ bản" min='0' type='number' disabled={is_create ? false : true} />
                           </Form.Item>
                           <Form.Item
                             {...restField}
                             name={[name, 'note']}
                             style={{
                               textAlign: 'left',
-                              width:'100%'
+                              width: 200
                             }}
                             rules={[
                               {
@@ -405,15 +421,18 @@ const InventoryRecordChangeForm = (props) => {
                             okText="Đồng ý"
                             okType="danger"
                             cancelText="Hủy bỏ"
-                            style={{width:'10%'}}
+                            style={{ width: '10%' }}
                             disabled={is_create ? false : true}
                           >
                             <MinusCircleOutlined />
                           </Popconfirm>
-                          
+
                         </Space>
+                        </Col>
+                          <Col span={5}></Col>
+                        </Row>
                       ))}
-                      <Form.Item style={{ width: '170px' }}>
+                      <Form.Item style={{ width: '170px', margin: 'auto' }}>
                         <Button type="dashed" disabled={is_create ? false : true} onClick={() => add()} block icon={<PlusOutlined />} >
                           Thêm sản phẩm
                         </Button>
@@ -422,32 +441,8 @@ const InventoryRecordChangeForm = (props) => {
                   )}
                 </Form.List>
               </Col>
-              <Form.Item label="Trạng thái" name="status"
-                style={{
-                  textAlign: 'left'
-                }}>
-                <Select
-                  defaultValue="pending"
-                  style={{
-                    width: 200,
-                  }}
-                >
-                  <Option value="pending">Chờ xác nhận</Option>
-                  <Option value="complete">Hoàn thành</Option>
-                  <Option value="cancel">Hủy</Option>
-                </Select>
-              </Form.Item>
-              <Form.Item label="Ghi chú" name="note"
-              // rules={[
-              //   {
-              //     required: true,
-              //     message: 'Vui lòng nhập ghi chú!',
-              //   },
-              // ]}
-              >
-                <TextArea rows={4} />
-              </Form.Item>
-              <Form.Item>
+
+              <Form.Item style={{ marginTop: '40px' }}>
                 <Space>
                   <Button
                     type="primary"

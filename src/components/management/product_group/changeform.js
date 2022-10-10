@@ -1,7 +1,7 @@
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Space, Popconfirm } from 'antd';
+import { Button, Form, Input, Select, message, Space, Popconfirm, Row, Col } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
@@ -43,7 +43,7 @@ const ProductGroupForm = (props) => {
         { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
     }
 
-    if (is_create==false) {
+    if (is_create == false) {
       props.setBreadcrumbExtras([
         <Popconfirm
           placement="bottomRight"
@@ -75,7 +75,7 @@ const ProductGroupForm = (props) => {
   useEffect(() => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
-  
+
   const handleData = async () => {
     setLoadingData(true)
     try {
@@ -163,7 +163,7 @@ const ProductGroupForm = (props) => {
     }
     return false
   }
-  
+
   const _delete = async () => {
     try {
       const response = await api.product_group.delete(id)
@@ -221,60 +221,77 @@ const ProductGroupForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <>
-              <Form.Item label="Tên nhóm sản phẩm" name="name" required
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng nhập tên nhóm sản phẩm!',
-                  },
-                ]}
-              >
-                <Input autoFocus ref={refAutoFocus} />
+              <Row>
+                <Col span={1}></Col>
+                <Col span={10}>
+                  <Form.Item label="Tên nhóm sản phẩm" name="name" required
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập tên nhóm sản phẩm!',
+                      },
+                    ]}
+                  >
+                    <Input autoFocus ref={refAutoFocus} />
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10}>
+                  <Form.Item label="Code nhóm sản phẩm" name="product_group_code" required
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập code nhóm sản phẩm!',
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={1}></Col>
+                <Col span={22}>
+                  <Form.Item label="Mô tả" name="description" >
+                    <TextArea rows={4} />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={1}></Col>
+                <Col span={22}>
+                  <Form.Item label="Ghi chú" name="note" >
+                    <TextArea rows={4} />
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Form.Item>
+                <Space>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    icon={<PlusOutlined />}
+                    loading={loadings[0]}
+                    onClick={() => setIdxBtnSave(0)}
+                    disabled={disableSubmit ? true : false}
+                  >Lưu</Button>
+                  <Button
+                    htmlType="submit"
+                    icon={<EditOutlined />}
+                    loading={loadings[1]}
+                    onClick={() => setIdxBtnSave(1)}
+                    disabled={disableSubmit ? true : false}
+                  >Lưu và tiếp tục chỉnh sửa</Button>
+                  <Button
+                    htmlType="submit"
+                    icon={<PlusOutlined />}
+                    loading={loadings[2]}
+                    onClick={() => setIdxBtnSave(2)}
+                    disabled={disableSubmit ? true : false}
+                  >Lưu và thêm mới</Button>
+                </Space>
               </Form.Item>
-              <Form.Item label="Code nhóm sản phẩm" name="product_group_code" required
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng nhập code nhóm sản phẩm!',
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item label="Mô tả" name="description" >
-                <TextArea rows={4} />
-              </Form.Item>
-              <Form.Item label="Ghi chú" name="note" >
-                <TextArea rows={4} />
-              </Form.Item>
-              {props.is_modal ? null :
-                <Form.Item>
-                  <Space>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      icon={<PlusOutlined />}
-                      loading={loadings[0]}
-                      onClick={() => setIdxBtnSave(0)}
-                      disabled={disableSubmit ? true : false}
-                    >Lưu</Button>
-                    <Button
-                      htmlType="submit"
-                      icon={<EditOutlined />}
-                      loading={loadings[1]}
-                      onClick={() => setIdxBtnSave(1)}
-                      disabled={disableSubmit ? true : false}
-                    >Lưu và tiếp tục chỉnh sửa</Button>
-                    <Button
-                      htmlType="submit"
-                      icon={<PlusOutlined />}
-                      loading={loadings[2]}
-                      onClick={() => setIdxBtnSave(2)}
-                      disabled={disableSubmit ? true : false}
-                    >Lưu và thêm mới</Button>
-                  </Space>
-                </Form.Item>
-              }
 
             </>
           }>

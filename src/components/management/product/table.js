@@ -6,10 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
 import api from '../../../api/apis'
 import messages from '../../../utils/messages'
-import ProductModal from './modal';
+import PriceModal from './modal';
 const { Search } = Input;
 
-const ProductTable = (props) => {
+const PriceTable = (props) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [dataIndex, setDataIndex] = useState("");
@@ -41,11 +41,8 @@ const ProductTable = (props) => {
   const onOpen = async (id) => {
     props.data.forEach(element => {
       if(element.id==id){
-        console.log(element)
         setDataIndex(element);
-        // renderProfile(element)
         setOpen(true);
-        console.log(element);
       }
     });
   };
@@ -162,6 +159,7 @@ const ProductTable = (props) => {
   
 
   const columns = [
+    
     {
       title: 'Mã sản phẩm',
       dataIndex: 'id',
@@ -175,9 +173,21 @@ const ProductTable = (props) => {
       onFilter: (value, record) => {
         return (record.name && record.name.toLowerCase().includes(value.toLowerCase()))
           || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
+          || (record.product_code && record.product_code.toString().toLowerCase().includes(value.toLowerCase()))
+          || (record.barcode && record.barcode.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))},
       ...renderSearch(),
       ...getColumnSearchProps('id'),
+    },
+    {
+      title: 'Hình ảnh',
+      dataIndex: 'image',
+      key: 'image',
+      render: (image) => (
+        <span>
+          <img src={image} style={{width:'50px', height:'50px'}}></img>
+        </span>
+      ),
     },
     {
       title: 'Tên sản phẩm',
@@ -271,6 +281,7 @@ const ProductTable = (props) => {
       //   selectedRowKeys,
       //   onChange: onSelectChange
       // }}
+      bordered
       columns={columns}
       dataSource={props.data}
       onChange={handleChange}
@@ -285,8 +296,8 @@ const ProductTable = (props) => {
         showTotal: (total) => `Tất cả ${total}`,
       }}
       loading={props.loading} />
-      <ProductModal open={open} data={dataIndex} setOpen={setOpen} /></>
+      <PriceModal open={open} data={dataIndex} setOpen={setOpen} /></>
   );
 };
 
-export default ProductTable;
+export default PriceTable;

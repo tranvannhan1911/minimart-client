@@ -1,7 +1,7 @@
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Space, Popconfirm, Switch,Row,Col } from 'antd';
+import { Button, Form, Input, Select, message, Space, Popconfirm, Switch, Row, Col } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
@@ -215,82 +215,104 @@ const StaffChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <>
-              <Form.Item label="Tên nhân viên" name="fullname" required
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng nhập tên nhân viên!',
-                  },
-                ]}
-              >
-                <Input autoFocus ref={refAutoFocus} />
-              </Form.Item>
-              <Form.Item label="Số điện thoại" name="phone" required
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng nhập số điện thoại!',
-                  },
-                ]}
-              >
-                <Input disabled={is_create ? false : true} />
-              </Form.Item>
-              <Form.Item label="Địa chỉ" name="address" >
-                <Input />
-              </Form.Item>
               <Row>
-                <Col span={12}>
-              <Form.Item label="Giới tính" name="gender"
-                style={{
-                  textAlign: 'left'
-                }}>
-                <Select
-                  defaultValue="U"
-                  style={{
-                    width: 200,
-                  }}
-                >
-                  <Option value="M">Nam</Option>
-                  <Option value="F">Nữ</Option>
-                  <Option value="U">Không xác định</Option>
-                </Select>
-              </Form.Item>
-              </Col>
-              <Col span={12}>
-              <Form.Item label="Trạng thái" name="status"
-                style={{
-                  textAlign: 'left'
-                }}>
-                <Select
-                  defaultValue='true'
-                  style={{
-                    width: 200,
-                  }}
-                >
-                  <Option value="true">Hoạt động</Option>
-                  <Option value="false">Khóa</Option>
-                </Select>
-              </Form.Item>
-              </Col>
+                <Col span={1}></Col>
+                <Col span={10}>
+                  <Form.Item label="Tên nhân viên" name="fullname" required
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập tên nhân viên!',
+                      },
+                    ]}
+                  >
+                    <Input autoFocus ref={refAutoFocus} />
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10}>
+                  <Form.Item label="Số điện thoại" name="phone" required
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập số điện thoại!',
+                      },
+                    ]}
+                  >
+                    <Input disabled={is_create ? false : true} />
+                  </Form.Item>
+                </Col>
               </Row>
-              {/* <Form.Item label="Vai trò" name="is_superuser"
-                style={{
-                  textAlign: 'left'
-                }}>
-                <Select
-                  defaultValue="false"
-                  style={{
-                    width: 200,
-                  }}
-                >
-                  <Option value="false">Nhân viên</Option>
-                  <Option value="true">Quản lý</Option>
-                  
-                </Select>
-              </Form.Item> */}
-              <Form.Item label="Ghi chú" name="note" >
-                <TextArea rows={4} />
-              </Form.Item>
+              <Row>
+                <Col span={1}></Col>
+                <Col span={10}>
+                  <Form.Item label="Địa chỉ" name="address" >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10}>
+                  <Form.Item label="Giới tính" name="gender"
+                    style={{
+                      textAlign: 'left'
+                    }}>
+                    <Select
+                      defaultValue="U"
+                      style={{
+                        width: '100%',
+                      }}
+                    >
+                      <Option value="M">Nam</Option>
+                      <Option value="F">Nữ</Option>
+                      <Option value="U">Không xác định</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={1}></Col>
+                <Col span={10}>
+                  <Form.Item label="Trạng thái" name="status"
+                    style={{
+                      textAlign: 'left'
+                    }}>
+                    <Select
+                      defaultValue='true'
+                      style={{
+                        width: '100%',
+                      }}
+                    >
+                      <Option value="true">Hoạt động</Option>
+                      <Option value="false">Khóa</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10}>
+                  <Form.Item label="Vai trò" name="is_superuser"
+                    style={{
+                      textAlign: 'left'
+                    }}>
+                    <Select
+                      defaultValue="false"
+                    >
+                      <Option value="false">Nhân viên</Option>
+                      <Option value="true">Quản lý</Option>
+
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col span={1}></Col>
+                <Col span={22}>
+                  <Form.Item label="Ghi chú" name="note" >
+                    <TextArea rows={4} />
+                  </Form.Item>
+                </Col>
+              </Row>
+
               <Form.Item>
                 <Space>
                   <Button

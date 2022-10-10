@@ -1,5 +1,5 @@
 import {
-  PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined, MinusCircleOutlined
+  PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined, MinusCircleOutlined, CalendarOutlined
 } from '@ant-design/icons';
 import { Button, Form, Input, Select, message, Space, Popconfirm, Switch, DatePicker, Col, Row, Table, Checkbox, Modal } from 'antd';
 import { Typography } from 'antd';
@@ -127,8 +127,11 @@ const InventoryReceivingChangeForm = (props) => {
   const onFinish = async (values) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
-    
-    let index={
+    // console.log("values1", values)
+    if (values.status == null) {
+      values.status = "pending";
+    }
+    let index = {
       "details": [
       ],
       "status": values.status,
@@ -136,36 +139,49 @@ const InventoryReceivingChangeForm = (props) => {
       "total": 0,
       "supplier": values.supplier
     }
-    let details=[];
-    values.details.forEach(async element => {
+    let details = [];
+    let promises = values.details.map(element => {
+      return new Promise(async (resolve) => {
         const response = await api.product.get(element.product);
         response.data.data.units.forEach(elementt => {
-          if(element.unit_exchange == elementt.id){
-            let detail={
-              "quantity": elementt.value*element.quantity,
+          if(element.unit_exchange == null && elementt.is_base_unit ==true){
+            let detail = {
+              "quantity": element.quantity,
               "price": element.price,
               "note": element.note,
               "product": element.product
             }
-            
+
             details.push(detail);
+            resolve()
+          }
+          if (element.unit_exchange == elementt.id) {
+            let detail = {
+              "quantity": elementt.value *  element.quantity,
+              "price": element.price,
+              "note": element.note,
+              "product": element.product
+            }
+
+            details.push(detail);
+            resolve()
           }
         });
-      }); 
-      index.details=details;
-      console.log(index,1);
-    if (is_create) {
+      })
+    });
+    Promise.all(promises).then(async () => {
+      index.details = details;
+      console.log(index, 1);
+      if (is_create) {
 
-      await create(index)
-    } else {
-      // console.log(values.start_date._i)
-      // values.start_date = values.start_date._i;
-      // values.end_date = values.end_date._i;
-      // values.pricedetails=dataIndex.pricedetails;
-      await update(values)
-    }
-    stopLoading(idxBtnSave)
-    setDisableSubmit(false)
+        await create(index)
+      } else {
+        await update(index)
+      }
+      stopLoading(idxBtnSave)
+      setDisableSubmit(false)
+    });
+
   }
 
   const onFinishFailed = (errorInfo) => {
@@ -179,10 +195,9 @@ const InventoryReceivingChangeForm = (props) => {
     try {
       const response = await api.inventory_receiving.get(id);
       const values = response.data.data;
-      values.supplier = values.supplier.name;
+      values.supplier = values.supplier.id;
       values.details = values.details.map(elm => {
         elm.product = elm.product.id;
-        // elm.unit_exchange = elm.unit_exchange.unit_name;
         return elm;
 
       })
@@ -190,7 +205,7 @@ const InventoryReceivingChangeForm = (props) => {
       form.setFieldsValue(values)
 
     } catch (error) {
-      message.error(messages.ERROR+"hhhh")
+      message.error(messages.ERROR)
     } finally {
       setLoadingData(false)
     }
@@ -327,223 +342,236 @@ const InventoryReceivingChangeForm = (props) => {
               >
                 <Input value={0} />
               </Form.Item>
+              <Row>
+                <Col span={1}></Col>
+                <Col span={10}>
+                  <Form.Item
+                    label="Nhà cung cấp" name="supplier" required
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng chọn nhà cung cấp!',
+                      },
+                    ]}
+                    style={{
+                      textAlign: 'left'
+                    }}
+                  >
+                    <Select
+                      showSearch
+                      // onChange={(option) => onUnitSelect(option)}
+                      style={{
+                        width: '100%',
+                      }}
+                      placeholder="Nhà cung cấp"
+                      optionFilterProp="children"
+                      filterOption={(input, option) => option.children.includes(input)}
+                      filterSort={(optionA, optionB) =>
+                        optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                      }
+                    >
+                      {baseSupplierOptions}
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10}>
+                  <Form.Item label="Trạng thái" name="status"
+                    style={{
+                      textAlign: 'left'
+                    }}>
+                    <Select
+                      defaultValue="pending"
+                      style={{
+                        width: '100%',
+                      }}
+                    >
+                      <Option value="pending">Chờ giao hàng</Option>
+                      <Option value="complete">Hoàn thành</Option>
+                      <Option value="cancel">Hủy</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
 
-              <Form.Item label="Ngày nhập" name="start_date" required
+              {/* <Form.Item label="Ngày nhập" name="date_created" required
                 style={{
                   textAlign: "left",
                   // width:'500px',
                   marginLeft: '0px',
                   // display:'inline-grid'
                 }}
-              // rules={[
-              //   {
-              //     required: true,
-              //     message: 'Vui lòng chọn ngày nhập!',
-              //   },
-              // ]}
               >
-                <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '200px' }} />
-              </Form.Item>
+                <Input size="large" placeholder="Ngày nhập" prefix={<CalendarOutlined />} readOnly value={props.data} style={{ width: '200px' }} />
+              </Form.Item> */}
 
-              <Form.Item
-                label="Nhà cung cấp" name="supplier" required
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng chọn nhà cung cấp!',
-                  },
-                ]}
-                style={{
-                  textAlign: 'left'
-                }}
-              >
-                <Select
-                  showSearch
-                  // onChange={(option) => onUnitSelect(option)}
-                  style={{
-                    width: 200,
-                  }}
-                  placeholder="Nhà cung cấp"
-                  optionFilterProp="children"
-                  filterOption={(input, option) => option.children.includes(input)}
-                  filterSort={(optionA, optionB) =>
-                    optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
-                  }
-                >
-                  {baseSupplierOptions}
-                </Select>
-              </Form.Item>
-              <Form.Item label="Trạng thái" name="status"
-                style={{
-                  textAlign: 'left'
-                }}>
-                <Select
-                  defaultValue="pending"
-                  style={{
-                    width: 200,
-                  }}
-                >
-                  <Option value="pending">Chờ xác nhận</Option>
-                  <Option value="complete">Hoàn thành</Option>
-                  <Option value="cancel">Hủy</Option>
-                </Select>
-              </Form.Item>
+              <Row>
+                <Col span={1}></Col>
+                <Col span={10}>
+                  <Form.Item label="Ghi chú" name="note"
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: 'Vui lòng nhập ghi chú!',
+                  //   },
+                  // ]}
+                  >
+                    <TextArea rows={1} />
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10}>
+
+                </Col>
+              </Row>
+
+
             </>
               <Col>
                 <label><h2 style={{ marginTop: '10px', marginBottom: '30px', textAlign: 'center' }}>Sản phẩm nhập</h2></label>
-                {/* <Button type="primary" onClick={showModal}>
-                  Thêm giá sản phẩm
-                </Button>
-                <Table
-                  columns={columns}
-                  dataSource={priceList}
-                >
 
-                </Table> */}
                 <Form.List name="details" label="Sản phẩm nhập">
                   {(fields, { add, remove }) => (
                     <>
 
                       {fields.map(({ key, name, ...restField }) => (
-                        <Space
-                          key={key}
-                          style={{
-                            display: 'flex',
-                            marginBottom: 0,
-                          }}
-                          align="baseline"
-                        >
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'product']}
-                            rules={[
-                              {
-                                required: true,
-                                message: 'Vui lòng chọn sản phẩm!',
-                              },
-                            ]}
-                            style={{
-                              textAlign: 'left'
-                            }}
-                          >
-                            <Select
-                              showSearch
-                              onChange={(option) => onUnitSelect(option)}
+                        <Row>
+                          <Col span={5}></Col>
+                          <Col span={14}>
+                            <Space
+                              key={key}
                               style={{
-                                width: 200,
+                                display: 'flex',
+                                marginBottom: 0,
                               }}
-                              placeholder="Sản phẩm"
-                              optionFilterProp="children"
-                              filterOption={(input, option) => option.children.includes(input)}
-                              filterSort={(optionA, optionB) =>
-                                optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
-                              }
-                              disabled={is_create ? false : true}
+                              align="baseline"
                             >
-                              {baseProductOptions}
-                            </Select>
-                          </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'unit_exchange']}
-                            // rules={[
-                            //   {
-                            //     required: true,
-                            //     message: 'Vui lòng chọn đơn vị tính!',
-                            //   },
-                            // ]}
-                            style={{
-                              textAlign: 'left'
-                            }}
-                          >
-                            <Select
-                              showSearch
-                              style={{
-                                width: 200,
-                              }}
-                              placeholder="Đơn vị tính"
-                              optionFilterProp="children"
-                              filterOption={(input, option) => option.children.includes(input)}
-                              filterSort={(optionA, optionB) =>
-                                optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
-                              }
-                              disabled={is_create ? false : true}
-                            >
-                              {baseUnitOptions}
-                            </Select>
-                          </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'quantity']}
-                            rules={[
-                              {
-                                required: true,
-                                message: 'Vui lòng nhập số lượng!',
-                              },
-                            ]}
-                          >
-                            <Input placeholder="Số lượng" type='number' disabled={is_create ? false : true} />
-                          </Form.Item>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'product']}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: 'Vui lòng chọn sản phẩm!',
+                                  },
+                                ]}
+                                style={{
+                                  textAlign: 'left'
+                                }}
+                              >
+                                <Select
+                                  showSearch
+                                  onChange={(option) => onUnitSelect(option)}
+                                  style={{
+                                    width: 200,
+                                  }}
+                                  placeholder="Sản phẩm"
+                                  optionFilterProp="children"
+                                  filterOption={(input, option) => option.children.includes(input)}
+                                  filterSort={(optionA, optionB) =>
+                                    optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                                  }
+                                  disabled={is_create ? false : true}
+                                >
+                                  {baseProductOptions}
+                                </Select>
+                              </Form.Item>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'unit_exchange']}
+                                // rules={[
+                                //   {
+                                //     required: true,
+                                //     message: 'Vui lòng chọn đơn vị tính!',
+                                //   },
+                                // ]}
+                                style={{
+                                  textAlign: 'left'
+                                }}
+                              >
+                                <Select
+                                  showSearch
+                                  style={{
+                                    width: 150,
+                                    display: is_create==true ? "block":"none"
+                                  }}
+                                  placeholder="Đơn vị tính"
+                                  optionFilterProp="children"
+                                  filterOption={(input, option) => option.children.includes(input)}
+                                  filterSort={(optionA, optionB) =>
+                                    optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                                  }
+                                  disabled={is_create ? false : true}
+                                >
+                                  {baseUnitOptions}
+                                </Select>
+                              </Form.Item>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'quantity']}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: 'Vui lòng nhập số lượng!',
+                                  },
+                                ]}
+                              >
+                                <Input placeholder="Số lượng" type='number' min='0' disabled={is_create ? false : true} />
+                              </Form.Item>
 
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'price']}
-                            rules={[
-                              {
-                                required: true,
-                                message: 'Vui lòng nhập giá!',
-                              },
-                            ]}
-                          >
-                            <Input placeholder="Giá" type='number' disabled={is_create ? false : true} />
-                          </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'note']}
-                            rules={[
-                              {
-                                required: true,
-                                message: 'Vui lòng nhập ghi chú!',
-                              },
-                            ]}
-                          >
-                            <Input placeholder="Ghi chú" disabled={is_create ? false : true} />
-                          </Form.Item>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'price']}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: 'Vui lòng nhập giá!',
+                                  },
+                                ]}
+                              >
+                                <Input placeholder="Giá" type='number' min='0' disabled={is_create ? false : true} />
+                              </Form.Item>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'note']}
+                              // rules={[
+                              //   {
+                              //     required: true,
+                              //     message: 'Vui lòng nhập ghi chú!',
+                              //   },
+                              // ]}
+                              >
+                                <Input placeholder="Ghi chú" disabled={is_create ? false : true} />
+                              </Form.Item>
 
 
-                          <Popconfirm
-                            placement="bottomRight"
-                            title="Xác nhận xóa sản phẩm này"
-                            onConfirm={() => remove(name)}
-                            okText="Đồng ý"
-                            okType="danger"
-                            cancelText="Hủy bỏ"
-                            disabled={is_create ? false : true}
-                          >
-                            <MinusCircleOutlined />
-                          </Popconfirm>
-                        </Space>
+                              <Popconfirm
+                                placement="bottomRight"
+                                title="Xác nhận xóa sản phẩm này"
+                                onConfirm={() => remove(name)}
+                                okText="Đồng ý"
+                                okType="danger"
+                                cancelText="Hủy bỏ"
+                                disabled={is_create ? false : true}
+                              >
+                                <MinusCircleOutlined />
+                              </Popconfirm>
+                            </Space>
+                          </Col>
+                          <Col span={5}></Col>
+                        </Row>
                       ))}
-                      <Form.Item style={{ width: '170px' }}>
+                      <Form.Item style={{ width: '180px', margin: 'auto' }}>
                         <Button type="dashed" disabled={is_create ? false : true} onClick={() => add()} block icon={<PlusOutlined />} >
-                          Thêm giá sản phẩm
+                          Thêm sản phẩm nhập
                         </Button>
                       </Form.Item>
                     </>
                   )}
                 </Form.List>
               </Col>
-              <Form.Item label="Ghi chú" name="note"
-              // rules={[
-              //   {
-              //     required: true,
-              //     message: 'Vui lòng nhập ghi chú!',
-              //   },
-              // ]}
-              >
-                <TextArea rows={4} />
-              </Form.Item>
-              <Form.Item>
+
+              <Form.Item style={{ marginTop: '40px' }}>
                 <Space>
                   <Button
                     type="primary"
