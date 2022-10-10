@@ -126,7 +126,6 @@ const PromotionLineModal = (props) => {
       message.error("Mã khuyến mãi không hợp lệ! Mã bao gồm 3 ký tự in hoa và 3 ký tự số phía sau (VD: AAA000)");
       return;
     }
-
     // console.log(form.getFieldValue("title"))
     let sta = "";
     let typ = "";

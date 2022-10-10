@@ -19,7 +19,6 @@ const SellPage = () => {
     const [items, setItems] = useState([]);
     const newTabIndex = useRef(0);
     let init = false;
-
     // const initialItems = [
     //     {
     //         label: 'Đơn hàng 1',
@@ -105,7 +104,6 @@ const SellPage = () => {
             remove(targetKey);
         }
     };
-
 
     const handleDataBaseUnit = async () => {
         try {
