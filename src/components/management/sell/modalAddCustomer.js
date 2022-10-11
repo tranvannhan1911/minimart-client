@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import api from '../../../api/apis'
 import { validPhone, validName } from '../../../resources/regexp'
 import messages from '../../../utils/messages'
+import AddressSelect from '../address/address_select';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -12,6 +13,7 @@ const ModalLogin = (props) => {
     const [isModalLoginOpen, setIsModalLoginOpen] = useState(false);
     const refAutoFocus = useRef(null)
     const [dataCustomerGroup, setDataCustomerGroup] = useState([]);
+    const [addressValue, setAddressValue] = useState([]);
 
     useEffect(() => {
         handleDataCustomerGroup()
@@ -144,14 +146,6 @@ const ModalLogin = (props) => {
                         </Col>
                         <Col span={2}></Col>
                         <Col span={10}>
-                            <Form.Item label="Địa chỉ" name="address">
-                                <Input style={{width: '250px', position:'absolute', right:'0px', top:'-2px'}}/>
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={1}></Col>
-                        <Col span={10}>
                             <Form.Item label="Giới tính" name="gender"
                                 style={{
                                     textAlign: 'left'
@@ -166,7 +160,25 @@ const ModalLogin = (props) => {
                                 </Select>
                             </Form.Item>
                         </Col>
+                    </Row>
+                    <Row>
+                        <Col span={1}></Col>
+                        <Col span={10}>
+                            <Form.Item label="Số nhà, tên đường" name="address">
+                                <Input style={{width: '250px', position:'absolute', right:'0px', top:'-2px'}}/>
+                            </Form.Item>
+                        </Col>
                         <Col span={2}></Col>
+                        <Col span={10}>
+                        <Form.Item label="Địa chỉ" name="ward">
+                            <AddressSelect
+                                addressValue={addressValue} setAddressValue={setAddressValue}
+                                style={{width: '250px', position:'absolute', right:'0px', top:'-2px'}}/>
+                        </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={1}></Col>
                         <Col span={10}>
                             <Form.Item label="Trạng thái" name="status"
                                 style={{
@@ -181,12 +193,11 @@ const ModalLogin = (props) => {
                                 </Select>
                             </Form.Item>
                         </Col>
-                    </Row>
-                    <Row>
-                        <Col span={1}></Col>
-                        <Col span={22}>
+                        <Col span={2}></Col>
+                        <Col span={10}>
                             <Form.Item label="Ghi chú" name="note" >
-                                <TextArea rows={4} />
+                                <TextArea rows={3} 
+                                    style={{width: '250px', position:'absolute', right:'0px', top:'-2px'}}/>
                             </Form.Item>
                         </Col>
                     </Row>
