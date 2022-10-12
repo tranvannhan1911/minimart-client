@@ -11,6 +11,7 @@ import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { validPhone, validName } from '../../../resources/regexp'
+import AddressSelect from '../address/address_select';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -26,7 +27,8 @@ const CustomerChangeForm = (props) => {
   let { customer_id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const refAutoFocus = useRef(null)
-
+  const [addressValue, setAddressValue] = useState([]);
+  
   const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
       const newLoadings = [...prevLoadings];
@@ -64,6 +66,7 @@ const CustomerChangeForm = (props) => {
   }
 
   const create = async (values) => {
+    values["ward"] = addressValue.length > 0 ? addressValue.at(-1) : undefined
     try {
       const response = await api.customer.add(values);
       if (response.data.code == 1) {
@@ -83,6 +86,7 @@ const CustomerChangeForm = (props) => {
   }
 
   const update = async (values) => {
+    values["ward"] = addressValue.length > 0 ? addressValue.at(-1) : undefined
     try {
       const response = await api.customer.update(customer_id, values)
       if (response.data.code == 1) {
@@ -154,6 +158,9 @@ const CustomerChangeForm = (props) => {
       const values = response.data.data
       values.customer_group = values.customer_group.map(elm => elm.id.toString())
       form.setFieldsValue(values)
+      
+      const response2 = await api.address.get_parent(values.ward);
+      setAddressValue(response2.data.data.tree)
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -272,14 +279,6 @@ const CustomerChangeForm = (props) => {
                 </Col>
                 <Col span={2}></Col>
                 <Col span={10}>
-                  <Form.Item label="Địa chỉ" name="address">
-                    <Input />
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={1}></Col>
-                <Col span={10}>
                   <Form.Item label="Giới tính" name="gender"
                     style={{
                       textAlign: 'left'
@@ -295,8 +294,26 @@ const CustomerChangeForm = (props) => {
                       <Option value="U">Không xác định</Option>
                     </Select>
                   </Form.Item>
+                  
+                </Col>
+              </Row>
+              <Row>
+                <Col span={1}></Col>
+                <Col span={10}>
+                  <Form.Item label="Số nhà,  đường" name="address">
+                      <Input />
+                    </Form.Item>
                 </Col>
                 <Col span={2}></Col>
+                <Col span={10}>
+                  
+                <Form.Item label="Địa chỉ" name="ward">
+                  <AddressSelect addressValue={addressValue} setAddressValue={setAddressValue}/>
+                </Form.Item>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={1}></Col>
                 <Col span={10}>
                   <Form.Item label="Trạng thái" name="status"
                     style={{
@@ -313,10 +330,8 @@ const CustomerChangeForm = (props) => {
                     </Select>
                   </Form.Item>
                 </Col>
-              </Row>
-              <Row>
-                <Col span={1}></Col>
-                <Col span={22}>
+                <Col span={2}></Col>
+                <Col span={10}>
                   <Form.Item label="Ghi chú" name="note" >
                     <TextArea rows={4} />
                   </Form.Item>

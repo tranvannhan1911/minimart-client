@@ -3,7 +3,7 @@ import {
     ExportOutlined, ReloadOutlined,
     SearchOutlined
   } from '@ant-design/icons';
-import { Button, Col, Row, Space, Input, message, Modal } from 'antd';
+import { Button, Col, Row, Space, Input, message, Modal, DatePicker } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import ListForm from '../templates/listform';
@@ -12,11 +12,14 @@ import api from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
+const { RangePicker } = DatePicker;
 
 const InventoryRecordListForm = (props) => {
+    const [dataMain, setDataMain] = useState([])
     const [data, setData] = useState([])
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
+    const [searchDate, setSearchDate] = useState([])
     const [sortedInfo, setSortedInfo] = useState({})
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
@@ -29,12 +32,13 @@ const InventoryRecordListForm = (props) => {
                 elm.key = elm.id
                 
                 let date=elm.date_created.slice(0, 10);
-                let time=elm.date_created.slice(12, 19);
+                let time=elm.date_created.slice(11, 19);
                 elm.date_created=date+" "+time;
                 
                 return elm
             })
             setData(_data)
+            setDataMain(_data)
         }catch(error){
             console.log('Failed:', error)
             message.error(messages.ERROR_REFRESH)
@@ -48,9 +52,36 @@ const InventoryRecordListForm = (props) => {
     }, []);
 
     const clearFiltersAndSort = () => {
+        setData(dataMain)
+        setSearchDate([])
         setFilteredInfo({})
         setSortedInfo({})
         setSearchInfo([])
+    };
+
+    const onChange = (dates, dateStrings) => {
+        if (dates) {
+            setLoading(true);
+            setSearchDate([dates[0],dates[1]])
+            console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
+            const datest = new Date(dateStrings[0].slice(0, 10));
+            const dateen = new Date(dateStrings[1].slice(0, 10));
+            let data_ = [];
+            dataMain.forEach(elm => {
+                const datecr = new Date(elm.date_created.slice(0, 10));
+                if (datest <= datecr && datecr <= dateen) {
+                    data_.push(elm);
+                }
+            });
+            // console.log(data_)
+            console.log(data_);
+            setData(data_);
+            setLoading(false);
+        } else {
+            console.log('Clear');
+            setSearchDate([])
+            setData(dataMain)
+        }
     };
 
     return (
@@ -78,6 +109,9 @@ const InventoryRecordListForm = (props) => {
                     allowClear value={searchInfo[0]}
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])} />,
+                    <RangePicker value={searchDate}
+                        onChange={onChange}
+                    />,
                 <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
             ]}
         >

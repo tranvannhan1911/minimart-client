@@ -99,19 +99,25 @@ const OrderModal = (props) => {
         setTotal(props.data.total);
         setIdOrder(props.data.key);
         setDataSource([]);
+        console.log(props.data.details)
+        let datainput = [];
         props.data.details.forEach(element => {
           let dataIndex = {
-            "key": element.key,
-            "quantity": element.quantity,
+            "key": element.id,
+            "quantity": 0,
+            "quantityBuy": element.quantity,
             "note": element.note,
             "product": element.product,
             "unit_exchange": element.unit_exchange,
             "price": element.price,
-            "total": element.total
+            "total": 0,
+            "idProduct": element.idProduct,
+            "idUnit": element.idUnit,
           }
-          setDataSource([...dataSource, dataIndex]);
-        });
+          datainput.push(dataIndex)
 
+        });
+        setDataSource(datainput);
       }
     }
   }, [props.open]);
@@ -122,7 +128,7 @@ const OrderModal = (props) => {
   };
 
   const onSave = async () => {
-    let details = [];
+    let detailss = [];
     dataSource.forEach(element => {
       let index = {
         "quantity": element.quantity,
@@ -130,13 +136,17 @@ const OrderModal = (props) => {
         "product": element.idProduct,
         "unit_exchange": element.idUnit
       }
-      details.push(index);
+      detailss.push(index);
     });
     let values = {
-      "details": details,
+      "details": detailss,
       "note": formRefund.getFieldValue("note"),
       "status": "complete",
-      "order": props.idIndex
+      "order": props.idOrder
+    }
+    if(total == null || total == 0){
+      message.error("Không có sản phẩm trả")
+      return;
     }
     try {
       const response = await api.order_refund.add(values);
@@ -177,12 +187,13 @@ const OrderModal = (props) => {
       dataIndex: 'unit_exchange',
     },
     {
-      title: 'Số lượng',
+      title: 'Số lượng mua',
+      dataIndex: 'quantityBuy',
+    },
+    {
+      title: 'Số lượng trả',
       dataIndex: 'quantity',
       editable: true,
-      // render: (quantity) => (
-      //   <Input type='number' min='0' max={quantity} defaultValue={quantity} style={{ width: '100px' }} onChange={(e) => calculateTotal(e.target.value)}></Input>
-      // )
     },
     {
       title: 'Thành tiền',
@@ -196,7 +207,7 @@ const OrderModal = (props) => {
     const index = newData.findIndex((item) => row.key === item.key);
     const item = newData[index];
     newData.splice(index, 1, { ...item, ...row });
-    if (newData[index].total < newData[index].quantity * newData[index].price) {
+    if (props.data.details[index].total < newData[index].quantity * newData[index].price) {
       message.error('Lỗi! Số lượng sản phẩm trả lớn hơn số sản phẩm mua trong hóa đơn!!');
       return;
     }
@@ -252,9 +263,10 @@ const OrderModal = (props) => {
 
       <Form layout="vertical" hideRequiredMark form={formRefund}>
         <Row>
-          <Col span={12}>
-            <label>Ghi chú:</label>
-            <Input></Input>
+          <Col span={24}>
+            <Form.Item name='note' label='Ghi chú:'>
+              <Input></Input>
+            </Form.Item>
           </Col>
 
         </Row>

@@ -105,7 +105,6 @@ const promotion_line_extras = {
     }
 }
 
-
 const category_extras = {
     to_select: (params) => {
         const url = `/category/to_select/`
@@ -113,6 +112,17 @@ const category_extras = {
     },
     get_parent: (id, params) => {
         const url = `/category/get_parent/${id}`
+        return axiosApi.get(url, params)
+    }
+}
+
+const address_extras = {
+    to_select: (params) => {
+        const url = `/address/tree/`
+        return axiosApi.get(url, params)
+    },
+    get_parent: (id, params) => {
+        const url = `/address/path/${id}`
         return axiosApi.get(url, params)
     }
 }
@@ -134,6 +144,7 @@ const api = {
     order: getApi("order"),
     order_refund: getApi("refund"),
     category: getApi("category", category_extras),
+    address: getApi("address", address_extras),
 }
 
 export {AccountApi};

@@ -101,7 +101,7 @@ const OrderDetailModal = (props) => {
         </Col>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Tổng tiền: {props.data.total}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Tổng tiền: {props.data.final_total}</p>
           </div>
         </Col>
       </Row>

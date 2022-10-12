@@ -1,5 +1,5 @@
 import { Button, Drawer, Row, Col, Divider, Image } from 'antd';
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 
 const PriceModal = (props) => {
   const [disabled, setDisabled] = useState(false);
@@ -66,6 +66,7 @@ const PriceModal = (props) => {
                 <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{ fontWeight: 'bold' }}>BarCode:</span> {props.data.barcode}</p>
               </div>
             </Col>
+
             <Col span={24}>
               <div className="site-description-item-profile-wrapper">
                 <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{ fontWeight: 'bold' }}>Nhóm sản phẩm:</span> {props.data.product_groups}</p>
@@ -79,6 +80,11 @@ const PriceModal = (props) => {
           </Row>
         </Col>
       </Row>
+      <Col span={24}>
+        <div className="site-description-item-profile-wrapper">
+          <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{ fontWeight: 'bold' }}>Ngành hàng:</span> {props.data.product_category}</p>
+        </div>
+      </Col>
       <Row>
         <Col span={24}>
           <div className="site-description-item-profile-wrapper">
@@ -93,7 +99,33 @@ const PriceModal = (props) => {
           </div>
         </Col>
       </Row>
+
       <Divider />
+      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin lịch sử</p>
+      <Row>
+        <Col span={12}>
+          <div className="site-description-item-profile-wrapper">
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Ngày tạo: {props.data.date_created}</p>
+          </div>
+        </Col>
+        <Col span={12}>
+          <div className="site-description-item-profile-wrapper">
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người tạo: {props.data.user_created}</p>
+          </div>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={12}>
+          <div className="site-description-item-profile-wrapper">
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Ngày cập nhật: {props.data.date_updated}</p>
+          </div>
+        </Col>
+        <Col span={12}>
+          <div className="site-description-item-profile-wrapper">
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người cập nhật: {props.data.user_updated}</p>
+          </div>
+        </Col>
+      </Row>
 
     </Drawer>
 

@@ -17,9 +17,11 @@ import * as XLSX from 'xlsx';
 
 
 const UnitListForm = (props) => {
+    const [dataMain, setDataMain] = useState([])
     const [data, setData] = useState([])
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
+    const [dataSearchName, setDataSearchName] = useState("")
     const [sortedInfo, setSortedInfo] = useState({})
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
@@ -61,6 +63,7 @@ const UnitListForm = (props) => {
                 return elm
             })
             setData(_data)
+            setDataMain(_data)
         } catch (error) {
             console.log('Failed:', error)
             message.error(messages.ERROR_REFRESH)
@@ -74,11 +77,23 @@ const UnitListForm = (props) => {
     }, []);
 
     const clearFiltersAndSort = () => {
+        setData(dataMain)
+        setDataSearchName("")
         setFilteredInfo({})
         setSortedInfo({})
         setSearchInfo([])
     };
 
+    const searchName = (value) =>{
+        setDataSearchName(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if(element.name.toLowerCase().includes(value.toLowerCase())){
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
 
     return (
         <ListForm
@@ -110,6 +125,12 @@ const UnitListForm = (props) => {
                     allowClear value={searchInfo[0]}
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
+                />,
+                <Input 
+                    placeholder="Tìm kiếm theo tên" 
+                    allowClear value={dataSearchName} 
+                    prefix={<SearchOutlined />}
+                    onChange={(e) => searchName(e.target.value)}
                 />,
                 <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
             ]}

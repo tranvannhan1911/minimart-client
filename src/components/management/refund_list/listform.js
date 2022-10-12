@@ -3,7 +3,7 @@ import {
     ExportOutlined, ReloadOutlined,
     SearchOutlined
 } from '@ant-design/icons';
-import { Button, Col, Row, Space, Input, message } from 'antd';
+import { Button, Col, Row, Space, Input, message, DatePicker } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import ListForm from '../templates/listform';
@@ -13,13 +13,18 @@ import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import axios from 'axios';
+const { RangePicker } = DatePicker;
 
 
 const RefundListForm = (props) => {
+    const [dataMain, setDataMain] = useState([])
     const [data, setData] = useState([])
     const [dataProductGroups, setDataProductGroups] = useState([])
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
+    const [dataSearchDate, setDataSearchDate] = useState([])
+    const [dataSearchCustomer, setDataSearchCustomer] = useState("")
+    const [dataSearchStaff, setDataSearchStaff] = useState("")
     const [sortedInfo, setSortedInfo] = useState({})
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
@@ -32,14 +37,18 @@ const RefundListForm = (props) => {
             // const _data = response.map(elm => {
             const _data = response.data.data.results.map(elm => {
                 elm.details = elm.details.map(element => {
+                    if(element.price == null){
+                        element.price=0;
+                    }else{
+                        element.price= element.price.price
+                    }
                     element.product = element.product.name;
-                    element.price = element.price.price;
                     element.unit_exchange = element.unit_exchange.unit_name;
                     return element;
                 });
                 let date = elm.date_created.slice(0, 10);
-                let time = elm.date_created.slice(12, 19);
-                elm.date_created = date + " " + time;
+                let time = elm.date_created.slice(11, 19);
+                elm.date_created = date + " " + time; 
 
                 let index = {
                     "key": elm.id,
@@ -49,14 +58,15 @@ const RefundListForm = (props) => {
                     "status": elm.status,
                     "date_created": elm.date_created,
                     "date_updated": elm.date_updated,
-                    "customer": elm.customer,
-                    "user_created": elm.user_created,
+                    "customer": elm.customer == null ? "" : elm.customer.fullname,
+                    "user_created": elm.user_created == null ? "" : elm.user_created.fullname,
                     "user_updated": elm.user_updated,
                 };
                 return index;
             })
             // console.log(data)
             setData(_data)
+            setDataMain(_data)
         } catch (error) {
             console.log('Failed:', error)
             message.error(messages.ERROR_REFRESH)
@@ -71,10 +81,61 @@ const RefundListForm = (props) => {
     }, []);
 
     const clearFiltersAndSort = () => {
+        setData(dataMain)
+        setDataSearchDate([])
+        setDataSearchCustomer("")
+        setDataSearchStaff("")
         setFilteredInfo({})
         setSortedInfo({})
         setSearchInfo([])
     };
+
+    const onChange = (dates, dateStrings) => {
+        if (dates) {
+            setDataSearchDate([dates[0],dates[1]])
+            setLoading(true);
+            console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
+            const datest = new Date(dateStrings[0].slice(0, 10));
+            const dateen = new Date(dateStrings[1].slice(0, 10));
+            let data_ = [];
+            dataMain.forEach(elm => {
+                const datecr = new Date(elm.date_created.slice(0, 10));
+                if (datest <= datecr && datecr <= dateen) {
+                    data_.push(elm);
+                }
+            });
+            // console.log(data_)
+            console.log(data_);
+            setData(data_);
+            setLoading(false);
+        } else {
+            console.log('Clear');
+            setDataSearchDate([])
+            setData(dataMain)
+        }
+    };
+
+    const searchCustomer = (value) => {
+        setDataSearchCustomer(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if (element.customer.toLowerCase().includes(value.toLowerCase())) {
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
+
+    const searchStaff = (value) => {
+        setDataSearchStaff(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if (element.user_created.toLowerCase().includes(value.toLowerCase())) {
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
 
     return (
         <ListForm
@@ -82,7 +143,6 @@ const RefundListForm = (props) => {
             actions={[
 
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                // <Button onClick={() => navigate(paths.product.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={
                 <RefundTable
@@ -104,6 +164,21 @@ const RefundListForm = (props) => {
                     allowClear value={searchInfo[0]}
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
+                />,
+                <RangePicker value={dataSearchDate}
+                    onChange={onChange}
+                />,
+                <Input
+                    placeholder="Tìm kiếm theo nhân viên"
+                    allowClear value={dataSearchStaff}
+                    prefix={<SearchOutlined />}
+                    onChange={(e) => searchStaff(e.target.value)}
+                />,
+                <Input
+                    placeholder="Tìm kiếm theo khách hàng"
+                    allowClear value={dataSearchCustomer}
+                    prefix={<SearchOutlined />}
+                    onChange={(e) => searchCustomer(e.target.value)}
                 />,
                 <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
             ]}

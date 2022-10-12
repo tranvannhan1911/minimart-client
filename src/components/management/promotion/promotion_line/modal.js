@@ -50,7 +50,7 @@ const PromotionLineModal = (props) => {
         message.success(messages.promotion_line.SUCCESS_SAVE())
         return true
       } else if (response.data.code == 0) {
-        message.error("Vui lòng nhập khuyến mãi");
+        message.error("Vui lòng nhập mã khuyến mãi khác");
       } else {
         message.error(response.data.message.toString())
       }
@@ -114,13 +114,17 @@ const PromotionLineModal = (props) => {
       message.error("Vui lòng chọn ngày kết thúc khuyến mãi");
       return;
     }
-    if (form.getFieldValue("start_date") < props.start_date._d - 1 || form.getFieldValue("start_date") > props.end_date._d + 1) {
-      message.error("Ngày bắt đầu phải trong thời gian chương trình khuyến mãi");
-      return;
+    if (form.getFieldValue("start_date") < props.start_date._d || form.getFieldValue("start_date") > props.end_date._d) {
+      if (props.start_date._d - form.getFieldValue("start_date")  > 1 || form.getFieldValue("start_date") - props.end_date._d > 1) {
+        message.error("Ngày bắt đầu phải trong thời gian chương trình khuyến mãi");
+        return;
+      }
     }
     if (form.getFieldValue("end_date") < form.getFieldValue("start_date") || form.getFieldValue("end_date") > props.end_date._d) {
-      message.error("Ngày kết thúc phải trong thời gian chương trình khuyến mãi và trước thời gian bắt đầu");
-      return;
+      if (form.getFieldValue("start_date") - form.getFieldValue("end_date") > 1 || form.getFieldValue("end_date") - props.end_date._d > 1) {
+        message.error("Ngày kết thúc phải trong thời gian chương trình khuyến mãi và trước thời gian bắt đầu");
+        return;
+      }
     }
     if (!validCode.test(form.getFieldValue("promotion_code"))) {
       message.error("Mã khuyến mãi không hợp lệ! Mã bao gồm 3 ký tự in hoa và 3 ký tự số phía sau (VD: AAA000)");
@@ -159,7 +163,7 @@ const PromotionLineModal = (props) => {
       "end_date": form.getFieldValue("end_date"),
       "status": sta,
       "max_quantity": form.getFieldValue("max_quantity") == "" ? null : form.getFieldValue("max_quantity"),
-      "max_quantity_per_customer": form.getFieldValue("max_quantity_per_customer") == "" ? null: form.getFieldValue("max_quantity_per_customer"),
+      "max_quantity_per_customer": form.getFieldValue("max_quantity_per_customer") == "" ? null : form.getFieldValue("max_quantity_per_customer"),
       "max_quantity_per_customer_per_day": form.getFieldValue("max_quantity_per_customer_per_day") == "" ? null : form.getFieldValue("max_quantity_per_customer_per_day"),
       "note": form.getFieldValue("note"),
       "date_updated": null,
@@ -364,7 +368,7 @@ const PromotionLineModal = (props) => {
           <Col span={12}>
             <Form.Item
               name="max_quantity"
-              label="Ngân sách khuyến mãi"
+              label="Số lượng tối đa áp dụng"
             // rules={[
             //   {
             //     required: true,
@@ -372,7 +376,7 @@ const PromotionLineModal = (props) => {
             //   },
             // ]}
             >
-              <Input type='number' min='0' placeholder="Hãy nhập số lượng tối đa" />
+              <Input type='number' min='0' placeholder="Hãy nhập số lượng tối đa áp dụng" />
             </Form.Item>
           </Col>
           <Col span={12}>
