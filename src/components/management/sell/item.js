@@ -85,7 +85,7 @@ const OrderItem = (props) => {
             const response = await api.product.get(product_id)
             if (response.data.code == 1) {
                 var base_unit_exchange = "";
-                var price_base_unit; 
+                var price_base_unit;
                 response.data.data.units.forEach(element => {
                     if (element.is_base_unit == true) {
                         base_unit_exchange = element.id;
@@ -132,9 +132,9 @@ const OrderItem = (props) => {
     const changeUnitExchange = (item, name, key) => {
         const _productlist = form.getFieldValue("productlist")
         _productlist[name].price = item.price
-        _productlist[name].total = item.price*_productlist[name].quantity
+        _productlist[name].total = item.price * _productlist[name].quantity
         _productlist[name].unit_exchange_value = item.unit_exchange_value
-        _productlist[name].quantity_base_unit = _productlist[name].unit_exchange_value*_productlist[name].quantity
+        _productlist[name].quantity_base_unit = _productlist[name].unit_exchange_value * _productlist[name].quantity
         updateQuantity(_productlist[name].quantity, name)
         form.setFieldValue("productlist", _productlist);
         calculateTotalAmount(_productlist);
@@ -162,7 +162,7 @@ const OrderItem = (props) => {
         var name = 0
         form.getFieldValue("productlist").map(element => {
             if (element.id == id) {
-                updateQuantity(Number(element.quantity)+1, name++)
+                updateQuantity(Number(element.quantity) + 1, name++)
             }
         });
         // form.setFieldValue("productlist", form.getFieldValue("productlist"));
@@ -177,7 +177,7 @@ const OrderItem = (props) => {
         // calculateTotalAmount(form.getFieldValue("productlist"));
         // sendListProduct(form.getFieldValue("productlist"));
         const productlist = form.getFieldValue("productlist")
-        const quantity_base_unit = sl*productlist[name].unit_exchange_value;
+        const quantity_base_unit = sl * productlist[name].unit_exchange_value;
         console.log("sl", sl)
         console.log(productlist[name])
         if (Number(quantity_base_unit) <= Number(productlist[name].stock)) {
@@ -186,9 +186,9 @@ const OrderItem = (props) => {
             productlist[name].quantity_base_unit = quantity_base_unit;
         } else {
             message.error("Số sản phẩm mua lớn hơn số lượng tồn");
-            productlist[name].quantity = Math.floor(productlist[name].stock/productlist[name].unit_exchange_value);
+            productlist[name].quantity = Math.floor(productlist[name].stock / productlist[name].unit_exchange_value);
             productlist[name].total = Number(productlist[name].quantity) * Number(productlist[name].price);
-            productlist[name].quantity_base_unit = productlist[name].quantity*productlist[name].unit_exchange_value;
+            productlist[name].quantity_base_unit = productlist[name].quantity * productlist[name].unit_exchange_value;
         }
         console.log(productlist[name])
         form.setFieldValue("productlist", productlist);
@@ -233,7 +233,13 @@ const OrderItem = (props) => {
     }
 
     const sendListProduct = (data) => {
-        props.parentCallbackListProduct(data);
+        let dataa = [];
+        data.forEach(element => {
+            if (element.price != 0) {
+                dataa.push(element)
+            }
+        });
+        props.parentCallbackListProduct(dataa);
     }
 
     const checkPromotion = async (idCustomer, idProduct) => {
@@ -249,9 +255,39 @@ const OrderItem = (props) => {
 
     const pickPromotionProduct = (pl) => {
         const _productlist = form.getFieldValue("productlist")
-        _productlist[currentNameForm].promotion_line = pl.id  
+        _productlist[currentNameForm].promotion_line = pl.id
+        var base_unit_exchange = "";
+        pl.detail.product_received.units.forEach(element => {
+            if (element.is_base_unit == true) {
+                base_unit_exchange = element.id;
+            }
+        });
+        let index = {
+            key: numberDe,
+            id: pl.detail.product_received.id,
+            product: pl.detail.product_received.name,
+            quantity: pl.detail.quantity_received,
+            quantity_base_unit: 1,
+            stock: pl.detail.product_received.stock,
+            unit_exchange: base_unit_exchange,
+            unit_exchange_value: 1,
+            price: 0,
+            total: 0,
+            promotion_line: null // default 
+        };
+        const options = pl.detail.product_received.units.map(elm => {
+            elm.unit_exchange_value = elm.value
+            delete elm.value
+            return (
+                <Option key={elm.id} value={elm.id} {...elm}>{elm.unit_name}</Option>
+            )
+        })
+        setBaseUnitOptions([...baseUnitOptions, options]);
+        setNumberDe(numberDe + 1);
         form.setFieldValue("productlist", _productlist);
         setProductData(form.getFieldValue("productlist"));
+        setProductData([...productData, index]);
+        form.setFieldValue("productlist", productData);
         sendListProduct(form.getFieldValue("productlist"));
     }
 
@@ -265,9 +301,9 @@ const OrderItem = (props) => {
                 {(fields, { add, remove }) => (
                     <>
                         <Form.Item>
-                            <ProductSelect 
+                            <ProductSelect
                                 onSelectProduct={(value) => onSelectProduct(value, add)}
-                                sellable={true}/>
+                                sellable={true} />
                             {/* <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
             Thêm đơn vị tính
         </Button> */}
@@ -336,7 +372,7 @@ const OrderItem = (props) => {
                                             onSelect={(key, item) => {
                                                 console.log(item)
                                                 changeUnitExchange(item, name, key)
-                                                
+
                                             }}
                                         >
                                             {baseUnitOptions[name]}
@@ -361,7 +397,7 @@ const OrderItem = (props) => {
                                     </Form.Item>
                                 </Col>
                                 <Col span={3} style={col}>
-                                    
+
                                     <Form.Item
                                         style={{ display: 'none' }}
                                         {...restField}
@@ -386,11 +422,11 @@ const OrderItem = (props) => {
                                             },
                                         ]}
                                     >
-                                        <Input 
-                                            type="number" 
-                                            placeholder="Số lượng" 
-                                            defaultValue={1} 
-                                            min='1' 
+                                        <Input
+                                            type="number"
+                                            placeholder="Số lượng"
+                                            defaultValue={1}
+                                            min='1'
                                             onChange={(e) => {
                                                 updateQuantity(e.target.value, name)
                                             }} />
@@ -407,7 +443,7 @@ const OrderItem = (props) => {
                                 </Col>
                                 <Col span={2}>
 
-                                     <Form.Item
+                                    <Form.Item
                                         style={{ display: 'none' }}
                                         {...restField}
                                         name={[name, 'promotion_line']}
@@ -424,9 +460,9 @@ const OrderItem = (props) => {
                                             setCurrentNameForm(name)
                                             handleOpenPromotionPicker(form.getFieldValue("productlist")[name], _quantity)
                                         }} />
-                                    <Popconfirm title="Bạn có chắc chắn muốn xóa?" onConfirm={() => { 
-                                        remove(name); 
-                                        updateTotalDelete(); 
+                                    <Popconfirm title="Bạn có chắc chắn muốn xóa?" onConfirm={() => {
+                                        remove(name);
+                                        updateTotalDelete();
                                         var _baseUnitOptions = [...baseUnitOptions]
                                         _baseUnitOptions.splice(name, 1)
                                         setBaseUnitOptions(_baseUnitOptions)
@@ -452,10 +488,10 @@ const OrderItem = (props) => {
                                 message: 'Vui lòng nhập số lượng mua!',
                             },
                         ]}>
-                        <Input 
-                            placeholder='Số lượng mua' 
-                            ref={quantityBuy} 
-                            onPressEnter={(e) => enterQuantity()} 
+                        <Input
+                            placeholder='Số lượng mua'
+                            ref={quantityBuy}
+                            onPressEnter={(e) => enterQuantity()}
                             defaultValue={1} ></Input>
                     </Form.Item>
                 </Form>

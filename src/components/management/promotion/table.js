@@ -95,103 +95,6 @@ const PromotionTable = (props) => {
       />
   })
 
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-
-  const handleReset = (clearFilters) => {
-    clearFilters();
-    setSearchText('');
-  };
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div
-        style={{
-          padding: 8,
-        }}
-      >
-        <Input
-          ref={searchInput}
-          placeholder={`Tìm kiếm`}
-          value={selectedKeys[0]}
-          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: 'block',
-          }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{
-              width: 90,
-            }}
-          >
-            Tìm kiếm
-          </Button>
-          <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
-            size="small"
-            style={{
-              width: 90,
-            }}
-          >
-            Quay lại
-          </Button>
-          {/* <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({
-                closeDropdown: false,
-              });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
-          </Button> */}
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: filtered ? '#1890ff' : undefined,
-        }}
-      />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    onFilterDropdownOpenChange: (visible) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
-    },
-    render: (text) =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{
-            backgroundColor: '#ffc069',
-            padding: 0,
-          }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ''}
-        />
-      ) : (
-        text
-      ),
-  });
-
-
-
   const columns = [
     {
       title: 'Mã',
@@ -209,7 +112,6 @@ const PromotionTable = (props) => {
           || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
       },
       ...renderSearch(),
-      ...getColumnSearchProps('id'),
     },
     {
       title: 'Hình ảnh',
@@ -231,7 +133,6 @@ const PromotionTable = (props) => {
         multiple: 2
       },
       ...renderSearch(),
-      ...getColumnSearchProps('title'),
     },
     {
       title: 'Mô tả',
@@ -243,27 +144,36 @@ const PromotionTable = (props) => {
         multiple: 2
       },
       ...renderSearch(),
-      ...getColumnSearchProps('description'),
     },
     {
       title: 'Ngày bắt đầu',
       dataIndex: 'start_date',
       key: 'start_date',
       width: "12%",
-      ...getColumnSearchProps('start_date'),
     },
     {
       title: 'Ngày kết thúc',
       dataIndex: 'end_date',
       key: 'end_date',
       width: "12%",
-      ...getColumnSearchProps('end_date'),
     },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       width: "10%",
+      filters: [
+        {
+          text: 'HOẠT ĐỘNG',
+          value: 'true',
+        },
+        {
+          text: 'KHÓA',
+          value: 'false',
+        },
+      ],
+      filteredValue: props.filteredInfo.status || null,
+      onFilter: (value, record) => record.status.toString().includes(value),
       render: (status) => (
         <span>
           <Tag color={tagStatusColor(status)} key={status}>

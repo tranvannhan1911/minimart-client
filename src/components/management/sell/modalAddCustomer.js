@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import api from '../../../api/apis'
 import { validPhone, validName } from '../../../resources/regexp'
 import messages from '../../../utils/messages'
+import AddressSelect from '../address/address_select';
+
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -12,6 +14,7 @@ const ModalLogin = (props) => {
     const [isModalLoginOpen, setIsModalLoginOpen] = useState(false);
     const refAutoFocus = useRef(null)
     const [dataCustomerGroup, setDataCustomerGroup] = useState([]);
+    const [addressValue, setAddressValue] = useState([]);
 
     useEffect(() => {
         handleDataCustomerGroup()
@@ -41,6 +44,7 @@ const ModalLogin = (props) => {
     };
 
     const create = async (values) => {
+        values["ward"] = addressValue.length > 0 ? addressValue.at(-1) : undefined
         try {
             const response = await api.customer.add(values);
             if (response.data.code == 1) {
@@ -66,7 +70,6 @@ const ModalLogin = (props) => {
         if (value.status == null) {
             value.status = true;
         }
-        console.log(value)
         if (!validName.test(value.fullname)) {
             message.error('Tên không hợp lệ! Ký tự đầu mỗi từ phải viết hoa');
             return;
@@ -76,7 +79,7 @@ const ModalLogin = (props) => {
             return;
         }
         create(value);
-        
+
     };
 
     const onFinishFailed = (errorInfo) => {
@@ -108,7 +111,7 @@ const ModalLogin = (props) => {
                                     },
                                 ]}
                             >
-                                <Input autoFocus ref={refAutoFocus} style={{width: '250px', position:'absolute', right:'0px', top:'-2px'}}/>
+                                <Input autoFocus ref={refAutoFocus} style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} />
                             </Form.Item>
                         </Col>
                         <Col span={2}></Col>
@@ -121,7 +124,7 @@ const ModalLogin = (props) => {
                                     },
                                 ]}
                             >
-                                <Input style={{width: '250px', position:'absolute', right:'0px', top:'-2px'}}/>
+                                <Input style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -131,9 +134,10 @@ const ModalLogin = (props) => {
                             <Form.Item label="Nhóm khách hàng" name="customer_group"
                             >
                                 <Select
+                                    filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
                                     mode="multiple"
                                     allowClear
-                                    style={{width: '250px', position:'absolute', right:'0px', top:'-2px'}}
+                                    style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }}
                                 // placeholder="Please select"
                                 // defaultValue={['a10', 'c12']}
                                 // onChange={handleChange}
@@ -144,29 +148,41 @@ const ModalLogin = (props) => {
                         </Col>
                         <Col span={2}></Col>
                         <Col span={10}>
-                            <Form.Item label="Địa chỉ" name="address">
-                                <Input style={{width: '250px', position:'absolute', right:'0px', top:'-2px'}}/>
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={1}></Col>
-                        <Col span={10}>
                             <Form.Item label="Giới tính" name="gender"
                                 style={{
                                     textAlign: 'left'
                                 }}>
                                 <Select
                                     defaultValue="U"
-                                    style={{width: '250px', position:'absolute', right:'0px', top:'-2px'}}
+                                    style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }}
                                 >
                                     <Option value="M">Nam</Option>
                                     <Option value="F">Nữ</Option>
                                     <Option value="U">Không xác định</Option>
                                 </Select>
                             </Form.Item>
+
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={1}></Col>
+                        <Col span={10}>
+                            <Form.Item label="Số nhà,  đường" name="address">
+                                <Input style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} />
+                            </Form.Item>
                         </Col>
                         <Col span={2}></Col>
+                        <Col span={10}>
+                            <Form.Item label="Địa chỉ" name="ward" >
+                                <span style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }}>
+                                    <AddressSelect addressValue={addressValue} setAddressValue={setAddressValue}
+                                    />
+                                </span>
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={1}></Col>
                         <Col span={10}>
                             <Form.Item label="Trạng thái" name="status"
                                 style={{
@@ -174,20 +190,20 @@ const ModalLogin = (props) => {
                                 }}>
                                 <Select
                                     defaultValue='true'
-                                    style={{width: '250px', position:'absolute', right:'0px', top:'-2px'}}
+                                    style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }}
                                 >
                                     <Option value="true">Hoạt động</Option>
                                     <Option value="false">Khóa</Option>
                                 </Select>
                             </Form.Item>
                         </Col>
-                    </Row>
-                    <Row>
-                        <Col span={1}></Col>
-                        <Col span={22}>
+                        <Col span={2}></Col>
+                        <Col span={10}>
+
                             <Form.Item label="Ghi chú" name="note" >
-                                <TextArea rows={4} />
+                                <TextArea rows={1} style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} />
                             </Form.Item>
+
                         </Col>
                     </Row>
 

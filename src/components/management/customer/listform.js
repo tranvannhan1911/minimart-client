@@ -19,10 +19,13 @@ const { Title } = Typography;
 const { Search } = Input;
 
 const CustomerListForm = (props) => {
+    const [dataMain, setDataMain] = useState([])
     const [data, setData] = useState([])
     const [dataCustomerGroup, setDataCustomerGroup] = useState([])
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
+    const [dataSearchName, setDataSearchName] = useState("")
+    const [dataSearchPhone, setDataSearchPhone] = useState('')
     const [sortedInfo, setSortedInfo] = useState({})
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
@@ -42,14 +45,14 @@ const CustomerListForm = (props) => {
                 for (let index = 0; index < jsonData.length; index++) {
                     const element = jsonData[index];
                     const response = await api.customer.add({
-                        "phone": "0"+element.phone,
+                        "phone": "0" + element.phone,
                         "fullname": element.fullname,
                         "gender": element.gender,
                         "address": element.address,
                         "note": element.note,
                         "is_active": element.is_active,
                         "customer_group": [
-                            
+
                         ]
                     });
                     if (index == jsonData.length - 1) {
@@ -87,12 +90,20 @@ const CustomerListForm = (props) => {
                         elm.gender = "Không xác định"
                         break
                 }
-                // let date=elm.date_joined.slice(0, 10);
-                // let time=elm.date_joined.slice(12, 19);
-                // elm.date_joined=date+" "+time;
+                let date = elm.date_created.slice(0, 10);
+                let time = elm.date_created.slice(11, 19);
+                elm.date_created = date + " " + time;
+
+                if (elm.date_updated != null) {
+                    let date2 = elm.date_updated.slice(0, 10);
+                    let time2 = elm.date_updated.slice(11, 19);
+                    elm.date_updated = date2 + " " + time2;
+                }
+
                 return elm
             })
             setData(_data)
+            setDataMain(_data)
         } catch (error) {
             console.log('Failed:', error)
             message.error(messages.ERROR_REFRESH)
@@ -117,10 +128,35 @@ const CustomerListForm = (props) => {
     }, []);
 
     const clearFiltersAndSort = () => {
+        setData(dataMain)
+        setDataSearchName("")
+        setDataSearchPhone("")
         setFilteredInfo({})
         setSortedInfo({})
         setSearchInfo([])
     };
+
+    const searchName = (value) => {
+        setDataSearchName(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if (element.fullname.toLowerCase().includes(value.toLowerCase())) {
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
+
+    const searchPhone = (value) => {
+        setDataSearchPhone(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if (element.phone.toString().toLowerCase().includes(value.toString().toLowerCase())) {
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
 
     return (
         <ListForm
@@ -153,6 +189,18 @@ const CustomerListForm = (props) => {
                     allowClear value={searchInfo[0]}
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
+                />,
+                <Input
+                    placeholder="Tìm kiếm theo tên"
+                    allowClear value={dataSearchName}
+                    prefix={<SearchOutlined />}
+                    onChange={(e) => searchName(e.target.value)}
+                />,
+                <Input
+                    placeholder="Tìm kiếm số điện thoại"
+                    allowClear value={dataSearchPhone}
+                    prefix={<SearchOutlined />}
+                    onChange={(e) => searchPhone(e.target.value)}
                 />,
                 <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
             ]}

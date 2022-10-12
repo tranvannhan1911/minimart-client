@@ -95,102 +95,6 @@ const WarehouseTransactionTable = (props) => {
       />
   })
 
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-
-  const handleReset = (clearFilters) => {
-    clearFilters();
-    setSearchText('');
-  };
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div
-        style={{
-          padding: 8,
-        }}
-      >
-        <Input
-          ref={searchInput}
-          placeholder={`Tìm kiếm`}
-          value={selectedKeys[0]}
-          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: 'block',
-          }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{
-              width: 90,
-            }}
-          >
-            Tìm kiếm
-          </Button>
-          <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
-            size="small"
-            style={{
-              width: 90,
-            }}
-          >
-            Quay lại
-          </Button>
-          {/* <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({
-                closeDropdown: false,
-              });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
-          </Button> */}
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: filtered ? '#1890ff' : undefined,
-        }}
-      />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    onFilterDropdownOpenChange: (visible) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
-    },
-    render: (text) =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{
-            backgroundColor: '#ffc069',
-            padding: 0,
-          }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ''}
-        />
-      ) : (
-        text
-      ),
-  });
-
-
   const columns = [
     {
       title: 'Mã',
@@ -207,7 +111,6 @@ const WarehouseTransactionTable = (props) => {
           || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
       },
       ...renderSearch(),
-      ...getColumnSearchProps('id'),
     },
     {
       title: 'Sản phẩm',
@@ -218,19 +121,16 @@ const WarehouseTransactionTable = (props) => {
         multiple: 2
       },
       ...renderSearch(),
-      ...getColumnSearchProps('name'),
     },
-    {
-      title: 'Số lượng',
-      dataIndex: 'reference',
-      key: 'phone',
-      ...getColumnSearchProps('reference'),
-    },
+    // {
+    //   title: 'Số lượng',
+    //   dataIndex: 'reference',
+    //   key: 'phone',
+    // },
     {
       title: 'Số lượng thay đổi',
       dataIndex: 'change',
       key: 'gender',
-      ...getColumnSearchProps('change'),
     },
     {
       title: 'Loại thay đổi',
@@ -241,19 +141,34 @@ const WarehouseTransactionTable = (props) => {
           text: 'Nhập hàng',
           value: 'Nhập hàng',
         },
-        // {
-        //   text: 'Nhân viên',
-        //   value: 'Nhân viên',
-        // },
+        {
+          text: 'Khuyến mãi',
+          value: 'Khuyến mãi',
+        },
+        {
+          text: 'Kiểm kê',
+          value: 'Kiểm kê',
+        },
+        {
+          text: 'Hủy kiểm kê',
+          value: 'Hủy kiểm kê',
+        },
+        {
+          text: 'Hủy nhập hàng',
+          value: 'Hủy nhập hàng',
+        },
+        {
+          text: 'Trả hàng',
+          value: 'Trả hàng',
+        },
       ],
-      filteredValue: props.filteredInfo.is_superuser || null,
-      onFilter: (value, record) => record.is_superuser.includes(value),
+      filteredValue: props.filteredInfo.type || null,
+      onFilter: (value, record) => record.type.includes(value),
     },
     {
       title: 'Ngày thay đổi',
       dataIndex: 'date_created',
       key: 'date_created',
-      ...getColumnSearchProps('date_created'),
     },
     {
       title: '',

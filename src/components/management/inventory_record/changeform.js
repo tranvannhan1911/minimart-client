@@ -196,13 +196,7 @@ const InventoryRecordChangeForm = (props) => {
   const handleDataBaseUnit = async (unit_exchange) => {
     setLoadingData(true)
     try {
-      // await unit_exchange.forEach(gr => dataBaseUnit(gr));
-      // // console.log(unit,11111);
-      //  const options = unit.map(elm => {
-      //   return (
-      //     <Option key={elm.unit_exchange} value={elm.unit_exchange}>{elm.nameUnit}</Option>
-      //   )
-      // })
+      
       const options = unit_exchange.map(elm => {
         return (
           <Option key={elm.id} value={elm.id}>{elm.unit_name}</Option>
@@ -262,19 +256,19 @@ const InventoryRecordChangeForm = (props) => {
 
     if (is_create == false) {
       props.setBreadcrumbExtras([
-        <Popconfirm
-          placement="bottomRight"
-          title="Xác nhận xóa phiếu kiểm kê này"
-          onConfirm={_delete}
-          okText="Đồng ý"
-          okType="danger"
-          cancelText="Hủy bỏ"
-        >
-          <Button type="danger" icon={<DeleteOutlined />}
-          >Xóa</Button>
-        </Popconfirm>,
-        <Button type="info" icon={<HistoryOutlined />}
-        >Lịch sử chỉnh sửa</Button>
+        // <Popconfirm
+        //   placement="bottomRight"
+        //   title="Xác nhận xóa phiếu kiểm kê này"
+        //   onConfirm={_delete}
+        //   okText="Đồng ý"
+        //   okType="danger"
+        //   cancelText="Hủy bỏ"
+        // >
+        //   <Button type="danger" icon={<DeleteOutlined />}
+        //   >Xóa</Button>
+        // </Popconfirm>,
+        // <Button type="info" icon={<HistoryOutlined />}
+        // >Lịch sử chỉnh sửa</Button>
       ])
     } else {
       props.setBreadcrumbExtras(null)

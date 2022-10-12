@@ -105,6 +105,28 @@ const promotion_line_extras = {
     }
 }
 
+const category_extras = {
+    to_select: (params) => {
+        const url = `/category/to_select/`
+        return axiosApi.get(url, params)
+    },
+    get_parent: (id, params) => {
+        const url = `/category/get_parent/${id}`
+        return axiosApi.get(url, params)
+    }
+}
+
+const address_extras = {
+    to_select: (params) => {
+        const url = `/address/tree/`
+        return axiosApi.get(url, params)
+    },
+    get_parent: (id, params) => {
+        const url = `/address/path/${id}`
+        return axiosApi.get(url, params)
+    }
+}
+
 const api = {
     customer: getApi("customer"),
     customer_group: getApi("customer-group"),
@@ -121,6 +143,8 @@ const api = {
     promotion_line: getApi("promotion-line", promotion_line_extras),
     order: getApi("order"),
     order_refund: getApi("refund"),
+    category: getApi("category", category_extras),
+    address: getApi("address", address_extras),
 }
 
 export {AccountApi};

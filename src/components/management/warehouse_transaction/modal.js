@@ -43,7 +43,7 @@ const WarehouseTransactionModal = (props) => {
           </Col>
           <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Số lượng kho: {props.data.reference}</p>
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Loại biến động: {props.data.type}</p>
             </div>
           </Col>
         </Row>

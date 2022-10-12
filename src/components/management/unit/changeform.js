@@ -38,7 +38,7 @@ const UnitChangeForm = (props) => {
 
   useEffect(() => {
     props.setBreadcrumb([
-      { title: "Nhà cung cấp", href: paths.unit.list },
+      { title: "Đơn vị tính", href: paths.unit.list },
       { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
 
     if (is_create==false) {

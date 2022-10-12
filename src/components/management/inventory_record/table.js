@@ -124,103 +124,7 @@ const InventoryRecordTable = (props) => {
       />
   })
 
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-
-  const handleReset = (clearFilters) => {
-    clearFilters();
-    setSearchText('');
-  };
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div
-        style={{
-          padding: 8,
-        }}
-      >
-        <Input
-          ref={searchInput}
-          placeholder={`Tìm kiếm`}
-          value={selectedKeys[0]}
-          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: 'block',
-          }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{
-              width: 90,
-            }}
-          >
-            Tìm kiếm
-          </Button>
-          <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
-            size="small"
-            style={{
-              width: 90,
-            }}
-          >
-            Quay lại
-          </Button>
-          {/* <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({
-                closeDropdown: false,
-              });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
-          </Button> */}
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: filtered ? '#1890ff' : undefined,
-        }}
-      />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    onFilterDropdownOpenChange: (visible) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
-    },
-    render: (text) =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{
-            backgroundColor: '#ffc069',
-            padding: 0,
-          }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ''}
-        />
-      ) : (
-        text
-      ),
-  });
-
-
-
+  
   const columns = [
     {
       title: 'Mã',
@@ -236,31 +140,32 @@ const InventoryRecordTable = (props) => {
         return (record.id && record.id.toLowerCase().includes(value.toLowerCase()))
       },
       ...renderSearch(),
-      ...getColumnSearchProps('id'),
     },
     {
       title: 'Ngày kiểm kê',
       dataIndex: 'date_created',
       key: 'date_created',
-      ...getColumnSearchProps('date_created'),
     },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
-      // ...getColumnSearchProps('status'),
-      // filters: [
-      //   {
-      //     text: 'HOẠT ĐỘNG',
-      //     value: 'true',
-      //   },
-      //   {
-      //     text: 'KHÓA',
-      //     value: 'false',
-      //   },
-      // ],
-      // filteredValue: props.filteredInfo.status || null,
-      // onFilter: (value, record) => record.status.includes(value),
+      filters: [
+        {
+          text: 'HOÀN THÀNH',
+          value: 'complete',
+        },
+        {
+          text: 'CHỜ XÁC NHẬN',
+          value: 'pending',
+        },
+        {
+          text: 'HỦY',
+          value: 'cancel',
+        },
+      ],
+      filteredValue: props.filteredInfo.status || null,
+      onFilter: (value, record) => record.status.includes(value),
       render: (status) => (
         <span>
           <Tag color={tagStatusColor(status)} key={status}>
@@ -273,7 +178,6 @@ const InventoryRecordTable = (props) => {
       title: 'Ghi chú',
       dataIndex: 'note',
       key: 'note',
-      ...getColumnSearchProps('note'),
     },
     {
       title: '',

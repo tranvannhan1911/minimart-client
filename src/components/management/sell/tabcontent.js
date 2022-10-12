@@ -124,7 +124,7 @@ const TabContent = (props) => {
     };
 
     const onFinish = async () => {
-        // console.log(form.getFieldValue("note"));
+        console.log(form.getFieldValue(12345,"customer"));
         // console.log(props)
         if(listProduct.length ==0){
             return;
@@ -132,7 +132,7 @@ const TabContent = (props) => {
         setDisabledCreateOrder(true)
         try {
             const info = {
-                customer: form.getFieldValue("customer"),
+                customer: customerId,
                 note: form.getFieldValue("note"),
                 promotion: (plOrder ? plOrder.id : null),
             }
@@ -147,14 +147,15 @@ const TabContent = (props) => {
             })
             info["details"] = _listProduct
             console.log("info", info)
-            const response = await api.order.add(info);
-            console.log(response)
-            if (response.data.code == 1) {
-                setOpenSuccessModal(true)
-            } else {
-                message.error("Có lỗi xảy ra!")
-                setDisabledCreateOrder(false)
-            }
+            // const response = await api.order.add(info);
+            // console.log(response)
+            // if (response.data.code == 1) {
+            //     setOpenSuccessModal(true)
+            //     clearOrder()
+            // } else {
+            //     message.error("Có lỗi xảy ra!")
+            //     setDisabledCreateOrder(false)
+            // }
         } catch {
             setDisabledCreateOrder(false)
         }
@@ -438,3 +439,4 @@ const TabContent = (props) => {
     );
 };
 
+export default TabContent;

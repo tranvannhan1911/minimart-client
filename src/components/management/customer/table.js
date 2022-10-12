@@ -21,16 +21,16 @@ const CustomerTable = (props) => {
   const searchInput = useRef(null);
   const handleChange = (pagination, filters, sorter, extras) => {
     console.log('Various parameters\n', pagination, filters, sorter);
-    props.setFilteredInfo(filters); 
+    props.setFilteredInfo(filters);
     props.setSortedInfo(sorter);
     SetCurrentCountData(extras.currentDataSource.length)
   };
 
-  
+
   useEffect(() => {
     SetCurrentCountData(props.data.length)
   }, [props.data]);
-  
+
   useEffect(() => {
     SetCurrentCountData(0)
   }, [props.searchInfo]);
@@ -39,13 +39,16 @@ const CustomerTable = (props) => {
     props.setLoading(enable);
   };
   const onOpen = async (id) => {
-    props.data.forEach(element => {
-      if(element.id==id){
+    props.data.forEach(async element => {
+      if (element.id == id) {
         // if(element.is_active==true){
         //   element.is_active="Hoạt động";
         // }else{
         //   element.is_active="Khóa";
         // }
+
+        // const response2 = await api.address.get_parent(element.ward);
+        // element.ward=response2.data.data.tree;
         console.log(element)
         setDataIndex(element);
         // renderProfile(element)
@@ -58,7 +61,8 @@ const CustomerTable = (props) => {
     navigate(paths.customer.change(id))
   };
 
-  const renderSearch = () => ({render: (text) =>
+  const renderSearch = () => ({
+    render: (text) =>
       <Highlighter
         highlightStyle={{
           backgroundColor: '#ffc069',
@@ -68,102 +72,8 @@ const CustomerTable = (props) => {
         autoEscape
         textToHighlight={text ? text.toString() : ''}
       />
-    })
-  
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-      confirm();
-      setSearchText(selectedKeys[0]);
-      setSearchedColumn(dataIndex);
-    };
-  
-    const handleReset = (clearFilters) => {
-      clearFilters();
-      setSearchText('');
-    };
-    const getColumnSearchProps = (dataIndex) => ({
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-        <div
-          style={{
-            padding: 8,
-          }}
-        >
-          <Input
-            ref={searchInput}
-            placeholder={`Tìm kiếm`}
-            value={selectedKeys[0]}
-            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-            onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            style={{
-              marginBottom: 8,
-              display: 'block',
-            }}
-          />
-          <Space>
-            <Button
-              type="primary"
-              onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-              icon={<SearchOutlined />}
-              size="small"
-              style={{
-                width: 90,
-              }}
-            >
-              Tìm kiếm
-            </Button>
-            <Button
-              onClick={() => clearFilters && handleReset(clearFilters)}
-              size="small"
-              style={{
-                width: 90,
-              }}
-            >
-              Quay lại
-            </Button>
-            {/* <Button
-              type="link"
-              size="small"
-              onClick={() => {
-                confirm({
-                  closeDropdown: false,
-                });
-                setSearchText(selectedKeys[0]);
-                setSearchedColumn(dataIndex);
-              }}
-            >
-              Filter
-            </Button> */}
-          </Space>
-        </div>
-      ),
-      filterIcon: (filtered) => (
-        <SearchOutlined
-          style={{
-            color: filtered ? '#1890ff' : undefined,
-          }}
-        />
-      ),
-      onFilter: (value, record) =>
-        record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-      onFilterDropdownOpenChange: (visible) => {
-        if (visible) {
-          setTimeout(() => searchInput.current?.select(), 100);
-        }
-      },
-      render: (text) =>
-        searchedColumn === dataIndex ? (
-          <Highlighter
-            highlightStyle={{
-              backgroundColor: '#ffc069',
-              padding: 0,
-            }}
-            searchWords={[searchText]}
-            autoEscape
-            textToHighlight={text ? text.toString() : ''}
-          />
-        ) : (
-          text
-        ),
-    });
+  })
+
 
   const columns = [
     {
@@ -179,9 +89,9 @@ const CustomerTable = (props) => {
       onFilter: (value, record) => {
         return record.fullname.toLowerCase().includes(value.toLowerCase())
           || record.id.toString().toLowerCase().includes(value.toLowerCase())
-          || record.phone.toLowerCase().includes(value.toLowerCase())},
+          || record.phone.toLowerCase().includes(value.toLowerCase())
+      },
       ...renderSearch(),
-      ...getColumnSearchProps('id'),
     },
     {
       title: 'Tên',
@@ -192,14 +102,12 @@ const CustomerTable = (props) => {
         multiple: 2
       },
       ...renderSearch(),
-      ...getColumnSearchProps('fullname'),
     },
     {
       title: 'Số điện thoại',
       dataIndex: 'phone',
       key: 'phone',
       ...renderSearch(),
-      ...getColumnSearchProps('phone'),
     },
     {
       title: 'Giới tính',
@@ -239,7 +147,7 @@ const CustomerTable = (props) => {
         <span>
           {groups.map((group) => {
             let color = 'geekblue';
-  
+
             return (
               <Tag color={color} key={group}>
                 {group.toUpperCase()}

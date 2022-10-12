@@ -40,6 +40,9 @@ const StatisticsProfitRevenue = lazy(() => import("../statistics/profit_revenue"
 const StatisticsReceived = lazy(() => import("../statistics/received"));
 const StatisticsRecord = lazy(() => import("../statistics/record"));
 
+const CategoryListForm = lazy(() => import("../category/listform"));
+const CategoryChangeForm = lazy(() => import("../category/changeform"));
+
 const MyContent = (props) => {
     const [container, setContainer] = useState(null);
     const [breadcrumb, setBreadcrumb] = useState(false);
@@ -239,6 +242,17 @@ const MyContent = (props) => {
                             element={<PromotionLineChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
                                 setBreadcrumb={setBreadcrumb} is_create={true} />} />
+
+                        <Route path={paths.category.rlist} key={paths.category.key}
+                            element={<CategoryListForm setBreadcrumb={setBreadcrumb} />} />
+                        <Route path={paths.category.radd} key={paths.category.key}
+                            element={<CategoryChangeForm
+                                breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                                setBreadcrumb={setBreadcrumb} is_create={true} />} />
+                        <Route path={paths.category.rchange} key={paths.category.key}
+                            element={<CategoryChangeForm
+                                breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                                setBreadcrumb={setBreadcrumb} is_create={false} />} />
 
                         <Route path={paths.order.rlist} key={paths.order.key}
                             element={<OrderListForm setBreadcrumb={setBreadcrumb} />} />

@@ -42,6 +42,7 @@ const Messages = {
     promotion_line: getMessage("khuyến mãi"),
     order: getMessage("đơn bán hàng"),
     order_refund: getMessage("đơn trả hàng"),
+    category: getMessage("ngành hàng"),
 }
 
 const messages = Messages;
