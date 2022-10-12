@@ -124,7 +124,7 @@ const TabContent = (props) => {
     };
 
     const onFinish = async () => {
-        // console.log(form.getFieldValue("note"));
+        console.log(form.getFieldValue(12345,"customer"));
         // console.log(props)
         if(listProduct.length ==0){
             return;
@@ -132,7 +132,7 @@ const TabContent = (props) => {
         setDisabledCreateOrder(true)
         try {
             const info = {
-                customer: form.getFieldValue("customer"),
+                customer: customerId,
                 note: form.getFieldValue("note"),
                 promotion: (plOrder ? plOrder.id : null),
             }
@@ -182,13 +182,6 @@ const TabContent = (props) => {
     const callbackResetFunction = (data) => {
         setReset(data);
     };
-
-
-
-
-
-
-
 
     const ApplyPromotionOrder = () => {
         console.log("ApplyPromotionOrder", totalProduct)

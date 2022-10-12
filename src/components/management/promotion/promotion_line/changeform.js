@@ -364,7 +364,7 @@ const PromotionChangeForm = (props) => {
                     },
                   ]}
                 >
-                  <Input autoFocus ref={refAutoFocus} />
+                  <Input autoFocus ref={refAutoFocus} disabled='true'/>
                 </Form.Item>
               </Col>
               <Col span={2}></Col>
@@ -398,7 +398,7 @@ const PromotionChangeForm = (props) => {
                     },
                   ]}
                 >
-                  <Input />
+                  <Input disabled='true'/>
                 </Form.Item>
               </Col>
               <Col span={2}></Col>
@@ -432,6 +432,7 @@ const PromotionChangeForm = (props) => {
                     style={{
                       width: '100%',
                     }}
+                    disabled='true'
                   >
                     <Option value="true">Hoạt động</Option>
                     <Option value="false">Khóa</Option>
@@ -445,6 +446,7 @@ const PromotionChangeForm = (props) => {
                   <Select
                     mode="multiple"
                     allowClear
+                    disabled='true'
                     style={{
                       width: '100%',
                     }}
@@ -464,7 +466,7 @@ const PromotionChangeForm = (props) => {
               <Col span={10} style={{ backgroundColor: "white" }}>
                 <Form.Item label="Ghi chú" name="note"
                 >
-                  <Input />
+                  <Input disabled='true'/>
                 </Form.Item>
               </Col>
             </Row>

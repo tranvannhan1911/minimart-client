@@ -12,7 +12,7 @@ const { Search } = Input;
 const PriceTable = (props) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [dataIndex, setDataIndex] = useState("");
+  const [dataIndexSelect, setDataIndexSelect] = useState("");
   const [currentCountData, SetCurrentCountData] = useState(0);
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
@@ -41,7 +41,7 @@ const PriceTable = (props) => {
   const onOpen = async (id) => {
     props.data.forEach(element => {
       if(element.id==id){
-        setDataIndex(element);
+        setDataIndexSelect(element);
         setOpen(true);
       }
     });
@@ -62,102 +62,6 @@ const PriceTable = (props) => {
       />
     })
 
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-      confirm();
-      setSearchText(selectedKeys[0]);
-      setSearchedColumn(dataIndex);
-    };
-  
-    const handleReset = (clearFilters) => {
-      clearFilters();
-      setSearchText('');
-    };
-    const getColumnSearchProps = (dataIndex) => ({
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-        <div
-          style={{
-            padding: 8,
-          }}
-        >
-          <Input
-            ref={searchInput}
-            placeholder={`Tìm kiếm`}
-            value={selectedKeys[0]}
-            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-            onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            style={{
-              marginBottom: 8,
-              display: 'block',
-            }}
-          />
-          <Space>
-            <Button
-              type="primary"
-              onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-              icon={<SearchOutlined />}
-              size="small"
-              style={{
-                width: 90,
-              }}
-            >
-              Tìm kiếm
-            </Button>
-            <Button
-              onClick={() => clearFilters && handleReset(clearFilters)}
-              size="small"
-              style={{
-                width: 90,
-              }}
-            >
-              Quay lại
-            </Button>
-            {/* <Button
-              type="link"
-              size="small"
-              onClick={() => {
-                confirm({
-                  closeDropdown: false,
-                });
-                setSearchText(selectedKeys[0]);
-                setSearchedColumn(dataIndex);
-              }}
-            >
-              Filter
-            </Button> */}
-          </Space>
-        </div>
-      ),
-      filterIcon: (filtered) => (
-        <SearchOutlined
-          style={{
-            color: filtered ? '#1890ff' : undefined,
-          }}
-        />
-      ),
-      onFilter: (value, record) =>
-        record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-      onFilterDropdownOpenChange: (visible) => {
-        if (visible) {
-          setTimeout(() => searchInput.current?.select(), 100);
-        }
-      },
-      render: (text) =>
-        searchedColumn === dataIndex ? (
-          <Highlighter
-            highlightStyle={{
-              backgroundColor: '#ffc069',
-              padding: 0,
-            }}
-            searchWords={[searchText]}
-            autoEscape
-            textToHighlight={text ? text.toString() : ''}
-          />
-        ) : (
-          text
-        ),
-    });
-  
-
   const columns = [
     
     {
@@ -177,7 +81,6 @@ const PriceTable = (props) => {
           || (record.barcode && record.barcode.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))},
       ...renderSearch(),
-      ...getColumnSearchProps('id'),
     },
     {
       title: 'Hình ảnh',
@@ -198,28 +101,24 @@ const PriceTable = (props) => {
         multiple: 2
       },
       ...renderSearch(),
-      ...getColumnSearchProps('name'),
     },
     {
       title: 'Code sản phẩm',
       dataIndex: 'product_code',
       key: 'product_code',
       ...renderSearch(),
-      ...getColumnSearchProps('product_code'),
     },
     {
       title: 'Mã vạch',
       dataIndex: 'barcode',
       key: 'barcode',
       ...renderSearch(),
-      ...getColumnSearchProps('barcode'),
     },
     {
       title: 'Số lượng',
       dataIndex: 'stock',
       key: 'stock',
       ...renderSearch(),
-      ...getColumnSearchProps('stock'),
     },
     {
       title: 'Nhóm sản phẩm',
@@ -296,7 +195,7 @@ const PriceTable = (props) => {
         showTotal: (total) => `Tất cả ${total}`,
       }}
       loading={props.loading} />
-      <PriceModal open={open} data={dataIndex} setOpen={setOpen} /></>
+      <PriceModal open={open} data={dataIndexSelect} setOpen={setOpen} /></>
   );
 };
 

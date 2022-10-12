@@ -17,9 +17,14 @@ import * as XLSX from 'xlsx';
 
 
 const SupplierListForm = (props) => {
+    const [dataMain, setDataMain] = useState([])
     const [data, setData] = useState([])
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
+    const [dataSearchName, setDataSearchName] = useState("")
+    const [dataSearchPhone, setDataSearchPhone] = useState('')
+    const [dataSearchEmail, setDataSearchEmail] = useState("")
+    const [dataSearchAddress, setDataSearchAddress] = useState("")
     const [sortedInfo, setSortedInfo] = useState({})
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
@@ -39,7 +44,7 @@ const SupplierListForm = (props) => {
                     const element = jsonData[index];
                     const response = await api.supplier.add({
                         "name": element.name,
-                        "phone": '0'+element.phone,
+                        "phone": '0' + element.phone,
                         "email": element.email,
                         "address": element.address,
                         "note": element.note
@@ -64,9 +69,21 @@ const SupplierListForm = (props) => {
         try {
             const response = await api.supplier.list()
             const _data = response.data.data.results.map(elm => {
+
+                let date = elm.date_created.slice(0, 10);
+                let time = elm.date_created.slice(11, 19);
+                elm.date_created = date + " " + time;
+
+                if (elm.date_updated != null) {
+                    let date2 = elm.date_updated.slice(0, 10);
+                    let time2 = elm.date_updated.slice(11, 19);
+                    elm.date_updated = date2 + " " + time2;
+                }
+
                 return elm
             })
             setData(_data)
+            setDataMain(_data)
         } catch (error) {
             console.log('Failed:', error)
             message.error(messages.ERROR_REFRESH)
@@ -80,10 +97,59 @@ const SupplierListForm = (props) => {
     }, []);
 
     const clearFiltersAndSort = () => {
+        setData(dataMain)
+        setDataSearchName("")
+        setDataSearchPhone("")
+        setDataSearchEmail("")
+        setDataSearchAddress("")
         setFilteredInfo({})
         setSortedInfo({})
         setSearchInfo([])
     };
+
+    const searchName = (value) =>{
+        setDataSearchName(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if(element.name.toLowerCase().includes(value.toLowerCase())){
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
+
+    const searchPhone = (value) =>{
+        setDataSearchPhone(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if(element.phone.toString().toLowerCase().includes(value.toString().toLowerCase())){
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
+
+    const searchEmail = (value) =>{
+        setDataSearchEmail(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if(element.email.toLowerCase().includes(value.toLowerCase())){
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
+
+    const searchAddress = (value) =>{
+        setDataSearchAddress(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if(element.address.toLowerCase().includes(value.toLowerCase())){
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
 
     return (
         <ListForm
@@ -115,6 +181,30 @@ const SupplierListForm = (props) => {
                     allowClear value={searchInfo[0]}
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
+                />,
+                <Input 
+                    placeholder="Tìm kiếm theo tên" 
+                    allowClear value={dataSearchName} 
+                    prefix={<SearchOutlined />}
+                    onChange={(e) => searchName(e.target.value)}
+                />,
+                <Input 
+                    placeholder="Tìm kiếm số điện thoại" 
+                    allowClear value={dataSearchPhone} 
+                    prefix={<SearchOutlined />}
+                    onChange={(e) => searchPhone(e.target.value)}
+                />,
+                <Input 
+                    placeholder="Tìm kiếm theo email" 
+                    allowClear value={dataSearchEmail} 
+                    prefix={<SearchOutlined />}
+                    onChange={(e) => searchEmail(e.target.value)}
+                />,
+                <Input 
+                    placeholder="Tìm kiếm theo địa chỉ" 
+                    allowClear value={dataSearchAddress} 
+                    prefix={<SearchOutlined />}
+                    onChange={(e) => searchAddress(e.target.value)}
                 />,
                 <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
             ]}

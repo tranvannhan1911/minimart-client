@@ -105,7 +105,6 @@ const promotion_line_extras = {
     }
 }
 
-
 const category_extras = {
     to_select: (params) => {
         const url = `/category/to_select/`

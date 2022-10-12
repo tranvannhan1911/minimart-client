@@ -209,11 +209,13 @@ const PriceChangeForm = (props) => {
     setLoadingData(true)
     try {
       const options = unit_exchange.map(elm => {
+        elm.unit_exchange_value = elm.value
+        delete elm.value
         return (
-          <Option key={elm.id} value={elm.id}>{elm.unit_name}</Option>
+          <Option key={elm.id} value={elm.id} {...elm}>{elm.unit_name}</Option>
         )
       })
-      setBaseUnitOptions(options);
+      setBaseUnitOptions([...baseUnitOptions, options]);
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -435,9 +437,10 @@ const PriceChangeForm = (props) => {
                                   filterSort={(optionA, optionB) =>
                                     optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
                                   }
+                                  
                                   disabled={is_create ? false : true}
                                 >
-                                  {baseUnitOptions}
+                                  {baseUnitOptions[name]}
                                 </Select>
                               </Form.Item>
                               <Form.Item

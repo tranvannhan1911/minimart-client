@@ -51,26 +51,25 @@ const PriceModal = (props) => {
       
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight:'bold' }}>Thông tin cơ bản</p>
       <Row>
-        <Col span={24}>
+        <Col span={12}>
           <div className="site-description-item-profile-wrapper">
             <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Mã bảng giá: {props.data.price_list_id}</p>
           </div>
         </Col>
-        <Col span={24}>
+        <Col span={12}>
           <div className="site-description-item-profile-wrapper">
             <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Tên bảng giá: {props.data.name}</p>
           </div>
         </Col>
       </Row>
       <Row>
-        <Col span={24}>
+        <Col span={12}>
           <div className="site-description-item-profile-wrapper">
             <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Ngày bắt đầu: {props.data.start_date}</p>
           </div>
         </Col>
-      </Row>
-      <Row>
-        <Col span={24}>
+      
+        <Col span={12}>
           <div className="site-description-item-profile-wrapper">
             <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Ngày kết thúc: {props.data.end_date}</p>
           </div>

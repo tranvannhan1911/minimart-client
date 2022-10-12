@@ -248,20 +248,16 @@ const InventoryReceivingChangeForm = (props) => {
   const handleDataBaseUnit = async (unit_exchange) => {
     setLoadingData(true)
     try {
-      // await unit_exchange.forEach(gr => dataBaseUnit(gr));
-      // // console.log(unit,11111);
-      //  const options = unit.map(elm => {
-      //   return (
-      //     <Option key={elm.unit_exchange} value={elm.unit_exchange}>{elm.nameUnit}</Option>
-      //   )
-      // })
+      
       const options = unit_exchange.map(elm => {
+        elm.unit_exchange_value = elm.value
+        delete elm.value
         return (
-          <Option key={elm.id} value={elm.id}>{elm.unit_name}</Option>
+          <Option key={elm.id} value={elm.id} {...elm}>{elm.unit_name}</Option>
         )
       })
       // console.log(unit);
-      setBaseUnitOptions(options);
+      setBaseUnitOptions([...baseUnitOptions, options]);
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -304,19 +300,19 @@ const InventoryReceivingChangeForm = (props) => {
 
     if (is_create == false) {
       props.setBreadcrumbExtras([
-        <Popconfirm
-          placement="bottomRight"
-          title="Xác nhận xóa phiếu nhập hàng này"
-          onConfirm={_delete}
-          okText="Đồng ý"
-          okType="danger"
-          cancelText="Hủy bỏ"
-        >
-          <Button type="danger" icon={<DeleteOutlined />}
-          >Xóa</Button>
-        </Popconfirm>,
-        <Button type="info" icon={<HistoryOutlined />}
-        >Lịch sử chỉnh sửa</Button>
+        // <Popconfirm
+        //   placement="bottomRight"
+        //   title="Xác nhận xóa phiếu nhập hàng này"
+        //   onConfirm={_delete}
+        //   okText="Đồng ý"
+        //   okType="danger"
+        //   cancelText="Hủy bỏ"
+        // >
+        //   <Button type="danger" icon={<DeleteOutlined />}
+        //   >Xóa</Button>
+        // </Popconfirm>,
+        // <Button type="info" icon={<HistoryOutlined />}
+        // >Lịch sử chỉnh sửa</Button>
       ])
     } else {
       props.setBreadcrumbExtras(null)
@@ -503,7 +499,7 @@ const InventoryReceivingChangeForm = (props) => {
                                   }
                                   disabled={is_create ? false : true}
                                 >
-                                  {baseUnitOptions}
+                                  {baseUnitOptions[name]}
                                 </Select>
                               </Form.Item>
                               <Form.Item

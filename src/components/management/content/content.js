@@ -243,6 +243,17 @@ const MyContent = (props) => {
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
                                 setBreadcrumb={setBreadcrumb} is_create={true} />} />
 
+                        <Route path={paths.category.rlist} key={paths.category.key}
+                            element={<CategoryListForm setBreadcrumb={setBreadcrumb} />} />
+                        <Route path={paths.category.radd} key={paths.category.key}
+                            element={<CategoryChangeForm
+                                breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                                setBreadcrumb={setBreadcrumb} is_create={true} />} />
+                        <Route path={paths.category.rchange} key={paths.category.key}
+                            element={<CategoryChangeForm
+                                breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                                setBreadcrumb={setBreadcrumb} is_create={false} />} />
+
                         <Route path={paths.order.rlist} key={paths.order.key}
                             element={<OrderListForm setBreadcrumb={setBreadcrumb} />} />
 
