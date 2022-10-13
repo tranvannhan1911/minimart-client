@@ -51,6 +51,7 @@ const RefundListForm = (props) => {
                 elm.date_created = date + " " + time; 
 
                 let index = {
+                    ...elm,
                     "key": elm.id,
                     "details": elm.details,
                     "note": elm.note,
@@ -147,6 +148,7 @@ const RefundListForm = (props) => {
             table={
                 <RefundTable
                     data={data}
+                    handleGetData={handleGetData}
                     dataProductGroups={dataProductGroups}
                     loading={loading}
                     setLoading={setLoading}

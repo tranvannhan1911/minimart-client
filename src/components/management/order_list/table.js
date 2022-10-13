@@ -1,12 +1,12 @@
-import { SearchOutlined, EyeOutlined, FormOutlined } from '@ant-design/icons';
-import { Button, Space, Table as AntdTable, Input, Tag, Pagination, message, Table } from 'antd';
+import { RollbackOutlined, EyeOutlined, FormOutlined } from '@ant-design/icons';
+import { Button, Space, Table as AntdTable, Input, Tag, Pagination, message, Table, Popconfirm, Tooltip } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
 import api from '../../../api/apis'
 import messages from '../../../utils/messages'
-import OrderModal from './modal';
+import OrderRefundModal from './modal';
 import OrderDetailModal from './modal_details';
 const { Search } = Input;
 
@@ -133,17 +133,26 @@ const OrderTable = (props) => {
       title: '',
       dataIndex: 'key',
       key: 'key',
-      with:'10%',
       render: (key) => (
-        <span>
-          <Button type="primary" onClick={() => onOpenDetails(key)}>
-            Xem chi tiết
-          </Button>
-          <Button type="primary" style={{marginLeft:'10px'}} danger onClick={() => onOpen(key)}>
-            Trả hàng
-          </Button>
-          
-        </span>
+        <Space>
+          <Button 
+            type="text" 
+            onClick={() => onOpenDetails(key)}
+            icon={<EyeOutlined/>}></Button>
+          <Popconfirm
+            title="Trả đơn hàng này?"
+            onConfirm={() => onOpen(key)}
+            okText="Đồng ý"
+            okType="danger"
+            cancelText="Không"
+          >
+            <Tooltip placement="right" title="Trả hàng">
+              <Button 
+                type="text" 
+                icon={<RollbackOutlined  style={{color: 'red'}}/>}></Button>
+            </Tooltip>
+          </Popconfirm>
+        </Space>
       ),
     },
   ];
@@ -176,7 +185,12 @@ const OrderTable = (props) => {
         showTotal: (total) => `Tất cả ${total}`,
       }}
       loading={props.loading} />
-      <OrderModal open={open} data={dataIndex} setOpen={setOpen} idOrder={idIndex}/>
+      <OrderRefundModal 
+        open={open} 
+        data={dataIndex} 
+        setOpen={setOpen} 
+        idOrder={idIndex}
+        handleGetData={props.handleGetData}/>
       <OrderDetailModal openDetails={openDetails} data={dataIndex} setOpenDetails={setOpenDetails} />
       </>
   );
