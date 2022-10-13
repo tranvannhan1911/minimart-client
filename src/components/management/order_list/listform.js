@@ -161,6 +161,7 @@ const OrderListForm = (props) => {
             table={
                 <OrderTable
                     data={data}
+                    handleGetData={handleGetData}
                     dataProductGroups={dataProductGroups}
                     loading={loading}
                     setLoading={setLoading}

@@ -36,21 +36,21 @@ const OrderRefundDetailModal = (props) => {
       dataIndex: 'unit_exchange',
       key: 'age',
     },
-    {
-      title: 'Giá',
-      dataIndex: 'price',
-      key: 'address',
-    },
+    // {
+    //   title: 'Giá',
+    //   dataIndex: 'price',
+    //   key: 'address',
+    // },
     {
       title: 'Số lượng',
       dataIndex: 'quantity',
       key: 'address',
     },
-    {
-      title: 'Thành tiền',
-      dataIndex: 'total',
-      key: 'address',
-    },
+    // {
+    //   title: 'Thành tiền',
+    //   dataIndex: 'total',
+    //   key: 'address',
+    // },
   ];
 
   return (
@@ -63,14 +63,14 @@ const OrderRefundDetailModal = (props) => {
           fontWeight: 'bold'
         }}
       >
-        Thông tin phiếu nhập hàng
+        Thông tin đơn trả hàng
       </p>
 
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin cơ bản</p>
       <Row>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Mã hóa đơn: {props.data.key}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Mã đơn trả hàng: {props.data.key}</p>
           </div>
         </Col>
         <Col span={12}>
@@ -93,7 +93,7 @@ const OrderRefundDetailModal = (props) => {
           </div>
         </Col>
       </Row>
-      <Row>
+      {/* <Row>
       <Col span={12}>
           <div className="site-description-item-profile-wrapper">
             <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Khuyến mãi: {props.data.total}</p>
@@ -104,7 +104,7 @@ const OrderRefundDetailModal = (props) => {
             <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Tổng tiền: {props.data.total}</p>
           </div>
         </Col>
-      </Row>
+      </Row> */}
 
       <Row>
         <Col span={24}>
@@ -118,8 +118,8 @@ const OrderRefundDetailModal = (props) => {
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Danh sách sản phẩm trả</p>
       <Table dataSource={dataSourceIndex} columns={columns} />
 
-      <Divider />
-      <p className="site-description-item-profile-p" style={{ fontSize: '15px', marginTop: '20px', fontWeight: 'bold',color:'red', textAlign:'right' }}>Tổng tiền: {props.data.total} đ</p>
+      {/* <Divider />
+      <p className="site-description-item-profile-p" style={{ fontSize: '15px', marginTop: '20px', fontWeight: 'bold',color:'red', textAlign:'right' }}>Tổng tiền: {props.data.total} đ</p> */}
       
     </Drawer>
   );

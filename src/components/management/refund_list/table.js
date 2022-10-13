@@ -1,5 +1,5 @@
-import { SearchOutlined, EyeOutlined, FormOutlined } from '@ant-design/icons';
-import { Button, Space, Table as AntdTable, Input, Tag, Pagination, message, Table } from 'antd';
+import { CloseCircleOutlined, EyeOutlined, FormOutlined } from '@ant-design/icons';
+import { Button, Space, Table as AntdTable, Input, Tag, Pagination, message, Table, Popconfirm, Tooltip } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
@@ -68,6 +68,20 @@ const RefundTable = (props) => {
     });
   };
 
+  const onCancel =  (id) => {
+    props.data.forEach(async element => {
+      if (element.key == id) {
+        const response = await api.order_refund.update(element.key, {status: "cancel"})
+        if(response.data.code == 1){
+          message.success("Cập nhật trạng thái thành công!")
+          props.handleGetData()
+        }else{
+          message.error(messages.ERROR_REFRESH)
+        }
+      }
+    });
+  };
+
   const renderSearch = () => ({
     render: (text) =>
       <Highlighter
@@ -81,10 +95,27 @@ const RefundTable = (props) => {
       />
   })
 
+  const tagStatusColor = (status) => {
+    if (status == 'pending') {
+      return 'processing';
+    } else if (status == 'complete') {
+      return 'success';
+    } else {
+      return 'warning';
+    }
+  };
+
+  const tagStatus = (status) => {
+    if(status == "complete")
+      return "Hoàn thành"
+    else 
+      return "Đã hủy"
+  }
+
   
   const columns = [
     {
-      title: 'Mã hóa đơn',
+      title: 'Mã đơn trả hàng',
       dataIndex: 'key',
       key: 'key',
       // with:'10%',
@@ -125,37 +156,54 @@ const RefundTable = (props) => {
       key: 'date_created',
       ...renderSearch(),
     },
-    {
-      title: 'Tổng tiền',
-      dataIndex: 'total',
-      key: 'total',
-      ...renderSearch(),
-    },
     // {
-    //   title: 'Trạng thái',
-    //   dataIndex: 'status',
-    //   key: 'status',
-    //   render: (status) => (
-    //     <span>
-    //       <Tag color={tagStatusColor(status)} key={status}>
-    //         {tagStatus(status)}
-    //       </Tag>
-    //     </span>
-    //   ),
+    //   title: 'Tổng tiền',
+    //   dataIndex: 'total',
+    //   key: 'total',
+    //   ...renderSearch(),
     // },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status) => (
+        <span>
+          <Tag color={tagStatusColor(status)} key={status}>
+            {tagStatus(status)}
+          </Tag>
+        </span>
+      ),
+    },
 
     {
       title: '',
       dataIndex: 'key',
       key: 'key',
-      with:'10%',
-      render: (key) => (
-        <span>
-          <Button type="primary" onClick={() => onOpen(key)}>
-            Xem chi tiết
-          </Button>
+      render: (key, record) => (
+        <Space>
+          <Button 
+            type="text" 
+            onClick={() => onOpen(key)}
+            icon={<EyeOutlined/>}></Button>
+          {record.status == "complete" ? 
+          <Popconfirm
+            title="Hủy đơn trả hàng này?"
+            onConfirm={() => onCancel(key)}
+            okText="Đồng ý"
+            okType="danger"
+            cancelText="Không"
+          >
+            <Tooltip placement="right" title="Trả hàng">
+              <Button 
+                type="text" 
+                icon={<CloseCircleOutlined style={{color: 'red'}}/>}></Button>  
+            </Tooltip>
+          </Popconfirm>
+            
+          : null}
           
-        </span>
+          
+        </Space>
       ),
     },
   ];
