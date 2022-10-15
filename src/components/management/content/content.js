@@ -261,7 +261,20 @@ const MyContent = (props) => {
                             element={<RefundListForm setBreadcrumb={setBreadcrumb} />} />
 
                         <Route path={paths.sell.rlist} key={paths.sell.key}
-                            element={<SellPage setBreadcrumb={setBreadcrumb} />} />
+                            element={<SellPage setBreadcrumb={setBreadcrumb}/>} />
+
+                            
+
+                        <Route path={paths.category.rlist} key={paths.category.key}
+                            element={<CategoryListForm setBreadcrumb={setBreadcrumb} />} />
+                        <Route path={paths.category.radd} key={paths.category.key}
+                            element={<CategoryChangeForm
+                                breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                                setBreadcrumb={setBreadcrumb} is_create={true} />} />
+                        <Route path={paths.category.rchange} key={paths.category.key}
+                            element={<CategoryChangeForm
+                                breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
+                                setBreadcrumb={setBreadcrumb} is_create={false} />} />
 
                         <Route path={paths.statistics_order_refund.rlist} key={paths.statistics_order_refund.key}
                             element={<StatisticsOrderRefund setBreadcrumb={setBreadcrumb} />} />

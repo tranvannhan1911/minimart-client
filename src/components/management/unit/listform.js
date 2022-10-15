@@ -60,6 +60,17 @@ const UnitListForm = (props) => {
         try {
             const response = await api.unit.list()
             const _data = response.data.data.results.map(elm => {
+
+                let date = elm.date_created.slice(0, 10);
+                let time = elm.date_created.slice(11, 19);
+                elm.date_created = date + " " + time;
+
+                if (elm.date_updated != null) {
+                    let date2 = elm.date_updated.slice(0, 10);
+                    let time2 = elm.date_updated.slice(11, 19);
+                    elm.date_updated = date2 + " " + time2;
+                }
+
                 return elm
             })
             setData(_data)
@@ -103,7 +114,17 @@ const UnitListForm = (props) => {
                 <Upload showUploadList={false} {...uploadData}>
                     <Button icon={<UploadOutlined />}>Nhập Excel</Button>
                 </Upload>,
-                <ExportReactCSV csvData={data} fileName='unit' />,
+                <ExportReactCSV csvData={data} fileName='unit' 
+                // header={[
+                //     { label: 'Mã', key: 'id' },
+                //     { label: 'Tên', key: 'name' },
+                //     { label: 'Ghi chú', key: 'note' },
+                //     { label: 'Ngày tạo', key: 'date_created' },
+                //     { label: 'Ngày sửa', key: 'date_updated' },
+                //     { label: 'Mã người tạo', key: 'user_created' },
+                //     { label: 'Mã người sửa', key: 'user_updated' },
+                // ]} 
+                />,
                 <Button onClick={() => navigate(paths.unit.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={

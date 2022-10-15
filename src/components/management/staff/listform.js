@@ -78,10 +78,10 @@ const StaffListForm = (props) => {
                         elm.gender = "Không xác định"
                         break
                 }
-                if (elm.is_superuser == true) {
-                    elm.is_superuser = "Quản lý";
+                if (elm.is_manager == true) {
+                    elm.is_manager = "Quản lý";
                 } else {
-                    elm.is_superuser = "Nhân viên";
+                    elm.is_manager = "Nhân viên";
                 }
                 if (elm.date_joined != null) {
                     let datej = elm.date_joined.slice(0, 10);
@@ -98,7 +98,6 @@ const StaffListForm = (props) => {
                     let time2 = elm.date_updated.slice(11, 19);
                     elm.date_updated = date2 + " " + time2;
                 }
-
 
                 return elm
             })
@@ -150,7 +149,6 @@ const StaffListForm = (props) => {
     return (
         <>
             {/* <ModalStaff >
-
         </ModalStaff> */}
             <ListForm
                 title="Nhân viên"
@@ -159,7 +157,18 @@ const StaffListForm = (props) => {
                     <Upload showUploadList={false} {...uploadData}>
                         <Button icon={<UploadOutlined />}>Nhập Excel</Button>
                     </Upload>,
-                    <ExportReactCSV csvData={data} fileName='staff' />,
+                    <ExportReactCSV csvData={data} fileName='staff' 
+                    // header={[
+                    //     { label: 'Mã', key: 'id' },
+                    //     { label: 'Họ tên', key: 'fullname' },
+                    //     { label: 'Giới tính', key: 'gender' },
+                    //     { label: 'Số điện thoại', key: 'phone' },
+                    //     { label: 'Vị trí', key: 'is_manager' },
+                    //     { label: 'Địa chỉ', key: 'address' },
+                    //     { label: 'Ghi chú', key: 'note' },
+                    //     { label: 'Trạng thái', key: 'is_active' },
+                    // ]} 
+                    />,
                     <Button onClick={() => navigate(paths.staff.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
                 ]}
                 table={<StaffTable

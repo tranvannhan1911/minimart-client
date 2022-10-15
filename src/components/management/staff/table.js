@@ -147,8 +147,8 @@ const StaffTable = (props) => {
     },
     {
       title: 'Vị trí',
-      dataIndex: 'is_superuser',
-      key: 'is_superuser',
+      dataIndex: 'is_manager',
+      key: 'is_manager',
       filters: [
         {
           text: 'Quản lý',
@@ -159,8 +159,8 @@ const StaffTable = (props) => {
           value: 'Nhân viên',
         },
       ],
-      filteredValue: props.filteredInfo.is_superuser || null,
-      onFilter: (value, record) => record.is_superuser.includes(value),
+      filteredValue: props.filteredInfo.is_manager || null,
+      onFilter: (value, record) => record.is_manager.includes(value),
     },
     {
       title: 'Trạng thái',

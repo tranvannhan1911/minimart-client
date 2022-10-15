@@ -2,7 +2,7 @@ import {
     PlusOutlined, ImportOutlined,
     ExportOutlined, ReloadOutlined,
     SearchOutlined
-  } from '@ant-design/icons';
+} from '@ant-design/icons';
 import { Button, Col, Row, Space, Input, message, Modal, DatePicker } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
@@ -12,6 +12,8 @@ import api from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
+import { ExportReactCSV } from '../../../utils/exportExcel';
+
 const { RangePicker } = DatePicker;
 
 const InventoryRecordListForm = (props) => {
@@ -26,20 +28,20 @@ const InventoryRecordListForm = (props) => {
 
     const handleGetData = async () => {
         setLoading(true)
-        try{
+        try {
             const response = await api.inventory_record.list()
             const _data = response.data.data.results.map(elm => {
                 elm.key = elm.id
-                
-                let date=elm.date_created.slice(0, 10);
-                let time=elm.date_created.slice(11, 19);
-                elm.date_created=date+" "+time;
-                
+
+                let date = elm.date_created.slice(0, 10);
+                let time = elm.date_created.slice(11, 19);
+                elm.date_created = date + " " + time;
+
                 return elm
             })
             setData(_data)
             setDataMain(_data)
-        }catch(error){
+        } catch (error) {
             console.log('Failed:', error)
             message.error(messages.ERROR_REFRESH)
         }
@@ -62,7 +64,7 @@ const InventoryRecordListForm = (props) => {
     const onChange = (dates, dateStrings) => {
         if (dates) {
             setLoading(true);
-            setSearchDate([dates[0],dates[1]])
+            setSearchDate([dates[0], dates[1]])
             console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
             const datest = new Date(dateStrings[0].slice(0, 10));
             const dateen = new Date(dateStrings[1].slice(0, 10));
@@ -86,35 +88,43 @@ const InventoryRecordListForm = (props) => {
 
     return (
         <>
-        
-        <ListForm
-            title="Phiếu kiểm kê"
-            actions={[
-                <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                <Button onClick={() => navigate(paths.inventory_record.add)} type="primary" icon={<PlusOutlined />}>Kiểm kê</Button>,
-            ]}
-            table={<InventoryRecordTable
-                data={data}
-                loading={loading}
-                setLoading={setLoading}
-                filteredInfo={filteredInfo}
-                setFilteredInfo={setFilteredInfo}
-                searchInfo={searchInfo}
-                setSearchInfo={setSearchInfo}
-                sortedInfo={sortedInfo}
-                setSortedInfo={setSortedInfo} />}
-            extra_actions={[
-                <Input
-                    placeholder="Tìm kiếm phiếu kiểm kê"
-                    allowClear value={searchInfo[0]}
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => setSearchInfo([e.target.value])} />,
+
+            <ListForm
+                title="Phiếu kiểm kê"
+                actions={[
+                    <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
+                    <ExportReactCSV csvData={data} fileName='inventoryrecord'
+                        header={[
+                            { label: 'Mã', key: 'id' },
+                            { label: 'Ngày kiểm kê', key: 'date_created' },
+                            { label: 'Trạng thái', key: 'status' },
+                            { label: 'Ghi chú', key: 'note' },
+                        ]}
+                    />,
+                    <Button onClick={() => navigate(paths.inventory_record.add)} type="primary" icon={<PlusOutlined />}>Kiểm kê</Button>,
+                ]}
+                table={<InventoryRecordTable
+                    data={data}
+                    loading={loading}
+                    setLoading={setLoading}
+                    filteredInfo={filteredInfo}
+                    setFilteredInfo={setFilteredInfo}
+                    searchInfo={searchInfo}
+                    setSearchInfo={setSearchInfo}
+                    sortedInfo={sortedInfo}
+                    setSortedInfo={setSortedInfo} />}
+                extra_actions={[
+                    <Input
+                        placeholder="Tìm kiếm phiếu kiểm kê"
+                        allowClear value={searchInfo[0]}
+                        prefix={<SearchOutlined />}
+                        onChange={(e) => setSearchInfo([e.target.value])} />,
                     <RangePicker value={searchDate}
                         onChange={onChange}
                     />,
-                <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
-            ]}
-        >
+                    <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
+                ]}
+            >
 
             </ListForm></>
     )

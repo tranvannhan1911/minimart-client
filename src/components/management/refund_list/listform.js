@@ -13,6 +13,8 @@ import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import axios from 'axios';
+import { ExportReactCSV } from '../../../utils/exportExcel';
+
 const { RangePicker } = DatePicker;
 
 
@@ -51,6 +53,7 @@ const RefundListForm = (props) => {
                 elm.date_created = date + " " + time; 
 
                 let index = {
+                    ...elm,
                     "key": elm.id,
                     "details": elm.details,
                     "note": elm.note,
@@ -58,7 +61,7 @@ const RefundListForm = (props) => {
                     "status": elm.status,
                     "date_created": elm.date_created,
                     "date_updated": elm.date_updated,
-                    "customer": elm.customer == null ? "" : elm.customer.fullname,
+                    "customer": elm.customer == null ? "khách hàng lẻ" : elm.customer.fullname,
                     "user_created": elm.user_created == null ? "" : elm.user_created.fullname,
                     "user_updated": elm.user_updated,
                 };
@@ -143,10 +146,21 @@ const RefundListForm = (props) => {
             actions={[
 
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
+                <ExportReactCSV csvData={data} fileName='listrefund' 
+                    header={[
+                        { label: 'Mã', key: 'id' },
+                        { label: 'Nhân viên', key: 'user_created' },
+                        { label: 'Khách hàng', key: 'customer' },
+                        { label: 'Ngày trả', key: 'date_created' },
+                        { label: 'Trạng thái', key: 'status' },
+                        { label: 'Ghi chú', key: 'note' },
+                    ]} 
+                    />,
             ]}
             table={
                 <RefundTable
                     data={data}
+                    handleGetData={handleGetData}
                     dataProductGroups={dataProductGroups}
                     loading={loading}
                     setLoading={setLoading}

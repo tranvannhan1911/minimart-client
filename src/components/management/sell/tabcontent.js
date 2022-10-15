@@ -29,9 +29,14 @@ const TabContent = (props) => {
     const [customerOptions, setCustomerOptions] = useState([]);
     const [customerId, setCustomerId] = useState();
     const [listProduct, setListProduct] = useState([]);
+    // const [listProductAndPromotion, setListProductAndPromotion] = useState([]);
+    const [order, setOrder] = useState([]);
     const [disabledCreateOrder, setDisabledCreateOrder] = useState(false);
     const [staff, setStaff] = useState(sessionStorage.getItem("nameStaff") + ' - ' + sessionStorage.getItem("phoneStaff"));
 
+    const [orderId, setOrderId] = useState("");
+    const [dateBuy, setDateBuy] = useState("");
+    const [customerName, setCustomerName] = useState("");
     const [openSuccessModal, setOpenSuccessModal] = useState(false);
     const [openModalLogin, setOpenModalLogin] = useState(false);
     const [openModalAddCustomer, setOpenModalAddCustomer] = useState(false);
@@ -124,9 +129,10 @@ const TabContent = (props) => {
     };
 
     const onFinish = async () => {
-        console.log(form.getFieldValue(12345,"customer"));
+        // console.log(form.getFieldValue(12345,"customer"));
         // console.log(props)
-        if(listProduct.length ==0){
+        // console.log(listProductAndPromotion,1111)
+        if (listProduct.length == 0) {
             return;
         }
         setDisabledCreateOrder(true)
@@ -146,29 +152,42 @@ const TabContent = (props) => {
                 return _item
             })
             info["details"] = _listProduct
-            console.log("info", info)
-            // const response = await api.order.add(info);
+            // console.log("info", info)
+            const response = await api.order.add(info);
+            setOrder(response.data.data.details)
+            setOrderId(response.data.data.id)
+            if (response.data.data.customer == null) {
+                setCustomerName("Khách hàng lẻ")
+            } else {
+                setCustomerName(response.data.data.customer.fullname)
+            }
+            setDateBuy(response.data.data.date_created)
             // console.log(response)
-            // if (response.data.code == 1) {
-            //     setOpenSuccessModal(true)
-            //     clearOrder()
-            // } else {
-            //     message.error("Có lỗi xảy ra!")
-            //     setDisabledCreateOrder(false)
-            // }
+            if (response.data.code == 1) {
+                setOpenSuccessModal(true)
+            } else {
+                message.error("Có lỗi xảy ra!")
+                setDisabledCreateOrder(false)
+            }
         } catch {
             setDisabledCreateOrder(false)
         }
     };
 
-    const clearOrder = () => {
+    const clearOrder = (data) => {
+        console.log(data)
         form.resetFields();
+        setCustomerId("")
+        setOrderId("")
+        setCustomerName("")
+        setDateBuy("")
         setMoneyChange(0)
         setTotal(0)
         setTotalProduct(0)
         setVoucher(0)
         setReset(true);
         setDisabledCreateOrder(false)
+
     }
 
     const callbackTotalFunction = (total) => {
@@ -180,16 +199,13 @@ const TabContent = (props) => {
         setListProduct(data)
     };
 
+    // const callbackListProductFunctionAndPromotion = (data) => {
+    //     setListProductAndPromotion(data)
+    // };
+
     const callbackResetFunction = (data) => {
         setReset(data);
     };
-
-
-
-
-
-
-
 
     const ApplyPromotionOrder = () => {
         console.log("ApplyPromotionOrder", totalProduct)
@@ -292,6 +308,7 @@ const TabContent = (props) => {
                     <OrderItem is_reset={reset} baseUnitOptions={props.baseUnitOptions}
                         parentCallbackTotal={callbackTotalFunction}
                         parentCallbackListProduct={callbackListProductFunction}
+                        // parentCallbackListProductAndPromotion={callbackListProductFunctionAndPromotion}
                         parentCallbackReset={callbackResetFunction}
                         customerId={customerId}
                         disabledCreateOrder={disabledCreateOrder} />
@@ -425,6 +442,15 @@ const TabContent = (props) => {
             <SuccessModal
                 open={openSuccessModal}
                 setOpen={setOpenSuccessModal}
+                order={order}
+                totalProduct={totalProduct}
+                total={total}
+                voucher={voucher}
+                orderId={orderId}
+                dateBuy={dateBuy}
+                customerName={customerName}
+                customerId={customerId}
+                dataMoneyChange={moneyChange}
                 onFinish={clearOrder} />
             <ModalLogin open={openModalLogin}
                 setOpen={setOpenModalLogin}
@@ -435,6 +461,7 @@ const TabContent = (props) => {
                 setOpen={setOpenModalAddCustomer}
                 setCustomer={handleCustomerNew}
             />
+            {/* <PDFOrder order={order} totalProduct={totalProduct} total={total} voucher={voucher} open={open} setOpen={setOpen}/> */}
         </Form>
     );
 };

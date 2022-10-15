@@ -11,6 +11,15 @@ const ModalLogin = (props) => {
         setIsModalLoginOpen(true);
     };
 
+    useEffect(() => {
+        setTimeout(() => {
+            if(passwordRef.current){
+                passwordRef.current.focus()
+            }
+        }, 200)
+        
+      }, [props.open])
+
     const handleOk = () => {
         props.setOpen(false);
         props.errorStaff();

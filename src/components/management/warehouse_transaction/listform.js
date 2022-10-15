@@ -13,9 +13,8 @@ import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import axios from 'axios';
+import { ExportReactCSV } from '../../../utils/exportExcel';
 const { RangePicker } = DatePicker;
-
-
 
 const WarehouseTransactionListForm = (props) => {
     const [dataMain, setDataMain] = useState([])
@@ -112,6 +111,16 @@ const WarehouseTransactionListForm = (props) => {
                 title="Lịch sử biến động kho"
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
+                    <ExportReactCSV csvData={data} fileName='warehousetransaction' 
+                    header={[
+                        { label: 'Mã', key: 'id' },
+                        { label: 'Sản phẩm', key: 'product' },
+                        { label: 'Loại', key: 'type' },
+                        { label: 'Số lượng thay đổi', key: 'change' },
+                        { label: 'Ngày thay đổi', key: 'date_created' },
+                        { label: 'Ghi chú', key: 'note' },
+                    ]} 
+                    />,
                     // <Button onClick={() => navigate(paths.staff.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
                 ]}
                 table={<WarehouseTransactionTable

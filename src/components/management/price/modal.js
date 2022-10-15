@@ -1,15 +1,19 @@
 import { Button, Drawer, Row, Col, Divider, Image, Table } from 'antd';
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ExportReactCSV } from '../../../utils/exportExcel';
+
 
 const PriceModal = (props) => {
   const [data, setData] = useState("");
-  const [dataSource, setDataSource] = useState('');
+  const [dataSource, setDataSource] = useState([]);
 
   useEffect(() => {
-    setDataSource(props.data.pricedetails)
-    
+    if (props.data.pricedetails != null) {
+
+      setDataSource(props.data.pricedetails)
+    }
   });
-  
+
   const showDrawer = () => {
     props.setOpen(true);
   };
@@ -43,13 +47,13 @@ const PriceModal = (props) => {
         style={{
           marginBottom: 24,
           fontSize: 25,
-           fontWeight:'bold'
+          fontWeight: 'bold'
         }}
       >
         Thông tin bảng giá
       </p>
-      
-      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight:'bold' }}>Thông tin cơ bản</p>
+
+      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin cơ bản</p>
       <Row>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
@@ -68,7 +72,7 @@ const PriceModal = (props) => {
             <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Ngày bắt đầu: {props.data.start_date}</p>
           </div>
         </Col>
-      
+
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
             <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Ngày kết thúc: {props.data.end_date}</p>
@@ -83,8 +87,18 @@ const PriceModal = (props) => {
         </Col>
       </Row>
       <Divider />
-      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight:'bold' }}>Danh sách giá sản phẩm</p>
-      <Table dataSource={dataSource} columns={columns}/>
+      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Danh sách giá sản phẩm
+        <span style={{ position: "absolute", right: '15px' }}>
+          <ExportReactCSV csvData={dataSource} fileName='priceproduct'
+            header={[
+              { label: 'Sản phẩm', key: 'product' },
+              { label: 'Đơn vị tính', key: 'unit_exchange' },
+              { label: 'Giá', key: 'price' },
+            ]}
+          />
+        </span>
+      </p>
+      <Table dataSource={dataSource} columns={columns} />
 
       <Divider />
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin lịch sử</p>

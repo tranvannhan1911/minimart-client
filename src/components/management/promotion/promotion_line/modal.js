@@ -50,7 +50,7 @@ const PromotionLineModal = (props) => {
         message.success(messages.promotion_line.SUCCESS_SAVE())
         return true
       } else if (response.data.code == 0) {
-        message.error("Vui lòng nhập khuyến mãi");
+        message.error("Vui lòng nhập mã khuyến mãi khác");
       } else {
         message.error(response.data.message.toString())
       }

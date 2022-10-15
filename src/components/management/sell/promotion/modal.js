@@ -44,7 +44,8 @@ const PromotionPicker = (props) => {
             handlePromotionLineByTypeOrder()
         }
         if(props.type == "Product"){
-            handlePromotionLineByTypeProduct()
+            if (props.product)
+                handlePromotionLineByTypeProduct()
         }
     }, [props.customerId])
 
@@ -53,7 +54,8 @@ const PromotionPicker = (props) => {
     }, [props.totalProduct])
 
     useEffect(() => {
-        handlePromotionLineByTypeProduct()
+        if (props.product)
+            handlePromotionLineByTypeProduct()
     }, [props.product])
 
     
@@ -152,9 +154,10 @@ const PromotionPicker = (props) => {
                             }else
                                 benefitText = `Được giảm: ${item.benefit}`
                         }else if(props.type == "Product"){
-                            if (item.benefit <= 0)
+                            if (item.benefit <= 0 || props.product.promotion_line == item.id){
                                 disabled = true;
-                            else{
+                                btnText = "Đang sử dụng"
+                            }else{
                                 // const res = await api.product.get(item.detail.product_received)
                                 // console.log("res", res)
                                 // const product_received = res.data.data

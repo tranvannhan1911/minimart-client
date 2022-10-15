@@ -1,8 +1,10 @@
 import { Button, Drawer, Row, Col, Divider, Image, Table } from 'antd';
 import React, { useState, useEffect } from 'react';
+import { ExportReactCSV } from '../../../utils/exportExcel';
+
 
 const InventoryReceivingModal = (props) => {
-  const [dataSource, setDataSource] = useState("");
+  const [dataSource, setDataSource] = useState([]);
 
   const showDrawer = () => {
     props.setOpen(true);
@@ -14,13 +16,13 @@ const InventoryReceivingModal = (props) => {
 
   useEffect(() => {
     // detail = props.data.details;
-    // if (props.data.details != null) {
-    //   detail.map(element => {
-    //     element.product = element.product.name;
-    //     return element;
-    //   });
+    if (props.data.details != null) {
+      //   detail.map(element => {
+      //     element.product = element.product.name;
+      //     return element;
+      //   });
       setDataSource(props.data.details)
-    // }
+    }
     // console.log(props.data.details, 1111);
 
   });
@@ -85,7 +87,7 @@ const InventoryReceivingModal = (props) => {
             <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Nhà cung cấp: {props.data.supplier}</p>
           </div>
         </Col>
-      {/* </Row>
+        {/* </Row>
       <Row> */}
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
@@ -110,7 +112,18 @@ const InventoryReceivingModal = (props) => {
       </Row>
       <Divider />
 
-      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Danh sách sản phẩm nhập</p>
+      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Danh sách sản phẩm nhập
+        <span style={{ position: "absolute", right: '15px' }}>
+          <ExportReactCSV csvData={dataSource} fileName='productreceiving'
+            header={[
+              { label: 'Sản phẩm', key: 'product' },
+              { label: 'Giá', key: 'price' },
+              { label: 'Số lượng', key: 'quantity' },
+              { label: 'Ghi chú', key: 'note' },
+            ]}
+          />
+        </span>
+      </p>
       <Table dataSource={dataSource} columns={columns} />
 
       <Divider />
@@ -139,7 +152,7 @@ const InventoryReceivingModal = (props) => {
           </div>
         </Col>
       </Row>
-      
+
     </Drawer>
   );
 };

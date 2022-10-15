@@ -85,7 +85,7 @@ const EditableCell = ({
   return <td {...restProps}>{childNode}</td>;
 };
 
-const OrderModal = (props) => {
+const OrderRefundModal = (props) => {
   const [disabled, setDisabled] = useState(false);
   const [total, setTotal] = useState(0);
   const [dataSource, setDataSource] = useState([]);
@@ -104,7 +104,7 @@ const OrderModal = (props) => {
         props.data.details.forEach(element => {
           let dataIndex = {
             "key": element.id,
-            "quantity": 0,
+            "quantity": element.quantity,
             "quantityBuy": element.quantity,
             "note": element.note,
             "product": element.product,
@@ -155,6 +155,7 @@ const OrderModal = (props) => {
         props.setOpen(false);
         console.log(dataSource);
         setDataSource([]);
+        props.handleGetData()
         return true
       } else if (response.data.code == 0) {
         message.error("Lỗi")
@@ -274,7 +275,9 @@ const OrderModal = (props) => {
       <Row style={{ marginTop: '20px' }}>
         <Col span={24}>
           <label>Thông tin hàng trả:</label>
-
+          <label style={{
+            float: 'right'
+          }}>*Bấm vào số lượng trả để sửa đổi.</label>
         </Col>
 
       </Row>
@@ -314,4 +317,4 @@ const OrderModal = (props) => {
 
   );
 };
-export default OrderModal;
+export default OrderRefundModal;

@@ -13,6 +13,8 @@ import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import axios from 'axios';
+import { ExportReactCSV } from '../../../utils/exportExcel';
+
 const { RangePicker } = DatePicker;
 
 const OrderListForm = (props) => {
@@ -72,7 +74,7 @@ const OrderListForm = (props) => {
                     "date_created": elm.date_created,
                     "date_updated": elm.date_updated,
                     "customer": elm.customer == null ? "Khách hàng lẻ" : elm.customer.fullname,
-                    "user_created": elm.user_created.fullname,
+                    "user_created": elm.user_created == null ? "" : elm.user_created.fullname,
                     "user_updated": elm.user_updated,
                 };
                 return index;
@@ -156,11 +158,21 @@ const OrderListForm = (props) => {
             actions={[
 
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                // <Button onClick={() => navigate(paths.product.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
+                <ExportReactCSV csvData={data} fileName='listrorder' 
+                    header={[
+                        { label: 'Mã', key: 'id' },
+                        { label: 'Nhân viên', key: 'user_created' },
+                        { label: 'Khách hàng', key: 'customer' },
+                        { label: 'Ngày bán', key: 'date_created' },
+                        { label: 'Tổng tiền', key: 'final_total' },
+                        { label: 'Ghi chú', key: 'note' },
+                    ]} 
+                    />,
             ]}
             table={
                 <OrderTable
                     data={data}
+                    handleGetData={handleGetData}
                     dataProductGroups={dataProductGroups}
                     loading={loading}
                     setLoading={setLoading}

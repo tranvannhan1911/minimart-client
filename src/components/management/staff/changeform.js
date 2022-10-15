@@ -289,7 +289,7 @@ const StaffChangeForm = (props) => {
                 </Col>
                 <Col span={2}></Col>
                 <Col span={10}>
-                  <Form.Item label="Vai trò" name="is_superuser"
+                  <Form.Item label="Vai trò" name="is_manager"
                     style={{
                       textAlign: 'left'
                     }}>
