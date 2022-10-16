@@ -11,6 +11,7 @@ import Loading from '../../../basic/loading';
 import paths from '../../../../utils/paths'
 import messages from '../../../../utils/messages'
 import { validName1 } from '../../../../resources/regexp'
+import { ExportReactCSV } from '../../../../utils/exportExcel';
 import PromotionLineModal from './modal';
 import moment from "moment";
 const { RangePicker } = DatePicker;
@@ -138,13 +139,18 @@ const PromotionChangeForm = (props) => {
         let date2 = element.end_date.slice(0, 10);
 
         let lineIndex = {
+          detail: element.detail,
           promotion_code: element.promotion_code,
           description: element.description,
           type: loai,
           start_date: date,
           end_date: date2,
           id: element.id,
-          status:element.status ? 'Hoạt động': 'Khóa'
+          note: element.note,
+          max_quantity: element.max_quantity,
+          max_quantity_per_customer: element.max_quantity_per_customer,
+          max_quantity_per_customer_per_day: element.max_quantity_per_customer_per_day,
+          status: element.status ? 'Hoạt động' : 'Khóa'
         }
         dataline.push(lineIndex);
       });
@@ -269,12 +275,12 @@ const PromotionChangeForm = (props) => {
       { title: is_create ? "Khuyến mãi" : "Khuyến mãi " }])
 
     // if (is_create == true) {
-      props.setBreadcrumbExtras([
-        <Button type="info" icon={<ReloadOutlined />} onClick={() => handleData()}
-        >Làm mới</Button>,
-        <Button type="info" icon={<HistoryOutlined />}
-        >Lịch sử chỉnh sửa</Button>
-      ])
+    props.setBreadcrumbExtras([
+      <Button type="info" icon={<ReloadOutlined />} onClick={() => handleData()}
+      >Làm mới</Button>,
+      <Button type="info" icon={<HistoryOutlined />}
+      >Lịch sử chỉnh sửa</Button>
+    ])
     // } else {
     //   props.setBreadcrumbExtras(null)
     // }
@@ -364,7 +370,7 @@ const PromotionChangeForm = (props) => {
                     },
                   ]}
                 >
-                  <Input autoFocus ref={refAutoFocus} disabled='true'/>
+                  <Input autoFocus ref={refAutoFocus} disabled='true' />
                 </Form.Item>
               </Col>
               <Col span={2}></Col>
@@ -398,7 +404,7 @@ const PromotionChangeForm = (props) => {
                     },
                   ]}
                 >
-                  <Input disabled='true'/>
+                  <Input disabled='true' />
                 </Form.Item>
               </Col>
               <Col span={2}></Col>
@@ -466,7 +472,7 @@ const PromotionChangeForm = (props) => {
               <Col span={10} style={{ backgroundColor: "white" }}>
                 <Form.Item label="Ghi chú" name="note"
                 >
-                  <Input disabled='true'/>
+                  <Input disabled='true' />
                 </Form.Item>
               </Col>
             </Row>
@@ -475,6 +481,32 @@ const PromotionChangeForm = (props) => {
             <Row>
               <label><h2 style={{ marginRight: '20px', marginBottom: '30px', textAlign: 'left' }}>Dòng</h2></label>
               <Button type="primary" onClick={() => onOpen()}>Thêm mới</Button>
+              <span style={{ marginLeft: '10px' }}>
+                <ExportReactCSV csvData={dataLine} fileName='promotionline'
+                  header={[
+                    { label: 'Mã áp dụng', key: 'id' },
+                    { label: 'Tiêu đề', key: 'title' },
+                    { label: 'Diễn giải', key: 'description' },
+                    { label: 'Loại khuyến mãi', key: 'type' },
+                    { label: 'Ngày bắt đầu', key: 'start_date' },
+                    { label: 'Ngày kết thúc', key: 'end_date' },
+                    { label: 'Trạng thái', key: 'status' },
+                    { label: 'Số lượng tối đa áp dụng', key: 'max_quantity' },
+                    { label: 'Số lượng tối đa cho 1 khách', key: 'max_quantity_per_customer' },
+                    { label: 'Số lượng tối đa cho 1 khách trong 1 ngày', key: 'max_quantity_per_customer_per_day' },
+                    { label: 'Ghi chú', key: 'note' },
+                    { label: 'Nhóm sản phẩm áp dụng', key: 'detail.applicable_product_groups' },
+                    { label: 'Sản phẩm áp dụng', key: 'detail.applicable_products' },
+                    { label: 'Số lượng mua', key: 'detail.quantity_buy' },
+                    { label: 'Sản phẩm khuyến mãi', key: 'detail.product_received' },
+                    { label: 'Số lượng khuyến mãi', key: 'detail.quantity_received' },
+                    { label: 'Số tiền ít nhất để được khuyến mãi', key: 'detail.minimum_total' },
+                    { label: 'Chiết khấu', key: 'detail.percent' },
+                    { label: 'Số tiền giảm tối đa', key: 'detail.maximum_reduction_amount' },
+                    { label: 'Số tiền giảm giá', key: 'detail.reduction_amount' },
+                  ]}
+                />
+              </span>
             </Row>
             <Col>
               <Table columns={columns} dataSource={dataLine}>
@@ -484,7 +516,7 @@ const PromotionChangeForm = (props) => {
           </>}>
         </ChangeForm>
 
-          <PromotionLineModal data={dataUpdate} open={open} start_date={start_date} end_date={end_date} id={id} dataProduct={products} dataGroupProduct={productGroup} setOpen={setOpen} setCreate={is_create} handleData={handleData}/></>
+          <PromotionLineModal data={dataUpdate} open={open} start_date={start_date} end_date={end_date} id={id} dataProduct={products} dataGroupProduct={productGroup} setOpen={setOpen} setCreate={is_create} handleData={handleData} /></>
       }
     </>
   )

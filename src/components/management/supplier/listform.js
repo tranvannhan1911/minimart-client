@@ -159,7 +159,20 @@ const SupplierListForm = (props) => {
                 <Upload showUploadList={false} {...uploadData}>
                     <Button icon={<UploadOutlined />}>Nhập Excel</Button>
                 </Upload>,
-                <ExportReactCSV csvData={data} fileName='supplier' />,
+                <ExportReactCSV csvData={data} fileName='supplier' 
+                // header={[
+                //     { label: 'Mã', key: 'id' },
+                //     { label: 'Tên', key: 'name' },
+                //     { label: 'Số điện thoại', key: 'phone' },
+                //     { label: 'Email', key: 'email' },
+                //     { label: 'Địa chỉ', key: 'address' },
+                //     { label: 'Ghi chú', key: 'note' },
+                //     { label: 'Ngày tạo', key: 'date_created' },
+                //     { label: 'Ngày sửa', key: 'date_updated' },
+                //     { label: 'Mã người tạo', key: 'user_created' },
+                //     { label: 'Mã người sửa', key: 'user_updated' },
+                // ]} 
+                />,
                 <Button onClick={() => navigate(paths.supplier.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={

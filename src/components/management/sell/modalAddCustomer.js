@@ -11,9 +11,18 @@ const { TextArea } = Input;
 const ModalLogin = (props) => {
     const [form] = Form.useForm();
     const [isModalLoginOpen, setIsModalLoginOpen] = useState(false);
-    const refAutoFocus = useRef(null)
+    const refAutoFocus = useRef()
     const [dataCustomerGroup, setDataCustomerGroup] = useState([]);
     const [addressValue, setAddressValue] = useState([]);
+
+    useEffect(() => {
+        setTimeout(() => {
+            if(refAutoFocus.current){
+                refAutoFocus.current.focus()
+            }
+        }, 200)
+        
+      }, [props.open])
 
     useEffect(() => {
         handleDataCustomerGroup()
@@ -163,14 +172,14 @@ const ModalLogin = (props) => {
 
                         </Col>
                     </Row>
-                    <Row>
+                    {/* <Row>
                         <Col span={1}></Col>
                         <Col span={10}>
                             <Form.Item label="Số nhà,  đường" name="address">
                                 <Input style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} />
                             </Form.Item>
                         </Col>
-                    </Row>
+                    </Row> */}
                     <Row>
                         <Col span={1}></Col>
                         <Col span={10}>
