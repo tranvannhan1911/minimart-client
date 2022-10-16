@@ -12,6 +12,8 @@ import api from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
+import { ExportReactCSV } from '../../../utils/exportExcel';
+
 
 const PromotionListForm = (props) => {
     const [dataMain, setDataMain] = useState([])
@@ -134,6 +136,18 @@ const PromotionListForm = (props) => {
                 title="Chương trình khuyến mãi"
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
+                    <ExportReactCSV csvData={data} fileName='listrpromotion' 
+                    header={[
+                        { label: 'Mã', key: 'id' },
+                        { label: 'Tiêu đề', key: 'title' },
+                        { label: 'Mô tả', key: 'description' },
+                        { label: 'Ngày bắt đầu', key: 'start_date' },
+                        { label: 'Ngày kết thúc', key: 'end_date' },
+                        // { label: 'Nhóm khách hàng', key: 'applicable_customer_groups' },
+                        { label: 'Trạng thái', key: 'status' },
+                        { label: 'Ghi chú', key: 'note' },
+                    ]} 
+                    />,
                     <Button onClick={() => navigate(paths.promotion.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
                 ]}
                 table={<PromotionTable

@@ -127,7 +127,7 @@ const RefundTable = (props) => {
       filteredValue: props.searchInfo || null,
       onFilter: (value, record) => {
         return (record.customer && record.customer.toLowerCase().includes(value.toLowerCase()))
-          || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
+          || (record.key && record.key.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.user_created && record.user_created.toString().toLowerCase().includes(value.toLowerCase()))
       },
       ...renderSearch(),

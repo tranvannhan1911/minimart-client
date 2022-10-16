@@ -248,6 +248,7 @@ const OrderItem = (props) => {
                 dataa.push(element)
             }
         });
+        // props.parentCallbackListProductAndPromotion(data);
         props.parentCallbackListProduct(dataa);
     }
 

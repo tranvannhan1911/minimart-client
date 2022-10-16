@@ -1,50 +1,23 @@
 import { Button, Drawer, Row, Col, Divider, Image, Table } from 'antd';
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ExportReactCSV } from '../../../utils/exportExcel';
+
 
 const InventoryRecordModal = (props) => {
   const [data, setData] = useState("");
-  const [dataSource, setDataSource] = useState('');
+  const [dataSource, setDataSource] = useState([]);
 
-  // const handleData = async () => {
-  //   setLoadingData(true)
-  //   try {
-  //     const response = await api..get(id);
-  //     const values = response.data.data
-  //     values.supplier=values.supplier.name
-  //     values.details = values.details.map(elm =>{
-  //     elm.product=elm.product.id
-  //     elm.unit_exchange=elm.unit_exchange.unit_name
-  //     return elm;
-    
-  //   })      
-      
-  //     form.setFieldsValue(values)
-
-  //   } catch (error) {
-  //     message.error(messages.ERROR)
-  //   } finally {
-  //     setLoadingData(false)
-  //   }
-  // }
 
   useEffect(() => {
-    setDataSource(props.data.details)
-    // console.log(dataSource)
-    setData(props.data)
-    // if(data.status == true){
-    //   data.status = "Hoạt động"
-    // }
-    // // data.status
-    // console.log(data)
+    if (props.data.details != null) {
 
-    // setData(props.data);
-    // if(props.data.status==true){
-    //   props.data.status='Hoạt động';
-    // }else{
-    //   props.data.status='Khóa';
-    // }
+      setDataSource(props.data.details)
+      // console.log(dataSource)
+      setData(props.data)
+    }
+
   });
-  
+
   const showDrawer = () => {
     props.setOpen(true);
   };
@@ -83,13 +56,13 @@ const InventoryRecordModal = (props) => {
         style={{
           marginBottom: 24,
           fontSize: 25,
-          fontWeight:'bold'
+          fontWeight: 'bold'
         }}
       >
         Thông tin phiếu kiểm kê
       </p>
       <Divider />
-      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight:'bold' }}>Thông tin cơ bản</p>
+      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin cơ bản</p>
       <Row>
         <Col span={24}>
           <div className="site-description-item-profile-wrapper">
@@ -107,7 +80,7 @@ const InventoryRecordModal = (props) => {
       <Row>
         <Col span={24}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Trạng thái: {props.data.status == 'pending' ? 'Chờ xác nhận' :''}{props.data.status == 'complete' ? 'Hoàn thành':''}{props.data.status == 'cancel' ? 'Hủy':''}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Trạng thái: {props.data.status == 'pending' ? 'Chờ xác nhận' : ''}{props.data.status == 'complete' ? 'Hoàn thành' : ''}{props.data.status == 'cancel' ? 'Hủy' : ''}</p>
           </div>
         </Col>
       </Row>
@@ -119,8 +92,19 @@ const InventoryRecordModal = (props) => {
         </Col>
       </Row>
       <Divider />
-      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px' }}>Danh sách sản phẩm</p>
-      <Table dataSource={dataSource} columns={columns}/>
+      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px' }}>Danh sách sản phẩm
+        <span style={{ position: "absolute", right: '15px' }}>
+          <ExportReactCSV csvData={dataSource} fileName='productrecord'
+            header={[
+              { label: 'Sản phẩm', key: 'product' },
+              { label: 'Số lượng trước', key: 'quantity_before' },
+              { label: 'Số lượng sau', key: 'quantity_after' },
+              { label: 'Ghi chú', key: 'note' },
+            ]}
+          />
+        </span>
+      </p>
+      <Table dataSource={dataSource} columns={columns} />
 
       <Divider />
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin lịch sử</p>

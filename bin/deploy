@@ -3,7 +3,7 @@ REACT_APP_BASE_URL=http://13.214.169.137:8000/api
 sed -i "/REACT_APP_BASE_URL=/c\\REACT_APP_BASE_URL=$REACT_APP_BASE_URL" .env
 npm run build
 scp -i "~/.ssh/minimart.pem" -r ./build/ ubuntu@13.214.169.137:/home/ubuntu/minimart-client/
-
+ssh -i "~/.ssh/minimart.pem" ubuntu@13.214.169.137 sudo service nginx restart
 # cp -r . /tmp/minimart-client
 # ssh -i "~/.ssh/minimart.pem" ubuntu@13.214.169.137 '''/bin/bash -c "cd /home/ubuntu/minimart-client \
 #         && git pull origin main \

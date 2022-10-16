@@ -149,7 +149,6 @@ const StaffListForm = (props) => {
     return (
         <>
             {/* <ModalStaff >
-
         </ModalStaff> */}
             <ListForm
                 title="Nhân viên"
@@ -158,7 +157,18 @@ const StaffListForm = (props) => {
                     <Upload showUploadList={false} {...uploadData}>
                         <Button icon={<UploadOutlined />}>Nhập Excel</Button>
                     </Upload>,
-                    <ExportReactCSV csvData={data} fileName='staff' />,
+                    <ExportReactCSV csvData={data} fileName='staff' 
+                    // header={[
+                    //     { label: 'Mã', key: 'id' },
+                    //     { label: 'Họ tên', key: 'fullname' },
+                    //     { label: 'Giới tính', key: 'gender' },
+                    //     { label: 'Số điện thoại', key: 'phone' },
+                    //     { label: 'Vị trí', key: 'is_manager' },
+                    //     { label: 'Địa chỉ', key: 'address' },
+                    //     { label: 'Ghi chú', key: 'note' },
+                    //     { label: 'Trạng thái', key: 'is_active' },
+                    // ]} 
+                    />,
                     <Button onClick={() => navigate(paths.staff.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
                 ]}
                 table={<StaffTable

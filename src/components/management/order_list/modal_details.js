@@ -63,7 +63,7 @@ const OrderDetailModal = (props) => {
           fontWeight: 'bold'
         }}
       >
-        Thông tin phiếu nhập hàng
+        Thông tin hóa đơn bán hàng
       </p>
 
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin cơ bản</p>
@@ -96,7 +96,7 @@ const OrderDetailModal = (props) => {
       <Row>
       <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Khuyến mãi: {props.data.total}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Khuyến mãi: {props.data.total-props.data.final_total}</p>
           </div>
         </Col>
         <Col span={12}>
