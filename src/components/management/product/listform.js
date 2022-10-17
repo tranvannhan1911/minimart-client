@@ -29,6 +29,7 @@ const PriceListForm = (props) => {
         setLoading(true)
         try{
             const response = await api.product.list()
+            console.log("handleGetData", response)
             const _data = response.data.data.results.map(elm => {
                 const _product_groups = []
                 elm.product_groups.forEach(gr => _product_groups.push(gr.name));

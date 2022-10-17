@@ -36,6 +36,9 @@ const InventoryReceivingListForm = (props) => {
                 let date=elm.date_created.slice(0, 10);
                 let time=elm.date_created.slice(11, 19);
                 elm.date_created=date+" "+time;
+                elm.date_updated = elm.date_updated
+                    ? elm.date_updated.slice(0, 10) + " " + elm.date_updated.slice(11, 19)
+                    : null;
                 return elm
             })
             setData(_data)

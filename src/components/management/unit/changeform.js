@@ -122,7 +122,11 @@ const UnitChangeForm = (props) => {
         message.success(messages.unit.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
-      } else {
+      } else if(response.data.message.code) {
+        message.error("Mã đơn vị tính bị trùng!")
+      }else if(response.data.message.name) {
+        message.error("Tên đơn vị tính bị trùng!")
+      }else{
         message.error(response.data.message.toString())
       }
     } catch (error) {
@@ -139,7 +143,11 @@ const UnitChangeForm = (props) => {
         message.success(messages.unit.SUCCESS_SAVE(id))
         directAfterSubmit(response)
         return true
-      } else {
+      } else if(response.data.message.code) {
+        message.error("Mã đơn vị tính bị trùng!")
+      }else if(response.data.message.name) {
+        message.error("Tên đơn vị tính bị trùng!")
+      }else{
         message.error(response.data.message.toString())
       }
     } catch (error) {

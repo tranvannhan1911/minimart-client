@@ -88,7 +88,7 @@ const PriceModal = (props) => {
       </Row>
       <Divider />
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Danh sách giá sản phẩm
-        <span style={{ position: "absolute", right: '15px' }}>
+        <span style={{ float: 'right' }}>
           <ExportReactCSV csvData={dataSource} fileName='priceproduct'
             header={[
               { label: 'Sản phẩm', key: 'product' },
@@ -110,7 +110,7 @@ const PriceModal = (props) => {
         </Col>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người tạo: {props.data.user_created}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người tạo: {props.data.user_created?.fullname}</p>
           </div>
         </Col>
       </Row>
@@ -122,7 +122,7 @@ const PriceModal = (props) => {
         </Col>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người cập nhật: {props.data.user_updated}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người cập nhật: {props.data.user_updated?.fullname}</p>
           </div>
         </Col>
       </Row>

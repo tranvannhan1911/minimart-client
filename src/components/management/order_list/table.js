@@ -1,8 +1,11 @@
-import { RollbackOutlined, EyeOutlined,  } from '@ant-design/icons';
-import { Button, Space, Table as AntdTable, Popconfirm, Tooltip } from 'antd';
+import { RollbackOutlined, EyeOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Button, Space, Table as AntdTable, Popconfirm, Tooltip, message, Tag } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
+import api from '../../../api/apis';
+import messages from '../../../utils/messages';
+import { tagStatus, tagStatusColor } from '../../../utils/util';
 import OrderRefundModal from './modal';
 import OrderDetailModal from './modal_details';
 
@@ -69,12 +72,31 @@ const OrderTable = (props) => {
       />
   })
 
+  const onOrderCancel = async (record) => {
+    console.log("onOrderCancel", record)
+    try {
+      const values = {
+        status: "cancel"
+      }
+      const response = await api.order.update(record.key, values);
+      if (response.data.code == 1) {
+        message.success("Hủy đơn hàng thành công!");
+        props.handleGetData()
+      } else {
+        message.error(response.data.message.toString())
+      }
+    } catch (error) {
+      message.error(messages.ERROR)
+      console.log('Failed:', error)
+    }
+  }
+
   const columns = [
     {
       title: 'Mã hóa đơn',
       dataIndex: 'key',
       key: 'key',
-      with:'10%',
+      with: '10%',
       sorter: {
         compare: (a, b) => a.key > b.key,
         multiple: 1
@@ -85,7 +107,7 @@ const OrderTable = (props) => {
         return (record.customer && record.customer.toLowerCase().includes(value.toLowerCase()))
           || (record.key && record.key.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.user_created && record.user_created.toLowerCase().includes(value.toLowerCase()))
-          || (record.total && record.total.toString().toLowerCase().includes(value.toLowerCase())) 
+          || (record.total && record.total.toString().toLowerCase().includes(value.toLowerCase()))
       },
       ...renderSearch(),
     },
@@ -93,7 +115,7 @@ const OrderTable = (props) => {
       title: 'Người tạo',
       dataIndex: 'user_created',
       key: 'user_created',
-      with:'20%',
+      with: '20%',
       sorter: {
         compare: (a, b) => a.user_created.toLowerCase().localeCompare(b.user_created.toLowerCase()),
         multiple: 2
@@ -104,7 +126,7 @@ const OrderTable = (props) => {
       title: 'Khách hàng',
       dataIndex: 'customer',
       key: 'customer',
-      with:'20%',
+      with: '20%',
       ...renderSearch(),
     },
     {
@@ -124,30 +146,60 @@ const OrderTable = (props) => {
       defaultSortOrder: 'descend',
       ...renderSearch(),
     },
-    
+    {
+      title: 'Trạng thái',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status) => (
+        <span>
+          <Tag color={tagStatusColor(status)} key={status}>
+            {tagStatus(status)}
+          </Tag>
+        </span>
+      ),
+    },
     {
       title: '',
       dataIndex: 'key',
       key: 'key',
-      render: (key) => (
+      render: (key, record) => (
         <Space>
-          <Button 
-            type="text" 
+          <Button
+            type="text"
             onClick={() => onOpenDetails(key)}
-            icon={<EyeOutlined/>}></Button>
-          <Popconfirm
-            title="Trả đơn hàng này?"
-            onConfirm={() => onOpen(key)}
-            okText="Đồng ý"
-            okType="danger"
-            cancelText="Không"
-          >
-            <Tooltip placement="right" title="Trả hàng">
-              <Button 
-                type="text" 
-                icon={<RollbackOutlined  style={{color: 'red'}}/>}></Button>
-            </Tooltip>
-          </Popconfirm>
+            icon={<EyeOutlined />}></Button>
+          {
+            record.status != "complete" ? null :
+              <Popconfirm
+                title="Trả đơn hàng này?"
+                onConfirm={() => onOpen(key)}
+                okText="Đồng ý"
+                okType="danger"
+                cancelText="Không"
+              >
+                <Tooltip placement="right" title="Trả hàng">
+                  <Button
+                    type="text"
+                    icon={<RollbackOutlined style={{ color: 'red' }} />}></Button>
+                </Tooltip>
+              </Popconfirm>
+          }
+          {
+            record.status != "complete" ? null :
+              <Popconfirm
+                title="Hủy hóa đơn này?"
+                onConfirm={() => onOrderCancel(record)}
+                okText="Đồng ý"
+                okType="danger"
+                cancelText="Không"
+              >
+                <Tooltip placement="right" title="Hủy hóa đơn">
+                  <Button
+                    type="text"
+                    icon={<CloseCircleOutlined style={{ color: 'red' }} />}></Button>
+                </Tooltip>
+              </Popconfirm>
+          }
         </Space>
       ),
     },
@@ -181,14 +233,14 @@ const OrderTable = (props) => {
         showTotal: (total) => `Tất cả ${total}`,
       }}
       loading={props.loading} />
-      <OrderRefundModal 
-        open={open} 
-        data={dataIndex} 
-        setOpen={setOpen} 
+      <OrderRefundModal
+        open={open}
+        data={dataIndex}
+        setOpen={setOpen}
         idOrder={idIndex}
-        handleGetData={props.handleGetData}/>
+        handleGetData={props.handleGetData} />
       <OrderDetailModal openDetails={openDetails} data={dataIndex} setOpenDetails={setOpenDetails} />
-      </>
+    </>
   );
 };
 

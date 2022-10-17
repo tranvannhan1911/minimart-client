@@ -138,12 +138,28 @@ const WarehouseTransactionTable = (props) => {
       key: 'type',
       filters: [
         {
-          text: 'Nhập hàng',
-          value: 'Nhập hàng',
+          text: 'Bán hàng',
+          value: 'Bán hàng',
+        },
+        {
+          text: 'Hủy hóa đơn',
+          value: 'Hủy hóa đơn',
+        },
+        {
+          text: 'Trả hàng',
+          value: 'Trả hàng',
         },
         {
           text: 'Khuyến mãi',
           value: 'Khuyến mãi',
+        },
+        {
+          text: 'Nhập hàng',
+          value: 'Nhập hàng',
+        },
+        {
+          text: 'Hủy nhập hàng',
+          value: 'Hủy nhập hàng',
         },
         {
           text: 'Kiểm kê',
@@ -152,14 +168,6 @@ const WarehouseTransactionTable = (props) => {
         {
           text: 'Hủy kiểm kê',
           value: 'Hủy kiểm kê',
-        },
-        {
-          text: 'Hủy nhập hàng',
-          value: 'Hủy nhập hàng',
-        },
-        {
-          text: 'Trả hàng',
-          value: 'Trả hàng',
         },
       ],
       filteredValue: props.filteredInfo.type || null,

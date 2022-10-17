@@ -34,6 +34,7 @@ const InventoryReceivingTable = (props) => {
     props.data.forEach(element => {
       if (element.id == id) {
         let index={
+          ...element,
           "details": [
           ],
           "status": element.status,
