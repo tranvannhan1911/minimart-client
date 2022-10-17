@@ -58,6 +58,13 @@ const generalApi = {
     }
 }
 
+const reset_password_extra = {
+    reset_password(id, params){
+        const url = `/staff/reset_password/${id}`
+        return axiosApi.get(url, params)
+    }
+}
+
 const getApi = (resource, extras) => {
     return {
         listBuy: (params) => {
@@ -131,13 +138,17 @@ const address_extras = {
     get_parent: (id, params) => {
         const url = `/address/path/${id}`
         return axiosApi.get(url, params)
+    },
+    ward(id, params){
+        const url = `/address/ward/${id}`
+        return axiosApi.get(url, params)
     }
 }
 
 const api = {
     customer: getApi("customer"),
     customer_group: getApi("customer-group"),
-    staff: getApi("staff"),
+    staff: getApi("staff", reset_password_extra),
     supplier: getApi("supplier"),
     product_group: getApi("product-group"),
     unit: getApi("calculation-unit"),

@@ -12,6 +12,7 @@ import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { validPhone, validName1, validEmail } from '../../../resources/regexp'
+import AddressSelect from '../address/address_select';
 
 const { TextArea } = Input;
 
@@ -25,6 +26,8 @@ const SupplierChangeForm = (props) => {
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const refAutoFocus = useRef(null)
+  const [addressValue, setAddressValue] = useState([]);
+  
 
   useEffect(() => {
     if (is_create == null) {
@@ -72,6 +75,11 @@ const SupplierChangeForm = (props) => {
       const response = await api.supplier.get(id);
       const values = response.data.data
       form.setFieldsValue(values)
+
+      if(values.ward){
+        const response2 = await api.address.get_parent(values.ward);
+        setAddressValue(response2.data.data.tree)
+      }
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -116,6 +124,7 @@ const SupplierChangeForm = (props) => {
   }
 
   const create = async (values) => {
+    values["ward"] = addressValue && addressValue.length > 0 ? addressValue.at(-1) : undefined
     try {
       const response = await api.supplier.add(values);
       if (response.data.code == 1) {
@@ -133,6 +142,7 @@ const SupplierChangeForm = (props) => {
   }
 
   const update = async (values) => {
+    values["ward"] = addressValue && addressValue.length > 0 ? addressValue.at(-1) : undefined
     try {
       const response = await api.supplier.update(id, values)
       if (response.data.code == 1) {
@@ -229,11 +239,7 @@ const SupplierChangeForm = (props) => {
                 </Col>
                 <Col span={2}></Col>
                 <Col span={10}>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={1}></Col>
-                <Col span={10}>
+                  
                   <Form.Item label="Tên nhà cung cấp" name="name" required
                     rules={[
                       {
@@ -245,7 +251,9 @@ const SupplierChangeForm = (props) => {
                     <Input />
                   </Form.Item>
                 </Col>
-                <Col span={2}></Col>
+              </Row>
+              <Row>
+                <Col span={1}></Col>
                 <Col span={10}>
                   <Form.Item label="Số điện thoại" name="phone" required
                     rules={[
@@ -258,9 +266,7 @@ const SupplierChangeForm = (props) => {
                     <Input />
                   </Form.Item>
                 </Col>
-              </Row>
-              <Row>
-                <Col span={1}></Col>
+                <Col span={2}></Col>
                 <Col span={10}>
                   <Form.Item label="Địa chỉ email" name="email" required
                     rules={[
@@ -272,10 +278,18 @@ const SupplierChangeForm = (props) => {
                     <Input />
                   </Form.Item>
                 </Col>
+              </Row>
+              <Row>
+                <Col span={1}></Col>
+                <Col span={10}>
+                  <Form.Item label="Số nhà, đường" name="address">
+                    <Input />
+                  </Form.Item>
+                </Col>
                 <Col span={2}></Col>
                 <Col span={10}>
-                  <Form.Item label="Địa chỉ" name="address">
-                    <Input />
+                  <Form.Item label="Địa chỉ" name="ward">
+                    <AddressSelect addressValue={addressValue} setAddressValue={setAddressValue}/>
                   </Form.Item>
                 </Col>
               </Row>

@@ -66,7 +66,7 @@ const CustomerChangeForm = (props) => {
   }
 
   const create = async (values) => {
-    values["ward"] = addressValue.length > 0 ? addressValue.at(-1) : undefined
+    values["ward"] = addressValue && addressValue.length > 0 ? addressValue.at(-1) : undefined
     try {
       const response = await api.customer.add(values);
       if (response.data.code == 1) {
@@ -86,7 +86,7 @@ const CustomerChangeForm = (props) => {
   }
 
   const update = async (values) => {
-    values["ward"] = addressValue.length > 0 ? addressValue.at(-1) : undefined
+    values["ward"] = addressValue && addressValue.length > 0 ? addressValue.at(-1) : undefined
     try {
       const response = await api.customer.update(customer_id, values)
       if (response.data.code == 1) {
@@ -159,8 +159,11 @@ const CustomerChangeForm = (props) => {
       values.customer_group = values.customer_group.map(elm => elm.id.toString())
       form.setFieldsValue(values)
       
-      const response2 = await api.address.get_parent(values.ward);
-      setAddressValue(response2.data.data.tree)
+      if(values.ward){
+        const response2 = await api.address.get_parent(values.ward);
+        setAddressValue(response2.data.data.tree)
+      }
+      
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -300,7 +303,7 @@ const CustomerChangeForm = (props) => {
               <Row>
                 <Col span={1}></Col>
                 <Col span={10}>
-                  <Form.Item label="Số nhà,  đường" name="address">
+                  <Form.Item label="Số nhà, đường" name="address">
                       <Input />
                     </Form.Item>
                 </Col>
