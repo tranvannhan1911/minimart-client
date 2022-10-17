@@ -1,8 +1,12 @@
-import { Button, Drawer, Row, Col, Divider } from 'antd';
+import { Button, Drawer, Row, Col, Divider, message } from 'antd';
 import React, { useState } from 'react';
+import { useEffect } from 'react';
+import api from '../../../api/apis';
+import messages from '../../../utils/messages';
 
 const SupplierModal = (props) => {
   const [disabled, setDisabled] = useState(false);
+  const [ward, setWard] = useState()
 
   const showDrawer = () => {
     props.setOpen(true);
@@ -11,6 +15,21 @@ const SupplierModal = (props) => {
   const onClose = () => {
     props.setOpen(false);
   };
+
+  const handleWardData = async () => {
+    try {
+      const response = await api.address.ward(props.data.ward);
+      setWard(response.data.data.ward)
+    } catch (error) {
+      message.error(messages.ERROR)
+    }
+  }
+
+  useEffect(() => {
+    if(props.data && props.data.ward){
+      handleWardData()
+    }
+  }, [props.data])
 
   return (
     <Drawer width={640} placement="right" closable={false} onClose={onClose} visible={props.open}>
@@ -51,9 +70,14 @@ const SupplierModal = (props) => {
           </Col>
         </Row>
         <Row>
-          <Col span={24}>
+          <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Địa chỉ: {props.data.address}</p>
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Số nhà, đường: {props.data.address}</p>
+            </div>
+          </Col>
+          <Col span={12}>
+          <div className="site-description-item-profile-wrapper">
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Địa chỉ: {ward?.path_with_type}</p>
             </div>
           </Col>
         </Row>

@@ -1,13 +1,15 @@
 
 import {
-  EyeOutlined, FormOutlined
+  EyeOutlined, FormOutlined, ClearOutlined
 } from '@ant-design/icons'
-import { Table as AntdTable, Input, Tag } from 'antd';
+import { Table as AntdTable, Input, Tag, Popconfirm, Tooltip, Button, Space, message } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
+import api from '../../../api/apis';
 import paths from '../../../utils/paths'
 import StaffModal from './modal';
+import messages from '../../../utils/messages';
 
 const StaffTable = (props) => {
   const navigate = useNavigate();
@@ -87,6 +89,21 @@ const StaffTable = (props) => {
         textToHighlight={text ? text.toString() : ''}
       />
   })
+
+  const onResetPassword = async (record) => {
+    console.log("onResetPassword", record)
+    try {
+      const response = await api.staff.reset_password(record.key);
+      if (response.data.code == 1) {
+        message.success("Đặt lại mật khẩu thành công!");
+      } else {
+        message.error(response.data.message.toString())
+      }
+    } catch (error) {
+      message.error(messages.ERROR)
+      console.log('Failed:', error)
+    }
+  }
 
   const columns = [
     {
@@ -189,11 +206,31 @@ const StaffTable = (props) => {
       title: '',
       dataIndex: 'id',
       key: 'id',
-      render: (id) => (
-        <span>
-          <a onClick={() => onOpen(id)} key={id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a>
-          <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
-        </span>
+      render: (id, record) => (
+        <Space>
+          <Button
+            type="text"
+            icon={<EyeOutlined title='Xem chi tiết'/>}
+            onClick={() => onOpen(id)} ></Button>
+          <Button
+            type="text"
+            icon={<FormOutlined title='Chỉnh sửa'/>}
+            onClick={() => setIdxBtn(id)} ></Button>
+          
+          <Popconfirm
+                title="Đặt lại mật khẩu của nhân viên này?"
+                onConfirm={() => onResetPassword(record)}
+                okText="Đồng ý"
+                okType="danger"
+                cancelText="Không"
+              >
+                <Tooltip placement="right" title="Đặt mật khẩu">
+                  <Button
+                    type="text"
+                    icon={<ClearOutlined style={{ color: 'red' }} />}></Button>
+                </Tooltip>
+              </Popconfirm>
+        </Space>
       ),
     },
   ];

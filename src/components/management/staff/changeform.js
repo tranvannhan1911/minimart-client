@@ -11,6 +11,7 @@ import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { validPhone, validName } from '../../../resources/regexp'
+import AddressSelect from '../address/address_select';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -25,6 +26,7 @@ const StaffChangeForm = (props) => {
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const refAutoFocus = useRef(null)
+  const [addressValue, setAddressValue] = useState([]);
 
   // const onChange = (checked) => {
   //   console.log(`switch to ${checked}`);
@@ -67,6 +69,7 @@ const StaffChangeForm = (props) => {
   }
 
   const create = async (values) => {
+    values["ward"] = addressValue && addressValue.length > 0 ? addressValue.at(-1) : undefined
     try {
       const response = await api.staff.add(values);
       if (response.data.code == 1) {
@@ -86,6 +89,7 @@ const StaffChangeForm = (props) => {
   }
 
   const update = async (values) => {
+    values["ward"] = addressValue && addressValue.length > 0 ? addressValue.at(-1) : undefined
     try {
       const response = await api.staff.update(id, values)
       if (response.data.code == 1) {
@@ -157,6 +161,11 @@ const StaffChangeForm = (props) => {
       const values = response.data.data
       // console.log(values)
       form.setFieldsValue(values)
+
+      if(values.ward){
+        const response2 = await api.address.get_parent(values.ward);
+        setAddressValue(response2.data.data.tree)
+      }
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -222,10 +231,6 @@ const StaffChangeForm = (props) => {
                   </Form.Item>
                 </Col>
                 <Col span={2}></Col>
-                <Col span={10}></Col>
-              </Row>
-              <Row>
-                <Col span={1}></Col>
                 <Col span={10}>
                   <Form.Item label="Tên nhân viên" name="fullname" required
                     rules={[
@@ -238,7 +243,9 @@ const StaffChangeForm = (props) => {
                     <Input autoFocus ref={refAutoFocus} />
                   </Form.Item>
                 </Col>
-                <Col span={2}></Col>
+              </Row>
+              <Row>
+                <Col span={1}></Col>
                 <Col span={10}>
                   <Form.Item label="Số điện thoại" name="phone" required
                     rules={[
@@ -249,14 +256,6 @@ const StaffChangeForm = (props) => {
                     ]}
                   >
                     <Input disabled={is_create ? false : true} />
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={1}></Col>
-                <Col span={10}>
-                  <Form.Item label="Địa chỉ" name="address" >
-                    <Input />
                   </Form.Item>
                 </Col>
                 <Col span={2}></Col>
@@ -275,6 +274,20 @@ const StaffChangeForm = (props) => {
                       <Option value="F">Nữ</Option>
                       <Option value="U">Không xác định</Option>
                     </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={1}></Col>
+                <Col span={10}>
+                  <Form.Item label="Số nhà, đường" name="address" >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10}>
+                  <Form.Item label="Địa chỉ" name="ward">
+                    <AddressSelect addressValue={addressValue} setAddressValue={setAddressValue}/>
                   </Form.Item>
                 </Col>
               </Row>

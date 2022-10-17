@@ -64,6 +64,17 @@ const SupplierTable = (props) => {
   })
 
   
+  // const getWard = async (id) => {
+  //   try {
+  //     const response = await api.address.ward(id);
+  //     return response.data.data.ward
+  //   } catch (error) {
+  //     message.error(messages.ERROR)
+  //   }
+  //   return {}
+  // }
+
+  
   const columns = [
     {
       title: 'Mã nhà cung cấp',
@@ -107,19 +118,23 @@ const SupplierTable = (props) => {
       key: 'email',
       ...renderSearch(),
     },
+    // {
+    //   title: 'Địa chỉ',
+    //   dataIndex: 'address',
+    //   key: 'address',
+    //   ...renderSearch(),
+    //   render: (address, record) => (
+    //     <span>
+    //       {`${record.address}, ${record.address}`}
+    //     </span>
+    //   ),
+    // },
     {
-      title: 'Địa chỉ',
-      dataIndex: 'address',
-      key: 'address',
+      title: 'Ghi chú',
+      dataIndex: 'note',
+      key: 'note',
       ...renderSearch(),
     },
-    // {
-    //   title: 'Ghi chú',
-    //   dataIndex: 'note',
-    //   key: 'note',
-    //   ...renderSearch(),
-    //   ...getColumnSearchProps('note'),
-    // },
     {
       title: '',
       dataIndex: 'id',
