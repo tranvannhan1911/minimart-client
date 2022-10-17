@@ -1,8 +1,8 @@
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Space, Popconfirm, Row, Col } from 'antd';
-import { Typography } from 'antd';
+import { Button, Form, Input, message, Space, Popconfirm, Row, Col } from 'antd';
+
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
 import ChangeForm from '../templates/changeform';
@@ -12,7 +12,6 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { validName1, validCode } from '../../../resources/regexp'
 
-const { Option } = Select;
 const { TextArea } = Input;
 
 const ProductGroupForm = (props) => {

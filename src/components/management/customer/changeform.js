@@ -2,7 +2,7 @@ import {
   PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined
 } from '@ant-design/icons';
 import { Button, Form, Input, Select, message, Space, Popconfirm, Col, Row } from 'antd';
-import { Typography } from 'antd';
+
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
 import ChangeForm from '../templates/changeform';

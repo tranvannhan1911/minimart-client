@@ -200,6 +200,16 @@ const UnitChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <>
+              <Form.Item label="Mã đơn vị tính" name="code" required
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng nhập mã đơn vị tính!',
+                  },
+                ]}
+              >
+                <Input autoFocus ref={refAutoFocus} />
+              </Form.Item>
               <Form.Item label="Tên đơn vị tính" name="name" required
                 rules={[
                   {
@@ -208,7 +218,7 @@ const UnitChangeForm = (props) => {
                   },
                 ]}
               >
-                <Input autoFocus ref={refAutoFocus} />
+                <Input />
               </Form.Item>
               <Form.Item label="Ghi chú" name="note" >
                 <TextArea rows={4} />

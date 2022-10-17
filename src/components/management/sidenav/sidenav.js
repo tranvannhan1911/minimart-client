@@ -6,11 +6,9 @@ import {
   InboxOutlined
 } from '@ant-design/icons';
 import { Menu } from 'antd';
-import Sider from 'antd/lib/layout/Sider';
 import { useNavigate } from 'react-router-dom'
 import { Typography } from 'antd';
 import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const { Title } = Typography;
 
 function getItem(label, key, icon, children, type) {

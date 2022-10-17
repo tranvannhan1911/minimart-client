@@ -66,9 +66,9 @@ const SupplierTable = (props) => {
   
   const columns = [
     {
-      title: 'Mã',
-      dataIndex: 'id',
-      key: 'id',
+      title: 'Mã nhà cung cấp',
+      dataIndex: 'code',
+      key: 'code',
       sorter: {
         compare: (a, b) => a.id > b.id,
         multiple: 1
@@ -77,7 +77,7 @@ const SupplierTable = (props) => {
       filteredValue: props.searchInfo || null,
       onFilter: (value, record) => {
         return (record.name && record.name.toLowerCase().includes(value.toLowerCase()))
-          || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
+          || (record.code && record.code.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.phone && record.phone.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.email && record.email.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.address && record.address.toString().toLowerCase().includes(value.toLowerCase()))

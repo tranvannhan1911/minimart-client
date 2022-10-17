@@ -1,10 +1,9 @@
 import { SearchOutlined,FormOutlined } from '@ant-design/icons';
-import { Button, Space, Table as AntdTable, Input, Tag, Pagination } from 'antd';
+import { Button, Space, Table as AntdTable, Input } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
-const { Search } = Input;
 
 const rowSelection = {
   onChange: (selectedRowKeys, selectedRows) => {
@@ -156,6 +155,17 @@ const CategoryTable = (props) => {
     });
 
   const columns = [
+    {
+      title: 'Mã ngành hàng',
+      dataIndex: 'code',
+      key: 'code',
+      sorter: {
+        compare: (a, b) => a.code.toLowerCase().localeCompare(b.code.toLowerCase()),
+        multiple: 1
+      },
+      // ...renderSearch(),
+      // ...getColumnSearchProps('name'),
+    },
     {
       title: 'Tên ngành hàng',
       dataIndex: 'name',

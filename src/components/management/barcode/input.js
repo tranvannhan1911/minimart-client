@@ -1,9 +1,7 @@
-import { Input, message, Select, Tabs } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
+import { message, Select} from 'antd';
+import React, { useEffect, useState } from 'react';
 import api from '../../../api/apis';
 import messages from '../../../utils/messages';
-import axios from 'axios';
-import { validBarCode } from '../../../resources/regexp';
 
 const { Option } = Select;
 

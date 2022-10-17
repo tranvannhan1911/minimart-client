@@ -51,6 +51,13 @@ class AccountApi{
     }
 }
 
+const generalApi = {
+    get_counter_index(table, params){
+        const url = `/counter-index/${table}/`
+        return axiosApi.get(url, params)
+    }
+}
+
 const getApi = (resource, extras) => {
     return {
         listBuy: (params) => {

@@ -1,4 +1,4 @@
-import { Button, Drawer, Row, Col, Divider } from 'antd';
+import { Drawer, Row, Col, Divider } from 'antd';
 import React, { useState } from 'react';
 
 const ProductGroupModal = (props) => {

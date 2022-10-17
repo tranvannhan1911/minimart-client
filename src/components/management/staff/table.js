@@ -1,14 +1,13 @@
-import { SearchOutlined } from '@ant-design/icons';
+
 import {
   EyeOutlined, FormOutlined
 } from '@ant-design/icons'
-import { Table as AntdTable, Input, Tag, Space,Button } from 'antd';
+import { Table as AntdTable, Input, Tag } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
 import StaffModal from './modal';
-const { Search } = Input;
 
 const StaffTable = (props) => {
   const navigate = useNavigate();
@@ -92,8 +91,8 @@ const StaffTable = (props) => {
   const columns = [
     {
       title: 'Mã nhân viên',
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'code',
+      key: 'code',
       sorter: {
         compare: (a, b) => a.id > b.id,
         multiple: 1
@@ -102,7 +101,7 @@ const StaffTable = (props) => {
       filteredValue: props.searchInfo || null,
       onFilter: (value, record) => {
         return (record.fullname && record.fullname.toLowerCase().includes(value.toLowerCase()))
-          || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
+          || (record.code && record.code.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.phone && record.phone.toLowerCase().includes(value.toLowerCase()))
       },
       ...renderSearch(),

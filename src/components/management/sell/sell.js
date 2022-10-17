@@ -2,11 +2,9 @@ import {
     ExpandOutlined,ExclamationCircleOutlined
 } from '@ant-design/icons';
 import React, { useEffect, useRef, useState } from 'react';
-import { Tabs, Form, Input, Select, message, Space, Popconfirm, Upload, Row, Col, Modal, Button } from 'antd';
-import OrderItem from './item';
+import { Tabs, Select, message, Modal, Button } from 'antd';
 import api from '../../../api/apis';
 import messages from '../../../utils/messages';
-import ProductSelect from '../barcode/input';
 import TabContent from './tabcontent';
 const { Option } = Select;
 const { confirm } = Modal;

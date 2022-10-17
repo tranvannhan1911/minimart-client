@@ -17,7 +17,6 @@ import ParentSelect from '../category/category_select';
 
 const { Option } = Select;
 const { TextArea } = Input;
-const { Title } = Typography;
 
 const PriceChangeForm = (props) => {
   const navigate = useNavigate();

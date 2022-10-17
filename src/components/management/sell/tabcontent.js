@@ -1,12 +1,12 @@
 import {
     PlusOutlined, ShoppingCartOutlined, TagOutlined
 } from '@ant-design/icons';
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, Form, Input, Select, message, Space, Popconfirm, Upload, Row, Col, Checkbox, Typography, Divider } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Form, Input, Select, message, Space, 
+    Row, Col, } from 'antd';
 import OrderItem from './item';
 import api from '../../../api/apis';
 import messages from '../../../utils/messages';
-import Promotion from './promotion';
 import PromotionPicker from './promotion/modal';
 import SuccessModal from './modal_success';
 import ModalLogin from './modalLogin';

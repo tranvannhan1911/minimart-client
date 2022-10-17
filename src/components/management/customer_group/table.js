@@ -1,10 +1,9 @@
-import { SearchOutlined, FormOutlined } from '@ant-design/icons';
-import { Button, Space, Table as AntdTable, Input, Tag, Pagination } from 'antd';
+import { FormOutlined } from '@ant-design/icons';
+import { Table as AntdTable } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
-const { Search } = Input;
 
 const CustomerGroupTable = (props) => {
   const navigate = useNavigate();

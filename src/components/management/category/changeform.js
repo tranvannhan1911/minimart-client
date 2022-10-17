@@ -1,8 +1,7 @@
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Space, Popconfirm } from 'antd';
-import { Typography } from 'antd';
+import { Button, Form, Input, message, Space, Popconfirm } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
 import ChangeForm from '../templates/changeform';
@@ -10,10 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
-import { validName1 } from '../../../resources/regexp'
 import ParentSelect from './category_select'
-
-const { Option } = Select;
 const { TextArea } = Input;
 
 const CategoryChangeForm = (props) => {
@@ -76,8 +72,10 @@ const CategoryChangeForm = (props) => {
       console.log(values)
       form.setFieldsValue(values)
       
-      const response2 = await api.category.get_parent(values.parent);
-      setCategoryParent(response2.data.data.tree)
+      if(values.parent){
+        const response2 = await api.category.get_parent(values.parent);
+        setCategoryParent(response2.data.data.tree)
+      }
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -122,7 +120,7 @@ const CategoryChangeForm = (props) => {
   }
 
   const create = async (values) => {
-    values["parent"] = categoryParent.length > 0 ? categoryParent.at(-1) : undefined
+    values["parent"] = categoryParent && categoryParent.length > 0 ? categoryParent.at(-1) : undefined
     try {
       const response = await api.category.add(values);
       if (response.data.code == 1) {
@@ -140,7 +138,7 @@ const CategoryChangeForm = (props) => {
   }
 
   const update = async (values) => {
-    values["parent"] = categoryParent.length > 0 ? categoryParent.at(-1) : undefined
+    values["parent"] = categoryParent && categoryParent.length > 0 ? categoryParent.at(-1) : undefined
     try {
       const response = await api.category.update(id, values)
       if (response.data.code == 1) {
@@ -202,6 +200,16 @@ const CategoryChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <>
+            <Form.Item label="Mã ngành hàng" name="code" required
+              rules={[
+                {
+                  required: true,
+                  message: 'Vui lòng nhập mã ngành hàng!',
+                },
+              ]}
+            >
+              <Input autoFocus ref={refAutoFocus} />
+            </Form.Item>
               <Form.Item label="Tên ngành hàng" name="name" required
                 rules={[
                   {
@@ -210,7 +218,7 @@ const CategoryChangeForm = (props) => {
                   },
                 ]}
               >
-                <Input autoFocus ref={refAutoFocus} />
+                <Input />
               </Form.Item>
               <Form.Item label="Ngành hàng cha" name="parent">
                 <ParentSelect categoryParent={categoryParent} setCategoryParent={setCategoryParent}/>

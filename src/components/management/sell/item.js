@@ -1,15 +1,14 @@
 import {
-    PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined,
-    LoadingOutlined, MinusCircleOutlined, TagOutlined
+    MinusCircleOutlined, TagOutlined
 } from '@ant-design/icons';
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Form, Input, Select, message, Space, Popconfirm, Upload, Row, Col, Checkbox, Typography, Popover, Modal } from 'antd';
+import { Form, Input, Select, message, 
+    Popconfirm, Row, Col, Typography, Modal } from 'antd';
 import ProductSelect from '../barcode/input';
 import api from '../../../api/apis';
 import messages from '../../../utils/messages';
 import PromotionPicker from './promotion/modal';
 const { Option } = Select;
-const { Title } = Typography;
 
 const col = {
     padding: '0 5px'

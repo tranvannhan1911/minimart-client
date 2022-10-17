@@ -1,4 +1,4 @@
-import { Button, Drawer, Row, Col, Divider, Image } from 'antd';
+import { Drawer, Row, Col, Divider, Image } from 'antd';
 import React, { useState, useEffect } from 'react';
 
 const PriceModal = (props) => {

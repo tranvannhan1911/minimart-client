@@ -52,10 +52,10 @@ const UnitTable = (props) => {
   const columns = [
     {
       title: 'Mã đơn vị tính',
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'code',
+      key: 'code',
       sorter: {
-        compare: (a, b) => a.id > b.id,
+        compare: (a, b) => a.code.toLowerCase().localeCompare(b.code.toLowerCase()),
         multiple: 1
       },
       defaultSortOrder: 'descend',
