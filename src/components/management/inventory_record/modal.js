@@ -14,6 +14,7 @@ const InventoryRecordModal = (props) => {
       setDataSource(props.data.details)
       // console.log(dataSource)
       setData(props.data)
+      console.log(props.data)
     }
 
   });
@@ -93,7 +94,7 @@ const InventoryRecordModal = (props) => {
       </Row>
       <Divider />
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px' }}>Danh sách sản phẩm
-        <span style={{ position: "absolute", right: '15px' }}>
+        <span style={{ float: 'right' }}>
           <ExportReactCSV csvData={dataSource} fileName='productrecord'
             header={[
               { label: 'Sản phẩm', key: 'product' },
@@ -116,7 +117,7 @@ const InventoryRecordModal = (props) => {
         </Col>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người tạo: {props.data.user_created}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người tạo: {props.data.user_created?.fullname}</p>
           </div>
         </Col>
       </Row>
@@ -128,7 +129,7 @@ const InventoryRecordModal = (props) => {
         </Col>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người cập nhật: {props.data.updated}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người cập nhật: {props.data.user_updated?.fullname}</p>
           </div>
         </Col>
       </Row>

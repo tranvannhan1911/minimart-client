@@ -154,6 +154,13 @@ const TabContent = (props) => {
             info["details"] = _listProduct
             // console.log("info", info)
             const response = await api.order.add(info);
+            if (response.data.code == 1) {
+                setOpenSuccessModal(true)
+            } else {
+                message.error("Không thể tạo hóa đơn trống, hoặc sản phẩm có số lượng là 0!")
+                setDisabledCreateOrder(false)
+                return
+            }
             setOrder(response.data.data.details)
             setOrderId(response.data.data.id)
             if (response.data.data.customer == null) {
@@ -163,12 +170,6 @@ const TabContent = (props) => {
             }
             setDateBuy(response.data.data.date_created)
             // console.log(response)
-            if (response.data.code == 1) {
-                setOpenSuccessModal(true)
-            } else {
-                message.error("Có lỗi xảy ra!")
-                setDisabledCreateOrder(false)
-            }
         } catch {
             setDisabledCreateOrder(false)
         }

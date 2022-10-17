@@ -45,7 +45,6 @@ const PriceModal = (props) => {
             />
           </div>
         </Col>
-        {/* </Row> */}
         <Col span={12}>
           <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '0px', fontWeight: 'bold' }}>Thông tin cơ bản</p>
           <Row>
@@ -82,7 +81,7 @@ const PriceModal = (props) => {
       </Row>
       <Col span={24}>
         <div className="site-description-item-profile-wrapper">
-          <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{ fontWeight: 'bold' }}>Ngành hàng:</span> {props.data.product_category}</p>
+          <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{ fontWeight: 'bold' }}>Ngành hàng:</span> {props.data.product_category?.name}</p>
         </div>
       </Col>
       <Row>
@@ -110,7 +109,7 @@ const PriceModal = (props) => {
         </Col>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người tạo: {props.data.user_created}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người tạo: {props.data.user_created?.fullname}</p>
           </div>
         </Col>
       </Row>
@@ -122,7 +121,7 @@ const PriceModal = (props) => {
         </Col>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người cập nhật: {props.data.user_updated}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người cập nhật: {props.data.user_updated?.fullname}</p>
           </div>
         </Col>
       </Row>

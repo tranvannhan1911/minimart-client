@@ -82,7 +82,7 @@ const OrderRefundDetailModal = (props) => {
       <Row>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Nhân viên bán hàng: {props.data.user_created}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Nhân viên bán hàng: {props.data.user_created?.fullname}</p>
           </div>
         </Col>
       {/* </Row>

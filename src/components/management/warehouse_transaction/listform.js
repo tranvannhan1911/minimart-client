@@ -39,6 +39,8 @@ const WarehouseTransactionListForm = (props) => {
                 let time = elm.date_created.slice(11, 19);
                 elm.date_created = date + " " + time;
                 elm.product = elm.product.name;
+                
+                elm.change = elm.change > 0 ? `+${elm.change}` : elm.change;
                 elm.type = elm.type.type_name;
                 
                 return elm

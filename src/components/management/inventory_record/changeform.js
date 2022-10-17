@@ -396,12 +396,6 @@ const InventoryRecordChangeForm = (props) => {
                               textAlign: 'left',
                               width: 200
                             }}
-                            rules={[
-                              {
-                                required: true,
-                                message: 'Vui lòng nhập ghi chú!',
-                              },
-                            ]}
                           >
                             <Input placeholder="Ghi chú" type='text' disabled={is_create ? false : true} />
                           </Form.Item>
