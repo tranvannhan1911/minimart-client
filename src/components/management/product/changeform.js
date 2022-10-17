@@ -91,8 +91,11 @@ const PriceChangeForm = (props) => {
       form.setFieldsValue(values)
       setImageUrl(values.image)
 
-      const response2 = await api.category.get_parent(values.product_category.id);
-      setCategoryParent(response2.data.data.tree)
+      if(values.product_category){
+        const response2 = await api.category.get_parent(values.product_category.id);
+        setCategoryParent(response2.data.data.tree)
+      }
+      
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
