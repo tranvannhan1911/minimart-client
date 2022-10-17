@@ -1,22 +1,16 @@
 import {
-  PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined, MinusCircleOutlined, CalendarOutlined
+  PlusOutlined, EditOutlined, MinusCircleOutlined,
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Space, Popconfirm, Switch, DatePicker, Col, Row, Table, Checkbox, Modal } from 'antd';
-import { Typography } from 'antd';
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import { Button, Form, Input, Select, message, Space, Popconfirm, 
+  Col, Row} from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
 import ChangeForm from '../templates/changeform';
 import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
-import { validName1 } from '../../../resources/regexp'
-import moment from "moment";
-const { RangePicker } = DatePicker;
 
-
-const EditableContext = React.createContext(null);
-const dateFormat = "YYYY/MM/DD";
 
 const { Option } = Select;
 const { TextArea } = Input;

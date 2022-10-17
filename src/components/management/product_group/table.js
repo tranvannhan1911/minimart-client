@@ -1,11 +1,10 @@
-import { SearchOutlined, FormOutlined,EyeOutlined } from '@ant-design/icons';
-import { Button, Space, Table as AntdTable, Input, Tag, Pagination } from 'antd';
+import { FormOutlined,EyeOutlined } from '@ant-design/icons';
+import { Table as AntdTable, } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
 import ProductGroupModal from './modal';
-const { Search } = Input;
 
 const ProductGroupTable = (props) => {
   const navigate = useNavigate();

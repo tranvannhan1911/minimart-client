@@ -1,11 +1,9 @@
-import {
-  PlusOutlined, MinusCircleOutlined
-} from '@ant-design/icons';
-import { Button, Drawer, Row, Col, Divider, Image, Table, Space, Form, Select, Input, DatePicker, message, Popconfirm } from 'antd';
+
+import { Button, Drawer, Row, Col, 
+  Space, Form, Select, Input, DatePicker, message, } from 'antd';
 import React, { useState, useEffect } from 'react';
 import messages from '../../../../utils/messages'
 import api from '../../../../api/apis'
-import paths from '../../../../utils/paths'
 import { useNavigate } from 'react-router-dom'
 import { validCode } from '../../../../resources/regexp'
 

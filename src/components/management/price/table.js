@@ -1,17 +1,13 @@
-import { SearchOutlined } from '@ant-design/icons';
+
 import {
-  EyeOutlined, FormOutlined, DeleteOutlined
+  EyeOutlined, FormOutlined
 } from '@ant-design/icons'
-import { Button, Space, Table as AntdTable, Input, Tag, Pagination, Switch, message, Popconfirm } from 'antd';
+import { Table as AntdTable, Tag, } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
-import { Col, Divider, Drawer, Row } from 'antd';
-import api from '../../../api/apis'
-import messages from '../../../utils/messages'
 import PriceModal from './modal';
-const { Search } = Input;
 // const idstaff=0;
 
 const DescriptionItem = ({ title, content }) => (

@@ -1,4 +1,4 @@
-import { Avatar, Button, Drawer, Image, Input, List, Typography  } from 'antd';
+import { Button, Drawer, Input, List, Typography  } from 'antd';
 import React, { useEffect, useState } from 'react';
 import api from '../../../../api/apis';
 import { formater } from '../../../../utils/util';

@@ -1,10 +1,8 @@
 import {
-    PlusOutlined, UploadOutlined,
-    ExportOutlined, ReloadOutlined,
+    PlusOutlined, UploadOutlined, ReloadOutlined,
     SearchOutlined
 } from '@ant-design/icons';
-import { Button, Col, Row, Space, Input, message, Upload } from 'antd';
-import { Typography } from 'antd';
+import { Button, Input, message, Upload } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import ListForm from '../templates/listform';
 import CustomerTable from './table';
@@ -15,8 +13,6 @@ import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
 import * as XLSX from 'xlsx';
 
-const { Title } = Typography;
-const { Search } = Input;
 
 const CustomerListForm = (props) => {
     const [dataMain, setDataMain] = useState([])

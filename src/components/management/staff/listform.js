@@ -1,11 +1,10 @@
 import {
     PlusOutlined, UploadOutlined,
-    ExportOutlined, ReloadOutlined,
+    ReloadOutlined,
     SearchOutlined
 } from '@ant-design/icons';
-import { Button, Col, Row, Space, Input, message, Modal, Upload } from 'antd';
-import { Typography } from 'antd';
-import React, { useState, useEffect, useRef } from 'react';
+import { Button, Input, message, Upload } from 'antd';
+import React, { useState, useEffect,  } from 'react';
 import ListForm from '../templates/listform';
 import StaffTable from './table';
 import api from '../../../api/apis'

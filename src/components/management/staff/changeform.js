@@ -1,8 +1,8 @@
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Space, Popconfirm, Switch, Row, Col } from 'antd';
-import { Typography } from 'antd';
+import { Button, Form, Input, Select, message, Space, Popconfirm, Row, Col } from 'antd';
+
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
 import ChangeForm from '../templates/changeform';
@@ -14,7 +14,6 @@ import { validPhone, validName } from '../../../resources/regexp'
 
 const { Option } = Select;
 const { TextArea } = Input;
-const idCity = 0;
 
 const StaffChangeForm = (props) => {
   const navigate = useNavigate();
@@ -215,6 +214,16 @@ const StaffChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <>
+              <Row>
+                <Col span={1}></Col>
+                <Col span={10}>
+                  <Form.Item label="Mã nhân viên" name="code">
+                    <Input disabled/>
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10}></Col>
+              </Row>
               <Row>
                 <Col span={1}></Col>
                 <Col span={10}>

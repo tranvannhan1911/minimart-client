@@ -1,11 +1,9 @@
 import {
-    PlusOutlined, ImportOutlined,
-    ExportOutlined, ReloadOutlined,
+    PlusOutlined, ReloadOutlined,
     SearchOutlined
 } from '@ant-design/icons';
-import { Button, Col, Row, Space, Input, message, Modal, DatePicker } from 'antd';
-import { Typography } from 'antd';
-import React, { useState, useEffect, useRef } from 'react';
+import { Button, Input, message, DatePicker } from 'antd';
+import React, { useState, useEffect,  } from 'react';
 import ListForm from '../templates/listform';
 import InventoryRecordTable from './table';
 import api from '../../../api/apis'

@@ -1,8 +1,9 @@
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Space, Popconfirm,Row,Col } from 'antd';
-import { Typography } from 'antd';
+import { Button, Form, Input, Select, message, Space, 
+    Popconfirm, Row, Col } from 'antd';
+
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
 import ChangeForm from '../templates/changeform';
@@ -12,7 +13,6 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { validPhone, validName1, validEmail } from '../../../resources/regexp'
 
-const { Option } = Select;
 const { TextArea } = Input;
 
 const SupplierChangeForm = (props) => {
@@ -216,6 +216,24 @@ const SupplierChangeForm = (props) => {
               <Row>
                 <Col span={1}></Col>
                 <Col span={10}>
+                  <Form.Item label="Mã nhà cung cấp" name="code" required
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập mã nhà cung cấp!',
+                      },
+                    ]}
+                  >
+                    <Input autoFocus ref={refAutoFocus} />
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10}>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={1}></Col>
+                <Col span={10}>
                   <Form.Item label="Tên nhà cung cấp" name="name" required
                     rules={[
                       {
@@ -224,7 +242,7 @@ const SupplierChangeForm = (props) => {
                       },
                     ]}
                   >
-                    <Input autoFocus ref={refAutoFocus} />
+                    <Input />
                   </Form.Item>
                 </Col>
                 <Col span={2}></Col>
@@ -244,7 +262,13 @@ const SupplierChangeForm = (props) => {
               <Row>
                 <Col span={1}></Col>
                 <Col span={10}>
-                  <Form.Item label="Địa chỉ email" name="email">
+                  <Form.Item label="Địa chỉ email" name="email" required
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng nhập số email!',
+                      },
+                    ]}>
                     <Input />
                   </Form.Item>
                 </Col>

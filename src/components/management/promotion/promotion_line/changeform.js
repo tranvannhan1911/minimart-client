@@ -1,25 +1,21 @@
 import {
-  PlusOutlined, FormOutlined, DeleteOutlined, HistoryOutlined, EyeOutlined, ReloadOutlined
+  FormOutlined, DeleteOutlined, HistoryOutlined, ReloadOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Space, Popconfirm, Switch, DatePicker, Col, Row, Table, Checkbox, Modal, Divider } from 'antd';
-import { Typography } from 'antd';
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import { Button, Form, Input, Select, message, Popconfirm, DatePicker, 
+  Col, Row, Table, Divider } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../../api/apis'
 import ChangeForm from '../../templates/changeform';
 import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../../basic/loading';
 import paths from '../../../../utils/paths'
 import messages from '../../../../utils/messages'
-import { validName1 } from '../../../../resources/regexp'
 import { ExportReactCSV } from '../../../../utils/exportExcel';
 import PromotionLineModal from './modal';
 import moment from "moment";
-const { RangePicker } = DatePicker;
 
-const EditableContext = React.createContext(null);
 const dateFormat = "YYYY/MM/DD";
 
-const { TextArea } = Input;
 const { Option } = Select;
 
 const PromotionChangeForm = (props) => {
