@@ -18,7 +18,6 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 const titleCol = {
-  paddingLeft: '11px',
   fontWeight: 500
 }
 
