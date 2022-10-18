@@ -2,7 +2,7 @@ import {
   PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined, MinusCircleOutlined
 } from '@ant-design/icons';
 import { Button, Form, Input, Select, message, Space, Popconfirm, 
-  DatePicker, Col, Row} from 'antd';
+  DatePicker, Col, Row, notification} from 'antd';
 
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
@@ -70,16 +70,30 @@ const PriceChangeForm = (props) => {
   }
 
   const create = async (values) => {
+    if(!values["pricedetails"] || values["pricedetails"].length == 0){
+      message.error("Không thể tạo bảng giá trống")
+      return;
+    }
+
     try {
       const response = await api.price.add(values);
       if (response.data.code == 1) {
         message.success(messages.price.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
-      } else if (response.data.code == 0) {
-        message.error("Vui lòng nhập bảng giá từng sản phẩm")
       } else {
-        message.error(response.data.message.toString())
+        if(response.data.message.length > 0){
+          notification.error({
+            message: "Sản phẩm đã tồn tại trong bảng giá khác",
+            placement: "topRight",
+            description: <span>
+              {response.data.message[0]}
+            </span>,
+            duration: 10
+          })
+        }else{
+          message.error(response.data.message)
+        }
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -96,7 +110,18 @@ const PriceChangeForm = (props) => {
         directAfterSubmit(response)
         return true
       } else {
-        message.error(response.data.message.toString())
+        if(response.data.message.length > 0){
+          notification.error({
+            message: "Sản phẩm đã tồn tại trong bảng giá khác",
+            placement: "topRight",
+            description: <span>
+              {response.data.message[0]}
+            </span>,
+            duration: 10
+          })
+        }else{
+          message.error(response.data.message)
+        }
       }
     } catch (error) {
       message.error(messages.ERROR)

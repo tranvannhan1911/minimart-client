@@ -34,7 +34,7 @@ const Messages = {
     product_group: getMessage("nhóm sản phẩm"),
     unit: getMessage("đơn vị tính"),
     product: getMessage("sản phẩm"),
-    price: getMessage("đơn giá"),
+    price: getMessage("bảng giá"),
     inventory_receiving: getMessage("phiếu nhập hàng"),
     inventory_record: getMessage("phiếu kiểm kê"),
     warehouse_transaction: getMessage("biến động kho"),
