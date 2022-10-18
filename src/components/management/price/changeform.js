@@ -21,7 +21,6 @@ const dateFormat = "YYYY/MM/DD";
 const { Option } = Select;
 
 const titleCol = {
-    paddingLeft: '11px',
     fontWeight: 500
 }
 

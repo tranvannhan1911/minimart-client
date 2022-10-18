@@ -1,9 +1,11 @@
 import {
-  PlusOutlined, EditOutlined, 
+  PlusOutlined, EditOutlined,
   MinusCircleOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Space, Popconfirm, 
-  Col, Row} from 'antd';
+import {
+  Button, Form, Input, Select, message, Space, Popconfirm,
+  Col, Row, Typography
+} from 'antd';
 
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
@@ -15,6 +17,10 @@ import messages from '../../../utils/messages'
 
 const { Option } = Select;
 const { TextArea } = Input;
+
+const titleCol = {
+  fontWeight: 500
+}
 
 const InventoryRecordChangeForm = (props) => {
   const navigate = useNavigate();
@@ -195,7 +201,7 @@ const InventoryRecordChangeForm = (props) => {
   // const handleDataBaseUnit = async (unit_exchange) => {
   //   setLoadingData(true)
   //   try {
-      
+
   //     const options = unit_exchange.map(elm => {
   //       return (
   //         <Option key={elm.id} value={elm.id}>{elm.unit_name}</Option>
@@ -221,14 +227,14 @@ const InventoryRecordChangeForm = (props) => {
   //   return result;
   // }
 
-  const onUnitSelect = async (option, key) => {
+  const onProductSelect = async (option, key) => {
     try {
       const response = await api.product.get(option);
       setQuantity(response.data.data.stock);
       setUnit(response.data.data.base_unit.name);
-      const a= form.getFieldsValue()
-      a.details[key].quantity=response.data.data.stock;
-      a.details[key].unit=response.data.data.base_unit.name;
+      const a = form.getFieldsValue()
+      a.details[key].quantity = response.data.data.stock;
+      a.details[key].unit = response.data.data.base_unit.name;
       console.log(a);
       form.setFieldsValue(a);
 
@@ -332,117 +338,139 @@ const InventoryRecordChangeForm = (props) => {
 
               <Col>
                 <label><h2 style={{ marginTop: '10px', marginBottom: '30px', textAlign: 'center' }}>Kiểm kê</h2></label>
-                
+
                 <Form.List name="details" label="Bảng giá sản phẩm">
                   {(fields, { add, remove }) => (
                     <>
-
+                      <Row>
+                        <Col span={1}></Col>
+                        <Col span={5} style={titleCol}>
+                          <Typography.Text>Sản phẩm</Typography.Text>
+                        </Col>
+                        <Col span={1}></Col>
+                        <Col span={3} style={titleCol}>
+                          <Typography.Text>Số lượng trên hệ thống</Typography.Text>
+                        </Col>
+                        <Col span={1}></Col>
+                        <Col span={3} style={titleCol}>
+                          <Typography.Text>Đơn vị tính</Typography.Text>
+                        </Col>
+                        <Col span={1}></Col>
+                        <Col span={3} style={titleCol}>
+                          <Typography.Text>Số lượng thực tế</Typography.Text>
+                        </Col>
+                        <Col span={1}></Col>
+                        <Col span={3} style={titleCol}>
+                          <Typography.Text>Ghi chú</Typography.Text>
+                        </Col>
+                        <Col span={2}></Col>
+                      </Row>
                       {fields.map(({ key, name, ...restField }) => (
                         <Row>
-                        <Col span={4}></Col>
-                        <Col span={15}>
-                        <Space
-                          key={key}
-                          style={{
-                            display: 'flex',
-                            marginBottom: 0,
-                            width: '100%',
-                          }}
-                          align="baseline"
-                        >
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'product']}
-                            rules={[
-                              {
-                                required: true,
-                                message: 'Vui lòng chọn sản phẩm!',
-                              },
-                            ]}
-                            style={{
-                              textAlign: 'left',
-                              width: '100%',
-                            }}
-                          >
-                            <Select
-                              showSearch
-                              onChange={(option) => onUnitSelect(option, key)}
+                          <Col span={1}></Col>
+                          <Col span={5}>
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'product']}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: 'Vui lòng chọn sản phẩm!',
+                                },
+                              ]}
                               style={{
-                                width: 250,
+                                textAlign: 'left',
+                                width: '100%',
                               }}
-                              placeholder="Sản phẩm"
-                              optionFilterProp="children"
-                              filterOption={(input, option) => option.children.includes(input)}
-                              filterSort={(optionA, optionB) =>
-                                optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
-                              }
+                            >
+                              <Select
+                                showSearch
+                                onChange={(option) => onProductSelect(option, key)}
+                                placeholder="Sản phẩm"
+                                optionFilterProp="children"
+                                filterOption={(input, option) => option.children.includes(input)}
+                                filterSort={(optionA, optionB) =>
+                                  optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                                }
+                                disabled={is_create ? false : true}
+                              >
+                                {baseProductOptions}
+                              </Select>
+                            </Form.Item>
+
+                          </Col>
+                          <Col span={1}></Col>
+                          <Col span={3}>
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'quantity']}
+                              style={{
+                                textAlign: 'left'
+                              }}
+                            >
+                              <Input min='0' type='number' readOnly value={quantity} 
+                                key={key} disabled={true} 
+                                placeholder="Số lượng tồn" className='inputDisableText'/>
+                            </Form.Item>
+                          </Col>
+                          <Col span={1}></Col>
+                          <Col span={3}>
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'unit']}
+                              style={{
+                                textAlign: 'left'
+                              }}
+                            >
+                              <Input type='text' value={unit} readOnly key={key} disabled={is_create ? false : true} placeholder="Đơn vị cơ bản" />
+                            </Form.Item>
+                          </Col>
+                          <Col span={1}></Col>
+                          <Col span={3}>
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'quantity_after']}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: 'Vui lòng nhập số lượng!',
+                                },
+                              ]}
+                              style={{
+                                textAlign: 'left'
+                              }}
+                            >
+                              <Input placeholder="Số lượng thực tế" min='0' type='number' disabled={is_create ? false : true} />
+                            </Form.Item>
+
+                          </Col>
+                          <Col span={1}></Col>
+                          <Col span={3}>
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'note']}
+                              style={{
+                                textAlign: 'left'
+                              }}
+                            >
+                              <Input placeholder="Ghi chú" type='text' disabled={is_create ? false : true} />
+                            </Form.Item>
+                          </Col>
+                          <Col span={1}>
+                            <Popconfirm
+                              placement="bottomRight"
+                              title="Xác nhận xóa bảng giá này"
+                              onConfirm={() => remove(name)}
+                              okText="Đồng ý"
+                              okType="danger"
+                              cancelText="Hủy bỏ"
+                              style={{ width: '10%' }}
                               disabled={is_create ? false : true}
                             >
-                              {baseProductOptions}
-                            </Select>
-                          </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'unit']}
-                            style={{
-                              textAlign: 'left',
-                              width: 100
-                            }}
-                          >
-                            <Input type='text' value={unit} readOnly key={key} disabled={is_create ? false : true} placeholder="Đơn vị cơ bản"/>
-                          </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'quantity']}
-                            style={{
-                              textAlign: 'left',
-                              width: 100
-                            }}
-                          >
-                            <Input min='0' type='number' readOnly value={quantity} key={key} disabled={is_create ? false : true} placeholder="Số lượng tồn"/>
-                          </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'quantity_after']}
-                            rules={[
-                              {
-                                required: true,
-                                message: 'Vui lòng nhập số lượng!',
-                              },
-                            ]}
-                            style={{
-                              textAlign: 'left',
-                              width: 150
-                            }}
-                          >
-                            <Input placeholder="Số lượng thực tế" min='0' type='number' disabled={is_create ? false : true} />
-                          </Form.Item>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'note']}
-                            style={{
-                              textAlign: 'left',
-                              width: 200
-                            }}
-                          >
-                            <Input placeholder="Ghi chú" type='text' disabled={is_create ? false : true} />
-                          </Form.Item>
-                          <Popconfirm
-                            placement="bottomRight"
-                            title="Xác nhận xóa bảng giá này"
-                            onConfirm={() => remove(name)}
-                            okText="Đồng ý"
-                            okType="danger"
-                            cancelText="Hủy bỏ"
-                            style={{ width: '10%' }}
-                            disabled={is_create ? false : true}
-                          >
-                            <MinusCircleOutlined />
-                          </Popconfirm>
-
-                        </Space>
-                        </Col>
-                          <Col span={5}></Col>
+                              <MinusCircleOutlined />
+                            </Popconfirm>
+                          </Col>
+                          <Col span={1}></Col>
                         </Row>
                       ))}
                       <Form.Item style={{ width: '170px', margin: 'auto' }}>

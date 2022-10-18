@@ -2,7 +2,7 @@ import {
   PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined,
   LoadingOutlined, MinusCircleOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Space, Popconfirm, Upload, Row, Col, Checkbox } from 'antd';
+import { Button, Form, Input, Select, message, Space, Popconfirm, Upload, Row, Col, Checkbox, InputNumber } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
@@ -88,7 +88,8 @@ const PriceChangeForm = (props) => {
       const response = await api.product.get(id);
       const values = response.data.data
       values.product_groups = values.product_groups.map(elm => elm.id.toString());
-      values.base_unit= values.base_unit.id
+      values.base_unit= values.base_unit?.id
+      values.units = values.units.filter(unitexchange => unitexchange.is_active && !unitexchange.is_base_unit)
       form.setFieldsValue(values)
       setImageUrl(values.image)
 
@@ -98,6 +99,7 @@ const PriceChangeForm = (props) => {
       }
 
     } catch (error) {
+      console.log(error)
       message.error(messages.ERROR)
     } finally {
       setLoadingData(false)
@@ -115,6 +117,7 @@ const PriceChangeForm = (props) => {
       })
       setBaseUnitOptions(options)
     } catch (error) {
+      console.log(error)
       message.error(messages.ERROR)
     } finally {
       setLoadingData(false)
@@ -133,6 +136,7 @@ const PriceChangeForm = (props) => {
       })
       setProductGroupOptions(options)
     } catch (error) {
+      console.log(error)
       message.error(messages.ERROR)
     } finally {
       setLoadingData(false)
@@ -150,6 +154,7 @@ const PriceChangeForm = (props) => {
       })
       setUnitOptions(options)
     } catch (error) {
+      console.log(error)
       message.error(messages.ERROR)
     } finally {
       setLoadingData(false)
@@ -212,6 +217,7 @@ const PriceChangeForm = (props) => {
 
   const update = async (values) => {
     values["product_category"] = categoryParent && categoryParent.length > 0 ? categoryParent.at(-1) : undefined
+    console.log("values", values)
     try {
       const response = await api.product.update(id, values)
       if (response.data.code == 1) {
@@ -574,9 +580,14 @@ const PriceChangeForm = (props) => {
                                     required: true,
                                     message: 'Vui lòng nhập giá trị quy đổi!',
                                   },
+                                  {
+                                    type: 'number',
+                                    min: 2,
+                                    message: 'Giá trị quy đổi phải lớn hơn hoặc bằng 2!',
+                                  },
                                 ]}
                               >
-                                <Input placeholder="Giá trị quy đổi" />
+                                <InputNumber type='number' placeholder="Giá trị quy đổi"/>
                               </Form.Item>
                               <Form.Item
                                 {...restField}
