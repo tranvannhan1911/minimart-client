@@ -192,7 +192,7 @@ const PriceChangeForm = (props) => {
   }
 
   const create = async (values) => {
-    values["product_category"] = categoryParent.length > 0 ? categoryParent.at(-1) : undefined
+    values["product_category"] = categoryParent && categoryParent.length > 0 ? categoryParent.at(-1) : undefined
     try {
       const response = await api.product.add(values);
       if (response.data.code == 1) {
@@ -210,7 +210,7 @@ const PriceChangeForm = (props) => {
   }
 
   const update = async (values) => {
-    values["product_category"] = categoryParent.length > 0 ? categoryParent.at(-1) : undefined
+    values["product_category"] = categoryParent && categoryParent.length > 0 ? categoryParent.at(-1) : undefined
     try {
       const response = await api.product.update(id, values)
       if (response.data.code == 1) {

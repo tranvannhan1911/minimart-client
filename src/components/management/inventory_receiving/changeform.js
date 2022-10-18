@@ -132,57 +132,14 @@ const InventoryReceivingChangeForm = (props) => {
     if (values.status == null) {
       values.status = "pending";
     }
-    let index = {
-      "details": [
-      ],
-      "status": values.status,
-      "note": values.note,
-      "total": 0,
-      "supplier": values.supplier
+    if (is_create) {
+
+      await create(values)
+    } else {
+      await update(values)
     }
-    let details = [];
-    let promises = values.details.map(element => {
-      return new Promise(async (resolve) => {
-        const response = await api.product.get(element.product);
-        response.data.data.units.forEach(elementt => {
-          if (element.unit_exchange == null && elementt.is_base_unit == true) {
-            let detail = {
-              "quantity": element.quantity,
-              "price": element.price,
-              "note": element.note,
-              "product": element.product
-            }
-
-            details.push(detail);
-            resolve()
-          }
-          if (element.unit_exchange == elementt.id) {
-            let detail = {
-              "quantity": elementt.value * element.quantity,
-              "price": element.price,
-              "note": element.note,
-              "product": element.product
-            }
-
-            details.push(detail);
-            resolve()
-          }
-        });
-      })
-    });
-    Promise.all(promises).then(async () => {
-      index.details = details;
-      console.log(index, 1);
-      if (is_create) {
-
-        await create(index)
-      } else {
-        await update(index)
-      }
-      stopLoading(idxBtnSave)
-      setDisableSubmit(false)
-    });
-
+    stopLoading(idxBtnSave)
+    setDisableSubmit(false)
   }
 
   const onFinishFailed = (errorInfo) => {
