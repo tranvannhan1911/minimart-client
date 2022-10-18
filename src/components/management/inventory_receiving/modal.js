@@ -114,7 +114,7 @@ const InventoryReceivingModal = (props) => {
 
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Danh sách sản phẩm nhập
         <span style={{ float: 'right' }}>
-          <ExportReactCSV csvData={dataSource} fileName='productreceiving'
+          <ExportReactCSV csvData={dataSource} fileName='productreceiving.xlsx'
             header={[
               { label: 'Sản phẩm', key: 'product' },
               { label: 'Giá', key: 'price' },

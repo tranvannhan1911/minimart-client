@@ -19,6 +19,7 @@ const PriceListForm = (props) => {
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
     const [dataSearchTitle, setDataSearchTitle] = useState("")
+    const [dataSearchId, setDataSearchId] = useState("")
     const [dataSearchDate, setDataSearchDate] = useState("")
     const [sortedInfo, setSortedInfo] = useState({})
     const [loading, setLoading] = useState(true)
@@ -67,6 +68,7 @@ const PriceListForm = (props) => {
         setData(dataMain)
         setDataSearchDate("")
         setDataSearchTitle("")
+        setDataSearchId("")
         setFilteredInfo({})
         setSortedInfo({})
         setSearchInfo([])
@@ -107,6 +109,17 @@ const PriceListForm = (props) => {
         setData(data_);
     }
 
+    const searchId = (value) => {
+        setDataSearchId(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if (element.price_list_id.toString().toLowerCase().includes(value.toLowerCase())) {
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
+
 
     return (
         <>
@@ -115,7 +128,7 @@ const PriceListForm = (props) => {
                 title="Bảng giá"
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                    <ExportReactCSV csvData={data} fileName='listprice'
+                    <ExportReactCSV csvData={data} fileName='listprice.xlsx'
                         header={[
                             { label: 'Mã', key: 'id' },
                             { label: 'Tiêu đề', key: 'name' },
@@ -137,19 +150,23 @@ const PriceListForm = (props) => {
                     searchInfo={searchInfo}
                     setSearchInfo={setSearchInfo}
                     sortedInfo={sortedInfo}
-                    setSortedInfo={setSortedInfo} />}
+                    setSortedInfo={setSortedInfo} 
+                    dataSearchName={searchTitle}
+                    dataSearchId={searchId}
+                    clearFiltersAndSort={clearFiltersAndSort}
+                    />}
                 extra_actions={[
-                    <Input
-                        placeholder="Tìm kiếm bảng giá"
-                        allowClear value={searchInfo[0]}
-                        prefix={<SearchOutlined />}
-                        onChange={(e) => setSearchInfo([e.target.value])} />,
-                    <Input
-                        placeholder="Tìm kiếm theo tiêu đề"
-                        allowClear value={dataSearchTitle}
-                        prefix={<SearchOutlined />}
-                        onChange={(e) => searchTitle(e.target.value)}
-                    />,
+                    // <Input
+                    //     placeholder="Tìm kiếm bảng giá"
+                    //     allowClear value={searchInfo[0]}
+                    //     prefix={<SearchOutlined />}
+                    //     onChange={(e) => setSearchInfo([e.target.value])} />,
+                    // <Input
+                    //     placeholder="Tìm kiếm theo tiêu đề"
+                    //     allowClear value={dataSearchTitle}
+                    //     prefix={<SearchOutlined />}
+                    //     onChange={(e) => searchTitle(e.target.value)}
+                    // />,
                     <DatePicker onChange={onChange} value={dataSearchDate} />,
                     <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
                 ]}

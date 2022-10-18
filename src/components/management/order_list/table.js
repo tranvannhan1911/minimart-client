@@ -1,5 +1,5 @@
-import { RollbackOutlined, EyeOutlined, CloseCircleOutlined } from '@ant-design/icons';
-import { Button, Space, Table as AntdTable, Popconfirm, Tooltip, message, Tag } from 'antd';
+import { RollbackOutlined, EyeOutlined, CloseCircleOutlined,SearchOutlined } from '@ant-design/icons';
+import { Button, Space, Table as AntdTable, Popconfirm, Tooltip, message, Tag, Input } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
@@ -91,6 +91,71 @@ const OrderTable = (props) => {
     }
   }
 
+  ///////////////////
+
+  const handleSearch = (data, column) => {
+    if (column == "nhân viên") {
+      props.dataSearchStaff(data)
+    } else if (column == "mã") {
+      props.dataSearchId(data)
+    } else if (column == "khách hàng") {
+      props.dataSearchCustomer(data)
+    }
+  };
+  const handleReset = (clearFilters) => {
+    props.clearFiltersAndSort()
+    clearFilters();
+    setSearchText('');
+
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Tìm kiếm ${dataIndex}`}
+          value={searchText}
+          onChange={(e) => { handleSearch(e.target.value, dataIndex); setSearchText(e.target.value);setSelectedKeys(e.target.value ? [e.target.value] : []) }}
+          onPressEnter={(e) => handleSearch(e.target.value, dataIndex,selectedKeys, confirm)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Quay lại
+          </Button>
+
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1890ff' : undefined,
+        }}
+      />
+    ),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+  });
+  //////////////////
+
   const columns = [
     {
       title: 'Mã hóa đơn',
@@ -110,6 +175,7 @@ const OrderTable = (props) => {
           || (record.total && record.total.toString().toLowerCase().includes(value.toLowerCase()))
       },
       ...renderSearch(),
+      ...getColumnSearchProps('mã')
     },
     {
       title: 'Người tạo',
@@ -121,6 +187,7 @@ const OrderTable = (props) => {
         multiple: 2
       },
       ...renderSearch(),
+      ...getColumnSearchProps('nhân viên')
     },
     {
       title: 'Khách hàng',
@@ -128,6 +195,7 @@ const OrderTable = (props) => {
       key: 'customer',
       with: '20%',
       ...renderSearch(),
+      ...getColumnSearchProps('khách hàng')
     },
     {
       title: 'Ngày bán',

@@ -11,7 +11,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
-import { validPhone, validName1, validEmail } from '../../../resources/regexp'
+import { validPhone, validName1, validEmail, validCodeSupplier } from '../../../resources/regexp'
 import AddressSelect from '../address/address_select';
 
 const { TextArea } = Input;
@@ -150,7 +150,7 @@ const SupplierChangeForm = (props) => {
         directAfterSubmit(response)
         return true
       } else {
-        message.error(response.data.message.toString())
+        message.error(response.data.message.code.toString())
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -179,6 +179,12 @@ const SupplierChangeForm = (props) => {
   const onFinish = async (values) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
+    if (!validCodeSupplier.test(values.code)) {
+      message.error('Mã không hợp lệ! Mã bắt đầu bằng NCC sau đó là 3 ký tự số! VD: NCC001');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
     if (!validName1.test(values.name)) {
       message.error('Tên không hợp lệ! Chữ cái đầu của từ đầu tiên phải viết hoa');
       setDisableSubmit(false)

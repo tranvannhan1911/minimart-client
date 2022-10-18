@@ -34,6 +34,8 @@ const PriceListForm = (props) => {
                 const _product_groups = []
                 elm.product_groups.forEach(gr => _product_groups.push(gr.name));
                 elm.product_groups = _product_groups;
+                // elm.base_unit= elm.base_unit.name;
+                elm.stock= elm.stock+"";
 
                 let date = elm.date_created.slice(0, 10);
                 let time = elm.date_created.slice(11, 19);
@@ -122,7 +124,7 @@ const PriceListForm = (props) => {
             actions={[
                 
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
-                <ExportReactCSV csvData={data} fileName='product' />,
+                <ExportReactCSV csvData={data} fileName='product.xlsx' />,
                 <Button onClick={() => navigate(paths.product.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={
@@ -137,6 +139,10 @@ const PriceListForm = (props) => {
                     setSearchInfo={setSearchInfo}
                     sortedInfo={sortedInfo}
                     setSortedInfo={setSortedInfo}
+                    dataSearchName={searchName}
+                    dataSearchId={searchCode}
+                    dataSearchBarCode={searchBarcode}
+                    clearFiltersAndSort={clearFiltersAndSort}
                 />
             }
             extra_actions={[
@@ -146,24 +152,24 @@ const PriceListForm = (props) => {
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
                 />,
-                <Input 
-                    placeholder="Tìm kiếm theo tên" 
-                    allowClear value={dataSearchName} 
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => searchName(e.target.value)}
-                />,
-                <Input 
-                    placeholder="Tìm kiếm code sản phẩm" 
-                    allowClear value={dataSearchCode} 
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => searchCode(e.target.value)}
-                />,
-                <Input 
-                    placeholder="Tìm kiếm theo mã vạch" 
-                    allowClear value={dataSearchBarcode} 
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => searchBarcode(e.target.value)}
-                />,
+                // <Input 
+                //     placeholder="Tìm kiếm theo tên" 
+                //     allowClear value={dataSearchName} 
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => searchName(e.target.value)}
+                // />,
+                // <Input 
+                //     placeholder="Tìm kiếm code sản phẩm" 
+                //     allowClear value={dataSearchCode} 
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => searchCode(e.target.value)}
+                // />,
+                // <Input 
+                //     placeholder="Tìm kiếm theo mã vạch" 
+                //     allowClear value={dataSearchBarcode} 
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => searchBarcode(e.target.value)}
+                // />,
                 <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
             ]}
         >

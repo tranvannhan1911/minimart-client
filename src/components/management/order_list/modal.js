@@ -110,7 +110,7 @@ const OrderRefundModal = (props) => {
             "product": element.product,
             "unit_exchange": element.unit_exchange,
             "price": element.price,
-            "total": 0,
+            "total": element.total,
             "idProduct": element.idProduct,
             "idUnit": element.idUnit,
           }

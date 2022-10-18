@@ -63,16 +63,74 @@ const SupplierTable = (props) => {
       />
   })
 
-  
-  // const getWard = async (id) => {
-  //   try {
-  //     const response = await api.address.ward(id);
-  //     return response.data.data.ward
-  //   } catch (error) {
-  //     message.error(messages.ERROR)
-  //   }
-  //   return {}
-  // }
+  ///////////////////
+
+  const handleSearch = (data, column) => {
+    if (column == "tên") {
+      props.dataSearchName(data)
+    } else if (column == "mã") {
+      props.dataSearchId(data)
+    } else if (column == "số điện thoại") {
+      props.dataSearchPhone(data)
+    } else if (column == "email") {
+      props.dataSearchEmail(data)
+    }
+
+
+  };
+  const handleReset = (clearFilters) => {
+    props.clearFiltersAndSort()
+    clearFilters();
+    setSearchText('');
+
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Tìm kiếm ${dataIndex}`}
+          value={searchText}
+          onChange={(e) => { handleSearch(e.target.value, dataIndex); setSearchText(e.target.value);setSelectedKeys(e.target.value ? [e.target.value] : []) }}
+          onPressEnter={(e) => handleSearch(e.target.value, dataIndex,selectedKeys, confirm)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Quay lại
+          </Button>
+
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1890ff' : undefined,
+        }}
+      />
+    ),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+  });
+  //////////////////
 
   
   const columns = [
@@ -95,6 +153,7 @@ const SupplierTable = (props) => {
           || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))
       },
       ...renderSearch(),
+      ...getColumnSearchProps('mã')
     },
     {
       title: 'Tên nhà cung cấp',
@@ -105,18 +164,21 @@ const SupplierTable = (props) => {
         multiple: 2
       },
       ...renderSearch(),
+      ...getColumnSearchProps('tên')
     },
     {
       title: 'Số điện thoại',
       dataIndex: 'phone',
       key: 'phone',
       ...renderSearch(),
+      ...getColumnSearchProps('số điện thoại')
     },
     {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
       ...renderSearch(),
+      ...getColumnSearchProps('email')
     },
     // {
     //   title: 'Địa chỉ',
@@ -140,10 +202,16 @@ const SupplierTable = (props) => {
       dataIndex: 'id',
       key: 'id',
       render: (id) => (
-        <span>
-          <a onClick={() => onOpen(id)} key={id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a>
-          <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
-        </span>
+        <Space>
+          <Button
+            type="text"
+            icon={<EyeOutlined title='Xem chi tiết' />}
+            onClick={() => onOpen(id)} ></Button>
+          <Button
+            type="text"
+            icon={<FormOutlined title='Chỉnh sửa' />}
+            onClick={() => setIdxBtn(id)} ></Button>
+        </Space>
       ),
     },
   ];

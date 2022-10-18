@@ -1,5 +1,5 @@
-import { EyeOutlined, FormOutlined } from '@ant-design/icons';
-import { Table as AntdTable, Tag, } from 'antd';
+import { EyeOutlined, FormOutlined,SearchOutlined } from '@ant-design/icons';
+import { Table as AntdTable, Tag, Button, Space, Input } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
@@ -59,17 +59,85 @@ const PriceTable = (props) => {
       />
     })
 
+    ///////////////////
+
+  const handleSearch = (data, column) => {
+    if (column == "tên") {
+      props.dataSearchName(data)
+    } else if (column == "mã") {
+      props.dataSearchId(data)
+    } else if (column == "barcode") {
+      props.dataSearchBarCode(data)
+    }
+
+
+  };
+  const handleReset = (clearFilters) => {
+    props.clearFiltersAndSort()
+    clearFilters();
+    setSearchText('');
+
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Tìm kiếm ${dataIndex}`}
+          value={searchText}
+          onChange={(e) => { handleSearch(e.target.value, dataIndex); setSearchText(e.target.value);setSelectedKeys(e.target.value ? [e.target.value] : []) }}
+          onPressEnter={(e) => handleSearch(e.target.value, dataIndex,selectedKeys, confirm)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Quay lại
+          </Button>
+
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1890ff' : undefined,
+        }}
+      />
+    ),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+  });
+  //////////////////
+
+
   const columns = [
     
     {
       title: 'Mã sản phẩm',
-      dataIndex: 'id',
-      key: 'id',
-      sorter: {
-        compare: (a, b) => a.id > b.id,
-        multiple: 1
-      },
-      defaultSortOrder: 'descend',
+      dataIndex: 'product_code',
+      key: 'product_code',
+      // sorter: {
+      //   compare: (a, b) => a.id > b.id,
+      //   multiple: 1
+      // },
+      // defaultSortOrder: 'descend',
       filteredValue: props.searchInfo || null,
       onFilter: (value, record) => {
         return (record.name && record.name.toLowerCase().includes(value.toLowerCase()))
@@ -78,6 +146,7 @@ const PriceTable = (props) => {
           || (record.barcode && record.barcode.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))},
       ...renderSearch(),
+      ...getColumnSearchProps('mã')
     },
     {
       title: 'Hình ảnh',
@@ -93,26 +162,30 @@ const PriceTable = (props) => {
       title: 'Tên sản phẩm',
       dataIndex: 'name',
       key: 'name',
+      width: '20%',
       sorter: {
         compare: (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
         multiple: 2
       },
       ...renderSearch(),
+      ...getColumnSearchProps('tên')
     },
-    {
-      title: 'Code sản phẩm',
-      dataIndex: 'product_code',
-      key: 'product_code',
-      ...renderSearch(),
-    },
+    // {
+    //   title: 'Code sản phẩm',
+    //   dataIndex: 'product_code',
+    //   key: 'product_code',
+    //   ...renderSearch(),
+    //   ...getColumnSearchProps('barcode')
+    // },
     {
       title: 'Mã vạch',
       dataIndex: 'barcode',
       key: 'barcode',
       ...renderSearch(),
+      ...getColumnSearchProps('barcode')
     },
     {
-      title: 'Số lượng',
+      title: 'Số lượng tồn kho',
       dataIndex: 'stock',
       key: 'stock',
       ...renderSearch(),
@@ -156,10 +229,16 @@ const PriceTable = (props) => {
       dataIndex: 'id',
       key: 'id',
       render: (id) => (
-        <span>
-          <a onClick={() => onOpen(id)} key={id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a>
-          <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
-        </span>
+        <Space>
+          <Button
+            type="text"
+            icon={<EyeOutlined title='Xem chi tiết' />}
+            onClick={() => onOpen(id)} ></Button>
+          <Button
+            type="text"
+            icon={<FormOutlined title='Chỉnh sửa' />}
+            onClick={() => setIdxBtn(id)} ></Button>
+        </Space>
       ),
     },
   ];

@@ -19,6 +19,7 @@ const InventoryRecordListForm = (props) => {
     const [data, setData] = useState([])
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
+    const [dataSearchId, setDataSearchId] = useState("")
     const [searchDate, setSearchDate] = useState([])
     const [sortedInfo, setSortedInfo] = useState({})
     const [loading, setLoading] = useState(true)
@@ -57,6 +58,7 @@ const InventoryRecordListForm = (props) => {
     const clearFiltersAndSort = () => {
         setData(dataMain)
         setSearchDate([])
+        setDataSearchId("")
         setFilteredInfo({})
         setSortedInfo({})
         setSearchInfo([])
@@ -83,9 +85,22 @@ const InventoryRecordListForm = (props) => {
         } else {
             console.log('Clear');
             setSearchDate([])
+            setDataSearchId("")
             setData(dataMain)
         }
     };
+
+    const searchId = (value) => {
+        setDataSearchId(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if (element.id.toString().toLowerCase().includes(value.toLowerCase())) {
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
+
 
     return (
         <>
@@ -94,7 +109,7 @@ const InventoryRecordListForm = (props) => {
                 title="Phiếu kiểm kê"
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                    <ExportReactCSV csvData={data} fileName='inventoryrecord'
+                    <ExportReactCSV csvData={data} fileName='inventoryrecord.xlsx'
                         header={[
                             { label: 'Mã', key: 'id' },
                             { label: 'Ngày kiểm kê', key: 'date_created' },
@@ -113,7 +128,10 @@ const InventoryRecordListForm = (props) => {
                     searchInfo={searchInfo}
                     setSearchInfo={setSearchInfo}
                     sortedInfo={sortedInfo}
-                    setSortedInfo={setSortedInfo} />}
+                    setSortedInfo={setSortedInfo} 
+                    dataSearchId={searchId}
+                    clearFiltersAndSort={clearFiltersAndSort}
+                    />}
                 extra_actions={[
                     <Input
                         placeholder="Tìm kiếm phiếu kiểm kê"

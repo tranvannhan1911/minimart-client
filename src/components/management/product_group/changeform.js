@@ -63,13 +63,13 @@ const ProductGroupForm = (props) => {
     }
   }, [is_create])
 
-  useEffect(() => {
-    console.log("props.modalSubmit", props.modalSubmit)
-    if(props.modalSubmit){
-      form.submit()
-    }
-    props.setModalSubmit(false)
-  }, [props.modalSubmit])
+  // useEffect(() => {
+  //   console.log("props.modalSubmit", props.modalSubmit)
+  //   if(props.modalSubmit){
+  //     form.submit()
+  //   }
+  //   props.setModalSubmit(false)
+  // }, [props.modalSubmit])
 
   useEffect(() => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)

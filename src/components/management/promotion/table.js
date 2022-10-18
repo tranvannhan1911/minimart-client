@@ -1,8 +1,8 @@
 
 import {
-  EyeOutlined, FormOutlined, 
+  EyeOutlined, FormOutlined, SearchOutlined
 } from '@ant-design/icons'
-import { Table as AntdTable, Input, Tag } from 'antd';
+import { Table as AntdTable, Input, Tag, Space, Button } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
@@ -89,12 +89,78 @@ const PromotionTable = (props) => {
       />
   })
 
+  ///////////////////
+
+  const handleSearch = (data, column) => {
+    if (column == "tiêu đề") {
+      props.dataSearchTitle(data)
+    } else if (column == "mã") {
+      props.dataSearchId(data)
+    } else if (column == "mô tả") {
+      props.dataSearchDescription(data)
+    }
+  };
+  const handleReset = (clearFilters) => {
+    props.clearFiltersAndSort()
+    clearFilters();
+    setSearchText('');
+
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Tìm kiếm ${dataIndex}`}
+          value={searchText}
+          onChange={(e) => { handleSearch(e.target.value, dataIndex); setSearchText(e.target.value);setSelectedKeys(e.target.value ? [e.target.value] : []) }}
+          onPressEnter={(e) => handleSearch(e.target.value, dataIndex,selectedKeys, confirm)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Quay lại
+          </Button>
+
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1890ff' : undefined,
+        }}
+      />
+    ),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+  });
+  //////////////////
+
+
   const columns = [
     {
       title: 'Mã',
       dataIndex: 'id',
       key: 'id',
-      width: "5%",
+      width: "7%",
       sorter: {
         compare: (a, b) => a.id > b.id,
         multiple: 1
@@ -106,6 +172,7 @@ const PromotionTable = (props) => {
           || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
       },
       ...renderSearch(),
+      ...getColumnSearchProps('mã')
     },
     {
       title: 'Hình ảnh',
@@ -127,17 +194,19 @@ const PromotionTable = (props) => {
         multiple: 2
       },
       ...renderSearch(),
+      ...getColumnSearchProps('tiêu đề')
     },
     {
       title: 'Mô tả',
       dataIndex: 'description',
       key: 'description',
-      width: "35%",
+      width: "30%",
       sorter: {
         compare: (a, b) => a.description.toLowerCase().localeCompare(b.description.toLowerCase()),
         multiple: 2
       },
       ...renderSearch(),
+      ...getColumnSearchProps('mô tả')
     },
     {
       title: 'Ngày bắt đầu',
@@ -182,10 +251,16 @@ const PromotionTable = (props) => {
       key: 'id',
       width: "11%",
       render: (id) => (
-        <span>
-          <a onClick={() => onOpen(id)} key={id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a>
-          <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
-        </span>
+        <Space>
+          {/* <Button
+            type="text"
+            icon={<EyeOutlined title='Xem chi tiết' />}
+            onClick={() => onOpen(id)} ></Button> */}
+          <Button
+            type="text"
+            icon={<FormOutlined title='Chỉnh sửa' />}
+            onClick={() => onOpen(id)} ></Button>
+        </Space>
       ),
     },
   ];

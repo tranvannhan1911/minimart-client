@@ -48,7 +48,7 @@ const SupplierModal = (props) => {
         <Row>
           <Col span={12}>
             <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Mã nhà cung cấp: {props.data.id}</p>
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Mã nhà cung cấp: {props.data.code}</p>
             </div>
           </Col>
           <Col span={12}>

@@ -159,7 +159,8 @@ const StaffChangeForm = (props) => {
     try {
       const response = await api.staff.get(id);
       const values = response.data.data
-      // console.log(values)
+      values.is_active =values.is_active+"";
+      values.is_manager =values.is_manager+"";
       form.setFieldsValue(values)
 
       if(values.ward){

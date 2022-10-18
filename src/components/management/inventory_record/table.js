@@ -1,8 +1,8 @@
 
 import {
-  EyeOutlined, FormOutlined
+  EyeOutlined, FormOutlined, SearchOutlined
 } from '@ant-design/icons'
-import { Table as AntdTable, Tag,} from 'antd';
+import { Table as AntdTable, Tag,Button, Space,Input} from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
@@ -121,6 +121,69 @@ const InventoryRecordTable = (props) => {
       />
   })
 
+  ///////////////////
+
+  const handleSearch = (data, column) => {
+    if (column == "mã") {
+      props.dataSearchId(data)
+    }
+
+
+  };
+  const handleReset = (clearFilters) => {
+    props.clearFiltersAndSort()
+    clearFilters();
+    setSearchText('');
+
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Tìm kiếm ${dataIndex}`}
+          value={searchText}
+          onChange={(e) => { handleSearch(e.target.value, dataIndex); setSearchText(e.target.value);setSelectedKeys(e.target.value ? [e.target.value] : []) }}
+          onPressEnter={(e) => handleSearch(e.target.value, dataIndex,selectedKeys, confirm)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Quay lại
+          </Button>
+
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1890ff' : undefined,
+        }}
+      />
+    ),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+  });
+  //////////////////
+
   
   const columns = [
     {
@@ -137,6 +200,7 @@ const InventoryRecordTable = (props) => {
         return (record.id && record.id.toLowerCase().includes(value.toLowerCase()))
       },
       ...renderSearch(),
+      ...getColumnSearchProps('mã')
     },
     {
       title: 'Ngày kiểm kê',
@@ -181,10 +245,16 @@ const InventoryRecordTable = (props) => {
       dataIndex: 'id',
       key: 'id',
       render: (id) => (
-        <span>
-          <a onClick={() => onOpen(id)} key={id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a>
-          <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
-        </span>
+        <Space>
+          <Button
+            type="text"
+            icon={<EyeOutlined title='Xem chi tiết' />}
+            onClick={() => onOpen(id)} ></Button>
+          <Button
+            type="text"
+            icon={<FormOutlined title='Chỉnh sửa' />}
+            onClick={() => setIdxBtn(id)} ></Button>
+        </Space>
       ),
     },
   ];

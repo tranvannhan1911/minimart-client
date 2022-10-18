@@ -189,9 +189,12 @@ const CategoryTable = (props) => {
       dataIndex: 'id',
       key: 'id',
       render: (id) => (
-        <span>
-          <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
-        </span>
+        <Space>
+          <Button
+            type="text"
+            icon={<FormOutlined title='Chỉnh sửa' />}
+            onClick={() => setIdxBtn(id)} ></Button>
+        </Space>
       ),
     },
   ];

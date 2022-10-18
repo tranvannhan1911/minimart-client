@@ -19,6 +19,7 @@ const CustomerGroupListForm = (props) => {
     const [data, setData] = useState([])
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
+    const [dataSearchCode, setDataSearchCode] = useState('')
     const [dataSearchName, setDataSearchName] = useState("")
     const [sortedInfo, setSortedInfo] = useState({})
     const [loading, setLoading] = useState(true)
@@ -77,10 +78,22 @@ const CustomerGroupListForm = (props) => {
     const clearFiltersAndSort = () => {
         setData(dataMain)
         setDataSearchName("")
+        setDataSearchCode('')
         setFilteredInfo({})
         setSortedInfo({})
         setSearchInfo([])
     };
+
+    const searchCode = (value) =>{
+        setDataSearchCode(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if(element.id.toString().toLowerCase().includes(value.toLowerCase())){
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
 
     const searchName = (value) =>{
         setDataSearchName(value);
@@ -101,7 +114,7 @@ const CustomerGroupListForm = (props) => {
                 <Upload showUploadList={false} {...uploadData}>
                     <Button icon={<UploadOutlined />}>Nhập Excel</Button>
                 </Upload>,
-                <ExportReactCSV csvData={data} fileName='customergroup' />,
+                <ExportReactCSV csvData={data} fileName='customergroup.xlsx' />,
                 <Button onClick={() => navigate(paths.customer_group.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={
@@ -115,6 +128,9 @@ const CustomerGroupListForm = (props) => {
                     setSearchInfo={setSearchInfo}
                     sortedInfo={sortedInfo}
                     setSortedInfo={setSortedInfo}
+                    dataSearchName={searchName}
+                    dataSearchId={searchCode}
+                    clearFiltersAndSort={clearFiltersAndSort}
                 />
             }
             extra_actions={[
@@ -124,12 +140,12 @@ const CustomerGroupListForm = (props) => {
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
                 />,
-                <Input 
-                    placeholder="Tìm kiếm theo tên" 
-                    allowClear value={dataSearchName} 
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => searchName(e.target.value)}
-                />,
+                // <Input 
+                //     placeholder="Tìm kiếm theo tên" 
+                //     allowClear value={dataSearchName} 
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => searchName(e.target.value)}
+                // />,
                 <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
             ]}
         >

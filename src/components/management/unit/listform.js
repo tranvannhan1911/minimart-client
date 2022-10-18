@@ -22,6 +22,7 @@ const UnitListForm = (props) => {
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
     const [dataSearchName, setDataSearchName] = useState("")
+    const [dataSearchId, setDataSearchId] = useState("")
     const [sortedInfo, setSortedInfo] = useState({})
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
@@ -90,6 +91,7 @@ const UnitListForm = (props) => {
     const clearFiltersAndSort = () => {
         setData(dataMain)
         setDataSearchName("")
+        setDataSearchId("")
         setFilteredInfo({})
         setSortedInfo({})
         setSearchInfo([])
@@ -106,6 +108,17 @@ const UnitListForm = (props) => {
         setData(data_);
     }
 
+    const searchId = (value) =>{
+        setDataSearchId(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if(element.code.toString().toLowerCase().includes(value.toLowerCase())){
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
+
     return (
         <ListForm
             title="Đơn vị tính"
@@ -114,7 +127,7 @@ const UnitListForm = (props) => {
                 <Upload showUploadList={false} {...uploadData}>
                     <Button icon={<UploadOutlined />}>Nhập Excel</Button>
                 </Upload>,
-                <ExportReactCSV csvData={data} fileName='unit' 
+                <ExportReactCSV csvData={data} fileName='unit.xlsx' 
                 // header={[
                 //     { label: 'Mã', key: 'id' },
                 //     { label: 'Tên', key: 'name' },
@@ -138,6 +151,9 @@ const UnitListForm = (props) => {
                     setSearchInfo={setSearchInfo}
                     sortedInfo={sortedInfo}
                     setSortedInfo={setSortedInfo}
+                    dataSearchName={searchName}
+                    dataSearchId={searchId}
+                    clearFiltersAndSort={clearFiltersAndSort}
                 />
             }
             extra_actions={[
@@ -147,12 +163,12 @@ const UnitListForm = (props) => {
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
                 />,
-                <Input 
-                    placeholder="Tìm kiếm theo tên" 
-                    allowClear value={dataSearchName} 
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => searchName(e.target.value)}
-                />,
+                // <Input 
+                //     placeholder="Tìm kiếm theo tên" 
+                //     allowClear value={dataSearchName} 
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => searchName(e.target.value)}
+                // />,
                 <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
             ]}
         >

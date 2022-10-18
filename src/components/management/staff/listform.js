@@ -19,6 +19,7 @@ const StaffListForm = (props) => {
     const [data, setData] = useState([])
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
+    const [dataSearchCode, setDataSearchCode] = useState('')
     const [dataSearchName, setDataSearchName] = useState("")
     const [dataSearchPhone, setDataSearchPhone] = useState('')
     const [sortedInfo, setSortedInfo] = useState({})
@@ -116,12 +117,24 @@ const StaffListForm = (props) => {
 
     const clearFiltersAndSort = () => {
         setData(dataMain)
+        setDataSearchCode("")
         setDataSearchName("")
         setDataSearchPhone("")
         setFilteredInfo({})
         setSortedInfo({})
         setSearchInfo([])
     };
+
+    const searchCode = (value) =>{
+        setDataSearchCode(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if(element.code.toLowerCase().includes(value.toLowerCase())){
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
 
     const searchName = (value) => {
         setDataSearchName(value);
@@ -156,7 +169,7 @@ const StaffListForm = (props) => {
                     <Upload showUploadList={false} {...uploadData}>
                         <Button icon={<UploadOutlined />}>Nhập Excel</Button>
                     </Upload>,
-                    <ExportReactCSV csvData={data} fileName='staff' 
+                    <ExportReactCSV csvData={data} fileName='staff.xlsx' 
                     // header={[
                     //     { label: 'Mã', key: 'id' },
                     //     { label: 'Họ tên', key: 'fullname' },
@@ -179,25 +192,30 @@ const StaffListForm = (props) => {
                     searchInfo={searchInfo}
                     setSearchInfo={setSearchInfo}
                     sortedInfo={sortedInfo}
-                    setSortedInfo={setSortedInfo} />}
+                    setSortedInfo={setSortedInfo} 
+                    dataSearchName={searchName}
+                    dataSearchId={searchCode}
+                    dataSearchPhone={searchPhone}
+                    clearFiltersAndSort={clearFiltersAndSort}
+                    />}
                 extra_actions={[
                     <Input
                         placeholder="Tìm kiếm nhân viên"
                         allowClear value={searchInfo[0]}
                         prefix={<SearchOutlined />}
                         onChange={(e) => setSearchInfo([e.target.value])} />,
-                    <Input
-                        placeholder="Tìm kiếm theo tên"
-                        allowClear value={dataSearchName}
-                        prefix={<SearchOutlined />}
-                        onChange={(e) => searchName(e.target.value)}
-                    />,
-                    <Input
-                        placeholder="Tìm kiếm số điện thoại"
-                        allowClear value={dataSearchPhone}
-                        prefix={<SearchOutlined />}
-                        onChange={(e) => searchPhone(e.target.value)}
-                    />,
+                    // <Input
+                    //     placeholder="Tìm kiếm theo tên"
+                    //     allowClear value={dataSearchName}
+                    //     prefix={<SearchOutlined />}
+                    //     onChange={(e) => searchName(e.target.value)}
+                    // />,
+                    // <Input
+                    //     placeholder="Tìm kiếm số điện thoại"
+                    //     allowClear value={dataSearchPhone}
+                    //     prefix={<SearchOutlined />}
+                    //     onChange={(e) => searchPhone(e.target.value)}
+                    // />,
                     <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
                 ]}
             >

@@ -1,7 +1,7 @@
 import {
     PlusOutlined, ReloadOutlined,
     SearchOutlined
-  } from '@ant-design/icons';
+} from '@ant-design/icons';
 import { Button, Input, message, DatePicker } from 'antd';
 import React, { useState, useEffect } from 'react';
 import ListForm from '../templates/listform';
@@ -19,6 +19,7 @@ const InventoryReceivingListForm = (props) => {
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
     const [searchDate, setSearchDate] = useState([])
+    const [dataSearchId, setDataSearchId] = useState("")
     const [dataSearchSupplier, setDataSearchSupplier] = useState("")
     const [dataSearchTotal, setDataSearchTotal] = useState('')
     const [sortedInfo, setSortedInfo] = useState({})
@@ -27,15 +28,15 @@ const InventoryReceivingListForm = (props) => {
 
     const handleGetData = async () => {
         setLoading(true)
-        try{
+        try {
             const response = await api.inventory_receiving.list()
             const _data = response.data.data.results.map(elm => {
                 elm.key = elm.id;
-                elm.supplier= elm.supplier.name;
+                elm.supplier = elm.supplier.name;
 
-                let date=elm.date_created.slice(0, 10);
-                let time=elm.date_created.slice(11, 19);
-                elm.date_created=date+" "+time;
+                let date = elm.date_created.slice(0, 10);
+                let time = elm.date_created.slice(11, 19);
+                elm.date_created = date + " " + time;
                 elm.date_updated = elm.date_updated
                     ? elm.date_updated.slice(0, 10) + " " + elm.date_updated.slice(11, 19)
                     : null;
@@ -43,7 +44,7 @@ const InventoryReceivingListForm = (props) => {
             })
             setData(_data)
             setDataMain(_data)
-        }catch(error){
+        } catch (error) {
             console.log('Failed:', error)
             message.error(messages.ERROR_REFRESH)
         }
@@ -58,12 +59,25 @@ const InventoryReceivingListForm = (props) => {
     const clearFiltersAndSort = () => {
         setData(dataMain)
         setSearchDate([])
+        setDataSearchId('')
         setDataSearchSupplier("")
         setDataSearchTotal("")
         setFilteredInfo({})
         setSortedInfo({})
         setSearchInfo([])
     };
+
+    const searchId = (value) => {
+        setDataSearchId(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if (element.id.toString().toLowerCase().includes(value.toLowerCase())) {
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
+
 
     const searchSupplier = (value) => {
         setDataSearchSupplier(value);
@@ -89,7 +103,7 @@ const InventoryReceivingListForm = (props) => {
 
     const onChange = (dates, dateStrings) => {
         if (dates) {
-            setSearchDate([dates[0],dates[1]])
+            setSearchDate([dates[0], dates[1]])
             setLoading(true);
             console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
             const datest = new Date(dateStrings[0].slice(0, 10));
@@ -114,57 +128,62 @@ const InventoryReceivingListForm = (props) => {
 
     return (
         <>
-        
-        <ListForm
-            title="Phiếu nhập hàng"
-            actions={[
-                <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                <ExportReactCSV csvData={data} fileName='inventoryreceiving'
-                header={[
-                    { label: 'Mã', key: 'id' },
-                    { label: 'Nhà cung cấp', key: 'supplier' },
-                    { label: 'Ngày nhập', key: 'date_created' },
-                    { label: 'Tổng tiền', key: 'total' },
-                    { label: 'Trạng thái', key: 'status' },
-                    { label: 'Ghi chú', key: 'note' },
+
+            <ListForm
+                title="Phiếu nhập hàng"
+                actions={[
+                    <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
+                    <ExportReactCSV csvData={data} fileName='inventoryreceiving.xlsx'
+                        header={[
+                            { label: 'Mã', key: 'id' },
+                            { label: 'Nhà cung cấp', key: 'supplier' },
+                            { label: 'Ngày nhập', key: 'date_created' },
+                            { label: 'Tổng tiền', key: 'total' },
+                            { label: 'Trạng thái', key: 'status' },
+                            { label: 'Ghi chú', key: 'note' },
+                        ]}
+                    />,
+                    <Button onClick={() => navigate(paths.inventory_receiving.add)} type="primary" icon={<PlusOutlined />}>Nhập hàng</Button>,
                 ]}
-                />,
-                <Button onClick={() => navigate(paths.inventory_receiving.add)} type="primary" icon={<PlusOutlined />}>Nhập hàng</Button>,
-            ]}
-            table={<InventoryReceivingTable
-                data={data}
-                loading={loading}
-                setLoading={setLoading}
-                filteredInfo={filteredInfo}
-                setFilteredInfo={setFilteredInfo}
-                searchInfo={searchInfo}
-                setSearchInfo={setSearchInfo}
-                sortedInfo={sortedInfo}
-                setSortedInfo={setSortedInfo} />}
-            extra_actions={[
-                <Input
-                    placeholder="Tìm kiếm phiếu nhập hàng"
-                    allowClear value={searchInfo[0]}
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => setSearchInfo([e.target.value])} />,
+                table={<InventoryReceivingTable
+                    data={data}
+                    loading={loading}
+                    setLoading={setLoading}
+                    filteredInfo={filteredInfo}
+                    setFilteredInfo={setFilteredInfo}
+                    searchInfo={searchInfo}
+                    setSearchInfo={setSearchInfo}
+                    sortedInfo={sortedInfo}
+                    setSortedInfo={setSortedInfo}
+                    dataSearchId={searchId}
+                    dataSearchSupplier={searchSupplier}
+                    dataSearchTotal={searchTotal}
+                    clearFiltersAndSort={clearFiltersAndSort}
+                />}
+                extra_actions={[
+                    <Input
+                        placeholder="Tìm kiếm phiếu nhập hàng"
+                        allowClear value={searchInfo[0]}
+                        prefix={<SearchOutlined />}
+                        onChange={(e) => setSearchInfo([e.target.value])} />,
                     <RangePicker value={searchDate}
                         onChange={onChange}
-                    />, 
-                    <Input
-                        placeholder="Tìm kiếm theo nhà cung cấp"
-                        allowClear value={dataSearchSupplier}
-                        prefix={<SearchOutlined />}
-                        onChange={(e) => searchSupplier(e.target.value)}
                     />,
-                    <Input
-                        placeholder="Tìm kiếm theo tổng tiền"
-                        allowClear value={dataSearchTotal}
-                        prefix={<SearchOutlined />}
-                        onChange={(e) => searchTotal(e.target.value)}
-                    />,
-                <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
-            ]}
-        >
+                    // <Input
+                    //     placeholder="Tìm kiếm theo nhà cung cấp"
+                    //     allowClear value={dataSearchSupplier}
+                    //     prefix={<SearchOutlined />}
+                    //     onChange={(e) => searchSupplier(e.target.value)}
+                    // />,
+                    // <Input
+                    //     placeholder="Tìm kiếm theo tổng tiền"
+                    //     allowClear value={dataSearchTotal}
+                    //     prefix={<SearchOutlined />}
+                    //     onChange={(e) => searchTotal(e.target.value)}
+                    // />,
+                    <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
+                ]}
+            >
 
             </ListForm></>
     )

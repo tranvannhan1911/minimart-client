@@ -1,5 +1,5 @@
 import { SearchOutlined,FormOutlined } from '@ant-design/icons';
-import { Button, Space, Table as AntdTable, Input, Tag, Pagination } from 'antd';
+import { Button, Space, Table as AntdTable, Input} from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
@@ -47,6 +47,71 @@ const UnitTable = (props) => {
         textToHighlight={text ? text.toString() : ''}
       />
     })
+
+     ///////////////////
+
+  const handleSearch = (data, column) => {
+    
+    if (column == "tên") {
+      props.dataSearchName(data)
+    } else if (column == "mã") {
+      props.dataSearchId(data)
+    }
+    // setSearchedColumn(data);
+  };
+  const handleReset = (clearFilters) => {
+    props.clearFiltersAndSort()
+    clearFilters();
+    setSearchText('');
+
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Tìm kiếm ${dataIndex}`}
+          value={searchText}
+          onChange={(e) => { handleSearch(e.target.value, dataIndex); setSearchText(e.target.value);setSelectedKeys(e.target.value ? [e.target.value] : []) }}
+          onPressEnter={(e) => handleSearch(e.target.value, dataIndex,selectedKeys, confirm)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Quay lại
+          </Button>
+
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1890ff' : undefined,
+        }}
+      />
+    ),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+  });
+  //////////////////
   
     
   const columns = [
@@ -65,6 +130,7 @@ const UnitTable = (props) => {
           || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))},
       ...renderSearch(),
+      ...getColumnSearchProps('mã')
     },
     {
       title: 'Tên đơn vị tính',
@@ -75,6 +141,7 @@ const UnitTable = (props) => {
         multiple: 2
       },
       ...renderSearch(),
+      ...getColumnSearchProps('tên')
     },
     {
       title: 'Ghi chú nội bộ',
@@ -87,9 +154,12 @@ const UnitTable = (props) => {
       dataIndex: 'id',
       key: 'id',
       render: (id) => (
-        <span>
-          <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
-        </span>
+        <Space>
+          <Button
+            type="text"
+            icon={<FormOutlined title='Chỉnh sửa' />}
+            onClick={() => setIdxBtn(id)} ></Button>
+        </Space>
       ),
     },
   ];

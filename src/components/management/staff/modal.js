@@ -47,7 +47,7 @@ const StaffModal = (props) => {
         <Row>
           <Col span={12}>
             <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Mã nhân viên: {props.data.id}</p>
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Mã nhân viên: {props.data.code}</p>
             </div>
           </Col>
           <Col span={12}>

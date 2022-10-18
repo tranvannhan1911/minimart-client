@@ -20,6 +20,7 @@ const OrderListForm = (props) => {
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
     const [searchDate, setSearchDate] = useState([])
+    const [dataSearchId, setDataSearchId] = useState("")
     const [dataSearchCustomer, setDataSearchCustomer] = useState("")
     const [dataSearchStaff, setDataSearchStaff] = useState("")
     const [sortedInfo, setSortedInfo] = useState({})
@@ -96,6 +97,7 @@ const OrderListForm = (props) => {
         setSearchDate([])
         setDataSearchCustomer("")
         setDataSearchStaff("")
+        setDataSearchId("")
         setFilteredInfo({});
         setSortedInfo({});
         setSearchInfo([]);
@@ -126,6 +128,17 @@ const OrderListForm = (props) => {
         }
     };
 
+    const searchId = (value) => {
+        setDataSearchId(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if (element.key.toString().toLowerCase().includes(value.toLowerCase())) {
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
+
     const searchCustomer = (value) => {
         setDataSearchCustomer(value);
         let data_ = [];
@@ -154,7 +167,7 @@ const OrderListForm = (props) => {
             actions={[
 
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                <ExportReactCSV csvData={data} fileName='listrorder' 
+                <ExportReactCSV csvData={data} fileName='listrorder.xlsx' 
                     header={[
                         { label: 'Mã', key: 'id' },
                         { label: 'Nhân viên', key: 'user_created' },
@@ -178,6 +191,10 @@ const OrderListForm = (props) => {
                     setSearchInfo={setSearchInfo}
                     sortedInfo={sortedInfo}
                     setSortedInfo={setSortedInfo}
+                    dataSearchId={searchId}
+                    dataSearchStaff={searchStaff}
+                    dataSearchCustomer={searchCustomer}
+                    clearFiltersAndSort={clearFiltersAndSort}
                 />
             }
             extra_actions={[
@@ -190,18 +207,18 @@ const OrderListForm = (props) => {
                 <RangePicker value={searchDate}
                     onChange={onChange}
                 />,
-                <Input
-                    placeholder="Tìm kiếm theo nhân viên"
-                    allowClear value={dataSearchStaff}
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => searchStaff(e.target.value)}
-                />,
-                <Input
-                    placeholder="Tìm kiếm theo khách hàng"
-                    allowClear value={dataSearchCustomer}
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => searchCustomer(e.target.value)}
-                />,
+                // <Input
+                //     placeholder="Tìm kiếm theo nhân viên"
+                //     allowClear value={dataSearchStaff}
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => searchStaff(e.target.value)}
+                // />,
+                // <Input
+                //     placeholder="Tìm kiếm theo khách hàng"
+                //     allowClear value={dataSearchCustomer}
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => searchCustomer(e.target.value)}
+                // />,
                 <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
             ]}
         >

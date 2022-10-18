@@ -21,6 +21,7 @@ const RefundListForm = (props) => {
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
     const [dataSearchDate, setDataSearchDate] = useState([])
+    const [dataSearchId, setDataSearchId] = useState("")
     const [dataSearchCustomer, setDataSearchCustomer] = useState("")
     const [dataSearchStaff, setDataSearchStaff] = useState("")
     const [sortedInfo, setSortedInfo] = useState({})
@@ -57,7 +58,7 @@ const RefundListForm = (props) => {
                     "status": elm.status,
                     "date_created": elm.date_created,
                     "date_updated": elm.date_updated,
-                    "customer": elm.customer == null ? "khách hàng lẻ" : elm.customer.fullname,
+                    "customer": elm.customer == null ? "Khách hàng lẻ" : elm.customer.fullname,
                     "user_created": elm.user_created == null ? "" : elm.user_created.fullname,
                     "user_updated": elm.user_updated,
                 };
@@ -82,6 +83,7 @@ const RefundListForm = (props) => {
     const clearFiltersAndSort = () => {
         setData(dataMain)
         setDataSearchDate([])
+        setDataSearchId("")
         setDataSearchCustomer("")
         setDataSearchStaff("")
         setFilteredInfo({})
@@ -114,6 +116,17 @@ const RefundListForm = (props) => {
         }
     };
 
+    const searchId = (value) => {
+        setDataSearchId(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if (element.key.toString().toLowerCase().includes(value.toLowerCase())) {
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
+
     const searchCustomer = (value) => {
         setDataSearchCustomer(value);
         let data_ = [];
@@ -142,7 +155,7 @@ const RefundListForm = (props) => {
             actions={[
 
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                <ExportReactCSV csvData={data} fileName='listrefund' 
+                <ExportReactCSV csvData={data} fileName='listrefund.xlsx' 
                     header={[
                         { label: 'Mã', key: 'id' },
                         { label: 'Nhân viên', key: 'user_created' },
@@ -166,6 +179,10 @@ const RefundListForm = (props) => {
                     setSearchInfo={setSearchInfo}
                     sortedInfo={sortedInfo}
                     setSortedInfo={setSortedInfo}
+                    dataSearchId={searchId}
+                    dataSearchStaff={searchStaff}
+                    dataSearchCustomer={searchCustomer}
+                    clearFiltersAndSort={clearFiltersAndSort}
                 />
             }
             extra_actions={[
@@ -178,18 +195,18 @@ const RefundListForm = (props) => {
                 <RangePicker value={dataSearchDate}
                     onChange={onChange}
                 />,
-                <Input
-                    placeholder="Tìm kiếm theo nhân viên"
-                    allowClear value={dataSearchStaff}
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => searchStaff(e.target.value)}
-                />,
-                <Input
-                    placeholder="Tìm kiếm theo khách hàng"
-                    allowClear value={dataSearchCustomer}
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => searchCustomer(e.target.value)}
-                />,
+                // <Input
+                //     placeholder="Tìm kiếm theo nhân viên"
+                //     allowClear value={dataSearchStaff}
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => searchStaff(e.target.value)}
+                // />,
+                // <Input
+                //     placeholder="Tìm kiếm theo khách hàng"
+                //     allowClear value={dataSearchCustomer}
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => searchCustomer(e.target.value)}
+                // />,
                 <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
             ]}
         >

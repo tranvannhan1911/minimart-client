@@ -21,6 +21,7 @@ const SupplierListForm = (props) => {
     const [data, setData] = useState([])
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
+    const [dataSearchCode, setDataSearchCode] = useState('')
     const [dataSearchName, setDataSearchName] = useState("")
     const [dataSearchPhone, setDataSearchPhone] = useState('')
     const [dataSearchEmail, setDataSearchEmail] = useState("")
@@ -98,6 +99,7 @@ const SupplierListForm = (props) => {
 
     const clearFiltersAndSort = () => {
         setData(dataMain)
+        setDataSearchCode("")
         setDataSearchName("")
         setDataSearchPhone("")
         setDataSearchEmail("")
@@ -106,6 +108,17 @@ const SupplierListForm = (props) => {
         setSortedInfo({})
         setSearchInfo([])
     };
+
+    const searchCode = (value) =>{
+        setDataSearchCode(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if(element.code.toLowerCase().includes(value.toLowerCase())){
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
 
     const searchName = (value) =>{
         setDataSearchName(value);
@@ -140,16 +153,16 @@ const SupplierListForm = (props) => {
         setData(data_);
     }
 
-    const searchAddress = (value) =>{
-        setDataSearchAddress(value);
-        let data_ = [];
-        dataMain.forEach(element => {
-            if(element.address.toLowerCase().includes(value.toLowerCase())){
-                data_.push(element);
-            }
-        });
-        setData(data_);
-    }
+    // const searchAddress = (value) =>{
+    //     setDataSearchAddress(value);
+    //     let data_ = [];
+    //     dataMain.forEach(element => {
+    //         if(element.address.toLowerCase().includes(value.toLowerCase())){
+    //             data_.push(element);
+    //         }
+    //     });
+    //     setData(data_);
+    // }
 
     return (
         <ListForm
@@ -159,7 +172,7 @@ const SupplierListForm = (props) => {
                 <Upload showUploadList={false} {...uploadData}>
                     <Button icon={<UploadOutlined />}>Nhập Excel</Button>
                 </Upload>,
-                <ExportReactCSV csvData={data} fileName='supplier' 
+                <ExportReactCSV csvData={data} fileName='supplier.xlsx' 
                 // header={[
                 //     { label: 'Mã', key: 'id' },
                 //     { label: 'Tên', key: 'name' },
@@ -186,6 +199,12 @@ const SupplierListForm = (props) => {
                     setSearchInfo={setSearchInfo}
                     sortedInfo={sortedInfo}
                     setSortedInfo={setSortedInfo}
+                    dataSearchName={searchName}
+                    dataSearchId={searchCode}
+                    dataSearchPhone={searchPhone}
+                    dataSearchEmail={searchEmail}
+                    // dataSearchAddress={searchAddress}
+                    clearFiltersAndSort={clearFiltersAndSort}
                 />
             }
             extra_actions={[
@@ -195,30 +214,30 @@ const SupplierListForm = (props) => {
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
                 />,
-                <Input 
-                    placeholder="Tìm kiếm theo tên" 
-                    allowClear value={dataSearchName} 
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => searchName(e.target.value)}
-                />,
-                <Input 
-                    placeholder="Tìm kiếm số điện thoại" 
-                    allowClear value={dataSearchPhone} 
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => searchPhone(e.target.value)}
-                />,
-                <Input 
-                    placeholder="Tìm kiếm theo email" 
-                    allowClear value={dataSearchEmail} 
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => searchEmail(e.target.value)}
-                />,
-                <Input 
-                    placeholder="Tìm kiếm theo địa chỉ" 
-                    allowClear value={dataSearchAddress} 
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => searchAddress(e.target.value)}
-                />,
+                // <Input 
+                //     placeholder="Tìm kiếm theo tên" 
+                //     allowClear value={dataSearchName} 
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => searchName(e.target.value)}
+                // />,
+                // <Input 
+                //     placeholder="Tìm kiếm số điện thoại" 
+                //     allowClear value={dataSearchPhone} 
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => searchPhone(e.target.value)}
+                // />,
+                // <Input 
+                //     placeholder="Tìm kiếm theo email" 
+                //     allowClear value={dataSearchEmail} 
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => searchEmail(e.target.value)}
+                // />,
+                // <Input 
+                //     placeholder="Tìm kiếm theo địa chỉ" 
+                //     allowClear value={dataSearchAddress} 
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => searchAddress(e.target.value)}
+                // />,
                 <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
             ]}
         >

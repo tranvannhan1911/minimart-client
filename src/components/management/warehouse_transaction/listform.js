@@ -22,6 +22,7 @@ const WarehouseTransactionListForm = (props) => {
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
     const [searchDate, setSearchDate] = useState([])
+    const [dataSearchId, setDataSearchId] = useState("")
     const [dataSearchProduct, setDataSearchProduct] = useState("")
     const [sortedInfo, setSortedInfo] = useState({})
     const [loading, setLoading] = useState(true)
@@ -37,10 +38,10 @@ const WarehouseTransactionListForm = (props) => {
                 elm.key = elm.id;
                 let date = elm.date_created.slice(0, 10);
                 let time = elm.date_created.slice(11, 19);
-                elm.date_created = date + " " + time;
-                elm.product = elm.product.name;
-                
+                elm.date_created = date + " " + time;                
                 elm.change = elm.change > 0 ? `+${elm.change}` : elm.change;
+                elm.reference = elm.product.base_unit.name;
+                elm.product = elm.product.name;
                 elm.type = elm.type.type_name;
                 
                 return elm
@@ -62,6 +63,7 @@ const WarehouseTransactionListForm = (props) => {
     const clearFiltersAndSort = () => {
         setData(dataMain)
         setSearchDate([])
+        setDataSearchId("")
         setDataSearchProduct("")
         setFilteredInfo({})
         setSortedInfo({})
@@ -104,6 +106,17 @@ const WarehouseTransactionListForm = (props) => {
         setData(data_);
     }
 
+    const searchId = (value) => {
+        setDataSearchId(value);
+        let data_ = [];
+        dataMain.forEach(element => {
+            if (element.id.toString().toLowerCase().includes(value.toLowerCase())) {
+                data_.push(element);
+            }
+        });
+        setData(data_);
+    }
+
     return (
         <>
             {/* <ModalStaff >
@@ -113,7 +126,7 @@ const WarehouseTransactionListForm = (props) => {
                 title="Lịch sử biến động kho"
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                    <ExportReactCSV csvData={data} fileName='warehousetransaction' 
+                    <ExportReactCSV csvData={data} fileName='warehousetransaction.xlsx' 
                     header={[
                         { label: 'Mã', key: 'id' },
                         { label: 'Sản phẩm', key: 'product' },
@@ -134,7 +147,11 @@ const WarehouseTransactionListForm = (props) => {
                     searchInfo={searchInfo}
                     setSearchInfo={setSearchInfo}
                     sortedInfo={sortedInfo}
-                    setSortedInfo={setSortedInfo} />}
+                    setSortedInfo={setSortedInfo} 
+                    dataSearchId={searchId} 
+                    dataSearchProduct={searchProduct}
+                    clearFiltersAndSort={clearFiltersAndSort}
+                    />}
                 extra_actions={[
                     <Input
                         placeholder="Tìm kiếm biến động kho"
@@ -144,12 +161,12 @@ const WarehouseTransactionListForm = (props) => {
                     <RangePicker value={searchDate}
                         onChange={onChange}
                     />,
-                    <Input
-                        placeholder="Tìm kiếm theo sản phẩm"
-                        allowClear value={dataSearchProduct}
-                        prefix={<SearchOutlined />}
-                        onChange={(e) => searchProduct(e.target.value)}
-                    />,
+                    // <Input
+                    //     placeholder="Tìm kiếm theo sản phẩm"
+                    //     allowClear value={dataSearchProduct}
+                    //     prefix={<SearchOutlined />}
+                    //     onChange={(e) => searchProduct(e.target.value)}
+                    // />,
                     <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
                 ]}
             >

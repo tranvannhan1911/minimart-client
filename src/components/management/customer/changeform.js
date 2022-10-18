@@ -157,6 +157,7 @@ const CustomerChangeForm = (props) => {
       const response = await api.customer.get(customer_id);
       const values = response.data.data
       values.customer_group = values.customer_group.map(elm => elm.id.toString())
+      values.is_active= values.is_active+"";
       form.setFieldsValue(values)
       
       if(values.ward){

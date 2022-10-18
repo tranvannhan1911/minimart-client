@@ -13,8 +13,6 @@ import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 
-
-
 const { Option } = Select;
 const { TextArea } = Input;
 
@@ -34,6 +32,8 @@ const InventoryRecordChangeForm = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const refAutoFocus = useRef(null)
   const listPrice = [];
+  const [unit, setUnit] = useState("")
+  const [quantity, setQuantity] = useState("")
   // const onChange = (checked) => {
   //   console.log(`switch to ${checked}`);
   // };
@@ -160,6 +160,8 @@ const InventoryRecordChangeForm = (props) => {
       ///
       values.details = values.details.map(elm => {
         elm.product = elm.product.id;
+        elm.unit = elm.product.base_unit.name;
+        elm.product = elm.product.id;
         return elm;
 
       })
@@ -190,23 +192,23 @@ const InventoryRecordChangeForm = (props) => {
     }
   }
   // const unit = []
-  const handleDataBaseUnit = async (unit_exchange) => {
-    setLoadingData(true)
-    try {
+  // const handleDataBaseUnit = async (unit_exchange) => {
+  //   setLoadingData(true)
+  //   try {
       
-      const options = unit_exchange.map(elm => {
-        return (
-          <Option key={elm.id} value={elm.id}>{elm.unit_name}</Option>
-        )
-      })
-      // console.log(unit);
-      setBaseUnitOptions(options);
-    } catch (error) {
-      message.error(messages.ERROR)
-    } finally {
-      setLoadingData(false)
-    }
-  }
+  //     const options = unit_exchange.map(elm => {
+  //       return (
+  //         <Option key={elm.id} value={elm.id}>{elm.unit_name}</Option>
+  //       )
+  //     })
+  //     // console.log(unit);
+  //     setBaseUnitOptions(options);
+  //   } catch (error) {
+  //     message.error(messages.ERROR)
+  //   } finally {
+  //     setLoadingData(false)
+  //   }
+  // }
 
   // async function dataBaseUnit(params) {
   //   console.log(params)
@@ -219,10 +221,16 @@ const InventoryRecordChangeForm = (props) => {
   //   return result;
   // }
 
-  const onUnitSelect = async (option) => {
+  const onUnitSelect = async (option, key) => {
     try {
       const response = await api.product.get(option);
-      handleDataBaseUnit(response.data.data.units)
+      setQuantity(response.data.data.stock);
+      setUnit(response.data.data.base_unit.name);
+      const a= form.getFieldsValue()
+      a.details[key].quantity=response.data.data.stock;
+      a.details[key].unit=response.data.data.base_unit.name;
+      console.log(a);
+      form.setFieldsValue(a);
 
     } catch (error) {
       message.error(messages.ERROR)
@@ -331,8 +339,8 @@ const InventoryRecordChangeForm = (props) => {
 
                       {fields.map(({ key, name, ...restField }) => (
                         <Row>
-                        <Col span={5}></Col>
-                        <Col span={14}>
+                        <Col span={4}></Col>
+                        <Col span={15}>
                         <Space
                           key={key}
                           style={{
@@ -358,7 +366,7 @@ const InventoryRecordChangeForm = (props) => {
                           >
                             <Select
                               showSearch
-                              onChange={(option) => onUnitSelect(option)}
+                              onChange={(option) => onUnitSelect(option, key)}
                               style={{
                                 width: 250,
                               }}
@@ -375,6 +383,26 @@ const InventoryRecordChangeForm = (props) => {
                           </Form.Item>
                           <Form.Item
                             {...restField}
+                            name={[name, 'unit']}
+                            style={{
+                              textAlign: 'left',
+                              width: 100
+                            }}
+                          >
+                            <Input type='text' value={unit} readOnly key={key} disabled={is_create ? false : true} placeholder="Đơn vị cơ bản"/>
+                          </Form.Item>
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'quantity']}
+                            style={{
+                              textAlign: 'left',
+                              width: 100
+                            }}
+                          >
+                            <Input min='0' type='number' readOnly value={quantity} key={key} disabled={is_create ? false : true} placeholder="Số lượng tồn"/>
+                          </Form.Item>
+                          <Form.Item
+                            {...restField}
                             name={[name, 'quantity_after']}
                             rules={[
                               {
@@ -384,10 +412,10 @@ const InventoryRecordChangeForm = (props) => {
                             ]}
                             style={{
                               textAlign: 'left',
-                              width: 200
+                              width: 150
                             }}
                           >
-                            <Input placeholder="Số lượng theo đơn vị tính cơ bản" min='0' type='number' disabled={is_create ? false : true} />
+                            <Input placeholder="Số lượng thực tế" min='0' type='number' disabled={is_create ? false : true} />
                           </Form.Item>
                           <Form.Item
                             {...restField}

@@ -88,14 +88,15 @@ const PriceChangeForm = (props) => {
       const response = await api.product.get(id);
       const values = response.data.data
       values.product_groups = values.product_groups.map(elm => elm.id.toString());
+      values.base_unit= values.base_unit.id
       form.setFieldsValue(values)
       setImageUrl(values.image)
 
-      if(values.product_category){
+      if (values.product_category) {
         const response2 = await api.category.get_parent(values.product_category.id);
         setCategoryParent(response2.data.data.tree)
       }
-      
+
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -144,7 +145,7 @@ const PriceChangeForm = (props) => {
       const response = await api.unit.list();
       const options = response.data.data.results.map(elm => {
         return (
-          <Option key={elm.id}>{elm.name}</Option>
+          <Option value={elm.id} key={elm.id}>{elm.name}</Option>
         )
       })
       setUnitOptions(options)
@@ -192,7 +193,7 @@ const PriceChangeForm = (props) => {
   }
 
   const create = async (values) => {
-    values["product_category"] = categoryParent.length > 0 ? categoryParent.at(-1) : undefined
+    values["product_category"] = categoryParent && categoryParent.length > 0 ? categoryParent.at(-1) : undefined
     try {
       const response = await api.product.add(values);
       if (response.data.code == 1) {
@@ -210,7 +211,7 @@ const PriceChangeForm = (props) => {
   }
 
   const update = async (values) => {
-    values["product_category"] = categoryParent.length > 0 ? categoryParent.at(-1) : undefined
+    values["product_category"] = categoryParent && categoryParent.length > 0 ? categoryParent.at(-1) : undefined
     try {
       const response = await api.product.update(id, values)
       if (response.data.code == 1) {
@@ -266,45 +267,43 @@ const PriceChangeForm = (props) => {
       return;
     }
     let units = [];
-    let i = 0;
-    console.log(values.units)
-    if(values.units == null){
+    if (values.base_unit == null) {
       message.error('Vui lòng nhập đơn vị tính cơ bản cho sản phẩm');
       stopLoading(idxBtnSave)
       setDisableSubmit(false)
       return;
     }
+    units.push({
+      "value": 1,
+      "allow_sale": true,
+      "is_base_unit": true,
+      "unit": values.base_unit
+    });
     values.units.forEach(element => {
       let unit;
-      if (element.value == 1) {
-        unit = {
-          "value": element.value,
-          "allow_sale": true,
-          "is_base_unit": true,
-          "unit": element.unit
-        }
-        i++;
-      } else {
+      if (element.value != 1) {
         unit = {
           "value": element.value,
           "allow_sale": element.allow_sale,
           "is_base_unit": false,
           "unit": element.unit
         }
+        units.push(unit);
       }
-      units.push(unit);
+      
     });
-    if (i == 0) {
-      message.error('Vui lòng nhập đơn vị tính cơ bản cho sản phẩm');
-      stopLoading(idxBtnSave)
-      setDisableSubmit(false)
-      return;
-    } else if (i > 1) {
-      message.error('Vui lòng chỉ nhập một đơn vị tính cơ bản cho sản phẩm');
-      stopLoading(idxBtnSave)
-      setDisableSubmit(false)
-      return;
-    }
+    
+    // if (i == 0) {
+    //   message.error('Vui lòng nhập đơn vị tính cơ bản cho sản phẩm');
+    //   stopLoading(idxBtnSave)
+    //   setDisableSubmit(false)
+    //   return;
+    // } else if (i > 1) {
+    //   message.error('Vui lòng chỉ nhập một đơn vị tính cơ bản cho sản phẩm');
+    //   stopLoading(idxBtnSave)
+    //   setDisableSubmit(false)
+    //   return;
+    // }
     values.units = units;
     values.image = imageUrl
     if (is_create) {
@@ -462,7 +461,7 @@ const PriceChangeForm = (props) => {
                   <Col span={2}></Col>
                   <Col span={10}>
                     <Form.Item label="Ngành hàng" name="product_category" >
-                      <ParentSelect categoryParent={categoryParent} setCategoryParent={setCategoryParent}/>
+                      <ParentSelect categoryParent={categoryParent} setCategoryParent={setCategoryParent} />
                     </Form.Item>
                     {/* <Form.Item label="Ghi chú" name="note" >
                       <TextArea rows={1} />
@@ -470,7 +469,34 @@ const PriceChangeForm = (props) => {
                   </Col>
                 </Row>
 
-
+                <Row>
+                  <Col span={1}></Col>
+                  <Col span={10}>
+                    <Form.Item label="Đơn vị cơ bản" name="base_unit"
+                    >
+                      <Select
+                        showSearch
+                        style={{
+                          width: "100%",
+                        }}
+                        placeholder="Đơn vị cơ bản"
+                        optionFilterProp="children"
+                        filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+                        filterSort={(optionA, optionB) =>
+                          optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                        }
+                      >
+                        {unitOptions}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={2}></Col>
+                  <Col span={10}>
+                    <Form.Item label="Ghi chú" name="note" >
+                      <TextArea rows={1} />
+                    </Form.Item>
+                  </Col>
+                </Row>
 
                 {/* <Row>
                   <Col flex="auto">
@@ -542,7 +568,7 @@ const PriceChangeForm = (props) => {
                               <Form.Item
                                 {...restField}
                                 name={[name, 'value']}
-                                style={{width: 150}}
+                                style={{ width: 150 }}
                                 rules={[
                                   {
                                     required: true,

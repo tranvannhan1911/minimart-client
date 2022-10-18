@@ -1,16 +1,20 @@
 import {
-  FormOutlined, DeleteOutlined, HistoryOutlined, ReloadOutlined
+  FormOutlined, DeleteOutlined, HistoryOutlined, ReloadOutlined, PlusOutlined, LoadingOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, Popconfirm, DatePicker, 
-  Col, Row, Table, Divider } from 'antd';
+import {
+  Button, Form, Input, Select, message, Popconfirm, DatePicker,
+  Col, Row, Table, Divider, Space, Upload
+} from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../../api/apis'
 import ChangeForm from '../../templates/changeform';
 import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../../basic/loading';
 import paths from '../../../../utils/paths'
+import uploadFile from '../../../../utils/s3';
 import messages from '../../../../utils/messages'
 import { ExportReactCSV } from '../../../../utils/exportExcel';
+import { validName1 } from '../../../../resources/regexp'
 import PromotionLineModal from './modal';
 import moment from "moment";
 
@@ -98,8 +102,42 @@ const PromotionChangeForm = (props) => {
     return false
   };
 
-  const onFinish = async (values) => {
+  const update = async (values) => {
+    try {
+      const response = await api.promotion.update(id, values)
+      if (response.data.code == 1) {
+        message.success(messages.promotion.SUCCESS_SAVE(id))
+        return true
+      } else {
+        message.error(response.data.message.toString())
+      }
+    } catch (error) {
+      message.error(messages.ERROR)
+      console.log('Failed:', error)
+    }
+    return false
+  }
 
+  const onFinish = async (values) => {
+    setDisableSubmit(true)
+    // console.log(state);
+    if (!validName1.test(values.title)) {
+      message.error('Tên không hợp lệ! Ký tự đầu của chữ đầu tiên phải viết hoa');
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
+    if (values.end_date < values.start_date) {
+      message.error('Ngày kết thúc phải sau ngày bắt đầu');
+      stopLoading(idxBtnSave)
+      setDisableSubmit(false)
+      return;
+    }
+    values.image = imageUrl;
+    values.start_date = values.start_date._i;
+    values.end_date = values.end_date._i;
+    await update(values)
+    setDisableSubmit(false)
   }
 
   const onFinishFailed = (errorInfo) => {
@@ -120,7 +158,7 @@ const PromotionChangeForm = (props) => {
       values.end_date = moment(values.end_date);
       values.applicable_customer_groups = values.applicable_customer_groups.map(elm => elm.toString());
       form.setFieldsValue(values);
-
+      setImageUrl(values.image)
       values.lines.forEach(element => {
         if (element.type == 'Product') {
           loai = 'Sản phẩm';
@@ -286,6 +324,56 @@ const PromotionChangeForm = (props) => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
 
+  const beforeUpload = (file) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+
+    if (!isJpgOrPng) {
+      message.error('Chỉ tải lên các file JPG/PNG!');
+    }
+
+    const isLt2M = file.size / 1024 / 1024 < 2;
+
+    if (!isLt2M) {
+      message.error('File phải nhỏ hơn 2MB!');
+    }
+
+    return isJpgOrPng && isLt2M;
+  };
+
+
+  const [loadingImage, setLoadingImage] = useState(false);
+  const [imageUrl, setImageUrl] = useState();
+
+  const handleChange = (info) => {
+    console.log(info)
+    if (info.file.status === 'uploading') {
+      setImageUrl(null);
+      setLoadingImage(true);
+      return;
+    }
+
+    if (info.file.status === 'done') {
+      setImageUrl(info.file.response);
+      // Get this url from response in real world.
+      // getBase64(info.file.originFileObj, (url) => {
+      //   setLoadingImage(false);
+      //   setImageUrl(url);
+      // });
+    }
+  };
+
+  const uploadButton = (
+    <div>
+      {loadingImage ? <LoadingOutlined /> : <PlusOutlined />}
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
+    </div>
+  );
 
   const columns = [
     // {
@@ -329,9 +417,11 @@ const PromotionChangeForm = (props) => {
       key: 'id',
       width: "11%",
       render: (id) => (
-        <span>
-          {/* <a onClick={() => onOpenPromotionLine(id)} key={id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a> */}
-          <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
+        <Space>
+          <Button
+            type="text"
+            icon={<FormOutlined title='Chỉnh sửa' />}
+            onClick={() => setIdxBtn(id)} ></Button>
           <Popconfirm
             title="Bạn có chắc chắn muốn xóa dòng khuyến mãi này?"
             onConfirm={() => setDeleteIdxBtn(id)}
@@ -339,9 +429,25 @@ const PromotionChangeForm = (props) => {
             okText="Xóa"
             cancelText="Thoát"
           >
-            <a><DeleteOutlined title='Xóa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
+            <Button
+              type="text"
+              icon={<DeleteOutlined title='Xóa' />}
+            ></Button>
           </Popconfirm>
-        </span>
+        </Space>
+        // <span>
+        //   {/* <a onClick={() => onOpenPromotionLine(id)} key={id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a> */}
+        //   <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
+        //   <Popconfirm
+        //     title="Bạn có chắc chắn muốn xóa dòng khuyến mãi này?"
+        //     onConfirm={() => setDeleteIdxBtn(id)}
+        //     onCancel={cancel}
+        //     okText="Xóa"
+        //     cancelText="Thoát"
+        //   >
+        //     <a><DeleteOutlined title='Xóa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
+        //   </Popconfirm>
+        // </span>
       ),
     },
   ];
@@ -366,7 +472,7 @@ const PromotionChangeForm = (props) => {
                     },
                   ]}
                 >
-                  <Input autoFocus ref={refAutoFocus} disabled='true' />
+                  <Input autoFocus ref={refAutoFocus} />
                 </Form.Item>
               </Col>
               <Col span={2}></Col>
@@ -400,7 +506,7 @@ const PromotionChangeForm = (props) => {
                     },
                   ]}
                 >
-                  <Input disabled='true' />
+                  <Input />
                 </Form.Item>
               </Col>
               <Col span={2}></Col>
@@ -434,7 +540,6 @@ const PromotionChangeForm = (props) => {
                     style={{
                       width: '100%',
                     }}
-                    disabled='true'
                   >
                     <Option value="true">Hoạt động</Option>
                     <Option value="false">Khóa</Option>
@@ -448,7 +553,6 @@ const PromotionChangeForm = (props) => {
                   <Select
                     mode="multiple"
                     allowClear
-                    disabled='true'
                     style={{
                       width: '100%',
                     }}
@@ -462,23 +566,64 @@ const PromotionChangeForm = (props) => {
             <Row>
               <Col span={1}></Col>
               <Col span={10} style={{ backgroundColor: "white" }}>
-
+                <Form.Item label="Hình ảnh" name="image"
+                  style={{
+                    textAlign: 'left'
+                  }}>
+                  <Upload
+                    listType="picture-card"
+                    className="avatar-uploader"
+                    showUploadList={false}
+                    beforeUpload={beforeUpload}
+                    onChange={handleChange}
+                    progress={{
+                      type: "circle"
+                    }}
+                    customRequest={(options) => {
+                      options.prefix = "promotion"
+                      uploadFile(options)
+                    }}
+                  >
+                    {imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt="avatar"
+                        style={{
+                          width: '100%',
+                        }}
+                      />
+                    ) : (
+                      uploadButton
+                    )}
+                  </Upload>
+                </Form.Item>
               </Col>
               <Col span={2}></Col>
               <Col span={10} style={{ backgroundColor: "white" }}>
                 <Form.Item label="Ghi chú" name="note"
                 >
-                  <Input disabled='true' />
+                  <Input />
                 </Form.Item>
               </Col>
             </Row>
+            <Form.Item style={{marginTop:'-70px'}}>
+              <Space>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  icon={<PlusOutlined />}
+                  loading={loadings[0]}
+                // onClick={() => setIdxBtnSave(0)}
+                >Cập nhật</Button>
+              </Space>
+            </Form.Item>
           </>
             <Divider />
             <Row>
               <label><h2 style={{ marginRight: '20px', marginBottom: '30px', textAlign: 'left' }}>Dòng</h2></label>
               <Button type="primary" onClick={() => onOpen()}>Thêm mới</Button>
               <span style={{ marginLeft: '10px' }}>
-                <ExportReactCSV csvData={dataLine} fileName='promotionline'
+                <ExportReactCSV csvData={dataLine} fileName='promotionline.xlsx'
                   header={[
                     { label: 'Mã áp dụng', key: 'id' },
                     { label: 'Tiêu đề', key: 'title' },

@@ -95,7 +95,7 @@ const InventoryRecordModal = (props) => {
       <Divider />
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px' }}>Danh sách sản phẩm
         <span style={{ float: 'right' }}>
-          <ExportReactCSV csvData={dataSource} fileName='productrecord'
+          <ExportReactCSV csvData={dataSource} fileName='productrecord.xlsx'
             header={[
               { label: 'Sản phẩm', key: 'product' },
               { label: 'Số lượng trước', key: 'quantity_before' },

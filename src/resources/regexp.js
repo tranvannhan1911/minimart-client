@@ -17,6 +17,9 @@ export const validEmail = new RegExp(
 export const validBarCode = new RegExp(
     '^[0-9]{13}$'
 );
+export const validCodeSupplier = new RegExp(
+    '^(NCC)[0-9]{3}$'
+);
 export const validCode = new RegExp(
     '^[A-Z]{3}[0-9]{3}$'
 );

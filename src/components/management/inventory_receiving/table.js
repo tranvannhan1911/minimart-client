@@ -1,8 +1,8 @@
 
 import {
-  EyeOutlined, FormOutlined
+  EyeOutlined, FormOutlined, SearchOutlined
 } from '@ant-design/icons'
-import { Table as AntdTable, Tag, } from 'antd';
+import { Table as AntdTable, Tag, Button, Space,Input } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
@@ -119,12 +119,79 @@ const InventoryReceivingTable = (props) => {
       />
   })
 
+  ///////////////////
+
+  const handleSearch = (data, column) => {
+    if (column == "nhà cung cấp") {
+      props.dataSearchSupplier(data)
+    } else if (column == "mã") {
+      props.dataSearchId(data)
+    } else if (column == "tổng tiền") {
+      props.dataSearchTotal(data)
+    }
+  };
+  const handleReset = (clearFilters) => {
+    props.clearFiltersAndSort()
+    clearFilters();
+    setSearchText('');
+
+  };
+  
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Tìm kiếm ${dataIndex}`}
+          value={searchText}
+          onChange={(e) => { handleSearch(e.target.value, dataIndex); setSearchText(e.target.value);setSelectedKeys(e.target.value ? [e.target.value] : []) }}
+          onPressEnter={(e) => handleSearch(e.target.value, dataIndex,selectedKeys, confirm)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Quay lại
+          </Button>
+
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1890ff' : undefined,
+        }}
+      />
+    ),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+  });
+  //////////////////
+
   
   const columns = [
     {
       title: 'Mã phiếu nhập hàng',
       dataIndex: 'id',
       key: 'id',
+      width:"10%",
       sorter: {
         compare: (a, b) => a.id > b.id,
         multiple: 1
@@ -136,6 +203,7 @@ const InventoryReceivingTable = (props) => {
           || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
       },
       ...renderSearch(),
+      ...getColumnSearchProps('mã')
     },
     {
       title: 'Nhà cung cấp',
@@ -146,6 +214,7 @@ const InventoryReceivingTable = (props) => {
         multiple: 2
       },
       ...renderSearch(),
+      ...getColumnSearchProps('nhà cung cấp')
     },
     {
       title: 'Ngày nhập',
@@ -162,6 +231,7 @@ const InventoryReceivingTable = (props) => {
       //   multiple: 1
       // },
       // ...renderSearch(),
+      ...getColumnSearchProps('tổng tiền')
     },
     {
       title: 'Trạng thái',
@@ -196,10 +266,16 @@ const InventoryReceivingTable = (props) => {
       dataIndex: 'id',
       key: 'id',
       render: (id) => (
-        <span>
-          <a onClick={() => onOpen(id)} key={id}><EyeOutlined title='Xem chi tiết' className="site-form-item-icon" style={{ fontSize: '20px' }} /></a>
-          <a onClick={() => setIdxBtn(id)}><FormOutlined title='Chỉnh sửa' className="site-form-item-icon" style={{ fontSize: '20px', marginLeft: '10px' }} /></a>
-        </span>
+        <Space>
+          <Button
+            type="text"
+            icon={<EyeOutlined title='Xem chi tiết' />}
+            onClick={() => onOpen(id)} ></Button>
+          <Button
+            type="text"
+            icon={<FormOutlined title='Chỉnh sửa' />}
+            onClick={() => setIdxBtn(id)} ></Button>
+        </Space>
       ),
     },
   ];

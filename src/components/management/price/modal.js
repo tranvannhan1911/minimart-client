@@ -89,7 +89,7 @@ const PriceModal = (props) => {
       <Divider />
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Danh sách giá sản phẩm
         <span style={{ float: 'right' }}>
-          <ExportReactCSV csvData={dataSource} fileName='priceproduct'
+          <ExportReactCSV csvData={dataSource} fileName='priceproduct.xlsx'
             header={[
               { label: 'Sản phẩm', key: 'product' },
               { label: 'Đơn vị tính', key: 'unit_exchange' },

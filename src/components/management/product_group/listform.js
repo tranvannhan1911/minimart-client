@@ -67,7 +67,7 @@ const ProductGroupListForm = (props) => {
                     let date2 = elm.date_updated.slice(0, 10);
                     let time2 = elm.date_updated.slice(11, 19);
                     elm.date_updated = date2 + " " + time2;
-                }
+                } 
 
                 return elm
             })
@@ -124,7 +124,7 @@ const ProductGroupListForm = (props) => {
                 <Upload showUploadList={false} {...uploadData}>
                     <Button icon={<UploadOutlined />}>Nhập Excel</Button>
                 </Upload>,
-                <ExportReactCSV csvData={data} fileName='productgroup' />,
+                <ExportReactCSV csvData={data} fileName='productgroup.xlsx' />,
                 <Button onClick={() => navigate(paths.product_group.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={
@@ -138,6 +138,9 @@ const ProductGroupListForm = (props) => {
                     setSearchInfo={setSearchInfo}
                     sortedInfo={sortedInfo}
                     setSortedInfo={setSortedInfo}
+                    dataSearchName={searchName}
+                    dataSearchId={searchCode}
+                    clearFiltersAndSort={clearFiltersAndSort}
                 />
             }
             extra_actions={[
@@ -147,18 +150,18 @@ const ProductGroupListForm = (props) => {
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
                 />,
-                <Input 
-                    placeholder="Tìm kiếm theo tên" 
-                    allowClear value={dataSearchName} 
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => searchName(e.target.value)}
-                />,
-                <Input 
-                    placeholder="Tìm kiếm code nhóm sản phẩm" 
-                    allowClear value={dataSearchCode} 
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => searchCode(e.target.value)}
-                />,
+                // <Input 
+                //     placeholder="Tìm kiếm theo tên" 
+                //     allowClear value={dataSearchName} 
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => searchName(e.target.value)}
+                // />,
+                // <Input 
+                //     placeholder="Tìm kiếm code nhóm sản phẩm" 
+                //     allowClear value={dataSearchCode} 
+                //     prefix={<SearchOutlined />}
+                //     onChange={(e) => searchCode(e.target.value)}
+                // />,
                 <Button onClick={clearFiltersAndSort}>Xóa lọc</Button>
             ]}
         >
