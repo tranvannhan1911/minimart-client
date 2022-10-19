@@ -167,10 +167,10 @@ const InventoryRecordChangeForm = (props) => {
       values.details = values.details.map(elm => {
         elm.product = elm.product.id;
         elm.unit = elm.product.base_unit.name;
-        elm.product = elm.product.id;
         return elm;
 
       })
+      console.log("handleData", values)
 
       form.setFieldsValue(values)
 

@@ -3,7 +3,7 @@ import {
 } from '@ant-design/icons';
 import {
   Button, Form, Input, Select, message, Space, Popconfirm,
-  Col, Row, Typography
+  Col, Row, Typography, InputNumber
 } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
@@ -12,6 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
+import ProductSelect from '../barcode/input';
 
 
 const { Option } = Select;
@@ -72,6 +73,12 @@ const InventoryReceivingChangeForm = (props) => {
   }
 
   const create = async (values) => {
+    values.details.map(item => {
+      item.product = item.id
+      item.quantity_base_unit = 0
+      return item
+    })
+
     try {
       const response = await api.inventory_receiving.add(values);
       if (response.data.code == 1) {
@@ -91,6 +98,13 @@ const InventoryReceivingChangeForm = (props) => {
   }
 
   const update = async (values) => {
+    console.log("values", values)
+    values.details.map(item => {
+      item.product = item.product_obj.id
+      item.unit_exchange = item.unit_exchange_obj.id
+      item.quantity_base_unit = 0
+      return item
+    })
     try {
       const response = await api.inventory_receiving.update(id, values)
       if (response.data.code == 1) {
@@ -152,10 +166,15 @@ const InventoryReceivingChangeForm = (props) => {
     try {
       const response = await api.inventory_receiving.get(id);
       const values = response.data.data;
+      console.log("handleData", values)
       values.supplier = values.supplier.id;
       values.details = values.details.map(elm => {
-        elm.product = elm.product.id;
-        return elm;
+        elm.quantity_base_unit = String(elm.quantity_base_unit) + " " + elm.product.base_unit.name;
+        elm.unit_exchange_obj = elm.unit_exchange
+        elm.unit_exchange = elm.unit_exchange.unit_name
+        elm.product_obj = elm.product
+        elm.product = elm.product.name
+        return elm
 
       })
 
@@ -280,6 +299,51 @@ const InventoryReceivingChangeForm = (props) => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
 
+  const onSelectProduct = async (product_id, add) => {
+    console.log("onSelectProduct", product_id)
+    const response = await api.product.get(product_id)
+    if (response.data.code == 1) {
+      console.log(response.data.data)
+      const product = response.data.data
+
+      var base_unit_exchange;
+      var unit_exchange_value;
+      response.data.data.units.forEach(element => {
+          if (element.is_base_unit == true) {
+              base_unit_exchange = element.id;
+              unit_exchange_value = element.value;
+          }
+      });
+
+      const value = {
+        ...product,
+        key: product.id,
+        product: product.name,
+        quantity_base_unit: 1,
+        quantity: 1,
+        unit_exchange: base_unit_exchange,
+        unit_exchange_value: unit_exchange_value
+      }
+      add(value)
+      handleDataBaseUnit(response.data.data.units)
+    }else {
+      message.error(messages.ERROR_REFRESH)
+    }
+  }
+
+  const calQuantityBaseUnit = (key, name) => {
+    const _details = form.getFieldValue("details")
+    console.log(_details)
+
+    baseUnitOptions[name].forEach(option => {
+      console.log(option)
+      if(option.props.id == _details[name].unit_exchange){
+        _details[name].unit_exchange_value = option.props.unit_exchange_value
+      }
+    })
+    _details[name].quantity_base_unit = ""+ String(_details[name].quantity * _details[name].unit_exchange_value) + " "+ _details[name].base_unit.name
+    form.setFieldValue("details", _details)
+  }
 
   return (
     <>
@@ -386,7 +450,13 @@ const InventoryReceivingChangeForm = (props) => {
                 <Form.List name="details" label="Sản phẩm nhập">
                   {(fields, { add, remove }) => (
                     <>
-                      <Row>
+                      {is_create ? <ProductSelect
+                        style={{
+                          marginBottom: '20px'
+                        }}
+                        onSelectProduct={(value) => onSelectProduct(value, add)}/> : null }
+                      
+                      <Row style={{marginBottom: '20px'}}>
                           <Col span={1}></Col>
                           <Col span={5} style={titleCol}>
                             <Typography.Text>Sản phẩm</Typography.Text>
@@ -396,11 +466,15 @@ const InventoryReceivingChangeForm = (props) => {
                             <Typography.Text>Đơn vị tính</Typography.Text>
                           </Col>
                           <Col span={1}></Col>
-                          <Col span={3} style={titleCol}>
+                          <Col span={2} style={titleCol}>
                             <Typography.Text>Số lượng</Typography.Text>
                           </Col>
                           <Col span={1}></Col>
-                          <Col span={3} style={titleCol}>
+                          <Col span={2} style={titleCol}>
+                            <Typography.Text>Số lượng đơn vị cơ bản</Typography.Text>
+                          </Col>
+                          <Col span={1}></Col>
+                          <Col span={2} style={titleCol}>
                             <Typography.Text>Giá nhập</Typography.Text>
                           </Col>
                           <Col span={1}></Col>
@@ -409,6 +483,10 @@ const InventoryReceivingChangeForm = (props) => {
                           </Col>
                           <Col span={2}></Col>
                       </Row>
+                      <div style={{
+                        maxHeight: '350px',
+                        overflow: 'auto'
+                      }}> 
                       {fields.map(({ key, name, ...restField }) => (
                         <Row>
                           <Col span={1}></Col>
@@ -426,19 +504,9 @@ const InventoryReceivingChangeForm = (props) => {
                                 textAlign: 'left'
                               }}
                             >
-                              <Select
-                                showSearch
-                                onChange={(option) => onUnitSelect(option)}
-                                placeholder="Sản phẩm"
-                                optionFilterProp="children"
-                                filterOption={(input, option) => option.children.includes(input)}
-                                filterSort={(optionA, optionB) =>
-                                  optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
-                                }
-                                disabled={is_create ? false : true}
-                              >
-                                {baseProductOptions}
-                              </Select>
+                              <Input 
+                                disabled={true}
+                                className='inputDisableText'/>
                             </Form.Item>
                           </Col>
                           <Col span={1}></Col>
@@ -465,13 +533,14 @@ const InventoryReceivingChangeForm = (props) => {
                                   optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
                                 }
                                 disabled={is_create ? false : true}
+                                onChange={() => calQuantityBaseUnit(key, name)}
                               >
                                 {baseUnitOptions[name]}
                               </Select>
                             </Form.Item>
                           </Col>
                           <Col span={1}></Col>
-                          <Col span={3}>
+                          <Col span={2}>
 
                             <Form.Item
                               {...restField}
@@ -481,13 +550,31 @@ const InventoryReceivingChangeForm = (props) => {
                                   required: true,
                                   message: 'Vui lòng nhập số lượng!',
                                 },
+                                {
+                                  type: 'number',
+                                  min: 1,
+                                  message: 'Số lượng tối thiểu là 1',
+                                },
                               ]}
                             >
-                              <Input placeholder="Số lượng" type='number' min='0' disabled={is_create ? false : true} />
+                              <InputNumber
+                                placeholder="Số lượng" type='number' 
+                                min='1' disabled={is_create ? false : true}
+                                onChange={() => calQuantityBaseUnit(key, name)}/>
                             </Form.Item>
                           </Col>
                           <Col span={1}></Col>
-                          <Col span={3}>
+                          <Col span={2}>
+
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'quantity_base_unit']}
+                            >
+                              <Input placeholder="Số lượng đơn vị tính cơ bản" disabled className='inputDisableText'/>
+                            </Form.Item>
+                          </Col>
+                          <Col span={1}></Col>
+                          <Col span={2}>
 
                             <Form.Item
                               {...restField}
@@ -522,7 +609,12 @@ const InventoryReceivingChangeForm = (props) => {
                             <Popconfirm
                               placement="bottomRight"
                               title="Xác nhận xóa sản phẩm này"
-                              onConfirm={() => remove(name)}
+                              onConfirm={() => {
+                                remove(name)
+                                var _baseUnitOptions = [...baseUnitOptions]
+                                _baseUnitOptions.splice(name, 1)
+                                setBaseUnitOptions(_baseUnitOptions)
+                              }}
                               okText="Đồng ý"
                               okType="danger"
                               cancelText="Hủy bỏ"
@@ -535,11 +627,12 @@ const InventoryReceivingChangeForm = (props) => {
                           <Col span={1}></Col>
                         </Row>
                       ))}
-                      <Form.Item style={{ width: '180px', margin: 'auto' }}>
+                      </div>
+                      {/* <Form.Item style={{ width: '180px', margin: 'auto' }}>
                         <Button type="dashed" disabled={is_create ? false : true} onClick={() => add()} block icon={<PlusOutlined />} >
                           Thêm sản phẩm nhập
                         </Button>
-                      </Form.Item>
+                      </Form.Item> */}
                     </>
                   )}
                 </Form.List>

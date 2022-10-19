@@ -197,12 +197,12 @@ const WarehouseTransactionTable = (props) => {
     {
       title: 'Số lượng thay đổi',
       dataIndex: 'change',
-      key: 'gender',
+      key: 'change',
     },
     {
       title: 'Đơn vị tính',
-      dataIndex: 'reference',
-      key: 'reference',
+      dataIndex: 'unit_exchange',
+      key: 'unit_exchange',
     },
     {
       title: 'Loại thay đổi',

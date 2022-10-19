@@ -59,6 +59,7 @@ const ProductSelect = (props) => {
                 | option.barcode.trim() == input.trim()
             }}
             value={value}
+            style={props.style}
         >
             {productOptions}
         </Select>
