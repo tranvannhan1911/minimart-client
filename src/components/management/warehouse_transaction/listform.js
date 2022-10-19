@@ -34,13 +34,19 @@ const WarehouseTransactionListForm = (props) => {
             // const response = (await axios.get('https://63252b299075b9cbee471829.mockapi.io/api/warehouse-transaction')).data;
             // const _data = response.map(elm => {
             const response = await api.warehouse_transaction.list()
+            console.log(response.data.data)
             const _data = response.data.data.results.map(elm => {
                 elm.key = elm.id;
                 let date = elm.date_created.slice(0, 10);
                 let time = elm.date_created.slice(11, 19);
                 elm.date_created = date + " " + time;                
                 elm.change = elm.change > 0 ? `+${elm.change}` : elm.change;
-                elm.reference = elm.product.base_unit.name;
+                elm.unit_exchange = elm.reference?.unit_exchange?.unit_name;
+                // if(elm.reference && elm.reference.unit_exchange)
+                //     elm.quantity_base_unit = elm.reference.quantity * elm.reference.unit_exchange.value + " " + elm.reference?.unit_exchange.unit_name
+                // else
+                //     elm.quantity_base_unit = elm.reference.quantity
+                elm.product_obj = elm.product;
                 elm.product = elm.product.name;
                 elm.type = elm.type.type_name;
                 
