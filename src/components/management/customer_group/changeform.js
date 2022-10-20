@@ -56,11 +56,16 @@ const CustomerGroupChangeForm = (props) => {
             >Xóa</Button>
           </Popconfirm>
         </ShowForPermission>,
-        <Button type="info" icon={<HistoryOutlined />}
-        >Lịch sử chỉnh sửa</Button>
+        // <Button type="info" icon={<HistoryOutlined />}
+        // >Lịch sử chỉnh sửa</Button>,
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.customer_group.list) }}
+        >Thoát</Button>
       ])
     } else {
-      props.setBreadcrumbExtras(null)
+      props.setBreadcrumbExtras([
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.customer_group.list) }}
+        >Thoát</Button>
+      ])
     }
   }, [is_create])
 

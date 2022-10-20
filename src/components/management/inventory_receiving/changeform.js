@@ -1,5 +1,5 @@
 import {
-  PlusOutlined, EditOutlined, MinusCircleOutlined,
+  PlusOutlined, EditOutlined, MinusCircleOutlined, HistoryOutlined
 } from '@ant-design/icons';
 import {
   Button, Form, Input, Select, message, Space, Popconfirm,
@@ -13,7 +13,6 @@ import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import ProductSelect from '../barcode/input';
-
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -32,8 +31,10 @@ const InventoryReceivingChangeForm = (props) => {
   const [idxBtnSave, setIdxBtnSave] = useState([]);
   const [baseUnitOptions, setBaseUnitOptions] = useState([]);
   const [baseSupplierOptions, setBaseSupplierOptions] = useState([]);
+  const [detailss, setDetailss] = useState([]); // create
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
+  const [is_status, setStatus] = useState(null);
   const refAutoFocus = useRef(null)
 
   const enterLoading = (index) => {
@@ -98,7 +99,6 @@ const InventoryReceivingChangeForm = (props) => {
   }
 
   const update = async (values) => {
-    console.log("values", values)
     values.details.map(item => {
       item.product = item.product_obj.id
       item.unit_exchange = item.unit_exchange_obj.id
@@ -149,6 +149,15 @@ const InventoryReceivingChangeForm = (props) => {
 
       await create(values)
     } else {
+      // if (is_status == "complete") {
+      //   if (values.status == "pending" || values.status == "cancel") {
+      //     message.error("Phiếu nhập hàng này đã hoàn thành không thể sửa trạng thái!")
+      //     stopLoading(idxBtnSave)
+      //     setDisableSubmit(false)
+      //     return;
+      //   }
+      // }
+      // values.details = detailss;
       await update(values)
     }
     stopLoading(idxBtnSave)
@@ -166,9 +175,25 @@ const InventoryReceivingChangeForm = (props) => {
     try {
       const response = await api.inventory_receiving.get(id);
       const values = response.data.data;
-      console.log("handleData", values)
+      // setStatus(values.status);
+      // let details = values.details.map(elm => {
+      //   let i = {
+      //     "product": elm.product.id,
+      //     "unit_exchange": elm.unit_exchange.id,
+      //     "quantity": elm.quantity,
+      //     "quantity_base_unit": elm.quantity_base_unit,
+      //     "price": elm.price,
+      //     "note": elm.note,
+      //   }
+      //   return i;
+      // });
+      // setDetailss(details);
       values.supplier = values.supplier.id;
+
       values.details = values.details.map(elm => {
+        // elm.unit_exchange = elm.unit_exchange.unit_name;
+        // elm.product = elm.product.id;
+        // return elm;
         elm.quantity_base_unit = String(elm.quantity_base_unit) + " " + elm.product.base_unit.name;
         elm.unit_exchange_obj = elm.unit_exchange
         elm.unit_exchange = elm.unit_exchange.unit_name
@@ -289,9 +314,14 @@ const InventoryReceivingChangeForm = (props) => {
         // </Popconfirm>,
         // <Button type="info" icon={<HistoryOutlined />}
         // >Lịch sử chỉnh sửa</Button>
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.inventory_receiving.list) }}
+        >Thoát</Button>
       ])
     } else {
-      props.setBreadcrumbExtras(null)
+      props.setBreadcrumbExtras([
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.inventory_receiving.list) }}
+        >Thoát</Button>
+      ])
     }
   }, [is_create])
 
@@ -450,38 +480,37 @@ const InventoryReceivingChangeForm = (props) => {
                 <Form.List name="details" label="Sản phẩm nhập">
                   {(fields, { add, remove }) => (
                     <>
-                      {is_create ? <ProductSelect
+                    {is_create ? <ProductSelect
                         style={{
                           marginBottom: '20px'
                         }}
                         onSelectProduct={(value) => onSelectProduct(value, add)}/> : null }
-                      
                       <Row style={{marginBottom: '20px'}}>
-                          <Col span={1}></Col>
-                          <Col span={5} style={titleCol}>
-                            <Typography.Text>Sản phẩm</Typography.Text>
-                          </Col>
-                          <Col span={1}></Col>
-                          <Col span={3} style={titleCol}>
-                            <Typography.Text>Đơn vị tính</Typography.Text>
-                          </Col>
-                          <Col span={1}></Col>
-                          <Col span={2} style={titleCol}>
-                            <Typography.Text>Số lượng</Typography.Text>
-                          </Col>
-                          <Col span={1}></Col>
+                        <Col span={1}></Col>
+                        <Col span={5} style={titleCol}>
+                          <Typography.Text>Sản phẩm</Typography.Text>
+                        </Col>
+                        <Col span={1}></Col>
+                        <Col span={3} style={titleCol}>
+                          <Typography.Text>Đơn vị tính</Typography.Text>
+                        </Col>
+                        <Col span={1}></Col>
+                        <Col span={2} style={titleCol}>
+                          <Typography.Text>Số lượng</Typography.Text>
+                        </Col>
+                        <Col span={1}></Col>
                           <Col span={2} style={titleCol}>
                             <Typography.Text>Số lượng đơn vị cơ bản</Typography.Text>
                           </Col>
-                          <Col span={1}></Col>
-                          <Col span={2} style={titleCol}>
-                            <Typography.Text>Giá nhập</Typography.Text>
-                          </Col>
-                          <Col span={1}></Col>
-                          <Col span={3} style={titleCol}>
-                            <Typography.Text>Ghi chú</Typography.Text>
-                          </Col>
-                          <Col span={2}></Col>
+                        <Col span={1}></Col>
+                        <Col span={2} style={titleCol}>
+                          <Typography.Text>Giá nhập</Typography.Text>
+                        </Col>
+                        <Col span={1}></Col>
+                        <Col span={3} style={titleCol}>
+                          <Typography.Text>Ghi chú</Typography.Text>
+                        </Col>
+                        <Col span={2}></Col>
                       </Row>
                       <div style={{
                         maxHeight: '350px',
@@ -504,6 +533,19 @@ const InventoryReceivingChangeForm = (props) => {
                                 textAlign: 'left'
                               }}
                             >
+                              {/* <Select
+                                showSearch
+                                onChange={(option) => onUnitSelect(option)}
+                                placeholder="Sản phẩm"
+                                optionFilterProp="children"
+                                filterOption={(input, option) => option.children.includes(input)}
+                                filterSort={(optionA, optionB) =>
+                                  optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                                }
+                                disabled={is_create ? false : true}
+                              >
+                                {baseProductOptions}
+                              </Select> */}
                               <Input 
                                 disabled={true}
                                 className='inputDisableText'/>
@@ -557,6 +599,7 @@ const InventoryReceivingChangeForm = (props) => {
                                 },
                               ]}
                             >
+                              {/* <Input placeholder="Số lượng" type='number' min='0' disabled={is_create ? false : true} /> */}
                               <InputNumber
                                 placeholder="Số lượng" type='number' 
                                 min='1' disabled={is_create ? false : true}
@@ -606,7 +649,7 @@ const InventoryReceivingChangeForm = (props) => {
                             </Form.Item>
                           </Col>
                           <Col span={1}>
-                            <Popconfirm
+                          <Popconfirm
                               placement="bottomRight"
                               title="Xác nhận xóa sản phẩm này"
                               onConfirm={() => {

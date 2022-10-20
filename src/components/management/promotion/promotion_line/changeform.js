@@ -312,8 +312,10 @@ const PromotionChangeForm = (props) => {
     props.setBreadcrumbExtras([
       <Button type="info" icon={<ReloadOutlined />} onClick={() => handleData()}
       >Làm mới</Button>,
-      <Button type="info" icon={<HistoryOutlined />}
-      >Lịch sử chỉnh sửa</Button>
+      // <Button type="info" icon={<HistoryOutlined />}
+      // >Lịch sử chỉnh sửa</Button>,
+      <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.promotion.list) }}
+        >Thoát</Button>
     ])
     // } else {
     //   props.setBreadcrumbExtras(null)

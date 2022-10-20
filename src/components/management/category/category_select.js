@@ -25,8 +25,6 @@ const ParentSelect = (props) => {
       handleData()
     }, [])
 
-    
-
     useEffect(() => {
       console.log("props.value", props)
     }, [props])

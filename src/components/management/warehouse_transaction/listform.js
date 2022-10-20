@@ -51,7 +51,42 @@ const WarehouseTransactionListForm = (props) => {
                 elm.product = elm.product.name;
                 elm.type = elm.type.type_name;
                 
-                return elm
+                // elm.product_obj = elm.product;
+                // elm.product = elm.product.name;
+                // elm.type = elm.type.type_name;
+                // elm.change = elm.change > 0 ? `+${elm.change}` : elm.change;
+                // elm.reference = elm.product.base_unit.name;
+                // elm.product = elm.product.name;
+                // elm.type = elm.type.type_name;
+                let reference='';
+                let link="";
+                if(elm.type.type == "promotion"){
+                    reference="";
+                }else if(elm.type.type == "order" || elm.type.type == "order_cancel"){
+                    reference=elm.reference.order;
+                    link="navigate(paths.order.get("+reference+"))";
+                }else if(elm.type.type == "inventory_receiving" || elm.type.type == "inventory_receiving_cancel"){
+                    reference=elm.reference.receiving_voucher
+                }else if(elm.type.type == "refund"){
+                    reference=elm.reference.receiving_voucher
+                }else if(elm.type.type == "inventory" || elm.type.type == "inventory_cancel"){
+                    reference=elm.reference.receiving_voucher
+                }
+
+                let elmm={
+                    key: elm.id,
+                    id: elm.id,
+                    unit: elm.product.base_unit.name,
+                    product: elm.product.name,
+                    change: elm.change > 0 ? `+${elm.change}` : elm.change,
+                    date_created: date + " " + time,
+                    reference: reference,
+                    type: elm.type.type_name,
+                    note: elm.note,
+                    link: link
+                }
+                
+                return elmm
             })
             setData(_data)
             setDataMain(_data)

@@ -14,19 +14,50 @@ const ModalLogin = (props) => {
     const refAutoFocus = useRef()
     const [dataCustomerGroup, setDataCustomerGroup] = useState([]);
     const [addressValue, setAddressValue] = useState([]);
+    const [is_create, setCreate] = useState(null); // create
 
     useEffect(() => {
         setTimeout(() => {
-            if(refAutoFocus.current){
+            if (refAutoFocus.current) {
                 refAutoFocus.current.focus()
             }
         }, 200)
-        
-      }, [props.open])
+
+    }, [props.open])
 
     useEffect(() => {
+        // if (is_create == null) {
+        setCreate(props.is_create)
+        if (!props.is_create && props.customer_id != null) {
+            handleData()
+        } else {
+            form.resetFields()
+            setAddressValue("")
+        }
+        //   }
         handleDataCustomerGroup()
-    }, [])
+    }, [props.open])
+
+    const handleData = async () => {
+        // setLoadingData(true)
+        try {
+            const response = await api.customer.get(props.customer_id);
+            const values = response.data.data
+            values.customer_group = values.customer_group.map(elm => elm.id.toString())
+            values.is_active = values.is_active + "";
+            form.setFieldsValue(values)
+
+            if (values.ward) {
+                const response2 = await api.address.get_parent(values.ward);
+                setAddressValue(response2.data.data.tree)
+            }
+
+        } catch (error) {
+            message.error(messages.ERROR)
+        } finally {
+            //   setLoadingData(false)
+        }
+    }
 
     const handleDataCustomerGroup = async () => {
         const response = await api.customer_group.list();
@@ -48,6 +79,7 @@ const ModalLogin = (props) => {
 
     const handleCancel = () => {
         form.resetFields()
+        setAddressValue("")
         props.setOpen(false);
     };
 
@@ -184,7 +216,7 @@ const ModalLogin = (props) => {
                         <Col span={1}></Col>
                         <Col span={10}>
                             <Form.Item label="Số nhà, tên đường" name="address">
-                                <Input style={{width: '250px', position:'absolute', right:'0px', top:'-2px'}}/>
+                                <Input style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} />
                             </Form.Item>
                         </Col>
                         <Col span={2}></Col>

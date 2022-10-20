@@ -41,7 +41,7 @@ const UnitChangeForm = (props) => {
       { title: "Đơn vị tính", href: paths.unit.list },
       { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
 
-    if (is_create==false) {
+    if (is_create == false) {
       props.setBreadcrumbExtras([
         <Popconfirm
           placement="bottomRight"
@@ -54,18 +54,22 @@ const UnitChangeForm = (props) => {
           <Button type="danger" icon={<DeleteOutlined />}
           >Xóa</Button>
         </Popconfirm>,
-        <Button type="info" icon={<HistoryOutlined />}
-        >Lịch sử chỉnh sửa</Button>
+        // <Button type="info" icon={<HistoryOutlined />}
+        // >Lịch sử chỉnh sửa</Button>,
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.unit.list) }}
+        >Thoát</Button>
       ])
     } else {
-      props.setBreadcrumbExtras(null)
+      props.setBreadcrumbExtras([
+      <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.unit.list) }}
+      >Thoát</Button>])
     }
   }, [is_create])
 
   useEffect(() => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
-  
+
   const handleData = async () => {
     setLoadingData(true)
     try {
@@ -122,11 +126,11 @@ const UnitChangeForm = (props) => {
         message.success(messages.unit.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
-      } else if(response.data.message.code) {
+      } else if (response.data.message.code) {
         message.error("Mã đơn vị tính bị trùng!")
-      }else if(response.data.message.name) {
+      } else if (response.data.message.name) {
         message.error("Tên đơn vị tính bị trùng!")
-      }else{
+      } else {
         message.error(response.data.message.toString())
       }
     } catch (error) {
@@ -143,11 +147,11 @@ const UnitChangeForm = (props) => {
         message.success(messages.unit.SUCCESS_SAVE(id))
         directAfterSubmit(response)
         return true
-      } else if(response.data.message.code) {
+      } else if (response.data.message.code) {
         message.error("Mã đơn vị tính bị trùng!")
-      }else if(response.data.message.name) {
+      } else if (response.data.message.name) {
         message.error("Tên đơn vị tính bị trùng!")
-      }else{
+      } else {
         message.error(response.data.message.toString())
       }
     } catch (error) {
@@ -156,7 +160,7 @@ const UnitChangeForm = (props) => {
     }
     return false
   }
-  
+
   const _delete = async () => {
     try {
       const response = await api.unit.delete(id)

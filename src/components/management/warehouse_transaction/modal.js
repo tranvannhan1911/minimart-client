@@ -38,7 +38,7 @@ const WarehouseTransactionModal = (props) => {
         <Row>
           <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Số lượng thay đổi: {props.data.change} {props.data.reference}</p>
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Số lượng thay đổi: {props.data.change} {props.data.unit}</p>
             </div>
           </Col>
           <Col span={12}>
@@ -47,7 +47,13 @@ const WarehouseTransactionModal = (props) => {
             </div>
           </Col>
         </Row>
-        
+        <Row>
+          <Col span={24}>
+          <div className="site-description-item-profile-wrapper">
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Mã đối tượng biến động: {props.data.reference}</p>
+            </div>
+          </Col>
+        </Row>
         <Row>
           <Col span={24}>
           <div className="site-description-item-profile-wrapper">
@@ -56,7 +62,8 @@ const WarehouseTransactionModal = (props) => {
           </Col>
         </Row>
         <Divider />
-        <p className="site-description-item-profile-p" style={{fontSize:'20px'}}>Lịch sử thay đổi</p>
+        
+        <p className="site-description-item-profile-p" style={{fontSize:'20px'}}>Lịch sử biến động</p>
         <Row>
           <Col span={24}>
           <div className="site-description-item-profile-wrapper">

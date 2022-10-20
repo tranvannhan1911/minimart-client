@@ -70,11 +70,16 @@ const PriceChangeForm = (props) => {
           <Button type="danger" icon={<DeleteOutlined />}
           >Xóa</Button>
         </Popconfirm>,
-        <Button type="info" icon={<HistoryOutlined />}
-        >Lịch sử chỉnh sửa</Button>
+        // <Button type="info" icon={<HistoryOutlined />}
+        // >Lịch sử chỉnh sửa</Button>,
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.product.list) }}
+        >Thoát</Button>
       ])
     } else {
-      props.setBreadcrumbExtras(null)
+      props.setBreadcrumbExtras([
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.product.list) }}
+        >Thoát</Button>
+      ])
     }
   }, [is_create])
 
@@ -469,9 +474,6 @@ const PriceChangeForm = (props) => {
                     <Form.Item label="Ngành hàng" name="product_category" >
                       <ParentSelect categoryParent={categoryParent} setCategoryParent={setCategoryParent} />
                     </Form.Item>
-                    {/* <Form.Item label="Ghi chú" name="note" >
-                      <TextArea rows={1} />
-                    </Form.Item> */}
                   </Col>
                 </Row>
 
