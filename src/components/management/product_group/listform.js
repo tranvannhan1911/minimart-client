@@ -12,6 +12,7 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
 import * as XLSX from 'xlsx';
+import ShowForPermission from '../../basic/permission';
 
 const ProductGroupListForm = (props) => {
     const [dataMain, setDataMain] = useState([])
@@ -121,11 +122,18 @@ const ProductGroupListForm = (props) => {
             title="Nhóm sản phẩm" 
             actions={[
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
-                <Upload showUploadList={false} {...uploadData}>
-                    <Button icon={<UploadOutlined />}>Nhập Excel</Button>
-                </Upload>,
-                <ExportReactCSV csvData={data} fileName='productgroup.xlsx' />,
-                <Button onClick={() => navigate(paths.product_group.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
+                
+                <ShowForPermission>
+                    <Upload showUploadList={false} {...uploadData}>
+                        <Button icon={<UploadOutlined />}>Nhập Excel</Button>
+                    </Upload>
+                </ShowForPermission>,
+                <ShowForPermission>
+                    <ExportReactCSV csvData={data} fileName='productgroup.xlsx' />
+                </ShowForPermission>,
+                <ShowForPermission>
+                    <Button onClick={() => navigate(paths.product_group.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>
+                </ShowForPermission>
             ]}
             table={
                 <ProductGroupTable 

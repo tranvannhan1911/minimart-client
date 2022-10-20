@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import ParentSelect from './category_select';
+import ShowForPermission from '../../basic/permission';
 
 
 const CategoryListForm = (props) => {
@@ -51,7 +52,9 @@ const CategoryListForm = (props) => {
             title="Ngành hàng" 
             actions={[
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
-                <Button onClick={() => navigate(paths.category.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
+                <ShowForPermission>
+                    <Button onClick={() => navigate(paths.category.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>
+                </ShowForPermission>,
             ]}
             table={
                 <CategoryTable 

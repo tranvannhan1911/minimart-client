@@ -14,6 +14,7 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
 import * as XLSX from 'xlsx';
+import ShowForPermission from '../../basic/permission';
 
 
 const SupplierListForm = (props) => {
@@ -169,24 +170,32 @@ const SupplierListForm = (props) => {
             title="Nhà cung cấp"
             actions={[
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                <Upload showUploadList={false} {...uploadData}>
-                    <Button icon={<UploadOutlined />}>Nhập Excel</Button>
-                </Upload>,
-                <ExportReactCSV csvData={data} fileName='supplier.xlsx' 
-                // header={[
-                //     { label: 'Mã', key: 'id' },
-                //     { label: 'Tên', key: 'name' },
-                //     { label: 'Số điện thoại', key: 'phone' },
-                //     { label: 'Email', key: 'email' },
-                //     { label: 'Địa chỉ', key: 'address' },
-                //     { label: 'Ghi chú', key: 'note' },
-                //     { label: 'Ngày tạo', key: 'date_created' },
-                //     { label: 'Ngày sửa', key: 'date_updated' },
-                //     { label: 'Mã người tạo', key: 'user_created' },
-                //     { label: 'Mã người sửa', key: 'user_updated' },
-                // ]} 
-                />,
-                <Button onClick={() => navigate(paths.supplier.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
+                
+                <ShowForPermission >
+                    <Upload showUploadList={false} {...uploadData}>
+                        <Button icon={<UploadOutlined />}>Nhập Excel</Button>
+                    </Upload>
+                </ShowForPermission>,
+                
+                <ShowForPermission >
+                    <ExportReactCSV csvData={data} fileName='supplier.xlsx' 
+                    // header={[
+                    //     { label: 'Mã', key: 'id' },
+                    //     { label: 'Tên', key: 'name' },
+                    //     { label: 'Số điện thoại', key: 'phone' },
+                    //     { label: 'Email', key: 'email' },
+                    //     { label: 'Địa chỉ', key: 'address' },
+                    //     { label: 'Ghi chú', key: 'note' },
+                    //     { label: 'Ngày tạo', key: 'date_created' },
+                    //     { label: 'Ngày sửa', key: 'date_updated' },
+                    //     { label: 'Mã người tạo', key: 'user_created' },
+                    //     { label: 'Mã người sửa', key: 'user_updated' },
+                    // ]} 
+                    />
+                </ShowForPermission>,
+                <ShowForPermission >
+                    <Button onClick={() => navigate(paths.supplier.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>
+                </ShowForPermission>,
             ]}
             table={
                 <SupplierTable

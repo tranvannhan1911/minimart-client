@@ -12,6 +12,7 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
 import * as XLSX from 'xlsx';
+import ShowForPermission from '../../basic/permission';
 
 
 const CustomerListForm = (props) => {
@@ -172,10 +173,13 @@ const CustomerListForm = (props) => {
             title="Khách hàng"
             actions={[
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
+                
                 <Upload showUploadList={false} {...uploadData}>
                     <Button icon={<UploadOutlined />}>Nhập Excel</Button>
                 </Upload>,
-                <ExportReactCSV csvData={data} fileName='customer.xlsx' />,
+                <ShowForPermission>
+                    <ExportReactCSV csvData={data} fileName='customer.xlsx' />
+                </ShowForPermission>,
                 <Button onClick={() => navigate(paths.customer.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={

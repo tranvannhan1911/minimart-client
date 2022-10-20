@@ -7,6 +7,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
+import ShowForPermission from '../../basic/permission';
 import InventoryReceivingModal from './modal';
 // const idstaff=0;
 
@@ -266,6 +267,7 @@ const InventoryReceivingTable = (props) => {
     {
       title: '',
       dataIndex: 'id',
+      width: '10%',
       key: 'id',
       render: (id) => (
         <Space>
@@ -273,10 +275,12 @@ const InventoryReceivingTable = (props) => {
             type="text"
             icon={<EyeOutlined title='Xem chi tiết' />}
             onClick={() => onOpen(id)} ></Button>
-          <Button
-            type="text"
-            icon={<FormOutlined title='Chỉnh sửa' />}
-            onClick={() => setIdxBtn(id)} ></Button>
+          <ShowForPermission>
+            <Button
+              type="text"
+              icon={<FormOutlined title='Chỉnh sửa' />}
+              onClick={() => setIdxBtn(id)} ></Button>
+          </ShowForPermission>
         </Space>
       ),
     },

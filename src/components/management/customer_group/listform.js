@@ -13,6 +13,7 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
 import * as XLSX from 'xlsx';
+import ShowForPermission from '../../basic/permission';
 
 const CustomerGroupListForm = (props) => {
     const [dataMain, setDataMain] = useState([])
@@ -114,7 +115,9 @@ const CustomerGroupListForm = (props) => {
                 <Upload showUploadList={false} {...uploadData}>
                     <Button icon={<UploadOutlined />}>Nhập Excel</Button>
                 </Upload>,
-                <ExportReactCSV csvData={data} fileName='customergroup.xlsx' />,
+                <ShowForPermission>
+                    <ExportReactCSV csvData={data} fileName='customergroup.xlsx' />
+                </ShowForPermission>,
                 <Button onClick={() => navigate(paths.customer_group.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={

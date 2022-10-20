@@ -10,6 +10,7 @@ import api from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
+import ShowForPermission from '../../basic/permission';
 
 const { RangePicker } = DatePicker;
 
@@ -155,16 +156,18 @@ const RefundListForm = (props) => {
             actions={[
 
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                <ExportReactCSV csvData={data} fileName='listrefund.xlsx' 
-                    header={[
-                        { label: 'Mã', key: 'id' },
-                        { label: 'Nhân viên', key: 'user_created' },
-                        { label: 'Khách hàng', key: 'customer' },
-                        { label: 'Ngày trả', key: 'date_created' },
-                        { label: 'Trạng thái', key: 'status' },
-                        { label: 'Ghi chú', key: 'note' },
-                    ]} 
-                    />,
+                <ShowForPermission>
+                    <ExportReactCSV csvData={data} fileName='listrefund.xlsx' 
+                        header={[
+                            { label: 'Mã', key: 'id' },
+                            { label: 'Nhân viên', key: 'user_created' },
+                            { label: 'Khách hàng', key: 'customer' },
+                            { label: 'Ngày trả', key: 'date_created' },
+                            { label: 'Trạng thái', key: 'status' },
+                            { label: 'Ghi chú', key: 'note' },
+                        ]} 
+                        />
+                </ShowForPermission>,
             ]}
             table={
                 <RefundTable

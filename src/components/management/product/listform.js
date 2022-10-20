@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
+import ShowForPermission from '../../basic/permission';
 
 const PriceListForm = (props) => {
     const [dataMain, setDataMain] = useState([])
@@ -124,8 +125,13 @@ const PriceListForm = (props) => {
             actions={[
                 
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
-                <ExportReactCSV csvData={data} fileName='product.xlsx' />,
-                <Button onClick={() => navigate(paths.product.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
+                
+                <ShowForPermission>
+                    <ExportReactCSV csvData={data} fileName='product.xlsx' />
+                </ShowForPermission>,
+                <ShowForPermission>
+                    <Button onClick={() => navigate(paths.product.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>
+                </ShowForPermission>,
             ]}
             table={
                 <PriceTable 

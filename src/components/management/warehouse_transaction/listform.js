@@ -14,6 +14,7 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import axios from 'axios';
 import { ExportReactCSV } from '../../../utils/exportExcel';
+import ShowForPermission from '../../basic/permission';
 const { RangePicker } = DatePicker;
 
 const WarehouseTransactionListForm = (props) => {
@@ -132,16 +133,19 @@ const WarehouseTransactionListForm = (props) => {
                 title="Lịch sử biến động kho"
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                    <ExportReactCSV csvData={data} fileName='warehousetransaction.xlsx' 
-                    header={[
-                        { label: 'Mã', key: 'id' },
-                        { label: 'Sản phẩm', key: 'product' },
-                        { label: 'Loại', key: 'type' },
-                        { label: 'Số lượng thay đổi', key: 'change' },
-                        { label: 'Ngày thay đổi', key: 'date_created' },
-                        { label: 'Ghi chú', key: 'note' },
-                    ]} 
-                    />,
+                    
+                    <ShowForPermission >
+                        <ExportReactCSV csvData={data} fileName='warehousetransaction.xlsx' 
+                        header={[
+                            { label: 'Mã', key: 'id' },
+                            { label: 'Sản phẩm', key: 'product' },
+                            { label: 'Loại', key: 'type' },
+                            { label: 'Số lượng thay đổi', key: 'change' },
+                            { label: 'Ngày thay đổi', key: 'date_created' },
+                            { label: 'Ghi chú', key: 'note' },
+                        ]} 
+                        />
+                    </ShowForPermission>,
                     // <Button onClick={() => navigate(paths.staff.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
                 ]}
                 table={<WarehouseTransactionTable

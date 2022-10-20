@@ -159,6 +159,7 @@ const CustomerGroupTable = (props) => {
       title: '',
       dataIndex: 'id',
       key: 'id',
+      width: '10%',
       render: (id) => (
         <Space>
           <Button

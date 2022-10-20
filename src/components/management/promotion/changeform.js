@@ -340,6 +340,7 @@ const PromotionChangeForm = (props) => {
           setBreadcrumb={props.setBreadcrumb}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
+          disabled={true}
           forms={
             <><>
               <Row>

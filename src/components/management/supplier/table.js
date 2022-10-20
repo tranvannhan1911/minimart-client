@@ -5,6 +5,7 @@ import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
 import SupplierModal from './modal';
 import paths from '../../../utils/paths'
+import ShowForPermission from '../../basic/permission';
 const { Search } = Input;
 
 const SupplierTable = (props) => {
@@ -200,6 +201,7 @@ const SupplierTable = (props) => {
     {
       title: '',
       dataIndex: 'id',
+      width: '10%',
       key: 'id',
       render: (id) => (
         <Space>
@@ -207,10 +209,12 @@ const SupplierTable = (props) => {
             type="text"
             icon={<EyeOutlined title='Xem chi tiết' />}
             onClick={() => onOpen(id)} ></Button>
-          <Button
-            type="text"
-            icon={<FormOutlined title='Chỉnh sửa' />}
-            onClick={() => setIdxBtn(id)} ></Button>
+          <ShowForPermission >
+            <Button
+              type="text"
+              icon={<FormOutlined title='Chỉnh sửa' />}
+              onClick={() => setIdxBtn(id)} ></Button>
+          </ShowForPermission>
         </Space>
       ),
     },

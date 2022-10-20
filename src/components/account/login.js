@@ -7,7 +7,7 @@ import React, { useState, useRef } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { AccountApi } from "../../api/apis"
-import { setToken } from '../../store/store'
+import store, { setUser } from '../../store/store'
 import { validPhone, validPassword } from '../../resources/regexp'
 
 const { Title } = Typography;
@@ -68,10 +68,10 @@ const Login = () => {
             if (response.data.code == 1) {
                 accountApi.save_token(response)
 
-                // const action = setToken(response.data.data)
-                // dispatch(action)
+                // const action = setUser(response.data.data)
+                // store.dispatch(action)
 
-                navigate('/quan-ly/khach-hang')
+                navigate('/quan-ly/ban-hang')
             } else {
                 error_msg()
             }

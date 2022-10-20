@@ -7,6 +7,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
+import ShowForPermission from '../../basic/permission';
 
 const DescriptionItem = ({ title, content }) => (
   <div className="site-description-item-profile-wrapper">
@@ -256,10 +257,12 @@ const PromotionTable = (props) => {
             type="text"
             icon={<EyeOutlined title='Xem chi tiết' />}
             onClick={() => onOpen(id)} ></Button> */}
-          <Button
-            type="text"
-            icon={<FormOutlined title='Chỉnh sửa' />}
-            onClick={() => onOpen(id)} ></Button>
+          <ShowForPermission>
+            <Button
+              type="text"
+              icon={<FormOutlined title='Chỉnh sửa' />}
+              onClick={() => onOpen(id)} ></Button>
+          </ShowForPermission>
         </Space>
       ),
     },

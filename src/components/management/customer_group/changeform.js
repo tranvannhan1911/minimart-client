@@ -11,6 +11,7 @@ import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { validName1 } from '../../../resources/regexp'
+import ShowForPermission from '../../basic/permission';
 
 const { TextArea } = Input;
 
@@ -42,17 +43,19 @@ const CustomerGroupChangeForm = (props) => {
 
     if (is_create==false) {
       props.setBreadcrumbExtras([
-        <Popconfirm
-          placement="bottomRight"
-          title="Xác nhận xóa nhóm khách hàng này"
-          onConfirm={_delete}
-          okText="Đồng ý"
-          okType="danger"
-          cancelText="Hủy bỏ"
-        >
-          <Button type="danger" icon={<DeleteOutlined />}
-          >Xóa</Button>
-        </Popconfirm>,
+        <ShowForPermission>
+          <Popconfirm
+            placement="bottomRight"
+            title="Xác nhận xóa nhóm khách hàng này"
+            onConfirm={_delete}
+            okText="Đồng ý"
+            okType="danger"
+            cancelText="Hủy bỏ"
+          >
+            <Button type="danger" icon={<DeleteOutlined />}
+            >Xóa</Button>
+          </Popconfirm>
+        </ShowForPermission>,
         <Button type="info" icon={<HistoryOutlined />}
         >Lịch sử chỉnh sửa</Button>
       ])

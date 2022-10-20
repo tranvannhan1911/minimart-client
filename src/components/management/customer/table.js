@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
+import ShowForPermission from '../../basic/permission';
 import CustomerModal from './modal';
 
 
@@ -225,6 +226,7 @@ const CustomerTable = (props) => {
     {
       title: '',
       dataIndex: 'id',
+      width: '10%',
       key: 'id',
       render: (id) => (
         <Space>

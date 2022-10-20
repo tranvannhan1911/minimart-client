@@ -14,10 +14,22 @@ const drawerPlacement = createSlice({
   }
 })
 
-// export const { setToken, getToken } = tokenSlice.actions
+const userSlice = createSlice({
+  name: 'user',
+  initialState: {},
+  reducers: {
+    setUser: (state, value) => {
+      state.info = value.payload
+    },
+    getUser: state => state
+  }
+})
+
+export const { setUser, getUser } = userSlice.actions
 
 const rootReducer = combineReducers({
-  drawerPlacement,
+  drawerPlacement: drawerPlacement.reducer, 
+  user: userSlice.reducer
 });
 
 const persistConfig = {

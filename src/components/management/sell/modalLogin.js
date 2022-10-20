@@ -1,6 +1,7 @@
 import { Button, Modal, Form, Input,message } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import { AccountApi } from "../../../api/apis"
+import store, { setUser } from '../../../store/store';
 
 const ModalLogin = (props) => {
     const [form] = Form.useForm();
@@ -53,11 +54,21 @@ const ModalLogin = (props) => {
             const response = await accountApi.login(params);
             console.log(response)
             if (response.data.code == 1) {
+
                 accountApi.save_token(response)
                 message.success('Đăng nhập thành công');
                 form.resetFields();
                 props.setStaff();
                 props.setOpen(false);
+
+                try{
+                    const response = await accountApi.get_info()
+                    console.log("account", response)
+                    const action = setUser(response.data.data)
+                    store.dispatch(action)
+                }catch(error){
+                    console.log(error)
+                }
             } else {
                 message.error('Đăng nhập thất bại');
                 passwordRef.current.focus();
