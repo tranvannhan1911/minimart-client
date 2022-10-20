@@ -1,4 +1,4 @@
-import { Drawer, Row, Col, Divider, Table } from 'antd';
+import { Drawer, Row, Col, Divider, Table, Typography } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { ExportReactCSV } from '../../../utils/exportExcel';
 
@@ -12,7 +12,7 @@ const InventoryRecordModal = (props) => {
     if (props.data.details != null) {
 
       setDataSource(props.data.details)
-      // console.log(dataSource)
+      console.log("dataSource", dataSource)
       setData(props.data)
       console.log(props.data)
     }
@@ -37,11 +37,25 @@ const InventoryRecordModal = (props) => {
       title: 'Số lượng trước',
       dataIndex: 'quantity_before',
       key: 'age',
+      render: (quantity_before, record) => (
+        <Typography>{`${quantity_before} ${record.product_obj.base_unit.name}`}</Typography>
+      ),
     },
     {
       title: 'Số lượng sau',
       dataIndex: 'quantity_after',
       key: 'age',
+      render: (quantity_after, record) => (
+        <Typography>{`${quantity_after} ${record.product_obj.base_unit.name}`}</Typography>
+      ),
+    },
+    {
+      title: 'Chênh lệch',
+      dataIndex: 'diff',
+      key: 'age',
+      render: (diff, record) => (
+        <Typography>{`${record.quantity_after-record.quantity_before} ${record.product_obj.base_unit.name}`}</Typography>
+      ),
     },
     {
       title: 'Ghi chú',

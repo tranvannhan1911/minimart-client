@@ -14,6 +14,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
+import ProductSelect from '../barcode/input';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -82,6 +83,10 @@ const InventoryRecordChangeForm = (props) => {
   }
 
   const create = async (values) => {
+    values.details.map(item => {
+      item.product = item.id
+      return item
+    })
     try {
       const response = await api.inventory_record.add(values);
       if (response.data.code == 1) {
@@ -101,6 +106,10 @@ const InventoryRecordChangeForm = (props) => {
   }
 
   const update = async (values) => {
+    values.details.map(item => {
+      item.product = item.product_obj.id
+      return item
+    })
     try {
       const response = await api.inventory_record.update(id, values)
       if (response.data.code == 1) {
@@ -175,7 +184,11 @@ const InventoryRecordChangeForm = (props) => {
       ///
       values.details = values.details.map(elm => {
         elm.unit = elm.product.base_unit.name;
-        elm.product = elm.product.id;
+        elm.diff = `${elm.quantity_after - elm.quantity_before} ${elm.product.base_unit.name}`
+        elm.quantity_before_int = elm.quantity_before
+        elm.quantity_before = `${elm.quantity_before} ${elm.product.base_unit.name}`
+        elm.product_obj = elm.product
+        elm.product = elm.product.name
 
         // elm.product = elm.product.id;
         return elm;
@@ -306,6 +319,39 @@ const InventoryRecordChangeForm = (props) => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
 
+  const onSelectProduct = async (product_id, add) => {
+    const response = await api.product.get(product_id)
+    console.log("onSelectProduct", response.data)
+    if (response.data.code == 1) {
+      console.log(response.data.data)
+      const product = response.data.data
+
+      const value = {
+        ...product,
+        key: product.id,
+        product: product.name,
+        unit: product.base_unit.name,
+        quantity_before_int: product.stock,
+        quantity_before: `${product.stock} ${product.base_unit.name}`,
+        quantity_after: product.stock,
+        diff: `0 ${product.base_unit.name}`
+      }
+      add(value)
+      // handleDataBaseUnit(response.data.data.units)
+    }else {
+      message.error(messages.ERROR_REFRESH)
+    }
+  }
+
+  const handleDiff = (key, name) => {
+    const _details = form.getFieldValue("details")
+    _details[name].diff = _details[name].quantity_after - _details[name].quantity_before_int
+    console.log("handleDiff", _details[name].quantity_after, 
+      _details[name].quantity_before_int, _details[name].diff)
+    _details[name].diff = `${_details[name].diff} ${_details[name].base_unit.name}`
+    form.setFieldValue("details", _details)
+  }
+
   return (
     <>
       {loadingData ? <Loading /> :
@@ -358,6 +404,11 @@ const InventoryRecordChangeForm = (props) => {
                 <Form.List name="details" label="Bảng giá sản phẩm">
                   {(fields, { add, remove }) => (
                     <>
+                      {is_create ? <ProductSelect
+                        style={{
+                          marginBottom: '20px'
+                        }}
+                        onSelectProduct={(value) => onSelectProduct(value, add)}/> : null }
                       <Row>
                         <Col span={1}></Col>
                         <Col span={5} style={titleCol}>
@@ -368,12 +419,16 @@ const InventoryRecordChangeForm = (props) => {
                           <Typography.Text>Số lượng trên hệ thống</Typography.Text>
                         </Col>
                         <Col span={1}></Col>
-                        <Col span={3} style={titleCol}>
+                        <Col span={2} style={titleCol}>
+                          <Typography.Text>Số lượng thực tế</Typography.Text>
+                        </Col>
+                        <Col span={1}></Col>
+                        <Col span={2} style={titleCol}>
                           <Typography.Text>Đơn vị tính</Typography.Text>
                         </Col>
                         <Col span={1}></Col>
-                        <Col span={3} style={titleCol}>
-                          <Typography.Text>Số lượng thực tế</Typography.Text>
+                        <Col span={2} style={titleCol}>
+                          <Typography.Text>Chênh lệch</Typography.Text>
                         </Col>
                         <Col span={1}></Col>
                         <Col span={3} style={titleCol}>
@@ -399,7 +454,7 @@ const InventoryRecordChangeForm = (props) => {
                                 width: '100%',
                               }}
                             >
-                              <Select
+                              {/* <Select
                                 showSearch
                                 onChange={(option) => onProductSelect(option, key)}
                                 placeholder="Sản phẩm"
@@ -411,7 +466,11 @@ const InventoryRecordChangeForm = (props) => {
                                 disabled={is_create ? false : true}
                               >
                                 {baseProductOptions}
-                              </Select>
+                              </Select> */}
+                              
+                              <Input 
+                                disabled={true}
+                                className='inputDisableText'/>
                             </Form.Item>
 
                           </Col>
@@ -424,25 +483,13 @@ const InventoryRecordChangeForm = (props) => {
                                 textAlign: 'left'
                               }}
                             >
-                              <Input min='0' type='number' readOnly value={quantity} 
+                              <Input readOnly value={quantity} 
                                 key={key} disabled={true} 
                                 placeholder="Số lượng tồn" className='inputDisableText'/>
                             </Form.Item>
                           </Col>
                           <Col span={1}></Col>
-                          <Col span={3}>
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'unit']}
-                              style={{
-                                textAlign: 'left'
-                              }}
-                            >
-                              <Input type='text' value={unit} readOnly key={key} disabled={is_create ? false : true} placeholder="Đơn vị cơ bản" />
-                            </Form.Item>
-                          </Col>
-                          <Col span={1}></Col>
-                          <Col span={3}>
+                          <Col span={2}>
                             <Form.Item
                               {...restField}
                               name={[name, 'quantity_after']}
@@ -456,9 +503,38 @@ const InventoryRecordChangeForm = (props) => {
                                 textAlign: 'left'
                               }}
                             >
-                              <Input placeholder="Số lượng thực tế" min='0' type='number' disabled={is_create ? false : true} />
+                              <Input placeholder="Số lượng thực tế" min='0' type='number' 
+                                disabled={is_create ? false : true}
+                                onChange={() => {handleDiff(key, name)}}/>
                             </Form.Item>
 
+                          </Col>
+                          <Col span={1}></Col>
+                          <Col span={2}>
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'unit']}
+                              style={{
+                                textAlign: 'left'
+                              }}
+                            >
+                              <Input type='text' value={unit} readOnly key={key}
+                                disabled={true} className='inputDisableText' placeholder="Đơn vị cơ bản" />
+                            </Form.Item>
+                          </Col>
+                          <Col span={1}></Col>
+                          <Col span={2}>
+                            <Form.Item
+                              {...restField}
+                              name={[name, 'diff']}
+                              style={{
+                                textAlign: 'left'
+                              }}
+                            >
+                              <Input type='text'
+                                disabled={true} className='inputDisableText'
+                                placeholder="Số lượng chênh lệch" />
+                            </Form.Item>
                           </Col>
                           <Col span={1}></Col>
                           <Col span={3}>
@@ -489,11 +565,6 @@ const InventoryRecordChangeForm = (props) => {
                           <Col span={1}></Col>
                         </Row>
                       ))}
-                      <Form.Item style={{ width: '170px', margin: 'auto' }}>
-                        <Button type="dashed" disabled={is_create ? false : true} onClick={() => add()} block icon={<PlusOutlined />} >
-                          Thêm sản phẩm
-                        </Button>
-                      </Form.Item>
                     </>
                   )}
                 </Form.List>

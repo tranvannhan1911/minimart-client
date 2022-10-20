@@ -480,7 +480,7 @@ const InventoryReceivingChangeForm = (props) => {
                 <Form.List name="details" label="Sản phẩm nhập">
                   {(fields, { add, remove }) => (
                     <>
-                    {is_create ? <ProductSelect
+                      {is_create ? <ProductSelect
                         style={{
                           marginBottom: '20px'
                         }}

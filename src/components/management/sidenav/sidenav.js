@@ -107,7 +107,7 @@ const SideNav = (props) => {
   
   const getItem = (label, key, icon, children, required_perm, type) => {
     
-    if(required_perm && !userInfo?.is_manager){
+    if(required_perm && userInfo && userInfo.is_manager == false){
       return null;
     }
     return {
@@ -121,7 +121,7 @@ const SideNav = (props) => {
   
   const getChildItem = (label, key, required_perm) => {
     
-    if(required_perm && !userInfo?.is_manager){
+    if(required_perm && userInfo && userInfo.is_manager == false){
       return null;
     }
     return {
