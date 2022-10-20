@@ -298,11 +298,16 @@ const PriceChangeForm = (props) => {
           <Button type="danger" icon={<DeleteOutlined />}
           >Xóa</Button>
         </Popconfirm>,
-        <Button type="info" icon={<HistoryOutlined />}
-        >Lịch sử chỉnh sửa</Button>
+        // <Button type="info" icon={<HistoryOutlined />}
+        // >Lịch sử chỉnh sửa</Button>,
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.price.list) }}
+        >Thoát</Button>
       ])
     } else {
-      props.setBreadcrumbExtras(null)
+      props.setBreadcrumbExtras([
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.price.list) }}
+        >Thoát</Button>
+      ])
     }
   }, [is_create])
 
@@ -496,7 +501,12 @@ const PriceChangeForm = (props) => {
                             <Popconfirm
                               placement="bottomRight"
                               title="Xác nhận xóa bảng giá này"
-                              onConfirm={() => remove(name)}
+                              onConfirm={() => {
+                                remove(name)
+                                var _baseUnitOptions = [...baseUnitOptions]
+                                _baseUnitOptions.splice(name, 1)
+                                setBaseUnitOptions(_baseUnitOptions)
+                              }}
                               okText="Đồng ý"
                               okType="danger"
                               cancelText="Hủy bỏ"

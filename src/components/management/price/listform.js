@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
+import ShowForPermission from '../../basic/permission';
 
 
 const PriceListForm = (props) => {
@@ -128,18 +129,22 @@ const PriceListForm = (props) => {
                 title="Bảng giá"
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                    <ExportReactCSV csvData={data} fileName='listprice.xlsx'
-                        header={[
-                            { label: 'Mã', key: 'id' },
-                            { label: 'Tiêu đề', key: 'name' },
-                            { label: 'Ngày bắt đầu', key: 'start_date' },
-                            { label: 'Ngày kết thúc', key: 'end_date' },
-                            { label: 'Trạng thái', key: 'status' },
-                            { label: 'Ngày tạo', key: 'date_created' },
-                            { label: 'Ghi chú', key: 'note' },
-                        ]}
-                    />,
-                    <Button onClick={() => navigate(paths.price.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
+                    <ShowForPermission>
+                        <ExportReactCSV csvData={data} fileName='listprice.xlsx'
+                            header={[
+                                { label: 'Mã', key: 'id' },
+                                { label: 'Tiêu đề', key: 'name' },
+                                { label: 'Ngày bắt đầu', key: 'start_date' },
+                                { label: 'Ngày kết thúc', key: 'end_date' },
+                                { label: 'Trạng thái', key: 'status' },
+                                { label: 'Ngày tạo', key: 'date_created' },
+                                { label: 'Ghi chú', key: 'note' },
+                            ]}
+                        />
+                    </ShowForPermission>,
+                    <ShowForPermission>
+                        <Button onClick={() => navigate(paths.price.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>
+                    </ShowForPermission>,
                 ]}
                 table={<PriceTable
                     data={data}

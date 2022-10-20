@@ -21,7 +21,7 @@ const SuccessModal = (props) => {
       window.print()
     }, 1000);
     setTimeout(() => {
-      props.onFinish();
+      props.onFinish(true);
       setOpen(true)
       props.setOpen(false);
     }, 2000);
@@ -29,7 +29,7 @@ const SuccessModal = (props) => {
   };
 
   const handleCancel = () => {
-    props.onFinish();
+    props.onFinish(false);
     props.setOpen(false);
   };
 
@@ -179,9 +179,15 @@ const SuccessModal = (props) => {
         <Row>
           <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px', fontWeight: 'bold', color: 'red' }}>Tổng tiền thanh toán: {props.total} vnđ</Col>
         </Row>
+        <Row>
+          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px'}}>Tiền khách đưa: {props.dataMoneyChange + props.total} vnđ</Col>
+        </Row>
+        <Row>
+          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px'}}>Tiền thừa: {props.dataMoneyChange} vnđ</Col>
+        </Row>
 
         <Row>
-          <Col style={{ textAlign: 'center', marginTop: '13px' }} span={24}>CẢM ƠN QUÝ KHÁCH ĐÃ MUA SẮM TẠI SIÊU THỊ MINI</Col>
+          <Col style={{ textAlign: 'center', marginTop: '10px' }} span={24}>CẢM ƠN QUÝ KHÁCH ĐÃ MUA SẮM TẠI SIÊU THỊ MINI</Col>
         </Row>
         <Row>
           <Col style={{ textAlign: 'center' }} span={24}>Hẹn gặp lại quý khách lần sau</Col>

@@ -12,6 +12,7 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { validPhone, validName } from '../../../resources/regexp'
 import AddressSelect from '../address/address_select';
+import ShowForPermission from '../../basic/permission';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -201,22 +202,29 @@ const CustomerChangeForm = (props) => {
 
     if (is_create == false) {
       props.setBreadcrumbExtras([
-        <Popconfirm
-          placement="bottomRight"
-          title="Xác nhận xóa khách hàng này"
-          onConfirm={_delete}
-          okText="Đồng ý"
-          okType="danger"
-          cancelText="Hủy bỏ"
-        >
-          <Button type="danger" icon={<DeleteOutlined />}
-          >Xóa</Button>
-        </Popconfirm>,
-        <Button type="info" icon={<HistoryOutlined />}
-        >Lịch sử chỉnh sửa</Button>
+        <ShowForPermission>
+          <Popconfirm
+            placement="bottomRight"
+            title="Xác nhận xóa khách hàng này"
+            onConfirm={_delete}
+            okText="Đồng ý"
+            okType="danger"
+            cancelText="Hủy bỏ"
+          >
+            <Button type="danger" icon={<DeleteOutlined />}
+            >Xóa</Button>
+          </Popconfirm>
+        </ShowForPermission>,
+        // <Button type="info" icon={<HistoryOutlined />}
+        // >Lịch sử chỉnh sửa</Button>,
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.customer.list) }}
+        >Thoát</Button>
       ])
     } else {
-      props.setBreadcrumbExtras(null)
+      props.setBreadcrumbExtras([
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.customer.list) }}
+        >Thoát</Button>
+      ])
     }
   }, [is_create])
 

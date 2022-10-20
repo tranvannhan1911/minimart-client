@@ -38,6 +38,16 @@ class AccountApi{
         );
     }
 
+    save_user(response){
+        Cookies.set("user_id", response.data.data.id);
+        Cookies.set("fullname", response.data.data.fullname);
+        Cookies.set("is_active", response.data.data.is_active);
+        Cookies.set("is_manager", response.data.data.is_manager);
+        Cookies.set("is_superuser", response.data.data.is_superuser);
+        Cookies.set("last_login", response.data.data.last_login);
+        Cookies.set("phone", response.data.data.phone);
+    }
+
     remove_token(response){
         Cookies.remove("access")
         Cookies.remove("refresh")

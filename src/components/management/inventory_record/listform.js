@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
+import ShowForPermission from '../../basic/permission';
 
 const { RangePicker } = DatePicker;
 
@@ -109,15 +110,20 @@ const InventoryRecordListForm = (props) => {
                 title="Phiếu kiểm kê"
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                    <ExportReactCSV csvData={data} fileName='inventoryrecord.xlsx'
-                        header={[
-                            { label: 'Mã', key: 'id' },
-                            { label: 'Ngày kiểm kê', key: 'date_created' },
-                            { label: 'Trạng thái', key: 'status' },
-                            { label: 'Ghi chú', key: 'note' },
-                        ]}
-                    />,
-                    <Button onClick={() => navigate(paths.inventory_record.add)} type="primary" icon={<PlusOutlined />}>Kiểm kê</Button>,
+                    
+                    <ShowForPermission>
+                        <ExportReactCSV csvData={data} fileName='inventoryrecord.xlsx'
+                            header={[
+                                { label: 'Mã', key: 'id' },
+                                { label: 'Ngày kiểm kê', key: 'date_created' },
+                                { label: 'Trạng thái', key: 'status' },
+                                { label: 'Ghi chú', key: 'note' },
+                            ]}
+                        />
+                    </ShowForPermission>,
+                    <ShowForPermission>
+                        <Button onClick={() => navigate(paths.inventory_record.add)} type="primary" icon={<PlusOutlined />}>Kiểm kê</Button>
+                    </ShowForPermission>,
                 ]}
                 table={<InventoryRecordTable
                     data={data}

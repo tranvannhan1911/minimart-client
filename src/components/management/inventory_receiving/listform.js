@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
+import ShowForPermission from '../../basic/permission';
 const { RangePicker } = DatePicker;
 
 const InventoryReceivingListForm = (props) => {
@@ -133,17 +134,22 @@ const InventoryReceivingListForm = (props) => {
                 title="Phiếu nhập hàng"
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                    <ExportReactCSV csvData={data} fileName='inventoryreceiving.xlsx'
-                        header={[
-                            { label: 'Mã', key: 'id' },
-                            { label: 'Nhà cung cấp', key: 'supplier' },
-                            { label: 'Ngày nhập', key: 'date_created' },
-                            { label: 'Tổng tiền', key: 'total' },
-                            { label: 'Trạng thái', key: 'status' },
-                            { label: 'Ghi chú', key: 'note' },
-                        ]}
-                    />,
-                    <Button onClick={() => navigate(paths.inventory_receiving.add)} type="primary" icon={<PlusOutlined />}>Nhập hàng</Button>,
+                    
+                    <ShowForPermission>
+                        <ExportReactCSV csvData={data} fileName='inventoryreceiving.xlsx'
+                            header={[
+                                { label: 'Mã', key: 'id' },
+                                { label: 'Nhà cung cấp', key: 'supplier' },
+                                { label: 'Ngày nhập', key: 'date_created' },
+                                { label: 'Tổng tiền', key: 'total' },
+                                { label: 'Trạng thái', key: 'status' },
+                                { label: 'Ghi chú', key: 'note' },
+                            ]}
+                        />
+                    </ShowForPermission>,
+                    <ShowForPermission>
+                        <Button onClick={() => navigate(paths.inventory_receiving.add)} type="primary" icon={<PlusOutlined />}>Nhập hàng</Button>
+                    </ShowForPermission>,
                 ]}
                 table={<InventoryReceivingTable
                     data={data}

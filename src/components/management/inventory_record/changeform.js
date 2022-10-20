@@ -1,6 +1,6 @@
 import {
   PlusOutlined, EditOutlined,
-  MinusCircleOutlined
+  MinusCircleOutlined, HistoryOutlined
 } from '@ant-design/icons';
 import {
   Button, Form, Input, Select, message, Space, Popconfirm,
@@ -36,6 +36,7 @@ const InventoryRecordChangeForm = (props) => {
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [is_status, setStatus] = useState(null);
   const refAutoFocus = useRef(null)
   const listPrice = [];
   const [unit, setUnit] = useState("")
@@ -142,7 +143,14 @@ const InventoryRecordChangeForm = (props) => {
     if (is_create) {
       await create(values)
     } else {
-
+      // if (is_status == "complete") {
+      //   if (values.status == "pending" || values.status == "cancel") {
+      //     message.error("Phiếu kiểm kê này đã hoàn thành không thể sửa trạng thái!")
+      //     stopLoading(idxBtnSave)
+      //     setDisableSubmit(false)
+      //     return;
+      //   }
+      // }
       await update(values)
     }
     stopLoading(idxBtnSave)
@@ -160,13 +168,16 @@ const InventoryRecordChangeForm = (props) => {
     try {
       const response = await api.inventory_record.get(id);
       const values = response.data.data
+      setStatus(values.status);
       // values.start_date = moment(values.start_date)
       // values.status = values.status.toString()
       // values.end_date = moment(values.end_date)
       ///
       values.details = values.details.map(elm => {
-        elm.product = elm.product.id;
         elm.unit = elm.product.base_unit.name;
+        elm.product = elm.product.id;
+
+        // elm.product = elm.product.id;
         return elm;
 
       })
@@ -280,9 +291,14 @@ const InventoryRecordChangeForm = (props) => {
         // </Popconfirm>,
         // <Button type="info" icon={<HistoryOutlined />}
         // >Lịch sử chỉnh sửa</Button>
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.inventory_record.list) }}
+        >Thoát</Button>
       ])
     } else {
-      props.setBreadcrumbExtras(null)
+      props.setBreadcrumbExtras([
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.inventory_record.list) }}
+        >Thoát</Button>
+      ])
     }
   }, [is_create])
 
@@ -403,7 +419,7 @@ const InventoryRecordChangeForm = (props) => {
                           <Col span={3}>
                             <Form.Item
                               {...restField}
-                              name={[name, 'quantity']}
+                              name={[name, 'quantity_before']}
                               style={{
                                 textAlign: 'left'
                               }}

@@ -1,19 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { PageHeader, Button, Menu, Dropdown } from 'antd';
+import { PageHeader, Button, Menu, Dropdown, Typography } from 'antd';
 import './header.css';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import store from '../../../store/store';
 
 
 
 const Header = (props) => {
-
   const navigate = useNavigate();
+  const [userInfo, setUserInfo] = useState({})
+
+  useEffect(() => {
+    
+    store.subscribe(() => {
+      setUserInfo(store.getState().user.info)
+    })
+  }, [])
 
   const menu = (
     <Menu
@@ -53,7 +61,7 @@ const Header = (props) => {
         onClick: () => props.setCollapsed(!props.collapsed),
       })}
       extra={[
-
+        <Typography.Title level={5} style={{marginRight: '10px'}}>{userInfo ? userInfo.fullname : ""}</Typography.Title>,
         <Dropdown overlay={menu} placement="bottomRight">
           <Button key="1" shape="circle" type="primary" icon={<UserOutlined />} />
         </Dropdown>

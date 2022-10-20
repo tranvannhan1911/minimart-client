@@ -269,11 +269,15 @@ const PromotionChangeForm = (props) => {
           <Button type="danger" icon={<DeleteOutlined />}
           >Xóa</Button>
         </Popconfirm>,
-        <Button type="info" icon={<HistoryOutlined />}
-        >Lịch sử chỉnh sửa</Button>
+        // <Button type="info" icon={<HistoryOutlined />}
+        // >Lịch sử chỉnh sửa</Button>,
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.promotion.list) }}
+        >Thoát</Button>
       ])
     } else {
-      props.setBreadcrumbExtras(null)
+      props.setBreadcrumbExtras([
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.promotion.list) }}
+        >Thoát</Button>])
     }
   }, [is_create])
 
@@ -340,6 +344,7 @@ const PromotionChangeForm = (props) => {
           setBreadcrumb={props.setBreadcrumb}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
+          disabled={true}
           forms={
             <><>
               <Row>
