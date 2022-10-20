@@ -53,8 +53,10 @@ const InventoryRecordTable = (props) => {
         }
         element.details.forEach(elementt => {
           let ind = {
+            ...elementt,
             "quantity": elementt.quantity,
             "note": elementt.note,
+            "product_obj": elementt.product,
             "product": elementt.product.name,
             "quantity_after": elementt.quantity_after,
             "quantity_before": elementt.quantity_before
