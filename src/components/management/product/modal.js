@@ -81,7 +81,8 @@ const PriceModal = (props) => {
       </Row>
       <Col span={24}>
         <div className="site-description-item-profile-wrapper">
-          <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{ fontWeight: 'bold' }}>Ngành hàng:</span> {props.data.product_category?.name}</p>
+          <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}><span style={{ fontWeight: 'bold' }}>Ngành hàng:</span> {props.data.product_category}</p>
+          {/* props.data.product_category?.name */}
         </div>
       </Col>
       <Row>

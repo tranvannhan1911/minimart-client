@@ -51,6 +51,7 @@ const WarehouseTransactionTable = (props) => {
         // }else{
         //   element.is_superuser=true;
         // }
+        console.log(element)
         setDataIndex(element);
         // renderProfile(element)
         setOpen(true);
@@ -182,6 +183,7 @@ const WarehouseTransactionTable = (props) => {
       title: 'Sản phẩm',
       dataIndex: 'product',
       key: 'product',
+      width: '15%',
       sorter: {
         compare: (a, b) => a.product.toLowerCase().localeCompare(b.product.toLowerCase()),
         multiple: 2
@@ -197,12 +199,12 @@ const WarehouseTransactionTable = (props) => {
     {
       title: 'Số lượng thay đổi',
       dataIndex: 'change',
-      key: 'gender',
+      key: 'change',
     },
     {
       title: 'Đơn vị tính',
-      dataIndex: 'reference',
-      key: 'reference',
+      dataIndex: 'unit',
+      key: 'unit',
     },
     {
       title: 'Loại thay đổi',
@@ -244,6 +246,11 @@ const WarehouseTransactionTable = (props) => {
       ],
       filteredValue: props.filteredInfo.type || null,
       onFilter: (value, record) => record.type.includes(value),
+    },
+    {
+      title: 'Mã đối tượng',
+      dataIndex: 'reference',
+      key: 'reference',
     },
     {
       title: 'Ngày thay đổi',

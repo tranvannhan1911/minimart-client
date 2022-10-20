@@ -202,11 +202,15 @@ const StaffChangeForm = (props) => {
           <Button type="danger" icon={<DeleteOutlined />}
           >Xóa</Button>
         </Popconfirm>,
-        <Button type="info" icon={<HistoryOutlined />}
-        >Lịch sử chỉnh sửa</Button>
+        // <Button type="info" icon={<HistoryOutlined />}
+        // >Lịch sử chỉnh sửa</Button>,
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.staff.list) }}
+        >Thoát</Button>
       ])
     } else {
-      props.setBreadcrumbExtras(null)
+      props.setBreadcrumbExtras([
+        <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.staff.list) }}
+        >Thoát</Button>])
     }
   }, [is_create])
 

@@ -1,4 +1,4 @@
-import { Drawer, Row, Col, Divider, Table } from 'antd';
+import { Drawer, Row, Col, Divider, Table, Typography } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { ExportReactCSV } from '../../../utils/exportExcel';
 
@@ -22,6 +22,7 @@ const InventoryReceivingModal = (props) => {
       //     return element;
       //   });
       setDataSource(props.data.details)
+      console.log(props.data.details)
     }
     // console.log(props.data.details, 1111);
 
@@ -31,7 +32,10 @@ const InventoryReceivingModal = (props) => {
     {
       title: 'Sản phẩm',
       dataIndex: 'product',
-      key: 'name',
+      key: 'product',
+      render: (product, record) => (
+        <Typography>{`${product.name}`}</Typography>
+      ),
     },
     // {
     //   title: 'Đơn vị tính',
@@ -46,7 +50,18 @@ const InventoryReceivingModal = (props) => {
     {
       title: 'Số lượng',
       dataIndex: 'quantity',
-      key: 'address',
+      key: 'quantity',
+      render: (quantity, record) => (
+        <Typography>{`${quantity} ${record.unit_exchange.unit_name}`}</Typography>
+      ),
+    },
+    {
+      title: 'Số lượng trên đơn vị cơ bản',
+      dataIndex: 'quantity_base_unit',
+      key: 'quantity_base_unit',
+      render: (quantity_base_unit, record) => (
+        <Typography>{`${quantity_base_unit} ${record.product.base_unit?.name}`}</Typography>
+      ),
     },
     {
       title: 'Ghi chú',

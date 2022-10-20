@@ -1,4 +1,3 @@
-
 import {
   EyeOutlined, FormOutlined, SearchOutlined
 } from '@ant-design/icons'
@@ -33,28 +32,30 @@ const InventoryReceivingTable = (props) => {
     let detail = [];
     props.data.forEach(element => {
       if (element.id == id) {
-        let index={
-          ...element,
-          "details": [
-          ],
-          "status": element.status,
-          "note": element.note,
-          "total": element.total,
-          "supplier": element.supplier,
-          "id": element.id,
-          "date_created": element.date_created
-        }
-        element.details.forEach(elementt => {
-          let ind = {
-            "quantity": elementt.quantity,
-            "price": elementt.price,
-            "note": elementt.note,
-            "product": elementt.product.name
-          }
-          detail.push(ind);
-        });
-        index.details=detail;
-        setDataIndex(index);
+        // console.log(element)
+        // let index={
+        //   ...element,
+        //   "details": [
+        //   ],
+        //   "status": element.status,
+        //   "note": element.note,
+        //   "total": element.total,
+        //   "supplier": element.supplier,
+        //   "id": element.id,
+        //   "date_created": element.date_created
+        // }
+        // element.details.forEach(elementt => {
+        //   let ind = {
+        //     ...elementt,
+        //     "quantity": elementt.quantity,
+        //     "price": elementt.price,
+        //     "note": elementt.note,
+        //     "product": elementt.product.name
+        //   }
+        //   detail.push(ind);
+        // });
+        // index.details=detail;
+        setDataIndex(element);
         setOpen(true);
       }
     });

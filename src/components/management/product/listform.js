@@ -16,6 +16,7 @@ const PriceListForm = (props) => {
     const [dataMain, setDataMain] = useState([])
     const [data, setData] = useState([])
     const [dataProductGroups, setDataProductGroups] = useState([])
+    const [dataCategory, setDataCategory] = useState([])
     const [filteredInfo, setFilteredInfo] = useState({})
     const [searchInfo, setSearchInfo] = useState([])
     const [sortedInfo, setSortedInfo] = useState({})
@@ -36,6 +37,7 @@ const PriceListForm = (props) => {
                 elm.product_groups = _product_groups;
                 // elm.base_unit= elm.base_unit.name;
                 elm.stock= elm.stock+"";
+                elm.product_category=elm.product_category ? elm.product_category.name: "";
 
                 let date = elm.date_created.slice(0, 10);
                 let time = elm.date_created.slice(11, 19);
@@ -69,9 +71,22 @@ const PriceListForm = (props) => {
         setLoading(false)
     }
 
+    const handleGetDataCategory = async () => {
+        setLoading(true)
+        try{
+            const response = await api.category.list()
+            setDataCategory(response.data.data.results)
+        }catch(error){
+            console.log('Failed:', error)
+            message.error(messages.ERROR_REFRESH)
+        }
+        setLoading(false)
+    }
+
     useEffect(() => {
         handleGetData()
         handleGetDataProductGroups()
+        handleGetDataCategory()
         props.setBreadcrumb(false)
     }, []);
 
@@ -131,6 +146,7 @@ const PriceListForm = (props) => {
                 <PriceTable 
                     data={data} 
                     dataProductGroups={dataProductGroups} 
+                    dataCategory={dataCategory}
                     loading={loading} 
                     setLoading={setLoading}
                     filteredInfo={filteredInfo}

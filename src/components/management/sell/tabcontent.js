@@ -1,5 +1,5 @@
 import {
-    PlusOutlined, ShoppingCartOutlined, TagOutlined
+    PlusOutlined, ShoppingCartOutlined, TagOutlined,HistoryOutlined, EyeOutlined
 } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, Select, message, Space, 
@@ -41,6 +41,7 @@ const TabContent = (props) => {
     const [openModalLogin, setOpenModalLogin] = useState(false);
     const [openModalAddCustomer, setOpenModalAddCustomer] = useState(false);
     const [phoneStaffSelect, setPhoneStaffSelect] = useState('');
+    const [is_create, setCreate] = useState(null); // create
 
     const handleDataStaff = async () => {
         try {
@@ -132,7 +133,19 @@ const TabContent = (props) => {
         // console.log(form.getFieldValue(12345,"customer"));
         // console.log(props)
         // console.log(listProductAndPromotion,1111)
+        const validMoneyTotal = new RegExp(
+            '^[0-9]+$'
+        );
         if (listProduct.length == 0) {
+            message.error("Không thể tạo hóa đơn trống!")
+            return;
+        }
+        if (!validMoneyTotal.test(total)) {
+            message.error("Lỗi tổng tiền!")
+            return;
+        }
+        if (form.getFieldValue("money_given") == null || form.getFieldValue("money_given") == "") {
+            message.error("Vui lòng nhập số tiền khách đưa!")
             return;
         }
         setDisabledCreateOrder(true)
@@ -175,8 +188,17 @@ const TabContent = (props) => {
         }
     };
 
-    const clearOrder = (data) => {
+    const finishPrint = (data) => {
         console.log(data)
+        if(data == true){
+            clearOrder()
+        }else{
+        setDisabledCreateOrder(false)
+        }
+    }
+
+    const clearOrder = () => {
+        // console.log(data)
         form.resetFields();
         setCustomerId("")
         setOrderId("")
@@ -353,10 +375,19 @@ const TabContent = (props) => {
                             cursor: 'pointer',
                             color: '#1890ff'
                         }}
-                            onClick={() => showModalAddCustomer()}>
+                            onClick={() => {showModalAddCustomer(); setCreate(true)}}>
                             <PlusOutlined
                                 twoToneColor="#eb2f96"
                             /> Thêm khách hàng mới</span>
+                            <span style={{
+                            cursor: 'pointer',
+                            color: '#1890ff',
+                            marginLeft: '10px'
+                        }}
+                            onClick={() => {showModalAddCustomer(); setCreate(false)}}>
+                            <EyeOutlined
+                                twoToneColor="#eb2f96"
+                            /> Xem thông tin</span>
                     </Form.Item>
                     {/* <Divider/> */}
                     <Form.Item label="Khuyến mãi" name="promotion" style={{
@@ -417,8 +448,8 @@ const TabContent = (props) => {
                             </Form.Item>
                         </div>
                     </div>
-                    {/* <Form.Item style={{ width: '100%' }}> */}
-                    <Space>
+                    <Form.Item style={{ width: '100%' }}>
+                    {/* <Space> */}
                         <Button
                             type="primary"
                             // htmlType="submit"
@@ -428,8 +459,16 @@ const TabContent = (props) => {
                             icon={<ShoppingCartOutlined />}
                             disabled={disabledCreateOrder}
                         >Thanh toán</Button>
-                    </Space>
-                    {/* </Form.Item> */}
+                        <Button
+                            type="primary"
+                            // htmlType="submit"
+                            onClick={() => clearOrder()}
+                            style={{ width: '100%', marginTop:'10px' }}
+                            icon={<HistoryOutlined />}
+                            disabled={disabledCreateOrder}
+                        >Làm mới</Button>
+                    {/* </Space> */}
+                    </Form.Item>
                 </Col>
             </Row>
             <PromotionPicker
@@ -452,7 +491,8 @@ const TabContent = (props) => {
                 customerName={customerName}
                 customerId={customerId}
                 dataMoneyChange={moneyChange}
-                onFinish={clearOrder} />
+                onFinish={finishPrint} 
+                />
             <ModalLogin open={openModalLogin}
                 setOpen={setOpenModalLogin}
                 setStaff={setStaffNew}
@@ -461,6 +501,8 @@ const TabContent = (props) => {
             <ModalAddCustomer open={openModalAddCustomer}
                 setOpen={setOpenModalAddCustomer}
                 setCustomer={handleCustomerNew}
+                is_create={is_create}
+                customer_id={customerId}
             />
             {/* <PDFOrder order={order} totalProduct={totalProduct} total={total} voucher={voucher} open={open} setOpen={setOpen}/> */}
         </Form>

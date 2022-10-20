@@ -133,6 +133,7 @@ const PriceTable = (props) => {
       title: 'Mã sản phẩm',
       dataIndex: 'product_code',
       key: 'product_code',
+      // width:"8%",
       // sorter: {
       //   compare: (a, b) => a.id > b.id,
       //   multiple: 1
@@ -152,6 +153,7 @@ const PriceTable = (props) => {
       title: 'Hình ảnh',
       dataIndex: 'image',
       key: 'image',
+      width:"5%",
       render: (image) => (
         <span>
           <img src={image} style={{width:'50px', height:'50px'}}></img>
@@ -181,6 +183,7 @@ const PriceTable = (props) => {
       title: 'Mã vạch',
       dataIndex: 'barcode',
       key: 'barcode',
+      width:"10%",
       ...renderSearch(),
       ...getColumnSearchProps('barcode')
     },
@@ -188,6 +191,28 @@ const PriceTable = (props) => {
       title: 'Số lượng tồn kho',
       dataIndex: 'stock',
       key: 'stock',
+      ...renderSearch(),
+    },
+    {
+      title: 'Ngành hàng',
+      dataIndex: 'product_category',
+      key: 'product_category',
+      filters: props.dataCategory.map(elm => {
+        const _elm = {
+          "text": elm.name,
+          "value": elm.name,
+        }
+        return _elm
+      }),
+      filteredValue: props.filteredInfo.product_category || null,
+      onFilter: (value, record) => record.product_category && record.product_category.toString().includes(value),
+      render: (product_category) => (
+        <span>
+              <Tag color='geekblue' key={product_category}>
+                {product_category}
+              </Tag>
+        </span>
+      ),
       ...renderSearch(),
     },
     {

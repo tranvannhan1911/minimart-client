@@ -133,6 +133,10 @@ const OrderItem = (props) => {
 
     const changeUnitExchange = (item, name, key) => {
         const _productlist = form.getFieldValue("productlist")
+        if(item.price == null){
+            message.error("Không có giá của đơn vị tính này !!")
+            // return;
+        }
         _productlist[name].price = item.price
         _productlist[name].total = item.price * _productlist[name].quantity
         _productlist[name].unit_exchange_value = item.unit_exchange_value
