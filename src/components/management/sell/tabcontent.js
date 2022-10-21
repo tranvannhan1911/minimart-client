@@ -20,6 +20,7 @@ const TabContent = (props) => {
     const [plOrder, setPlOrder] = useState();
     const [totalProduct, setTotalProduct] = useState(0);
     const [total, setTotal] = useState(0);
+    const [moneyGiven, setMoneyGiven] = useState(0);
     const [moneyChange, setMoneyChange] = useState(0);
     const [voucher, setVoucher] = useState(0);
     const [reset, setReset] = useState(false);
@@ -270,6 +271,11 @@ const TabContent = (props) => {
         }
     }, [totalProduct])
 
+    useEffect(() => {
+        form.setFieldValue("money_given", total)
+        console.log("setMoneyGiven", total)
+    }, [total])
+
     const pickPromotionOrder = (pl) => {
         console.log(pl)
         setPlOrder(pl)
@@ -469,7 +475,10 @@ const TabContent = (props) => {
                     <div className='sb'>
                         <div>
                             <Form.Item label="Tiền khách đưa" name='money_given'>
-                                <InputNumber step={1000} min='0' onChange={(value) => calculateMoneyChange(value)} />
+                                <InputNumber step={1000} min='0' value={moneyGiven} onChange={(value) => {
+                                    setMoneyGiven(value)
+                                    calculateMoneyChange(value)
+                                    }} />
                             </Form.Item>
                         </div>
                         <div>

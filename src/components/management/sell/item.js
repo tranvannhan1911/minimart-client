@@ -37,7 +37,7 @@ const OrderItem = (props) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [plProduct, setPlProduct] = useState();
     const refQuantityBuy = useRef();
-    const [quantityBuy, setQuantityBuy] = useState();
+    const [quantityBuy, setQuantityBuy] = useState(1);
     const [quantityInUse, setQuantityInUse] = useState({});
 
     const showModal = () => {
@@ -154,7 +154,7 @@ const OrderItem = (props) => {
     const enterQuantity = () => {
         // addProduct(idProduct, value)
         // const value = quantityBuy.current.input.value\
-        const value = quantityBuy
+        const value = Number(quantityBuy)
         setQuantityBuy(1)
         console.log("enterQuantity", value)
         setIsModalOpen(false)
