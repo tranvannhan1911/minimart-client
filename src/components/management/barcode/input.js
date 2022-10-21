@@ -26,7 +26,7 @@ const ProductSelect = (props) => {
           var results = response.data.data.results
           if(props.sellable){
             results = results.filter(elm => {
-              return elm.have_price;
+              return elm.have_price && elm.stock > 0;
             })
           }
           const options = results.map(elm => {
