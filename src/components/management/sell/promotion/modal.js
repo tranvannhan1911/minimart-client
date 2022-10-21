@@ -70,6 +70,7 @@ const PromotionPicker = (props) => {
                 }
             }
             const response = await api.promotion_line.by_type(params)
+            console.log("handlePromotionLineByTypeOrder", response)
             setData(response.data.data.results)
             setStableData(response.data.data.results)
         }catch{
@@ -154,7 +155,11 @@ const PromotionPicker = (props) => {
                             }else
                                 benefitText = `Được giảm: ${item.benefit}`
                         }else if(props.type == "Product"){
-                            if (item.benefit <= 0 || props.product.promotion_line == item.id){
+                            if (item.actual_received <= 0){
+                                disabled = true;
+                                benefitText = `Không đủ điều kiện`
+                                btnText = "Sử dụng"
+                            }else if(props.product.promotion_line == item.id){
                                 disabled = true;
                                 btnText = "Đang sử dụng"
                             }else{

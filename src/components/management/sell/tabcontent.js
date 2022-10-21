@@ -3,7 +3,7 @@ import {
 } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Input, Select, message, Space, 
-    Row, Col, } from 'antd';
+    Row, Col, InputNumber} from 'antd';
 import OrderItem from './item';
 import api from '../../../api/apis';
 import messages from '../../../utils/messages';
@@ -20,6 +20,7 @@ const TabContent = (props) => {
     const [plOrder, setPlOrder] = useState();
     const [totalProduct, setTotalProduct] = useState(0);
     const [total, setTotal] = useState(0);
+    const [moneyGiven, setMoneyGiven] = useState(0);
     const [moneyChange, setMoneyChange] = useState(0);
     const [voucher, setVoucher] = useState(0);
     const [reset, setReset] = useState(false);
@@ -126,7 +127,7 @@ const TabContent = (props) => {
     }, [props.customerOptions])
 
     const calculateMoneyChange = (value) => {
-        setMoneyChange(Number(value) - Number(totalProduct));
+        setMoneyChange(Number(value) - Number(total));
     };
 
     const onFinish = async () => {
@@ -270,6 +271,11 @@ const TabContent = (props) => {
         }
     }, [totalProduct])
 
+    useEffect(() => {
+        form.setFieldValue("money_given", total)
+        console.log("setMoneyGiven", total)
+    }, [total])
+
     const pickPromotionOrder = (pl) => {
         console.log(pl)
         setPlOrder(pl)
@@ -319,6 +325,35 @@ const TabContent = (props) => {
         handleDataCustomer();
     }
 
+    useEffect(() => {
+        autoPickPromotion()
+    }, [totalProduct, customerId])
+    
+    const autoPickPromotion = async () => {
+        console.log("autoPickPromotion Order", totalProduct, customerId)
+        if(!plOrder){ // chưa áp dụng mã
+            const params = {
+                params: {
+                    type: "Order",
+                    customer_id: customerId,
+                    amount: totalProduct
+                }
+            }
+            const response = await api.promotion_line.by_type(params)
+            console.log("autoPickPromotion Order", response)
+            if (response.data.code == 1){
+                for(var i=0; i<response.data.data.count; i++){
+                    if(response.data.data.results[i].benefit > 0){
+                        pickPromotionOrder(response.data.data.results[i])
+                        return
+                    }
+                }
+                
+            }
+        }
+
+    }
+
     return (
 
         <Form
@@ -356,6 +391,7 @@ const TabContent = (props) => {
                     <Form.Item label="Khách hàng" name="customer" >
                         <Select
                             showSearch
+                            allowClear
                             defaultValue={customerId}
                             style={{
                                 width: '100%',
@@ -401,7 +437,7 @@ const TabContent = (props) => {
                         }}>
                             <TagOutlined
                                 twoToneColor="#eb2f96"
-                            /> Thêm khuyến mãi</span>
+                            /> Chọn khuyến mãi</span>
 
                         {plOrder ?
                             <>
@@ -439,7 +475,10 @@ const TabContent = (props) => {
                     <div className='sb'>
                         <div>
                             <Form.Item label="Tiền khách đưa" name='money_given'>
-                                <Input type='number' min='0' onChange={(e) => calculateMoneyChange(e.target.value)} />
+                                <InputNumber step={1000} min='0' value={moneyGiven} onChange={(value) => {
+                                    setMoneyGiven(value)
+                                    calculateMoneyChange(value)
+                                    }} />
                             </Form.Item>
                         </div>
                         <div>

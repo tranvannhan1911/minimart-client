@@ -398,7 +398,7 @@ const PromotionLineModal = (props) => {
               name="type"
               label="Loại khuyến mãi"
             >
-              <Select defaultValue='Product' onChange={(option) => selectType(option)}>
+              <Select defaultValue='Product' onChange={(option) => selectType(option)} disabled={is_create ? false : true} >
                 <Option value="Percent">Chiết khấu</Option>
                 <Option value="Product">Sản phẩm</Option>
                 <Option value="Fixed">Tiền</Option>
@@ -460,6 +460,7 @@ const PromotionLineModal = (props) => {
                   // width: 150,
                 }}
                 filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+                disabled={is_create ? false : true} 
               >
                 {baseProductGroupOptions}
               </Select>
@@ -497,6 +498,7 @@ const PromotionLineModal = (props) => {
                   // width: 150,
                 }}
                 filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+                disabled={is_create ? false : true} 
               >
                 {baseProductOptions}
               </Select>

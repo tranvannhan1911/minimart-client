@@ -266,6 +266,7 @@ const PriceTable = (props) => {
       title: '',
       dataIndex: 'price_list_id',
       key: 'price_list_id',
+      width: '10%',
       render: (price_list_id) => (
         <Space>
           <Button
