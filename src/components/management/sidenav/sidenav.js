@@ -3,7 +3,8 @@ import {
   UserOutlined, 
   TagsOutlined,
   ShoppingCartOutlined,
-  InboxOutlined
+  InboxOutlined,
+  DashboardOutlined
 } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { useNavigate } from 'react-router-dom'
@@ -132,6 +133,7 @@ const SideNav = (props) => {
 
   useEffect(() => {
     var _items = [
+      getItem('Dashboard', '', <DashboardOutlined />,),
       getItem('Bán hàng', 'quan-ly-ban-hang', <ShoppingCartOutlined />, [
         getChildItem('Bán hàng', 'ban-hang'),
         getChildItem('Đơn bán hàng', 'don-ban-hang'),

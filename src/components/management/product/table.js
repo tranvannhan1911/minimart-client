@@ -189,9 +189,10 @@ const PriceTable = (props) => {
       ...getColumnSearchProps('barcode')
     },
     {
-      title: 'Số lượng tồn kho',
+      title: 'Số lượng tồn kho (DVT cơ bản)',
       dataIndex: 'stock',
       key: 'stock',
+      width:"12%",
       ...renderSearch(),
     },
     {
@@ -285,6 +286,7 @@ const PriceTable = (props) => {
       //   selectedRowKeys,
       //   onChange: onSelectChange
       // }}
+      size='small'
       bordered
       columns={columns}
       dataSource={props.data}

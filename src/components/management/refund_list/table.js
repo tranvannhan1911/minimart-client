@@ -297,6 +297,7 @@ const RefundTable = (props) => {
       //   ),
       //   rowExpandable: (record) => record.id !== 'Not Expandable',
       // }}
+      size='small'
       bordered
       columns={columns}
       dataSource={props.data}

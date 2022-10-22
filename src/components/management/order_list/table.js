@@ -286,6 +286,7 @@ const OrderTable = (props) => {
       //   selectedRowKeys,
       //   onChange: onSelectChange
       // }}
+      size='small'
       bordered
       columns={columns}
       dataSource={props.data}

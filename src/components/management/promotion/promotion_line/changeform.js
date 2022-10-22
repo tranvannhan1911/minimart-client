@@ -652,7 +652,7 @@ const PromotionChangeForm = (props) => {
               </span>
             </Row>
             <Col>
-              <Table columns={columns} dataSource={dataLine}>
+              <Table columns={columns} dataSource={dataLine} size='small'>
 
               </Table>
             </Col>

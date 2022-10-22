@@ -203,8 +203,8 @@ const WarehouseTransactionTable = (props) => {
     },
     {
       title: 'Đơn vị tính',
-      dataIndex: 'unit_exchange',
-      key: 'unit_exchange',
+      dataIndex: 'unit',
+      key: 'unit',
     },
     {
       title: 'Loại thay đổi',
@@ -286,6 +286,7 @@ const WarehouseTransactionTable = (props) => {
         //   selectedRowKeys,
         //   onChange: onSelectChange
         // }}
+        size='small'
         columns={columns}
         dataSource={props.data}
         onChange={handleChange}

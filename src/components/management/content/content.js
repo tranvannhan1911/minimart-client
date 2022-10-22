@@ -44,6 +44,8 @@ const StatisticsRecord = lazy(() => import("../statistics/record"));
 const CategoryListForm = lazy(() => import("../category/listform"));
 const CategoryChangeForm = lazy(() => import("../category/changeform"));
 
+const Dashboard= lazy(() => import("../dashboard/dashboard"));
+
 const MyContent = (props) => {
     const [container, setContainer] = useState(null);
     const [breadcrumb, setBreadcrumb] = useState(false);
@@ -121,7 +123,7 @@ const MyContent = (props) => {
                 <Suspense fallback={<Loading />}>
                     <Routes >
 
-                        <Route path="" key="" element={<ListForm title="Chung" />} />
+                        <Route path="" key="" element={<Dashboard title="Chung" />} />
                         
                         <Route path={paths.customer.rlist} key={paths.customer.key}
                             element={<CustomerListForm setBreadcrumb={setBreadcrumb}  {...props}/>} />

@@ -233,6 +233,7 @@ const SupplierTable = (props) => {
       //   selectedRowKeys,
       //   onChange: onSelectChange
       // }} 
+      size='small'
       columns={columns}
       dataSource={props.data}
       onChange={handleChange}

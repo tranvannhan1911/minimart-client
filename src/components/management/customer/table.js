@@ -143,6 +143,7 @@ const CustomerTable = (props) => {
       title: 'Mã khách hàng',
       dataIndex: 'id',
       key: 'id',
+      width:'10%',
       sorter: {
         compare: (a, b) => a.id > b.id,
         multiple: 1
@@ -256,6 +257,7 @@ const CustomerTable = (props) => {
       //   selectedRowKeys,
       //   onChange: onSelectChange
       // }}
+      size="small"
       columns={columns}
       dataSource={props.data}
       onChange={handleChange}
