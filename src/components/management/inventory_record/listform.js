@@ -3,7 +3,7 @@ import {
     SearchOutlined
 } from '@ant-design/icons';
 import { Button, Input, message, DatePicker } from 'antd';
-import React, { useState, useEffect,  } from 'react';
+import React, { useState, useEffect, } from 'react';
 import ListForm from '../templates/listform';
 import InventoryRecordTable from './table';
 import api from '../../../api/apis'
@@ -12,6 +12,7 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
 import ShowForPermission from '../../basic/permission';
+import { ExportTemplateReactCSV } from '../../../utils/exportTemplate';
 
 const { RangePicker } = DatePicker;
 
@@ -110,14 +111,24 @@ const InventoryRecordListForm = (props) => {
                 title="Phiếu kiểm kê"
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                    
+
                     <ShowForPermission>
-                        <ExportReactCSV csvData={data} fileName='inventoryrecord.xlsx'
+                        <ExportReactCSV csvData={data} fileName='ds_kiem_ke.xlsx'
                             header={[
                                 { label: 'Mã', key: 'id' },
                                 { label: 'Ngày kiểm kê', key: 'date_created' },
                                 { label: 'Trạng thái', key: 'status' },
                                 { label: 'Ghi chú', key: 'note' },
+                            ]}
+                        />
+                    </ShowForPermission>,
+                    <ShowForPermission>
+                        <ExportTemplateReactCSV csvData={[]} fileName='template_kiem_ke.xlsx'
+                            header={[
+                                { label: 'maSP', key: 'maSP' },
+                                { label: 'soluong', key: 'soluong' },
+                                { label: 'ghichu', key: 'ghichu' },
+                                { label: '(So luong theo don vi co ban)', key: 'note' },
                             ]}
                         />
                     </ShowForPermission>,
@@ -134,10 +145,10 @@ const InventoryRecordListForm = (props) => {
                     searchInfo={searchInfo}
                     setSearchInfo={setSearchInfo}
                     sortedInfo={sortedInfo}
-                    setSortedInfo={setSortedInfo} 
+                    setSortedInfo={setSortedInfo}
                     dataSearchId={searchId}
                     clearFiltersAndSort={clearFiltersAndSort}
-                    />}
+                />}
                 extra_actions={[
                     <Input
                         placeholder="Tìm kiếm phiếu kiểm kê"

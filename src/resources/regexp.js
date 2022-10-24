@@ -23,5 +23,8 @@ export const validCodeSupplier = new RegExp(
 export const validCode = new RegExp(
     '^[A-Z]{3}[0-9]{3}$'
 );
+export const validNumber = new RegExp(
+    '^[0-9]{1,20}$'
+);
 
 

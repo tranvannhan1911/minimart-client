@@ -1,10 +1,10 @@
 import {
   PlusOutlined, EditOutlined,
-  MinusCircleOutlined, HistoryOutlined
+  MinusCircleOutlined, HistoryOutlined, UploadOutlined
 } from '@ant-design/icons';
 import {
   Button, Form, Input, Select, message, Space, Popconfirm,
-  Col, Row, Typography
+  Col, Row, Typography, Upload, notification
 } from 'antd';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -15,6 +15,9 @@ import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import ProductSelect from '../barcode/input';
+import * as XLSX from 'xlsx';
+import { CSVLink } from 'react-csv'
+import { validNumber } from '../../../resources/regexp';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -29,11 +32,13 @@ const InventoryRecordChangeForm = (props) => {
   const [formPrice] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
   const [baseProductOptions, setBaseProductOptions] = useState([]);
+  const [dataError, setDataError] = useState([])
   const [loadingData, setLoadingData] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
   const [idxBtnSave, setIdxBtnSave] = useState([]);
   const [baseUnitOptions, setBaseUnitOptions] = useState([]);
   const [priceList, setPriceList] = useState([]);
+  const [dataProduct, setDataProduct] = useState([]); // create
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,6 +50,100 @@ const InventoryRecordChangeForm = (props) => {
   // const onChange = (checked) => {
   //   console.log(`switch to ${checked}`);
   // };
+
+  const uploadData = {
+    async beforeUpload(file) {
+      // console.log(file.name)
+      var typeFile = file.name.split('.').pop().toLowerCase();
+      if (typeFile == "xlsx" || typeFile == "csv") {
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data);
+
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+        setDataError([]);
+        let datadetail = [];
+        let dataFormDetails = form.getFieldValue("details");
+        if (dataFormDetails != null) {
+          dataFormDetails.forEach(elmm => {
+            datadetail.push(elmm);
+          });
+        }
+        let resultTotal = 0;
+        let dataerrorr = [];
+        for (let index = 0; index < jsonData.length; index++) {
+          let result = false;
+          const element = jsonData[index];
+          let loi = "";
+          if (!validNumber.test(element.soluong)) {
+            loi = "So luong phai la so, ";
+          }
+          dataProduct.forEach(elementt => {
+            if (elementt.product_code == element.maSP || elementt.barcode == element.maSP) {
+              if (validNumber.test(element.soluong)) {
+                let indexx = {
+                  key: elementt.id,
+                  product: elementt.name,
+                  unit: elementt.base_unit.name,
+                  quantity_before_int: elementt.stock,
+                  quantity_before: `${elementt.stock} ${elementt.base_unit.name}`,
+                  quantity_after: element.soluong,
+                  diff: element.soluong - elementt.stock + ` ${elementt.base_unit.name}`,
+
+                };
+                dataerrorr.push({
+                  "maSP": element.maSP,
+                  "soluong": element.soluong,
+                  "ghichu": element.ghichu,
+                  "loi": ""
+                });
+                datadetail.push(indexx);
+                result = true;
+                resultTotal++;
+              } else {
+                result = true;
+              }
+            }
+          });
+          if (result == false) {
+            notification.open({
+              message: 'Lỗi tải dữ liệu',
+              description:
+                'Không tìm thấy mã sản phẩm ' + element.maSP + " để thêm dữ liệu !!",
+              // duration: 0,
+            });
+            loi += "Ma san pham khong chinh xac, ";
+
+          }
+          if (loi != "") {
+            dataerrorr.push({
+              "maSP": element.maSP,
+              "soluong": element.soluong,
+              "ghichu": element.ghichu,
+              "loi": loi
+            });
+          }
+          if (index == jsonData.length - 1) {
+            setDataError(dataerrorr);
+            if (resultTotal == jsonData.length) {
+              message.success("Xong quá trình thêm dữ liệu");
+              form.setFieldValue("details", datadetail)
+            } else {
+              message.error("Dữ liệu lỗi!!");
+              setTimeout(() => {
+                document.getElementById("excelExport").click();
+              }, 500);
+            }
+          }
+        }
+      } else {
+        message.error("Chỉ nhập dữ liệu bằng file .csv, .xlsx");
+        return;
+      }
+
+    }
+  };
 
   const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
@@ -84,7 +183,7 @@ const InventoryRecordChangeForm = (props) => {
 
   const create = async (values) => {
     values.details.map(item => {
-      item.product = item.id
+      item.product = item.key
       return item
     })
     try {
@@ -149,6 +248,12 @@ const InventoryRecordChangeForm = (props) => {
     if (values.status == null) {
       values.status = "pending";
     }
+    if (values.details == null) {
+      message.error("Không thể tạo phiếu kiểm kê trống!")
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
+    }
     if (is_create) {
       await create(values)
     } else {
@@ -209,6 +314,7 @@ const InventoryRecordChangeForm = (props) => {
     setLoadingData(true)
     try {
       const response = await api.product.list();
+      setDataProduct(response.data.data.results);
       const options = response.data.data.results.map(elm => {
         return (
           <Option key={elm.id} value={elm.id}>{elm.name}</Option>
@@ -338,7 +444,7 @@ const InventoryRecordChangeForm = (props) => {
       }
       add(value)
       // handleDataBaseUnit(response.data.data.units)
-    }else {
+    } else {
       message.error(messages.ERROR_REFRESH)
     }
   }
@@ -346,7 +452,7 @@ const InventoryRecordChangeForm = (props) => {
   const handleDiff = (key, name) => {
     const _details = form.getFieldValue("details")
     _details[name].diff = _details[name].quantity_after - _details[name].quantity_before_int
-    console.log("handleDiff", _details[name].quantity_after, 
+    console.log("handleDiff", _details[name].quantity_after,
       _details[name].quantity_before_int, _details[name].diff)
     _details[name].diff = `${_details[name].diff} ${_details[name].base_unit.name}`
     form.setFieldValue("details", _details)
@@ -401,14 +507,16 @@ const InventoryRecordChangeForm = (props) => {
               <Col>
                 <label><h2 style={{ marginTop: '10px', marginBottom: '30px', textAlign: 'center' }}>Kiểm kê</h2></label>
 
-                <Form.List name="details" label="Bảng giá sản phẩm">
+                <Form.List name="details" label="Bảng sản phẩm">
                   {(fields, { add, remove }) => (
                     <>
-                      {is_create ? <ProductSelect
+                      {is_create ? <><ProductSelect
                         style={{
                           marginBottom: '20px'
                         }}
-                        onSelectProduct={(value) => onSelectProduct(value, add)}/> : null }
+                        onSelectProduct={(value) => onSelectProduct(value, add)} /><Upload showUploadList={false} {...uploadData} style={{}}>
+                          <Button icon={<UploadOutlined />}>Nhập Excel</Button>
+                        </Upload></> : null}
                       <Row>
                         <Col span={1}></Col>
                         <Col span={5} style={titleCol}>
@@ -467,10 +575,10 @@ const InventoryRecordChangeForm = (props) => {
                               >
                                 {baseProductOptions}
                               </Select> */}
-                              
-                              <Input 
+
+                              <Input
                                 disabled={true}
-                                className='inputDisableText'/>
+                                className='inputDisableText' />
                             </Form.Item>
 
                           </Col>
@@ -483,9 +591,9 @@ const InventoryRecordChangeForm = (props) => {
                                 textAlign: 'left'
                               }}
                             >
-                              <Input readOnly value={quantity} 
-                                key={key} disabled={true} 
-                                placeholder="Số lượng tồn" className='inputDisableText'/>
+                              <Input readOnly value={quantity}
+                                key={key} disabled={true}
+                                placeholder="Số lượng tồn" className='inputDisableText' />
                             </Form.Item>
                           </Col>
                           <Col span={1}></Col>
@@ -503,9 +611,9 @@ const InventoryRecordChangeForm = (props) => {
                                 textAlign: 'left'
                               }}
                             >
-                              <Input placeholder="Số lượng thực tế" min='0' type='number' 
+                              <Input placeholder="Số lượng thực tế" min='0' type='number'
                                 disabled={is_create ? false : true}
-                                onChange={() => {handleDiff(key, name)}}/>
+                                onChange={() => { handleDiff(key, name) }} />
                             </Form.Item>
 
                           </Col>
@@ -601,7 +709,7 @@ const InventoryRecordChangeForm = (props) => {
 
         </ChangeForm>
       }
-
+      <CSVLink data={dataError} filename='dataerror.xlsx' id="excelExport"></CSVLink>
 
     </>
   )

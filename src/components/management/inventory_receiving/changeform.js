@@ -1,9 +1,9 @@
 import {
-  PlusOutlined, EditOutlined, MinusCircleOutlined, HistoryOutlined
+  PlusOutlined, EditOutlined, MinusCircleOutlined, HistoryOutlined, UploadOutlined
 } from '@ant-design/icons';
 import {
   Button, Form, Input, Select, message, Space, Popconfirm,
-  Col, Row, Typography, InputNumber
+  Col, Row, Typography, InputNumber, Upload, notification
 } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
@@ -13,6 +13,9 @@ import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import ProductSelect from '../barcode/input';
+import * as XLSX from 'xlsx';
+import { CSVLink } from 'react-csv'
+import { validNumber } from '../../../resources/regexp';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -25,6 +28,7 @@ const InventoryReceivingChangeForm = (props) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
+  const [dataError, setDataError] = useState([])
   const [baseProductOptions, setBaseProductOptions] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
@@ -32,10 +36,116 @@ const InventoryReceivingChangeForm = (props) => {
   const [baseUnitOptions, setBaseUnitOptions] = useState([]);
   const [baseSupplierOptions, setBaseSupplierOptions] = useState([]);
   const [detailss, setDetailss] = useState([]); // create
+  const [dataProduct, setDataProduct] = useState([]); // create
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const [is_status, setStatus] = useState(null);
   const refAutoFocus = useRef(null)
+
+  const uploadData = {
+    async beforeUpload(file) {
+      // console.log(file.name)
+      var typeFile = file.name.split('.').pop().toLowerCase();
+      if (typeFile == "xlsx" || typeFile == "csv") {
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data);
+
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+        setDataError([]);
+        let datadetail = [];
+        let dataFormDetails = form.getFieldValue("details");
+        if (dataFormDetails != null) {
+          dataFormDetails.forEach(elmm => {
+            datadetail.push(elmm);
+          });
+        }
+        let resultTotal = 0;
+        let dataerrorr = [];
+        for (let index = 0; index < jsonData.length; index++) {
+          let result = false;
+          const element = jsonData[index];
+          let loi = "";
+          if ((!validNumber.test(element.soluong)) || (!validNumber.test(element.gia))) {
+            loi = "So luong va gia phai la so,  ";
+          }
+          dataProduct.forEach(elementt => {
+            if (elementt.product_code == element.maSP || elementt.barcode == element.maSP) {
+              if (validNumber.test(element.soluong) && validNumber.test(element.gia)) {
+                let unit = "";
+                let unitname = "";
+                elementt.units.forEach(elm => {
+                  if (elm.is_base_unit == true) {
+                    unit = elm.id;
+                    unitname = elm.unit_name;
+                  }
+                })
+                let indexx = {
+                  "key": elementt.id,
+                  "quantity": element.soluong,
+                  "quantity_base_unit": element.soluong + " " + unitname,
+                  "price": element.gia,
+                  "note": element.ghichu,
+                  "product": elementt.name,
+                  "unit_exchange": unit,
+                  "product_obj": elementt
+                };
+                dataerrorr.push({
+                  "maSP": element.maSP,
+                  "soluong": element.soluong,
+                  "gia": element.gia,
+                  "ghichu": element.ghichu,
+                  "loi": ""
+                });
+                handleDataBaseUnit(elementt.units)
+                datadetail.push(indexx);
+                result = true;
+                resultTotal++;
+              } else {
+                result = true;
+              }
+            }
+          });
+          if (result == false) {
+            notification.open({
+              message: 'Lỗi tải dữ liệu',
+              description:
+                'Không tìm thấy mã sản phẩm ' + element.maSP + " để thêm dữ liệu !!",
+              // duration: 50,
+            });
+
+            loi = loi + "Ma san pham khong chinh xac, ";
+          }
+          if (loi != '') {
+            dataerrorr.push({
+              "maSP": element.maSP,
+              "soluong": element.soluong,
+              "gia": element.gia,
+              "ghichu": element.ghichu,
+              "loi": loi
+            });
+          }
+          if (index == jsonData.length - 1) {
+            if (resultTotal == jsonData.length) {
+              message.success("Xong quá trình thêm dữ liệu");
+              form.setFieldValue("details", datadetail)
+            } else {
+              setDataError(dataerrorr);
+              message.error("Dữ liệu lỗi!!");
+              setTimeout(() => {
+                document.getElementById("excelExport").click();
+              }, 500);
+            }
+          }
+        }
+      } else {
+        message.error("Chỉ nhập dữ liệu bằng file .csv, .xlsx");
+        return;
+      }
+
+    }
+  };
 
   const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
@@ -75,10 +185,11 @@ const InventoryReceivingChangeForm = (props) => {
 
   const create = async (values) => {
     values.details.map(item => {
-      item.product = item.id
+      item.product = item.key
       item.quantity_base_unit = 0
       return item
     })
+    console.log(values)
 
     try {
       const response = await api.inventory_receiving.add(values);
@@ -144,6 +255,12 @@ const InventoryReceivingChangeForm = (props) => {
     // console.log("values1", values)
     if (values.status == null) {
       values.status = "pending";
+    }
+    if (values.details == null) {
+      message.error("Không thể tạo phiếu nhập hàng trống!")
+      setDisableSubmit(false)
+      stopLoading(idxBtnSave)
+      return;
     }
     if (is_create) {
 
@@ -233,6 +350,7 @@ const InventoryReceivingChangeForm = (props) => {
     setLoadingData(true)
     try {
       const response = await api.product.list();
+      setDataProduct(response.data.data.results);
       const options = response.data.data.results.map(elm => {
         return (
           <Option key={elm.id} value={elm.id}>{elm.name}</Option>
@@ -339,10 +457,10 @@ const InventoryReceivingChangeForm = (props) => {
       var base_unit_exchange;
       var unit_exchange_value;
       response.data.data.units.forEach(element => {
-          if (element.is_base_unit == true) {
-              base_unit_exchange = element.id;
-              unit_exchange_value = element.value;
-          }
+        if (element.is_base_unit == true) {
+          base_unit_exchange = element.id;
+          unit_exchange_value = element.value;
+        }
       });
 
       const value = {
@@ -356,7 +474,7 @@ const InventoryReceivingChangeForm = (props) => {
       }
       add(value)
       handleDataBaseUnit(response.data.data.units)
-    }else {
+    } else {
       message.error(messages.ERROR_REFRESH)
     }
   }
@@ -367,11 +485,11 @@ const InventoryReceivingChangeForm = (props) => {
 
     baseUnitOptions[name].forEach(option => {
       console.log(option)
-      if(option.props.id == _details[name].unit_exchange){
+      if (option.props.id == _details[name].unit_exchange) {
         _details[name].unit_exchange_value = option.props.unit_exchange_value
       }
     })
-    _details[name].quantity_base_unit = ""+ String(_details[name].quantity * _details[name].unit_exchange_value) + " "+ _details[name].base_unit.name
+    _details[name].quantity_base_unit = "" + String(_details[name].quantity * _details[name].unit_exchange_value) + " " + _details[name].base_unit.name
     form.setFieldValue("details", _details)
   }
 
@@ -475,17 +593,21 @@ const InventoryReceivingChangeForm = (props) => {
 
             </>
               <Col>
-                <label><h2 style={{ marginTop: '10px', marginBottom: '30px', textAlign: 'center' }}>Sản phẩm nhập</h2></label>
+                <label><h2 style={{ marginTop: '10px', marginBottom: '30px', textAlign: 'center' }}>Sản phẩm nhập</h2>
+
+                </label>
 
                 <Form.List name="details" label="Sản phẩm nhập">
                   {(fields, { add, remove }) => (
                     <>
-                      {is_create ? <ProductSelect
+                      {is_create ? <><ProductSelect
                         style={{
                           marginBottom: '20px'
                         }}
-                        onSelectProduct={(value) => onSelectProduct(value, add)}/> : null }
-                      <Row style={{marginBottom: '20px'}}>
+                        onSelectProduct={(value) => onSelectProduct(value, add)} /><Upload showUploadList={false} {...uploadData} style={{}}>
+                          <Button icon={<UploadOutlined />}>Nhập Excel</Button>
+                        </Upload></> : null}
+                      <Row style={{ marginBottom: '20px' }}>
                         <Col span={1}></Col>
                         <Col span={5} style={titleCol}>
                           <Typography.Text>Sản phẩm</Typography.Text>
@@ -499,9 +621,9 @@ const InventoryReceivingChangeForm = (props) => {
                           <Typography.Text>Số lượng</Typography.Text>
                         </Col>
                         <Col span={1}></Col>
-                          <Col span={2} style={titleCol}>
-                            <Typography.Text>Số lượng đơn vị cơ bản</Typography.Text>
-                          </Col>
+                        <Col span={2} style={titleCol}>
+                          <Typography.Text>Số lượng đơn vị cơ bản</Typography.Text>
+                        </Col>
                         <Col span={1}></Col>
                         <Col span={2} style={titleCol}>
                           <Typography.Text>Giá nhập</Typography.Text>
@@ -515,25 +637,25 @@ const InventoryReceivingChangeForm = (props) => {
                       <div style={{
                         maxHeight: '350px',
                         overflow: 'auto'
-                      }}> 
-                      {fields.map(({ key, name, ...restField }) => (
-                        <Row>
-                          <Col span={1}></Col>
-                          <Col span={5}>
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'product']}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: 'Vui lòng chọn sản phẩm!',
-                                },
-                              ]}
-                              style={{
-                                textAlign: 'left'
-                              }}
-                            >
-                              {/* <Select
+                      }}>
+                        {fields.map(({ key, name, ...restField }) => (
+                          <Row>
+                            <Col span={1}></Col>
+                            <Col span={5}>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'product']}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: 'Vui lòng chọn sản phẩm!',
+                                  },
+                                ]}
+                                style={{
+                                  textAlign: 'left'
+                                }}
+                              >
+                                {/* <Select
                                 showSearch
                                 onChange={(option) => onUnitSelect(option)}
                                 placeholder="Sản phẩm"
@@ -546,130 +668,130 @@ const InventoryReceivingChangeForm = (props) => {
                               >
                                 {baseProductOptions}
                               </Select> */}
-                              <Input 
-                                disabled={true}
-                                className='inputDisableText'/>
-                            </Form.Item>
-                          </Col>
-                          <Col span={1}></Col>
-                          <Col span={3}>
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'unit_exchange']}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: 'Vui lòng chọn đơn vị tính!',
-                                },
-                              ]}
-                              style={{
-                                textAlign: 'left'
-                              }}
-                            >
-                              <Select
-                                showSearch
-                                placeholder="Đơn vị tính"
-                                optionFilterProp="children"
-                                filterOption={(input, option) => option.children.includes(input)}
-                                filterSort={(optionA, optionB) =>
-                                  optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
-                                }
-                                disabled={is_create ? false : true}
-                                onChange={() => calQuantityBaseUnit(key, name)}
+                                <Input
+                                  disabled={true}
+                                  className='inputDisableText' />
+                              </Form.Item>
+                            </Col>
+                            <Col span={1}></Col>
+                            <Col span={3}>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'unit_exchange']}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: 'Vui lòng chọn đơn vị tính!',
+                                  },
+                                ]}
+                                style={{
+                                  textAlign: 'left'
+                                }}
                               >
-                                {baseUnitOptions[name]}
-                              </Select>
-                            </Form.Item>
-                          </Col>
-                          <Col span={1}></Col>
-                          <Col span={2}>
+                                <Select
+                                  showSearch
+                                  placeholder="Đơn vị tính"
+                                  optionFilterProp="children"
+                                  filterOption={(input, option) => option.children.includes(input)}
+                                  filterSort={(optionA, optionB) =>
+                                    optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                                  }
+                                  disabled={is_create ? false : true}
+                                  onChange={() => calQuantityBaseUnit(key, name)}
+                                >
+                                  {baseUnitOptions[name]}
+                                </Select>
+                              </Form.Item>
+                            </Col>
+                            <Col span={1}></Col>
+                            <Col span={2}>
 
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'quantity']}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: 'Vui lòng nhập số lượng!',
-                                },
-                                {
-                                  type: 'number',
-                                  min: 1,
-                                  message: 'Số lượng tối thiểu là 1',
-                                },
-                              ]}
-                            >
-                              {/* <Input placeholder="Số lượng" type='number' min='0' disabled={is_create ? false : true} /> */}
-                              <InputNumber
-                                placeholder="Số lượng" type='number' 
-                                min='1' disabled={is_create ? false : true}
-                                onChange={() => calQuantityBaseUnit(key, name)}/>
-                            </Form.Item>
-                          </Col>
-                          <Col span={1}></Col>
-                          <Col span={2}>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'quantity']}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: 'Vui lòng nhập số lượng!',
+                                  },
+                                  {
+                                    type: 'number',
+                                    min: 1,
+                                    message: 'Số lượng tối thiểu là 1',
+                                  },
+                                ]}
+                              >
+                                {/* <Input placeholder="Số lượng" type='number' min='0' disabled={is_create ? false : true} /> */}
+                                <InputNumber
+                                  placeholder="Số lượng" type='number'
+                                  min='1' disabled={is_create ? false : true}
+                                  onChange={() => calQuantityBaseUnit(key, name)} />
+                              </Form.Item>
+                            </Col>
+                            <Col span={1}></Col>
+                            <Col span={2}>
 
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'quantity_base_unit']}
-                            >
-                              <Input placeholder="Số lượng đơn vị tính cơ bản" disabled className='inputDisableText'/>
-                            </Form.Item>
-                          </Col>
-                          <Col span={1}></Col>
-                          <Col span={2}>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'quantity_base_unit']}
+                              >
+                                <Input placeholder="Số lượng đơn vị tính cơ bản" disabled className='inputDisableText' />
+                              </Form.Item>
+                            </Col>
+                            <Col span={1}></Col>
+                            <Col span={2}>
 
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'price']}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: 'Vui lòng nhập giá!',
-                                },
-                              ]}
-                            >
-                              <Input placeholder="Giá" type='number' min='0' disabled={is_create ? false : true} />
-                            </Form.Item>
-                          </Col>
-                          <Col span={1}></Col>
-                          <Col span={3}>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'price']}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: 'Vui lòng nhập giá!',
+                                  },
+                                ]}
+                              >
+                                <Input placeholder="Giá" type='number' min='0' disabled={is_create ? false : true} />
+                              </Form.Item>
+                            </Col>
+                            <Col span={1}></Col>
+                            <Col span={3}>
 
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'note']}
-                            // rules={[
-                            //   {
-                            //     required: true,
-                            //     message: 'Vui lòng nhập ghi chú!',
-                            //   },
-                            // ]}
-                            >
-                              <Input placeholder="Ghi chú" disabled={is_create ? false : true} />
-                            </Form.Item>
-                          </Col>
-                          <Col span={1}>
-                          <Popconfirm
-                              placement="bottomRight"
-                              title="Xác nhận xóa sản phẩm này"
-                              onConfirm={() => {
-                                remove(name)
-                                var _baseUnitOptions = [...baseUnitOptions]
-                                _baseUnitOptions.splice(name, 1)
-                                setBaseUnitOptions(_baseUnitOptions)
-                              }}
-                              okText="Đồng ý"
-                              okType="danger"
-                              cancelText="Hủy bỏ"
-                              disabled={is_create ? false : true}
-                            >
-                              <MinusCircleOutlined />
-                            </Popconfirm>
-                          </Col>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'note']}
+                              // rules={[
+                              //   {
+                              //     required: true,
+                              //     message: 'Vui lòng nhập ghi chú!',
+                              //   },
+                              // ]}
+                              >
+                                <Input placeholder="Ghi chú" disabled={is_create ? false : true} />
+                              </Form.Item>
+                            </Col>
+                            <Col span={1}>
+                              <Popconfirm
+                                placement="bottomRight"
+                                title="Xác nhận xóa sản phẩm này"
+                                onConfirm={() => {
+                                  remove(name)
+                                  var _baseUnitOptions = [...baseUnitOptions]
+                                  _baseUnitOptions.splice(name, 1)
+                                  setBaseUnitOptions(_baseUnitOptions)
+                                }}
+                                okText="Đồng ý"
+                                okType="danger"
+                                cancelText="Hủy bỏ"
+                                disabled={is_create ? false : true}
+                              >
+                                <MinusCircleOutlined />
+                              </Popconfirm>
+                            </Col>
 
-                          <Col span={1}></Col>
-                        </Row>
-                      ))}
+                            <Col span={1}></Col>
+                          </Row>
+                        ))}
                       </div>
                       {/* <Form.Item style={{ width: '180px', margin: 'auto' }}>
                         <Button type="dashed" disabled={is_create ? false : true} onClick={() => add()} block icon={<PlusOutlined />} >
@@ -713,7 +835,7 @@ const InventoryReceivingChangeForm = (props) => {
         </ChangeForm>
       }
 
-
+      <CSVLink data={dataError} filename='dataerror.xlsx' id="excelExport"></CSVLink>
     </>
   )
 

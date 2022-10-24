@@ -132,31 +132,31 @@ const Dashboard = () => {
                 <Col span={13}>
                     <Row style={{ paddingTop: '10px' }}>
                         <Col span={11}>
-                            <Card style={{backgroundColor:"#95c2ec", borderRadius: "20px"}}>
+                            <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
                                 <Row>
                                     <Col span={10}>
-                                        <ShoppingCartOutlined style={{ fontSize: '50px' }} />
+                                        <DollarCircleOutlined style={{ fontSize: '50px' }} />
                                     </Col>
                                     <Col span={14}>
-                                        <div style={{fontWeight:"bold", fontSize:'20px'}}>12,000,000</div>
+                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>12,000,000</div>
                                         <div>Tổng tiền</div>
                                     </Col>
-                                    
+
                                 </Row>
                             </Card>
                         </Col>
                         <Col span={2}></Col>
                         <Col span={11}>
-                            <Card style={{backgroundColor:"#95c2ec", borderRadius: "20px"}}>
+                            <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
                                 <Row>
                                     <Col span={10}>
-                                    <UserOutlined style={{ fontSize: '50px' }} />
+                                        <UserOutlined style={{ fontSize: '50px' }} />
                                     </Col>
                                     <Col span={14}>
-                                        <div style={{fontWeight:"bold", fontSize:'20px'}}>1200</div>
+                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>1200</div>
                                         <div>Tổng khách hàng</div>
                                     </Col>
-                                    
+
                                 </Row>
                             </Card>
                         </Col>
@@ -164,28 +164,28 @@ const Dashboard = () => {
                     </Row>
                     <Row style={{ paddingTop: '30px' }}>
                         <Col span={11}>
-                            <Card style={{backgroundColor:"#95c2ec", borderRadius: "20px"}}>
-                                <Row>
-                                    <Col span={10}>
-                                    <DollarCircleOutlined style={{ fontSize: '50px' }} />
-                                    </Col>
-                                    <Col span={14}>
-                                        <div style={{fontWeight:"bold", fontSize:'20px'}}>1200</div>
-                                        <div style={{ fontSize:'15px'}}>Tổng hóa đơn</div>
-                                    </Col>
-                                    
-                                </Row>
-                            </Card>
-                        </Col>
-                        <Col span={2}></Col>
-                        <Col span={11}>
-                            <Card style={{backgroundColor:"#95c2ec", borderRadius: "20px"}}>
+                            <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
                                 <Row>
                                     <Col span={10}>
                                         <ShoppingCartOutlined style={{ fontSize: '50px' }} />
                                     </Col>
                                     <Col span={14}>
-                                        <div style={{fontWeight:"bold", fontSize:'20px'}}>0</div>
+                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>1200</div>
+                                        <div style={{ fontSize: '15px' }}>Tổng hóa đơn</div>
+                                    </Col>
+
+                                </Row>
+                            </Card>
+                        </Col>
+                        <Col span={2}></Col>
+                        <Col span={11}>
+                            <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
+                                <Row>
+                                    <Col span={10}>
+                                        <ShoppingCartOutlined style={{ fontSize: '50px' }} />
+                                    </Col>
+                                    <Col span={14}>
+                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>0</div>
                                         <div>Tổng hóa đơn trả</div>
                                     </Col>
                                 </Row>
@@ -196,7 +196,7 @@ const Dashboard = () => {
                 </Col>
                 <Col span={1}></Col>
                 <Col span={10}>
-                    <Card style={{borderRadius: "20px"}}>
+                    <Card style={{ borderRadius: "20px" }}>
                         <div className="card__header">
                             <h3>Đồ thị</h3>
                         </div>
@@ -239,7 +239,7 @@ const Dashboard = () => {
             </Row>
             <Row style={{ marginTop: "20px" }}>
                 <Col span={9}>
-                    <Card style={{borderRadius: "20px"}}>
+                    <Card style={{ borderRadius: "20px" }}>
                         <div className="card__header">
                             <h3>Top 5 khách hàng thân thiết</h3>
                         </div>
@@ -256,7 +256,7 @@ const Dashboard = () => {
                 <Col span={1}></Col>
 
                 <Col span={14}>
-                    <Card style={{borderRadius: "20px"}}>
+                    <Card style={{ borderRadius: "20px" }}>
                         <div className="card__header">
                             <h3>Top 5 hóa đơn bán hàng</h3>
                         </div>

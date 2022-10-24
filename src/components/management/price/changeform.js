@@ -1,9 +1,9 @@
 import {
-  PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined, MinusCircleOutlined
+  PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined, MinusCircleOutlined, UploadOutlined
 } from '@ant-design/icons';
 import {
   Button, Form, Input, Select, message, Space, Popconfirm,
-  DatePicker, Col, Row, notification, Typography
+  DatePicker, Col, Row, notification, Typography, Upload
 } from 'antd';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -15,13 +15,16 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { validName1 } from '../../../resources/regexp'
 import moment from "moment";
+import * as XLSX from 'xlsx';
+import { CSVLink } from 'react-csv'
+import { validNumber } from '../../../resources/regexp';
 
 const dateFormat = "YYYY/MM/DD";
 
 const { Option } = Select;
 
 const titleCol = {
-    fontWeight: 500
+  fontWeight: 500
 }
 
 const PriceChangeForm = (props) => {
@@ -30,15 +33,139 @@ const PriceChangeForm = (props) => {
   const [formPrice] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
   const [baseProductOptions, setBaseProductOptions] = useState([]);
+  const [dataError, setDataError] = useState([])
   const [loadingData, setLoadingData] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
   const [idxBtnSave, setIdxBtnSave] = useState([]);
   const [baseUnitOptions, setBaseUnitOptions] = useState([]);
+  const [dataProduct, setDataProduct] = useState([]); // create
+  const [dataUnit, setDataUnit] = useState([]); // create
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const [priceDetails, setPriceDetails] = useState([]);
   const refAutoFocus = useRef(null)
-  let dataDetails = [];
+
+  const uploadData = {
+    async beforeUpload(file) {
+      // console.log(file.name)
+      var typeFile = file.name.split('.').pop().toLowerCase();
+      if (typeFile == "xlsx" || typeFile == "csv") {
+
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data);
+
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+        setDataError([]);
+        let datadetail = [];
+        let dataFormDetails = form.getFieldValue("pricedetails");
+        if (dataFormDetails != null) {
+          dataFormDetails.forEach(elmm => {
+            datadetail.push(elmm);
+          });
+        }
+        let resultTotal = 0;
+        let dataerrorr = [];
+        for (let index = 0; index < jsonData.length; index++) {
+          let result = false;
+          const element = jsonData[index];
+          let loi = "";
+          let kqUnit = false;
+          if (!validNumber.test(element.gia)) {
+            loi = "Gia phai la so, "
+          }
+          dataUnit.forEach(ell => {
+            if (ell.name == element.maDonVi) {
+              kqUnit = true;
+            }
+          });
+          if (kqUnit == false) {
+            loi += "Ma don vi tinh khong chinh xac, ";
+          }
+          dataProduct.forEach(elementt => {
+            if (elementt.product_code == element.maSP || elementt.barcode == element.maSP) {
+              let unit = "";
+              if (kqUnit == true) {
+                elementt.units.forEach(elm => {
+                  if (elm.unit_name == element.maDonVi) {
+                    unit = elm.id;
+                  }
+                });
+              }
+              if (unit == "" && kqUnit == true) {
+                notification.open({
+                  message: 'Lỗi tải dữ liệu',
+                  description:
+                    "Không tìm thấy đơn vị tính " + element.maDonVi + " của mã sản phẩm " + element.maSP + " để thêm dữ liệu !!",
+                  // duration: 50,
+                });
+                loi += "San pham khong co ma don vi tinh nay, ";
+                result = true;
+              }
+              if (validNumber.test(element.gia) && kqUnit == true && unit != "") {
+                let re = false;
+
+                let indexx = {
+                  // "key": elementt.id,
+                  "price": element.gia,
+                  "product": elementt.id,
+                  "unit_exchange": unit
+                };
+                dataerrorr.push({
+                  "maSP": element.maSP,
+                  "maDonVi": element.maDonVi,
+                  "gia": element.gia,
+                  "loi": ""
+                });
+                handleDataBaseUnit(elementt.units)
+                datadetail.push(indexx);
+                result = true;
+                resultTotal++;
+                re = true;
+              } else {
+                result = true;
+              }
+            }
+          });
+          if (result == false) {
+            notification.open({
+              message: 'Lỗi tải dữ liệu',
+              description:
+                'Không tìm thấy mã sản phẩm ' + element.maSP + " để thêm dữ liệu !!",
+              // duration: 50,
+            });
+            loi += "Ma san pham khong chinh xac, ";
+          }
+          if (loi != "") {
+            dataerrorr.push({
+              "maSP": element.maSP,
+              "maDonVi": element.maDonVi,
+              "gia": element.gia,
+              "loi": loi
+            });
+          }
+          if (index == jsonData.length - 1) {
+            setDataError(dataerrorr);
+            if (resultTotal == jsonData.length) {
+              message.success("Xong quá trình thêm dữ liệu");
+              form.setFieldValue("pricedetails", datadetail)
+            } else {
+              message.error("Dữ liệu lỗi!!");
+              setTimeout(() => {
+                document.getElementById("excelExport").click();
+              }, 500);
+            }
+          }
+        }
+      } else {
+        message.error("Chỉ nhập dữ liệu bằng file .csv, .xlsx");
+        return;
+      }
+
+    }
+  };
+
   const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
       const newLoadings = [...prevLoadings];
@@ -223,6 +350,7 @@ const PriceChangeForm = (props) => {
     setLoadingData(true)
     try {
       const response = await api.product.list();
+      setDataProduct(response.data.data.results);
       const options = response.data.data.results.map(elm => {
         return (
           <Option key={elm.id} value={elm.id}>{elm.name}</Option>
@@ -235,6 +363,19 @@ const PriceChangeForm = (props) => {
       setLoadingData(false)
     }
   }
+
+  const handleDataUnit = async () => {
+    setLoadingData(true)
+    try {
+      const response = await api.unit.list();
+      setDataUnit(response.data.data.results);
+    } catch (error) {
+      message.error(messages.ERROR)
+    } finally {
+      setLoadingData(false)
+    }
+  }
+
   const handleDataBaseUnit = async (unit_exchange) => {
     setLoadingData(true)
     try {
@@ -272,12 +413,12 @@ const PriceChangeForm = (props) => {
       if (!props.is_create) {
         handleData()
         handleDataBaseProduct();
-        // handleDataBaseUnit()
+        handleDataUnit()
       }
       setLoadingData(false)
     }
     handleDataBaseProduct();
-    // handleDataBaseUnit()
+    handleDataUnit()
   }, [])
 
   useEffect(() => {
@@ -306,7 +447,8 @@ const PriceChangeForm = (props) => {
     } else {
       props.setBreadcrumbExtras([
         <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.price.list) }}
-        >Thoát</Button>
+        >Thoát</Button>,
+
       ])
     }
   }, [is_create])
@@ -400,123 +542,124 @@ const PriceChangeForm = (props) => {
 
             </>
               <Col>
-                <label><h2 style={{ marginTop: '10px', marginBottom: '30px', textAlign: 'center' }}>Bảng giá sản phẩm</h2></label>
+                <label><h2 style={{ marginTop: '10px', marginBottom: '10px', textAlign: 'center' }}>Bảng giá sản phẩm
+                  {is_create ? <><span style={{ position: "absolute", marginLeft: "10px" }}><Upload showUploadList={false} {...uploadData} style={{}}>
+                    <Button icon={<UploadOutlined />}>Nhập Excel</Button>
+                  </Upload></span></> : null}
+                </h2></label>
 
                 <Form.List name="pricedetails" label="Bảng giá sản phẩm">
                   {(fields, { add, remove }) => (
                     <>
                       <Row>
-                          <Col span={1}></Col>
-                          <Col span={10} style={titleCol}>
-                            <Typography.Text>Sản phẩm</Typography.Text>
-                          </Col>
-                          <Col span={1}></Col>
-                          <Col span={5} style={titleCol}>
-                            <Typography.Text>Đơn vị tính</Typography.Text>
-                          </Col>
-                          <Col span={5} style={titleCol}>
-                            <Typography.Text>Giá bán</Typography.Text>
-                          </Col>
-                          <Col span={2}></Col>
+                        <Col span={1}></Col>
+                        <Col span={10} style={titleCol}>
+                          <Typography.Text>Sản phẩm</Typography.Text>
+                        </Col>
+                        <Col span={1}></Col>
+                        <Col span={5} style={titleCol}>
+                          <Typography.Text>Đơn vị tính</Typography.Text>
+                        </Col>
+                        <Col span={5} style={titleCol}>
+                          <Typography.Text>Giá bán</Typography.Text>
+                        </Col>
+                        <Col span={2}></Col>
                       </Row>
                       {fields.map(({ key, name, ...restField }) => (
-                        <Row>
-                          <Col span={1}></Col>
-                          <Col span={10}>
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'product']}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: 'Vui lòng chọn sản phẩm!',
-                                },
-                              ]}
-                              style={{
-                                textAlign: 'left'
-                              }}
-                            >
-                              <Select
-                                showSearch
-                                onChange={(option) => onUnitSelect(option)}
-                                placeholder="Sản phẩm"
-                                optionFilterProp="children"
-                                filterOption={(input, option) => option.children.includes(input)}
-                                filterSort={(optionA, optionB) =>
-                                  optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
-                                }
+                        <>
+                          <Row>
+                            <Col span={1}></Col>
+                            <Col span={10}>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'product']}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: 'Vui lòng chọn sản phẩm!',
+                                  },
+                                ]}
+                                style={{
+                                  textAlign: 'left'
+                                }}
+                              >
+                                <Select
+                                  showSearch
+                                  onChange={(option) => onUnitSelect(option)}
+                                  placeholder="Sản phẩm"
+                                  optionFilterProp="children"
+                                  filterOption={(input, option) => option.children.includes(input)}
+                                  filterSort={(optionA, optionB) => optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())}
+                                  disabled={is_create ? false : true}
+                                >
+                                  {baseProductOptions}
+                                </Select>
+                              </Form.Item>
+                            </Col>
+                            <Col span={1}></Col>
+                            <Col span={5}>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'unit_exchange']}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: 'Vui lòng chọn đơn vị tính!',
+                                  },
+                                ]}
+                                required
+                                style={{
+                                  textAlign: 'left'
+                                }}
+                              >
+                                <Select
+                                  showSearch
+                                  placeholder="Đơn vị tính"
+                                  optionFilterProp="children"
+                                  filterOption={(input, option) => option.children.includes(input)}
+                                  filterSort={(optionA, optionB) => optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())}
+
+                                  disabled={is_create ? false : true}
+                                >
+                                  {baseUnitOptions[name]}
+                                </Select>
+                              </Form.Item>
+                            </Col>
+                            <Col span={5}>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'price']}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: 'Vui lòng nhập giá!',
+                                  },
+                                ]}
+                              >
+                                <Input placeholder="Giá" type='number' style={{ width: 150 }} min='0' disabled={is_create ? false : true} />
+                              </Form.Item>
+                            </Col>
+                            <Col span={1}>
+
+                              <Popconfirm
+                                placement="bottomRight"
+                                title="Xác nhận xóa bảng giá này"
+                                onConfirm={() => {
+                                  remove(name);
+                                  var _baseUnitOptions = [...baseUnitOptions];
+                                  _baseUnitOptions.splice(name, 1);
+                                  setBaseUnitOptions(_baseUnitOptions);
+                                }}
+                                okText="Đồng ý"
+                                okType="danger"
+                                cancelText="Hủy bỏ"
                                 disabled={is_create ? false : true}
                               >
-                                {baseProductOptions}
-                              </Select>
-                            </Form.Item>
-                          </Col>
-                          <Col span={1}></Col>
-                          <Col span={5}>
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'unit_exchange']}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: 'Vui lòng chọn đơn vị tính!',
-                                },
-                              ]}
-                              required
-                              style={{
-                                textAlign: 'left'
-                              }}
-                            >
-                              <Select
-                                showSearch
-                                placeholder="Đơn vị tính"
-                                optionFilterProp="children"
-                                filterOption={(input, option) => option.children.includes(input)}
-                                filterSort={(optionA, optionB) =>
-                                  optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
-                                }
-
-                                disabled={is_create ? false : true}
-                              >
-                                {baseUnitOptions[name]}
-                              </Select>
-                            </Form.Item>
-                          </Col>
-                          <Col span={5}>
-                            <Form.Item
-                              {...restField}
-                              name={[name, 'price']}
-                              rules={[
-                                {
-                                  required: true,
-                                  message: 'Vui lòng nhập giá!',
-                                },
-                              ]}
-                            >
-                              <Input placeholder="Giá" type='number' style={{ width: 150 }} min='0' disabled={is_create ? false : true} />
-                            </Form.Item>
-                          </Col>
-                          <Col span={1}>
-
-                            <Popconfirm
-                              placement="bottomRight"
-                              title="Xác nhận xóa bảng giá này"
-                              onConfirm={() => {
-                                remove(name)
-                                var _baseUnitOptions = [...baseUnitOptions]
-                                _baseUnitOptions.splice(name, 1)
-                                setBaseUnitOptions(_baseUnitOptions)
-                              }}
-                              okText="Đồng ý"
-                              okType="danger"
-                              cancelText="Hủy bỏ"
-                              disabled={is_create ? false : true}
-                            >
-                              <MinusCircleOutlined />
-                            </Popconfirm>
-                          </Col>
-                          <Col span={1}></Col>
-                        </Row>
+                                <MinusCircleOutlined />
+                              </Popconfirm>
+                            </Col>
+                            <Col span={1}></Col>
+                          </Row></>
                       ))}
                       <Row>
 
@@ -560,6 +703,7 @@ const PriceChangeForm = (props) => {
           }>
         </ChangeForm>
       }
+      <CSVLink data={dataError} filename='dataerror.xlsx' id="excelExport"></CSVLink>
     </>
   )
 

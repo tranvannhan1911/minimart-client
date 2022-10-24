@@ -12,6 +12,7 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
 import ShowForPermission from '../../basic/permission';
+import { ExportTemplateReactCSV } from '../../../utils/exportTemplate';
 const { RangePicker } = DatePicker;
 
 const InventoryReceivingListForm = (props) => {
@@ -134,9 +135,9 @@ const InventoryReceivingListForm = (props) => {
                 title="Phiếu nhập hàng"
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                    
+
                     <ShowForPermission>
-                        <ExportReactCSV csvData={data} fileName='inventoryreceiving.xlsx'
+                        <ExportReactCSV csvData={data} fileName='ds_nhap_hang.xlsx'
                             header={[
                                 { label: 'Mã', key: 'id' },
                                 { label: 'Nhà cung cấp', key: 'supplier' },
@@ -144,6 +145,17 @@ const InventoryReceivingListForm = (props) => {
                                 { label: 'Tổng tiền', key: 'total' },
                                 { label: 'Trạng thái', key: 'status' },
                                 { label: 'Ghi chú', key: 'note' },
+                            ]}
+                        />
+                    </ShowForPermission>,
+                    <ShowForPermission>
+                        <ExportTemplateReactCSV csvData={[]} fileName='template_nhap_hang.xlsx'
+                            header={[
+                                { label: 'maSP', key: 'maSP' },
+                                { label: 'soluong', key: 'soluong' },
+                                { label: 'gia', key: 'gia' },
+                                { label: 'ghichu', key: 'ghichu' },
+                                { label: '(So luong theo don vi co ban)', key: 'note' },
                             ]}
                         />
                     </ShowForPermission>,
