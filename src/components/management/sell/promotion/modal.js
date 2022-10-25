@@ -70,7 +70,7 @@ const PromotionPicker = (props) => {
                 }
             }
             const response = await api.promotion_line.by_type(params)
-            console.log("handlePromotionLineByTypeOrder", response)
+            // console.log("handlePromotionLineByTypeOrder", response)
             setData(response.data.data.results)
             setStableData(response.data.data.results)
         }catch{
@@ -133,7 +133,7 @@ const PromotionPicker = (props) => {
                         var disabled = false;
                         var btnText = "Sử dụng";
                         var benefitText = "Không thể áp dụng";
-                        console.log(item)
+                        // console.log(item)
                         
                         if (props.type == "Order"){     
                             if (item.benefit <= 0){
@@ -151,6 +151,7 @@ const PromotionPicker = (props) => {
                                 }
                             }else if(props.plOrder && props.plOrder.id == item.id){
                                 disabled = true;
+                                benefitText = `Được giảm: ${item.benefit}`
                                 btnText = "Đang sử dụng"
                             }else
                                 benefitText = `Được giảm: ${item.benefit}`
@@ -161,6 +162,7 @@ const PromotionPicker = (props) => {
                                 btnText = "Sử dụng"
                             }else if(props.product.promotion_line == item.id){
                                 disabled = true;
+                                benefitText = `Nhận ${item.actual_received} ${item.detail.product_received.base_unit.name} ${item.detail.product_received.name} trị giá ${item.benefit}`
                                 btnText = "Đang sử dụng"
                             }else{
                                 // const res = await api.product.get(item.detail.product_received)
