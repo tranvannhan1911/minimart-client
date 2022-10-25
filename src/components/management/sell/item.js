@@ -505,13 +505,16 @@ const OrderItem = (props) => {
         </Button> */}
                         </Form.Item>
                         <Row style={{ textAlign: 'left', marginBottom: '10px' }}>
-                            <Col style={titleCol} span={7}>
+                            <Col style={titleCol} span={2}>
+                                <Typography.Text>Mã SP</Typography.Text>
+                            </Col>
+                            <Col style={titleCol} span={6}>
                                 <Typography.Text>Sản phẩm</Typography.Text>
                             </Col>
                             <Col style={titleCol} span={4}>
                                 <Typography.Text>Đơn vị</Typography.Text>
                             </Col>
-                            <Col style={titleCol} span={4}>
+                            <Col style={titleCol} span={3}>
                                 <Typography.Text>Giá</Typography.Text>
                             </Col>
                             <Col style={titleCol} span={3}>
@@ -532,7 +535,21 @@ const OrderItem = (props) => {
                 }}
                 align="baseline"
             > */}
-                                <Col span={7} style={{ paddingRight: '5px' }}>
+                                <Col span={2} style={{ paddingRight: '5px' }}>
+                                    <Form.Item
+                                        {...restField}
+                                        name={[name, '_product', 'product_code']}
+                                        style={{
+                                            textAlign: 'left'
+                                        }}
+                                    >
+                                        <Input
+                                            disabled={true}
+                                            placeholder="Sản phẩm"
+                                            className='inputDisableText' />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={6} style={{ paddingRight: '5px' }}>
                                     <Form.Item
                                         {...restField}
                                         name={[name, 'product']}
@@ -599,7 +616,7 @@ const OrderItem = (props) => {
                                         </Select>
                                     </Form.Item>
                                 </Col>
-                                <Col span={4} style={col}>
+                                <Col span={3} style={col}>
                                     <Form.Item
                                         {...restField}
                                         name={[name, 'price']}
