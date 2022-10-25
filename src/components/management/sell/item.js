@@ -75,8 +75,11 @@ const OrderItem = (props) => {
 
     const onSelectProduct = async (product_id, add) => {
         let i = 0;
-        productData.forEach(element => {
-            if (element.id == product_id) {
+        var _productData = form.getFieldValue("productlist")
+        if(!_productData)
+            _productData = []
+        _productData.forEach(element => {
+            if (element.id == product_id && element._base_unit_exchange.id == element.unit_exchange) {
                 updateQuantityById(product_id);
                 i++;
             }
@@ -85,12 +88,13 @@ const OrderItem = (props) => {
 
             const response = await api.product.get(product_id)
             if (response.data.code == 1) {
-                var base_unit_exchange = "";
+                var base_unit_exchange;
                 var price_base_unit;
                 response.data.data.units.forEach(element => {
                     if (element.is_base_unit == true) {
-                        base_unit_exchange = element.id;
-                        price_base_unit = element.price
+                        base_unit_exchange = element
+                        // base_unit_exchange = element.id;
+                        // price_base_unit = element.price
                     }
                 });
                 calculateTotalAddProduct(price_base_unit)
@@ -104,16 +108,17 @@ const OrderItem = (props) => {
                     // price: response.data.data.price_detail.price
                     quantity_base_unit: 1,
                     stock: response.data.data.stock,
-                    unit_exchange: base_unit_exchange,
+                    _base_unit_exchange: base_unit_exchange,
+                    unit_exchange: base_unit_exchange.id,
                     unit_exchange_value: 1,
-                    price: price_base_unit,
-                    total: price_base_unit,
+                    price: base_unit_exchange.price,
+                    total: base_unit_exchange.price,
                     promotion_line: null // default 
                 };
                 setNumberDe(numberDe + 1);
                 setCurrentProduct(index)
                 setCurrentQuantity(1)
-                setCurrentNameForm(productData.length)
+                setCurrentNameForm(_productData.length)
                 const options = response.data.data.units.map(elm => {
                     elm.unit_exchange_value = elm.value
                     delete elm.value
@@ -122,10 +127,11 @@ const OrderItem = (props) => {
                     )
                 })
                 setBaseUnitOptions([...baseUnitOptions, options]);
-                add(index);
-                setProductData([...productData, index])
+                // add(index);
+                setProductData([..._productData, index])
                 const _open = [...openPopover, false]
                 setOpenPopover(_open)
+                form.setFieldValue("productlist", [..._productData, index])
                 sendListProduct(form.getFieldValue("productlist"))
                 showModal()
                 setIdProduct(product_id);
@@ -156,7 +162,6 @@ const OrderItem = (props) => {
         // const value = quantityBuy.current.input.value\
         const value = Number(quantityBuy)
         setQuantityBuy(1)
-        console.log("enterQuantity", value)
         setIsModalOpen(false)
         var name = 0
         form.getFieldValue("productlist").map(element => {
@@ -174,7 +179,7 @@ const OrderItem = (props) => {
     const updateQuantityById = (id) => {
         var name = 0
         form.getFieldValue("productlist").map(element => {
-            if (element.id == id) {
+            if (element.id == id && element._base_unit_exchange.id == element.unit_exchange) {
                 updateQuantity(Number(element.quantity) + 1, name)
             }
             name++
@@ -185,18 +190,15 @@ const OrderItem = (props) => {
     }
 
     const updateQuantity = (sl, name) => {
-        // console.log(key);
         // form.getFieldValue("productlist")[key-numberDe].total = sl * form.getFieldValue("productlist")[key-numberDe].price;
         // form.setFieldValue("productlist", form.getFieldValue("productlist"));
         // calculateTotalAmount(form.getFieldValue("productlist"));
         // sendListProduct(form.getFieldValue("productlist"));
         const productlist = form.getFieldValue("productlist")
         const quantity_base_unit = sl * productlist[name].unit_exchange_value;
-        console.log("sl", sl, productlist[name].unit_exchange_value, quantity_base_unit)
-        console.log(productlist[name])
         const _inUse = calculateQuantityInUseByProduct(productlist[name].id, name)
-        console.log("_inUse", _inUse)
-        console.log("Number(productlist[name].stock) - _inUse", Number(productlist[name].stock) - _inUse)
+        // console.log("_inUse", _inUse)
+        // console.log("Number(productlist[name].stock) - _inUse", Number(productlist[name].stock) - _inUse)
         if (Number(quantity_base_unit) <= Number(productlist[name].stock) - _inUse) {
             productlist[name].quantity = sl;
             productlist[name].total = Number(productlist[name].quantity) * Number(productlist[name].price);
@@ -207,7 +209,7 @@ const OrderItem = (props) => {
             productlist[name].total = Number(productlist[name].quantity) * Number(productlist[name].price);
             productlist[name].quantity_base_unit = productlist[name].quantity * productlist[name].unit_exchange_value;
         }
-        console.log(productlist[name])
+        // console.log(productlist[name])
         form.setFieldValue("productlist", productlist);
         calculateTotalAmount(form.getFieldValue("productlist"));
         calculateQuantityInUse()
@@ -267,7 +269,6 @@ const OrderItem = (props) => {
 
     const checkPromotion = async (idCustomer, idProduct) => {
         const response = await api.promotion_line.listPromotionByProduct(idProduct, idCustomer);
-        console.log(123, response);
     }
 
     const handleOpenPromotionPicker = (product, quantity) => {
@@ -288,7 +289,6 @@ const OrderItem = (props) => {
             }
         })
         setQuantityInUse(_quantityInUse)
-        console.log("calculateQuantityInUse", _quantityInUse)
     }
 
     
@@ -297,25 +297,34 @@ const OrderItem = (props) => {
         const productlist = form.getFieldValue("productlist")
         var _quantityInUse = 0
         productlist.forEach((productItem, idx) => {
-            console.log("productItem1", productItem, productItem._id == product_id, productItem.quantity_base_unit)
-            console.log("productItem2", name, idx)
             if(name == idx)
                 return
             if(productItem._id == product_id){
                 _quantityInUse += productItem.quantity_base_unit
-                console.log("_quantityInUse", _quantityInUse)
             }
         })
-        console.log("_quantityInUse", _quantityInUse)
         return _quantityInUse
     }
 
     useEffect(() => {
         autoPickPromotion()
     }, [currentQuantity, props.customerId])
+
+    const calculateQuantityInUseByProductNotPl = (product_id) => {
+        
+        const productlist = form.getFieldValue("productlist")
+        var _quantityInUse = 0
+        productlist.forEach((productItem, idx) => {
+            if(productItem.id == product_id){
+                _quantityInUse += productItem.quantity_base_unit
+            }
+        })
+        return _quantityInUse
+    }
+
     
     const autoPickPromotion = async () => {
-        console.log("autoPickPromotion", currentProduct, currentQuantity)
+        // console.log("autoPickPromotion", currentProduct, currentQuantity)
         if(currentProduct && !currentProduct.promotion_line){ // chưa áp dụng mã
             // const _quantity_in_use = quantityInUse[currentProduct.id]
             // if(currentProduct.promotion_line)
@@ -324,12 +333,12 @@ const OrderItem = (props) => {
                 params: {
                     product_id: currentProduct.id,
                     customer_id: props.customerId,
-                    quantity: Number(currentQuantity),
+                    quantity: calculateQuantityInUseByProductNotPl(currentProduct.id),
                     // quantity_in_use: _quantity_in_use
                 }
             }
             const response = await api.promotion_line.by_product(params)
-            console.log("autoPickPromotion", response)
+            // console.log("autoPickPromotion", response)
             if (response.data.code == 1){
                 for(var i=0; i<response.data.data.count; i++){
                     if(response.data.data.results[i].actual_received > 0){
@@ -346,11 +355,11 @@ const OrderItem = (props) => {
                 params: {
                     product_id: currentProduct.id,
                     customer_id: props.customerId,
-                    quantity: Number(currentQuantity)
+                    quantity: calculateQuantityInUseByProductNotPl(currentProduct.id)
                 }
             }
             const response = await api.promotion_line.by_product(params)
-            console.log("autoPickPromotion", response)
+            // console.log("autoPickPromotion", response)
             if (response.data.code == 1){
                 const _pl = response.data.data.results
                 for(var i=0; i<_pl.length; i++){
@@ -372,26 +381,40 @@ const OrderItem = (props) => {
         if(pl){
             const _cal = calculateQuantityInUseByProduct(pl.detail.product_received.id)
             const _quantityInUse = _cal ? _cal : 0
-            console.log("calculateActualReceived", _quantityInUse, pl.detail.product_received.stock - _quantityInUse, pl.actual_received)
+            // console.log("calculateActualReceived", _quantityInUse, pl.detail.product_received.stock - _quantityInUse, pl.actual_received)
             return Math.min(pl.detail.product_received.stock - _quantityInUse, pl.actual_received)
         }
         return 0
     }
 
     const pickPromotionProduct = (pl) => {
-        console.log("pickPromotionProduct", pl)
+        // console.log("pickPromotionProduct", pl)
         const _productlist = form.getFieldValue("productlist")
         var base_unit_exchange = "";
         pl.detail.product_received.units.forEach(element => {
             if (element.is_base_unit == true) {
-                base_unit_exchange = element.id;
+                base_unit_exchange = element;
             }
         });
-        removePromotionByProductId(_productlist[currentNameForm].id)
+        const idx = removePromotionByProductId(_productlist[currentNameForm].id)
+        var _currentNameForm = currentNameForm;
+        var _baseUnitOptions = [...baseUnitOptions]
+        if(idx && idx <= _currentNameForm){
+            
+            setCurrentNameForm(_currentNameForm-1)
+            _currentNameForm--
+            // console.log("______baseUnitOptions", _baseUnitOptions)
+            _baseUnitOptions.splice(idx, 1)
+            // console.log("______baseUnitOptions", _baseUnitOptions)
+            setBaseUnitOptions(_baseUnitOptions)
+        }
         pl.actual_received = calculateActualReceived(pl)
         // console.log("calculateActualReceived", pl.actual_received)
+
+        // // 
         if(pl.actual_received > 0){
-            _productlist[currentNameForm].promotion_line = pl.id
+            // console.log("currentNameForm", currentNameForm)
+            _productlist[_currentNameForm].promotion_line = pl.id
             let index = {
                 _product: pl.detail.product_received,
                 key: numberDe,
@@ -401,13 +424,14 @@ const OrderItem = (props) => {
                 quantity: pl.actual_received,
                 quantity_base_unit: pl.actual_received,
                 stock: pl.detail.product_received.stock,
-                unit_exchange: base_unit_exchange,
+                unit_exchange: base_unit_exchange.unit_name,
                 unit_exchange_value: 1,
                 price: 0,
                 total: 0,
                 promotion_line: null, // default 
-                promotion_by_product_id: _productlist[currentNameForm].id
+                promotion_by_product_id: _productlist[_currentNameForm].id
             };
+            setNumberDe(numberDe + 1);
             const options = pl.detail.product_received.units.map(elm => {
                 elm.unit_exchange_value = elm.value
                 delete elm.value
@@ -415,8 +439,7 @@ const OrderItem = (props) => {
                     <Option key={elm.id} value={elm.id} {...elm}>{elm.unit_name}</Option>
                 )
             })
-            setBaseUnitOptions([...baseUnitOptions, options]);
-            setNumberDe(numberDe + 1);
+            setBaseUnitOptions([..._baseUnitOptions, options]);
 
 
             const _productData = [..._productlist, index]
@@ -439,14 +462,33 @@ const OrderItem = (props) => {
 
     const removePromotionByProductId = (product_id) => {
         const idx = findPromotionByProductId(product_id)
+        const _currentNameForm = currentNameForm
         if(idx){
             const productlist = form.getFieldValue("productlist")
-            console.log("removePromotionByProductId", productlist[currentNameForm])
-            productlist[currentNameForm].promotion_line = null
-            console.log("removePromotionByProductId", productlist[currentNameForm])
+            productlist[_currentNameForm].promotion_line = null
             productlist.splice(idx, 1)
+            
             form.setFieldValue("productlist", productlist);
+            setProductData(productlist);
         }
+        return idx
+    }
+
+    const ableApplyPromotion = (name) => {
+
+        if(productData[name].promotion_by_product_id)
+            return false
+        
+        if(form.getFieldValue("productlist")[name]._base_unit_exchange.id == form.getFieldValue("productlist")[name].unit_exchange)
+            return true
+        
+        var flag = true;
+        form.getFieldValue("productlist").forEach(elm => {
+            if(elm.id == productData[name].id && elm._base_unit_exchange.id == elm.unit_exchange){
+                flag = false;
+            }
+        })
+        return flag;
     }
 
     return (
@@ -524,10 +566,33 @@ const OrderItem = (props) => {
                                             optionFilterProp="children"
                                             filterOption={(input, option) => option.children.includes(input)}
                                             onSelect={(key, item) => {
-                                                console.log(item)
                                                 changeUnitExchange(item, name, key)
 
                                             }}
+                                            // onChange={(value) => {
+                                            //     console.log("onechange", productData[name].unit_exchange, value)
+                                            //     var flag = true;
+                                            //     const productlist = form.getFieldValue("productlist")
+                                            //     productlist.forEach(elm => {
+                                            //         console.log(elm)
+                                            //         if(elm.unit_exchange == value){
+                                            //             flag = false
+                                            //         }
+                                            //     })
+                                            //     if(!flag){
+                                            //         message.error("Đã tồn tại sản phẩm với đơn vị tính này!")
+                                            //         return
+                                            //     }
+                                            //     // console.log()
+                                            //     var selected;
+                                            //     baseUnitOptions[name].forEach(elm => {
+                                            //         if(elm.props.id == value)
+                                            //             selected = elm.props
+                                            //     })
+                                            //     console.log("onechange", selected)
+                                            //     changeUnitExchange(selected, name, key)
+                                            // }}
+                                            // value={productData[name].unit_exchange}
                                             disabled={productData[name].promotion_by_product_id ? true : false}
                                         >
                                             {baseUnitOptions[name]}
@@ -614,7 +679,7 @@ const OrderItem = (props) => {
                                     >
                                         <Input type="hidden" />
                                     </Form.Item>
-                                    {productData[name].promotion_by_product_id ? null :
+                                    {!ableApplyPromotion(name) ? null :
                                         <>
                                             <TagOutlined
                                                 twoToneColor="#eb2f96"
@@ -627,7 +692,6 @@ const OrderItem = (props) => {
                                                     if (productData[name].promotion_by_product_id)
                                                         return
 
-                                                    console.log("dataform", form.getFieldValue("productlist")[name])
                                                     setIdProduct(form.getFieldValue("productlist")[name].id)
                                                     const _quantity = form.getFieldValue("productlist")[name]["quantity_base_unit"]
                                                     setCurrentNameForm(name)
@@ -676,7 +740,6 @@ const OrderItem = (props) => {
                             // autoFocus
                             onPressEnter={(e) => enterQuantity()}
                             onChange={(value) => {
-                                console.log("onChange", value)
                                 setQuantityBuy(value)
                             }}
                             value={quantityBuy}
