@@ -508,10 +508,10 @@ const OrderItem = (props) => {
                             <Col style={titleCol} span={2}>
                                 <Typography.Text>Mã SP</Typography.Text>
                             </Col>
-                            <Col style={titleCol} span={6}>
+                            <Col style={titleCol} span={5}>
                                 <Typography.Text>Sản phẩm</Typography.Text>
                             </Col>
-                            <Col style={titleCol} span={4}>
+                            <Col style={titleCol} span={3}>
                                 <Typography.Text>Đơn vị</Typography.Text>
                             </Col>
                             <Col style={titleCol} span={3}>
@@ -520,8 +520,11 @@ const OrderItem = (props) => {
                             <Col style={titleCol} span={3}>
                                 <Typography.Text>Số lượng</Typography.Text>
                             </Col>
-                            <Col style={titleCol} span={4}>
+                            <Col style={titleCol} span={3}>
                                 <Typography.Text>Thành tiền</Typography.Text>
+                            </Col>
+                            <Col style={titleCol} span={3}>
+                                <Typography.Text>Ghi chú</Typography.Text>
                             </Col>
                             <Col span={2}></Col>
                         </Row>
@@ -549,7 +552,7 @@ const OrderItem = (props) => {
                                             className='inputDisableText' />
                                     </Form.Item>
                                 </Col>
-                                <Col span={6} style={{ paddingRight: '5px' }}>
+                                <Col span={5} style={{ paddingRight: '5px' }}>
                                     <Form.Item
                                         {...restField}
                                         name={[name, 'product']}
@@ -563,7 +566,7 @@ const OrderItem = (props) => {
                                             className='inputDisableText' />
                                     </Form.Item>
                                 </Col>
-                                <Col span={4} style={col}>
+                                <Col span={3} style={col}>
                                     <Form.Item
                                         {...restField}
                                         name={[name, 'unit_exchange']}
@@ -670,13 +673,21 @@ const OrderItem = (props) => {
                                             disabled={productData[name].promotion_by_product_id ? true : false} />
                                     </Form.Item>
                                 </Col>
-                                <Col span={4} style={col}>
+                                <Col span={3} style={col}>
                                     <Form.Item
                                         {...restField}
                                         name={[name, 'total']}
                                     >
                                         <Input placeholder="Thành tiền" disabled={true}
                                             className='inputDisableText' />
+                                    </Form.Item>
+                                </Col>
+                                <Col span={3} style={col}>
+                                    <Form.Item
+                                        {...restField}
+                                        name={[name, 'note']}
+                                    >
+                                        <Input placeholder="Ghi chú" />
                                     </Form.Item>
                                 </Col>
                                 <Col span={2}>
