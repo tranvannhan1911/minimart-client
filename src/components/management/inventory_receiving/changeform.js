@@ -604,6 +604,7 @@ const InventoryReceivingChangeForm = (props) => {
                         style={{
                           marginBottom: '20px'
                         }}
+                        placeholder="Thêm sản phẩm vào phiếu nhập hàng"
                         onSelectProduct={(value) => onSelectProduct(value, add)} /><Upload showUploadList={false} {...uploadData} style={{}}>
                           <Button icon={<UploadOutlined />}>Nhập Excel</Button>
                         </Upload></> : null}

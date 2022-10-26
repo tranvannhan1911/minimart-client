@@ -51,7 +51,7 @@ const ProductSelect = (props) => {
     return (
         <Select
             showSearch
-            placeholder="Thêm sản phẩm vào đơn hàng"
+            placeholder={props.placeholder ? props.placeholder : "Thêm sản phẩm vào đơn hàng"}
             optionFilterProp="children"
             onChange={onChange}
             filterOption={(input, option) => {
