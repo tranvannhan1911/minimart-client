@@ -1,7 +1,7 @@
 import {
     PlusOutlined, UploadOutlined,
     ExportOutlined, ReloadOutlined,
-    SearchOutlined
+    SearchOutlined, DownloadOutlined
 } from '@ant-design/icons';
 import { Button, Col, Row, Space, Input, message, Upload, Modal } from 'antd';
 import { Typography } from 'antd';
@@ -15,6 +15,8 @@ import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
 import * as XLSX from 'xlsx';
 import ShowForPermission from '../../basic/permission';
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 
 
 const UnitListForm = (props) => {
@@ -120,6 +122,68 @@ const UnitListForm = (props) => {
         setData(data_);
     }
 
+    /////////////////
+
+    const exportExcel = () => {
+        var ExcelJSWorkbook = new ExcelJS.Workbook();
+        var worksheet = ExcelJSWorkbook.addWorksheet("DonViTinh");
+
+        worksheet.mergeCells("A2:E2");
+
+        const customCell = worksheet.getCell("A2");
+        customCell.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 20,
+            underline: true,
+            bold: true,
+        };
+        customCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+        customCell.value = "Danh sách đơn vị tính";
+
+        let header = ["Mã đơn vị tính", "Tên đơn vị tính", "Ghi chú"];
+
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+
+        worksheet.getRow(5).font = { bold: true };
+
+        for (let i = 0; i < 3; i++) {
+            let currentColumnWidth = "123";
+            worksheet.getColumn(i + 1).width =
+                currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
+            let cell = headerRow.getCell(i + 1);
+            cell.value = header[i];
+        }
+
+        worksheet.autoFilter = {
+            from: {
+                row: 5,
+                column: 1
+            },
+            to: {
+                row: 5,
+                column: 3
+            }
+        };
+
+        data.forEach(element => {
+            
+            worksheet.addRow([element.code, element.name, element.note]);
+        });
+
+        ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+            saveAs(
+                new Blob([buffer], { type: "application/octet-stream" }),
+                `DSDonViTinh.xlsx`
+            );
+        });
+    };
+
+    ////////////////
+
     return (
         <ListForm
             title="Đơn vị tính"
@@ -132,17 +196,7 @@ const UnitListForm = (props) => {
                     </Upload>
                 </ShowForPermission>,
                 <ShowForPermission>
-                    <ExportReactCSV csvData={data} fileName='unit.xlsx' 
-                    // header={[
-                    //     { label: 'Mã', key: 'id' },
-                    //     { label: 'Tên', key: 'name' },
-                    //     { label: 'Ghi chú', key: 'note' },
-                    //     { label: 'Ngày tạo', key: 'date_created' },
-                    //     { label: 'Ngày sửa', key: 'date_updated' },
-                    //     { label: 'Mã người tạo', key: 'user_created' },
-                    //     { label: 'Mã người sửa', key: 'user_updated' },
-                    // ]} 
-                    />
+                    <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                 </ShowForPermission>,
                 <ShowForPermission>
                     <Button onClick={() => navigate(paths.unit.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>

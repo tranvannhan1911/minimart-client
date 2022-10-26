@@ -1,6 +1,10 @@
-import { Drawer, Row, Col, Divider, Table } from 'antd';
+import {
+  DownloadOutlined
+} from '@ant-design/icons';
+import { Drawer, Row, Col, Divider, Table, Button } from 'antd';
 import React, { useState, useEffect } from 'react';
-import { ExportReactCSV } from '../../../utils/exportExcel';
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 
 
 const PriceModal = (props) => {
@@ -40,6 +44,107 @@ const PriceModal = (props) => {
     },
   ];
 
+  /////////////////
+
+  const exportExcel = () => {
+    var ExcelJSWorkbook = new ExcelJS.Workbook();
+    var worksheet = ExcelJSWorkbook.addWorksheet("BangGia");
+
+    worksheet.mergeCells("A2:E2");
+
+    const customCell = worksheet.getCell("A2");
+    customCell.font = {
+      name: "Times New Roman",
+      family: 4,
+      size: 20,
+      underline: true,
+      bold: true,
+    };
+    customCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+    customCell.value = "Thông tin bảng giá";
+
+    let header = ["Mã sản phẩm", "Sản phẩm", "Đơn vị tính", "Giá"];
+
+    var headerRow = worksheet.addRow();
+    var headerRow = worksheet.addRow();
+
+    const customCellA5 = worksheet.getCell("A5");
+    customCellA5.value = "Mã bảng giá:";
+    const customCellB5 = worksheet.getCell("B5");
+    customCellB5.value = props.data.price_list_id + "";
+
+    const customCellC5 = worksheet.getCell("C5");
+    customCellC5.value = "Tên bảng giá:";
+    const customCellD5 = worksheet.getCell("D5");
+    customCellD5.value = props.data.name;
+
+    let tt = "";
+    if (props.data.status == true) {
+      tt = "Hoạt động";
+    } else {
+      tt = 'Khóa';
+    }
+
+    const customCellA6 = worksheet.getCell("A6");
+    customCellA6.value = "Ngày bắt đầu:";
+    const customCellB6 = worksheet.getCell("B6");
+    customCellB6.value = props.data.start_date;
+
+    const customCellC6 = worksheet.getCell("C6");
+    customCellC6.value = "Ngày kết thúc:";
+    const customCellD6 = worksheet.getCell("D6");
+    customCellD6.value = props.data.end_date;
+
+    const customCellA7 = worksheet.getCell("A7");
+    customCellA7.value = "Trạng thái:";
+    const customCellB7 = worksheet.getCell("B7");
+    customCellB7.value = tt;
+
+    const customCellC7 = worksheet.getCell("C7");
+    customCellC7.value = "Ghi chú:";
+    const customCellD7 = worksheet.getCell("D7");
+    customCellD7.value = props.data.note == null ? "" : props.note;
+
+    var headerRow = worksheet.addRow();
+    var headerRow = worksheet.addRow();
+    var headerRow = worksheet.addRow();
+
+    worksheet.getRow(10).font = { bold: true };
+
+    for (let i = 0; i < 4; i++) {
+      let currentColumnWidth = "123";
+      worksheet.getColumn(i + 1).width =
+        currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
+      let cell = headerRow.getCell(i + 1);
+      cell.value = header[i];
+    }
+
+    worksheet.autoFilter = {
+      from: {
+        row: 10,
+        column: 1
+      },
+      to: {
+        row: 10,
+        column: 4
+      }
+    };
+
+    dataSource.forEach(element => {
+      worksheet.addRow([element.product_obj.product_code, element.product, element.unit_exchange, element.price]);
+    });
+
+    ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+      saveAs(
+        new Blob([buffer], { type: "application/octet-stream" }),
+        `BangGiaSo${props.data.price_list_id}.xlsx`
+      );
+    });
+  };
+
+  ////////////////
+
   return (
     <Drawer width={640} placement="right" closable={false} onClose={onClose} visible={props.open}>
       <p
@@ -53,7 +158,11 @@ const PriceModal = (props) => {
         Thông tin bảng giá
       </p>
 
-      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin cơ bản</p>
+      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin cơ bản
+        <span style={{ float: 'right' }}>
+          <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
+        </span>
+      </p>
       <Row>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
@@ -88,15 +197,6 @@ const PriceModal = (props) => {
       </Row>
       <Divider />
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Danh sách giá sản phẩm
-        <span style={{ float: 'right' }}>
-          <ExportReactCSV csvData={dataSource} fileName='priceproduct.xlsx'
-            header={[
-              { label: 'Sản phẩm', key: 'product' },
-              { label: 'Đơn vị tính', key: 'unit_exchange' },
-              { label: 'Giá', key: 'price' },
-            ]}
-          />
-        </span>
       </p>
       <Table dataSource={dataSource} columns={columns} />
 

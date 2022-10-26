@@ -74,48 +74,6 @@ const TabContent = (props) => {
         }
     }
 
-    // const handlePromotionLineByOrder = async () => {
-    //     // try {
-    //     const params = {
-    //         params: {
-    //             amount: 100000
-    //         }
-    //     }
-    //     const response = await api.promotion_line.by_order(params)
-    //     // console.log(response.data)
-    //     let options = [<Option key="default" value="">Không</Option>]
-    //     options = options.concat(response.data.data.results.map(elm => {
-    //         return (
-    //             <Option key={elm.id} value={elm.id}>{elm.title}</Option>
-    //         )
-    //     }))
-    //     setPromotionLineOrderOption(options);
-    //     // } catch (error) {
-    //     //     message.error(messages.ERROR)
-    //     // }
-    // }
-
-    // const handlePromotionLineByTypeOrder = async () => {
-    //     // try {
-    //     const params = {
-    //         params: {
-    //             type: "Order"
-    //         }
-    //     }
-    //     const response = await api.promotion_line.by_type(params)
-    //     // console.log(response.data)
-    //     let options = [<Option key="default" value="">Không</Option>]
-    //     options = options.concat(response.data.data.results.map(elm => {
-    //         return (
-    //             <Option key={elm.id} value={elm.id}>{elm.title}</Option>
-    //         )
-    //     }))
-    //     setPromotionLineOrderOption(options);
-    //     // } catch (error) {
-    //     //     message.error(messages.ERROR)
-    //     // }
-    // }
-
     useEffect(() => {
         // handlePromotionLineByTypeOrder();
         handleDataStaff();
@@ -161,7 +119,8 @@ const TabContent = (props) => {
                     product: item.id,
                     quantity: Number(item.quantity),
                     unit_exchange: item.unit_exchange,
-                    promotion_line: item.promotion_line
+                    promotion_line: item.promotion_line,
+                    note: item.note
                 }
                 return _item
             })

@@ -1,6 +1,6 @@
 import {
     PlusOutlined, UploadOutlined,
-    ReloadOutlined, SearchOutlined
+    ReloadOutlined, SearchOutlined, DownloadOutlined
   } from '@ant-design/icons';
 import { Button, Input, message, Upload } from 'antd';
 import React, { useState, useEffect,  } from 'react';
@@ -13,6 +13,8 @@ import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
 import * as XLSX from 'xlsx';
 import ShowForPermission from '../../basic/permission';
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 
 const ProductGroupListForm = (props) => {
     const [dataMain, setDataMain] = useState([])
@@ -117,6 +119,69 @@ const ProductGroupListForm = (props) => {
         setData(data_);
     }
 
+    /////////////////
+
+    const exportExcel = () => {
+        var ExcelJSWorkbook = new ExcelJS.Workbook();
+        var worksheet = ExcelJSWorkbook.addWorksheet("NhomSanPham");
+
+        worksheet.mergeCells("A2:E2");
+
+        const customCell = worksheet.getCell("A2");
+        customCell.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 20,
+            underline: true,
+            bold: true,
+        };
+        customCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+        customCell.value = "Danh sách nhóm sản phẩm";
+
+        let header = ["Mã nhóm sản phẩm", "Tên nhóm sản phẩm", "Mô tả", "Ghi chú"];
+
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+
+        worksheet.getRow(5).font = { bold: true };
+
+        for (let i = 0; i < 4; i++) {
+            let currentColumnWidth = "123";
+            worksheet.getColumn(i + 1).width =
+                currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
+            let cell = headerRow.getCell(i + 1);
+            cell.value = header[i];
+        }
+
+        worksheet.autoFilter = {
+            from: {
+                row: 5,
+                column: 1
+            },
+            to: {
+                row: 5,
+                column: 4
+            }
+        };
+
+        data.forEach(element => {
+            
+            worksheet.addRow([element.product_group_code, element.name, element.description, element.note]);
+        });
+
+        ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+            saveAs(
+                new Blob([buffer], { type: "application/octet-stream" }),
+                `DSNhomSanPham.xlsx`
+            );
+        });
+    };
+
+    ////////////////
+
+
     return (
         <ListForm 
             title="Nhóm sản phẩm" 
@@ -129,7 +194,7 @@ const ProductGroupListForm = (props) => {
                     </Upload>
                 </ShowForPermission>,
                 <ShowForPermission>
-                    <ExportReactCSV csvData={data} fileName='productgroup.xlsx' />
+                    <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                 </ShowForPermission>,
                 <ShowForPermission>
                     <Button onClick={() => navigate(paths.product_group.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>

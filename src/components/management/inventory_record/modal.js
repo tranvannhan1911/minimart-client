@@ -1,7 +1,10 @@
-import { Drawer, Row, Col, Divider, Table, Typography } from 'antd';
+import {
+  DownloadOutlined
+} from '@ant-design/icons';
+import { Drawer, Row, Col, Divider, Table, Typography, Button } from 'antd';
 import React, { useState, useEffect } from 'react';
-import { ExportReactCSV } from '../../../utils/exportExcel';
-
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 
 const InventoryRecordModal = (props) => {
   const [data, setData] = useState("");
@@ -54,7 +57,7 @@ const InventoryRecordModal = (props) => {
       dataIndex: 'diff',
       key: 'age',
       render: (diff, record) => (
-        <Typography>{`${record.quantity_after-record.quantity_before} ${record.product_obj.base_unit.name}`}</Typography>
+        <Typography>{`${record.quantity_after - record.quantity_before} ${record.product_obj.base_unit.name}`}</Typography>
       ),
     },
     {
@@ -63,6 +66,97 @@ const InventoryRecordModal = (props) => {
       key: 'age',
     },
   ];
+
+  /////////////////
+
+  const exportExcel = () => {
+    var ExcelJSWorkbook = new ExcelJS.Workbook();
+    var worksheet = ExcelJSWorkbook.addWorksheet("KiemKe");
+
+    worksheet.mergeCells("A2:E2");
+
+    const customCell = worksheet.getCell("A2");
+    customCell.font = {
+      name: "Times New Roman",
+      family: 4,
+      size: 20,
+      underline: true,
+      bold: true,
+    };
+    customCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+    customCell.value = "Thông tin phiếu kiểm kê";
+
+    let header = ["Mã sản phẩm", "Sản phẩm", "Số lượng trước", "Số lượng sau", "Chênh lệch", "Ghi chú"];
+
+    var headerRow = worksheet.addRow();
+    var headerRow = worksheet.addRow();
+
+    const customCellA5 = worksheet.getCell("A5");
+    customCellA5.value = "Mã phiếu kiểm kê:";
+    const customCellB5 = worksheet.getCell("B5");
+    customCellB5.value = props.data.id + "";
+
+    const customCellC5 = worksheet.getCell("C5");
+    customCellC5.value = "Ngày kiểm kê:";
+    const customCellD5 = worksheet.getCell("D5");
+    customCellD5.value = props.data.date_created;
+
+    let tt = "";
+    if (props.data.status == 'pending') {
+      tt = "Chờ xác nhận";
+    } else {
+      tt = 'Hoàn thành';
+    }
+
+    const customCellA6 = worksheet.getCell("A6");
+    customCellA6.value = "Trạng thái:";
+    const customCellB6 = worksheet.getCell("B6");
+    customCellB6.value = tt;
+
+    const customCellC6 = worksheet.getCell("C6");
+    customCellC6.value = "Ghi chú:";
+    const customCellD6 = worksheet.getCell("D6");
+    customCellD6.value = props.data.note == null ? "" : props.note;
+
+    var headerRow = worksheet.addRow();
+    var headerRow = worksheet.addRow();
+    var headerRow = worksheet.addRow();
+
+    worksheet.getRow(9).font = { bold: true };
+
+    for (let i = 0; i < 6; i++) {
+      let currentColumnWidth = "123";
+      worksheet.getColumn(i + 1).width =
+        currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
+      let cell = headerRow.getCell(i + 1);
+      cell.value = header[i];
+    }
+
+    worksheet.autoFilter = {
+      from: {
+        row: 9,
+        column: 1
+      },
+      to: {
+        row: 9,
+        column: 6
+      }
+    };
+
+    dataSource.forEach(element => {
+      worksheet.addRow([element.product_obj.product_code, element.product, element.quantity_before, element.quantity_after, (element.quantity_after - element.quantity_before) + " " + element.product_obj.base_unit.name, element.note]);
+    });
+
+    ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+      saveAs(
+        new Blob([buffer], { type: "application/octet-stream" }),
+        `PhieuKiemKeSo${props.data.id}.xlsx`
+      );
+    });
+  };
+
+  ////////////////
 
   return (
     <Drawer width={640} placement="right" closable={false} onClose={onClose} visible={props.open}>
@@ -77,7 +171,11 @@ const InventoryRecordModal = (props) => {
         Thông tin phiếu kiểm kê
       </p>
       <Divider />
-      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin cơ bản</p>
+      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin cơ bản
+        <span style={{ float: 'right' }}>
+          <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
+        </span>
+      </p>
       <Row>
         <Col span={24}>
           <div className="site-description-item-profile-wrapper">
@@ -108,16 +206,6 @@ const InventoryRecordModal = (props) => {
       </Row>
       <Divider />
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px' }}>Danh sách sản phẩm
-        <span style={{ float: 'right' }}>
-          <ExportReactCSV csvData={dataSource} fileName='productrecord.xlsx'
-            header={[
-              { label: 'Sản phẩm', key: 'product' },
-              { label: 'Số lượng trước', key: 'quantity_before' },
-              { label: 'Số lượng sau', key: 'quantity_after' },
-              { label: 'Ghi chú', key: 'note' },
-            ]}
-          />
-        </span>
       </p>
       <Table dataSource={dataSource} columns={columns} />
 
@@ -131,7 +219,7 @@ const InventoryRecordModal = (props) => {
         </Col>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người tạo: {props.data.user_created?.fullname}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Người tạo: {props.data.user_created}</p>
           </div>
         </Col>
       </Row>

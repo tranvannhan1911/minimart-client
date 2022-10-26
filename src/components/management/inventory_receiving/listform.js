@@ -1,6 +1,6 @@
 import {
     PlusOutlined, ReloadOutlined,
-    SearchOutlined
+    SearchOutlined, DownloadOutlined
 } from '@ant-design/icons';
 import { Button, Input, message, DatePicker } from 'antd';
 import React, { useState, useEffect } from 'react';
@@ -13,7 +13,10 @@ import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
 import ShowForPermission from '../../basic/permission';
 import { ExportTemplateReactCSV } from '../../../utils/exportTemplate';
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 const { RangePicker } = DatePicker;
+
 
 const InventoryReceivingListForm = (props) => {
     const [dataMain, setDataMain] = useState([])
@@ -128,6 +131,75 @@ const InventoryReceivingListForm = (props) => {
         }
     };
 
+    /////////////////
+
+    const exportExcel = () => {
+        var ExcelJSWorkbook = new ExcelJS.Workbook();
+        var worksheet = ExcelJSWorkbook.addWorksheet("DSPhieuNhapHang");
+
+        worksheet.mergeCells("A2:E2");
+
+        const customCell = worksheet.getCell("A2");
+        customCell.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 20,
+            underline: true,
+            bold: true,
+        };
+        customCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+        customCell.value = "Danh sách phiếu nhập hàng";
+
+        let header = ["Mã phiếu nhập hàng", "Nhà cung cấp", "Ngày nhập", "Tổng tiền", "Trạng thái", "Ghi chú"];
+
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+
+        worksheet.getRow(5).font = { bold: true };
+
+        for (let i = 0; i < 6; i++) {
+            let currentColumnWidth = "123";
+            worksheet.getColumn(i + 1).width =
+                currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
+            let cell = headerRow.getCell(i + 1);
+            cell.value = header[i];
+        }
+
+        worksheet.autoFilter = {
+            from: {
+                row: 5,
+                column: 1
+            },
+            to: {
+                row: 5,
+                column: 6
+            }
+        };
+
+        data.forEach(element => {
+            let status ="";
+            if(element.status == "complete"){
+                status ="Hoàn thành";
+            }else if(element.status == "pending"){
+                status="Chờ xác nhận";
+            }else{
+                status="Hủy";
+            }
+            worksheet.addRow([element.id, element.supplier, element.date_created, element.total, status, element.note]);
+        });
+
+        ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+            saveAs(
+                new Blob([buffer], { type: "application/octet-stream" }),
+                `DSPhieuNhapHang.xlsx`
+            );
+        });
+    };
+
+    ////////////////
+
     return (
         <>
 
@@ -137,16 +209,8 @@ const InventoryReceivingListForm = (props) => {
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
 
                     <ShowForPermission>
-                        <ExportReactCSV csvData={data} fileName='ds_nhap_hang.xlsx'
-                            header={[
-                                { label: 'Mã', key: 'id' },
-                                { label: 'Nhà cung cấp', key: 'supplier' },
-                                { label: 'Ngày nhập', key: 'date_created' },
-                                { label: 'Tổng tiền', key: 'total' },
-                                { label: 'Trạng thái', key: 'status' },
-                                { label: 'Ghi chú', key: 'note' },
-                            ]}
-                        />
+                        <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
+                        
                     </ShowForPermission>,
                     <ShowForPermission>
                         <ExportTemplateReactCSV csvData={[]} fileName='template_nhap_hang.xlsx'

@@ -1,16 +1,19 @@
 import {
     ReloadOutlined,
-    SearchOutlined
+    SearchOutlined, DownloadOutlined
 } from '@ant-design/icons';
 import { Button, Input, message, DatePicker } from 'antd';
 import React, { useState, useEffect,  } from 'react';
 import ListForm from '../templates/listform';
 import RefundTable from './table';
 import api from '../../../api/apis'
+import moment from "moment";
 import { useNavigate } from 'react-router-dom'
 import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
 import ShowForPermission from '../../basic/permission';
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 
 const { RangePicker } = DatePicker;
 
@@ -33,8 +36,7 @@ const RefundListForm = (props) => {
         setLoading(true)
         try {
             const response = await api.order_refund.list()
-            // const response = (await axios.get('https://63252b299075b9cbee471829.mockapi.io/api/order')).data;
-            // const _data = response.map(elm => {
+           
             const _data = response.data.data.results.map(elm => {
                 elm.details = elm.details.map(element => {
                     if(element.price == null){
@@ -49,6 +51,7 @@ const RefundListForm = (props) => {
                 let date = elm.date_created.slice(0, 10);
                 let time = elm.date_created.slice(11, 19);
                 elm.date_created = date + " " + time; 
+                // elm.date_created= moment(elm.date_created).format('DD-MM-YYYY h:mm:ss a')
 
                 let index = {
                     ...elm,
@@ -150,6 +153,73 @@ const RefundListForm = (props) => {
         setData(data_);
     }
 
+    /////////////////
+
+    const exportExcel = () => {
+        var ExcelJSWorkbook = new ExcelJS.Workbook();
+        var worksheet = ExcelJSWorkbook.addWorksheet("TraHang");
+
+        worksheet.mergeCells("A2:E2");
+
+        const customCell = worksheet.getCell("A2");
+        customCell.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 20,
+            underline: true,
+            bold: true,
+        };
+        customCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+        customCell.value = "Danh sách hóa đơn trả hàng";
+
+        let header = ["Mã hóa đơn", "Người bán", "Khách hàng", "Ngày trả","Trạng thái", "Ghi chú"];
+
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+
+        worksheet.getRow(5).font = { bold: true };
+
+        for (let i = 0; i < 6; i++) {
+            let currentColumnWidth = "123";
+            worksheet.getColumn(i + 1).width =
+                currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
+            let cell = headerRow.getCell(i + 1);
+            cell.value = header[i];
+        }
+
+        worksheet.autoFilter = {
+            from: {
+                row: 5,
+                column: 1
+            },
+            to: {
+                row: 5,
+                column: 6
+            }
+        };
+
+        data.forEach(element => {
+            let status ="";
+            if(element.status == "complete"){
+                status ="Hoàn thành";
+            }else{
+                status="Đã hủy";
+            }
+            worksheet.addRow([element.key, element.user_created, element.customer, element.date_created, status, element.note]);
+        });
+
+        ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+            saveAs(
+                new Blob([buffer], { type: "application/octet-stream" }),
+                `TraHang.xlsx`
+            );
+        });
+    };
+
+    ////////////////
+
     return (
         <ListForm
             title="Đơn trả hàng"
@@ -157,16 +227,7 @@ const RefundListForm = (props) => {
 
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
                 <ShowForPermission>
-                    <ExportReactCSV csvData={data} fileName='listrefund.xlsx' 
-                        header={[
-                            { label: 'Mã', key: 'id' },
-                            { label: 'Nhân viên', key: 'user_created' },
-                            { label: 'Khách hàng', key: 'customer' },
-                            { label: 'Ngày trả', key: 'date_created' },
-                            { label: 'Trạng thái', key: 'status' },
-                            { label: 'Ghi chú', key: 'note' },
-                        ]} 
-                        />
+                    <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                 </ShowForPermission>,
             ]}
             table={

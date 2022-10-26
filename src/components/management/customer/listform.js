@@ -1,6 +1,6 @@
 import {
     PlusOutlined, UploadOutlined, ReloadOutlined,
-    SearchOutlined
+    SearchOutlined, DownloadOutlined
 } from '@ant-design/icons';
 import { Button, Input, message, Upload } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
@@ -13,6 +13,8 @@ import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
 import * as XLSX from 'xlsx';
 import ShowForPermission from '../../basic/permission';
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 
 
 const CustomerListForm = (props) => {
@@ -168,6 +170,77 @@ const CustomerListForm = (props) => {
         setData(data_);
     }
 
+    /////////////////
+
+    const exportExcel = () => {
+        var ExcelJSWorkbook = new ExcelJS.Workbook();
+        var worksheet = ExcelJSWorkbook.addWorksheet("KhachHang");
+
+        worksheet.mergeCells("A2:E2");
+
+        const customCell = worksheet.getCell("A2");
+        customCell.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 20,
+            underline: true,
+            bold: true,
+        };
+        customCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+        customCell.value = "Danh sách khách hàng";
+
+        let header = ["Mã khách hàng", "Tên khách hàng", "Số điện thoại", "Giới tính","Nhóm khách hàng", "Trạng thái", "Ghi chú"];
+
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+
+        worksheet.getRow(5).font = { bold: true };
+
+        for (let i = 0; i < 7; i++) {
+            let currentColumnWidth = "123";
+            worksheet.getColumn(i + 1).width =
+                currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
+            let cell = headerRow.getCell(i + 1);
+            cell.value = header[i];
+        }
+
+        worksheet.autoFilter = {
+            from: {
+                row: 5,
+                column: 1
+            },
+            to: {
+                row: 5,
+                column: 7
+            }
+        };
+
+        data.forEach(element => {
+            let status ="";
+            if(element.is_active == true){
+                status ="Hoạt động";
+            }else{
+                status="Khóa";
+            }
+            let nhomkh="";
+            element.customer_group.forEach(elm => {
+                nhomkh += elm;
+            })
+            worksheet.addRow([element.id, element.fullname, element.phone, element.gender, nhomkh, status, element.note]);
+        });
+
+        ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+            saveAs(
+                new Blob([buffer], { type: "application/octet-stream" }),
+                `DSKhachHang.xlsx`
+            );
+        });
+    };
+
+    ////////////////
+
     return (
         <ListForm
             title="Khách hàng"
@@ -178,7 +251,7 @@ const CustomerListForm = (props) => {
                     <Button icon={<UploadOutlined />}>Nhập Excel</Button>
                 </Upload>,
                 <ShowForPermission>
-                    <ExportReactCSV csvData={data} fileName='customer.xlsx' />
+                    <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                 </ShowForPermission>,
                 <Button onClick={() => navigate(paths.customer.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
