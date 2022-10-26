@@ -3,7 +3,7 @@ import {
 } from '@ant-design/icons';
 import {
   Button, Form, Input, Select, message, Space, Popconfirm,
-  DatePicker, Col, Row, notification, Typography, Upload
+  DatePicker, Col, Row, notification, Typography, Upload, InputNumber
 } from 'antd';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -18,13 +18,17 @@ import moment from "moment";
 import * as XLSX from 'xlsx';
 import { CSVLink } from 'react-csv'
 import { validNumber } from '../../../resources/regexp';
+import ProductSelect from '../barcode/input';
+import Item from 'antd/lib/list/Item';
 
 const dateFormat = "YYYY/MM/DD";
 
 const { Option } = Select;
 
 const titleCol = {
-  fontWeight: 500
+  fontWeight: 500,
+  textAlign: 'left',
+  marginLeft: '3px'
 }
 
 const PriceChangeForm = (props) => {
@@ -318,26 +322,35 @@ const PriceChangeForm = (props) => {
       const values = response.data.data
       let details = values.pricedetails.map(elm => {
         let i = {
-          "price": elm.price,
-          "note": elm.note,
-          "product": elm.product.id,
-          "unit_exchange": elm.unit_exchange.id
+          ...elm.product,
+          _product: elm.product,
+          key: elm.product.id,
+          product: elm.product.id,
+          product_name: elm.product.name,
+          unit_exchange: elm.unit_exchange.id,
+          unit_exchange_name: elm.unit_exchange.unit_name,
+          unit_exchange_value: elm.unit_exchange.value,
+          unit_exchange_value_str: `${elm.unit_exchange.value} ${elm.product.base_unit.name}`,
+          disable_unit: true,
+          price: elm.price,
+          note: elm.note,
         }
         return i;
       });
       values.start_date = moment(values.start_date)
       values.status = values.status.toString()
       values.end_date = moment(values.end_date)
-      setPriceDetails(details);
-      values.pricedetails = values.pricedetails.map(elm => {
-        elm.product = elm.product.id;
-        if (elm.unit_exchange == null) {
-          elm.unit_exchange = null;
-        } else {
-          elm.unit_exchange = elm.unit_exchange.unit_name;
-        }
-        return elm;
-      });
+      values.pricedetails = details
+      // setPriceDetails(details);
+      // values.pricedetails = values.pricedetails.map(elm => {
+      //   elm.product = elm.product.id;
+      //   if (elm.unit_exchange == null) {
+      //     elm.unit_exchange = null;
+      //   } else {
+      //     elm.unit_exchange = elm.unit_exchange.unit_name;
+      //   }
+      //   return elm;
+      // });
 
       form.setFieldsValue(values)
     } catch (error) {
@@ -376,16 +389,22 @@ const PriceChangeForm = (props) => {
     }
   }
 
-  const handleDataBaseUnit = async (unit_exchange) => {
+  const handleDataBaseUnit = async (unit_exchange, disable_base_unit) => {
     setLoadingData(true)
     try {
-      const options = unit_exchange.map(elm => {
+      const options = []
+      for (var i = 0; i < unit_exchange.length; i++) {
+        const elm = unit_exchange[i]
         elm.unit_exchange_value = elm.value
         delete elm.value
-        return (
+        // console.log("handleDataBaseUnit", elm, disable_base_unit && elm.is_base_unit)
+        if (disable_base_unit && elm.is_base_unit) {
+          continue;
+        }
+        options.push(
           <Option key={elm.id} value={elm.id} {...elm}>{elm.unit_name}</Option>
         )
-      })
+      }
       setBaseUnitOptions([...baseUnitOptions, options]);
     } catch (error) {
       message.error(messages.ERROR)
@@ -393,19 +412,6 @@ const PriceChangeForm = (props) => {
       setLoadingData(false)
     }
   }
-
-  const onUnitSelect = async (option) => {
-    try {
-      const response = await api.product.get(option);
-      handleDataBaseUnit(response.data.data.units)
-
-    } catch (error) {
-      message.error(messages.ERROR)
-    } finally {
-    }
-  }
-
-
 
   useEffect(() => {
     if (is_create == null) {
@@ -457,6 +463,92 @@ const PriceChangeForm = (props) => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
 
+
+  const onSelectProduct = async (product_id, add) => {
+    const response = await api.product.get(product_id)
+    console.log("onSelectProduct", response.data)
+    if (response.data.code == 1) {
+      // console.log(response.data.data)
+      const product = response.data.data
+      var base_unit_exchange;
+      product.units.forEach(elm => {
+        if (elm.unit == product.base_unit.id) {
+          base_unit_exchange = elm
+        }
+      })
+
+      if (!checkUnitAvail(base_unit_exchange.id, product.id)) {
+        message.error("Sản phẩm và đã tồn tại!")
+        return
+      }
+      for (var i = 0; i < product.units.length; i++) {
+        const value = {
+          ...product,
+          _product: product,
+          key: product.id,
+          product: product.id,
+          product_name: product.name,
+          unit_exchange: product.units[i].id,
+          unit_exchange_value: product.units[i].value,
+          unit_exchange_value_str: `${product.units[i].value} ${base_unit_exchange.unit_name}`,
+          unit_exchange_name: product.units[i].unit_name,
+          disable_unit: true,
+          price: 0,
+        }
+        if (product.units[i].id == base_unit_exchange.id) {
+          value.is_base_unit = true
+        }
+        add(value)
+
+      }
+    } else {
+      message.error(messages.ERROR_REFRESH)
+    }
+  }
+
+  const checkUnitAvail = (unit_exchange, product_id) => {
+    var pricedetails = form.getFieldValue("pricedetails")
+    if (!pricedetails)
+      return true
+
+    for (var i = 0; i < pricedetails.length; i++) {
+      console.log("checkUnitAvail", pricedetails[i], unit_exchange)
+      if (pricedetails[i].id == product_id && pricedetails[i].unit_exchange == unit_exchange) {
+        return false
+      }
+    }
+    return true
+  }
+
+  const getUnitAvail = (product) => {
+    for (var i = 0; i < product.units.length; i++) {
+      // console.log("getUnitAvail", currentRecord.units[i])
+      const unit_ex = product.units[i]
+      // console.log("getUnitAvail", unit_ex, checkUnitAvail(unit_ex.id, currentRecord.id))
+      if (checkUnitAvail(unit_ex.id, product.id))
+        return unit_ex
+    }
+    return null
+  }
+
+  const onUnitSelect = async (value, name) => {
+    try {
+      const pricedetails = form.getFieldValue("pricedetails")
+      const currentRecord = pricedetails[name]
+      for (var i = 0; i < pricedetails.length; i++) {
+        console.log("onUnitSelect", pricedetails[i], value)
+        if (i != name && pricedetails[i].id == currentRecord.id) {
+          if (pricedetails[i].unit_exchange == value) {
+            message.error("Đã tồn tại sản phẩm với đơn vị tính này")
+            return
+          }
+        }
+      }
+    } catch (error) {
+      message.error(messages.ERROR)
+    } finally {
+    }
+  }
 
   return (
     <>
@@ -542,37 +634,82 @@ const PriceChangeForm = (props) => {
 
             </>
               <Col>
-                <label><h2 style={{ marginTop: '10px', marginBottom: '10px', textAlign: 'center' }}>Bảng giá sản phẩm
-                  {is_create ? <><span style={{ position: "absolute", marginLeft: "10px" }}><Upload showUploadList={false} {...uploadData} style={{}}>
-                    <Button icon={<UploadOutlined />}>Nhập Excel</Button>
-                  </Upload></span></> : null}
-                </h2></label>
+                <div><h2 style={{ marginTop: '10px', marginBottom: '10px', textAlign: 'center', display: 'inline-block' }}>Bảng giá sản phẩm</h2>
+                  {is_create ?
+                    <><span style={{
+                      position: 'absolute',
+                      right: '0',
+                      float: 'right',
+                      marginTop: '10px',
+                      marginRight: '45px'
+                    }}>
+                      <Upload showUploadList={false} {...uploadData} style={{}}>
+                        <Button icon={<UploadOutlined />}>Nhập Excel</Button>
+                      </Upload>
+                    </span></>
+                    : null}
+                </div>
 
                 <Form.List name="pricedetails" label="Bảng giá sản phẩm">
                   {(fields, { add, remove }) => (
                     <>
-                      <Row>
+                      {is_create ?
+                        <ProductSelect
+                          style={{
+                            marginBottom: '20px'
+                          }}
+                          placeholder="Thêm sản phẩm vào bảng giá"
+                          onSelectProduct={(value) => onSelectProduct(value, add)} />
+                        : null}
+
+                      <Row style={{
+                        marginBottom: '10px'
+                      }}>
                         <Col span={1}></Col>
-                        <Col span={10} style={titleCol}>
+                        <Col span={2} style={titleCol}>
+                          <Typography.Text>Mã SP</Typography.Text>
+                        </Col>
+                        <Col span={5} style={titleCol}>
                           <Typography.Text>Sản phẩm</Typography.Text>
                         </Col>
                         <Col span={1}></Col>
-                        <Col span={5} style={titleCol}>
+                        <Col span={4} style={titleCol}>
                           <Typography.Text>Đơn vị tính</Typography.Text>
                         </Col>
-                        <Col span={5} style={titleCol}>
+                        <Col span={1}></Col>
+                        <Col span={4} style={titleCol}>
+                          <Typography.Text>Giá trị quy đổi (ĐVT Cơ bản)</Typography.Text>
+                        </Col>
+                        <Col span={4} style={titleCol}>
                           <Typography.Text>Giá bán</Typography.Text>
                         </Col>
                         <Col span={2}></Col>
                       </Row>
+                      <div style={{
+                        maxHeight: '350px',
+                        overflow: 'auto'
+                        }}>
                       {fields.map(({ key, name, ...restField }) => (
                         <>
-                          <Row>
+                          <Row style={{
+                            borderTop: `${form.getFieldValue("pricedetails")[name].is_base_unit ? '1px solid #eee' : '0px'}`,
+                            paddingTop: `${form.getFieldValue("pricedetails")[name].is_base_unit ? '10px' : '0px'}`,
+                          }}>
                             <Col span={1}></Col>
-                            <Col span={10}>
+                            <Col span={2}>
                               <Form.Item
                                 {...restField}
-                                name={[name, 'product']}
+                                name={[name, 'product_code']}
+                              >
+                                <Input
+                                  disabled={true}
+                                  className='inputDisableText' />
+                              </Form.Item>
+                            </Col>
+                            <Col span={5}>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'product_name']}
                                 rules={[
                                   {
                                     required: true,
@@ -583,24 +720,16 @@ const PriceChangeForm = (props) => {
                                   textAlign: 'left'
                                 }}
                               >
-                                <Select
-                                  showSearch
-                                  onChange={(option) => onUnitSelect(option)}
-                                  placeholder="Sản phẩm"
-                                  optionFilterProp="children"
-                                  filterOption={(input, option) => option.children.includes(input)}
-                                  filterSort={(optionA, optionB) => optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())}
-                                  disabled={is_create ? false : true}
-                                >
-                                  {baseProductOptions}
-                                </Select>
+                                <Input
+                                  disabled={true}
+                                  className='inputDisableText' />
                               </Form.Item>
                             </Col>
                             <Col span={1}></Col>
-                            <Col span={5}>
+                            <Col span={4}>
                               <Form.Item
                                 {...restField}
-                                name={[name, 'unit_exchange']}
+                                name={[name, 'unit_exchange_name']}
                                 rules={[
                                   {
                                     required: true,
@@ -612,20 +741,26 @@ const PriceChangeForm = (props) => {
                                   textAlign: 'left'
                                 }}
                               >
-                                <Select
-                                  showSearch
-                                  placeholder="Đơn vị tính"
-                                  optionFilterProp="children"
-                                  filterOption={(input, option) => option.children.includes(input)}
-                                  filterSort={(optionA, optionB) => optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())}
-
-                                  disabled={is_create ? false : true}
-                                >
-                                  {baseUnitOptions[name]}
-                                </Select>
+                                <Input
+                                  disabled={true}
+                                  className='inputDisableText' />
                               </Form.Item>
                             </Col>
-                            <Col span={5}>
+                            <Col span={1}></Col>
+                            <Col span={4}>
+                              <Form.Item
+                                {...restField}
+                                name={[name, 'unit_exchange_value_str']}
+                                style={{
+                                  textAlign: 'left'
+                                }}
+                              >
+                                <Input
+                                  disabled={true}
+                                  className='inputDisableText' />
+                              </Form.Item>
+                            </Col>
+                            <Col span={4}>
                               <Form.Item
                                 {...restField}
                                 name={[name, 'price']}
@@ -636,40 +771,59 @@ const PriceChangeForm = (props) => {
                                   },
                                 ]}
                               >
-                                <Input placeholder="Giá" type='number' style={{ width: 150 }} min='0' disabled={is_create ? false : true} />
+                                <InputNumber
+                                  placeholder="Giá"
+                                  style={{ width: 150 }} min='0'
+                                  disabled={is_create ? false : true}
+                                  className={is_create ? "" : "inputDisableText"}
+                                  step={100}
+                                  onChange={(value) => {
+                                    if (form.getFieldValue("pricedetails")[name].is_base_unit) {
+                                      const _pricedetails = form.getFieldValue("pricedetails")
+                                      const product_id = _pricedetails[name]._product.id
+                                      for (var i = _pricedetails.length - 1; i >= 0; i--) {
+                                        console.log(_pricedetails[i])
+                                        if (_pricedetails[i]._product.id == product_id) {
+                                          // remove(i);
+                                          _pricedetails[i].price = value * _pricedetails[i].unit_exchange_value
+                                        }
+                                      }
+                                      form.setFieldValue("pricedetails", _pricedetails)
+                                    }
+                                  }} />
                               </Form.Item>
                             </Col>
                             <Col span={1}>
+                              {
+                                form.getFieldValue("pricedetails")[name].is_base_unit ?
+                                  <Popconfirm
+                                    placement="bottomRight"
+                                    title="Xác nhận xóa bảng giá này"
+                                    onConfirm={() => {
+                                      const _pricedetails = form.getFieldValue("pricedetails")
+                                      const product_id = _pricedetails[name]._product.id
+                                      for (var i = _pricedetails.length - 1; i >= 0; i--) {
+                                        if (_pricedetails[i]._product.id == product_id) {
+                                          remove(i);
+                                        }
+                                      }
+                                    }}
+                                    okText="Đồng ý"
+                                    okType="danger"
+                                    cancelText="Hủy bỏ"
+                                    disabled={is_create ? false : true}
+                                  >
+                                    <MinusCircleOutlined />
+                                  </Popconfirm>
+                                  :
+                                  null
+                              }
 
-                              <Popconfirm
-                                placement="bottomRight"
-                                title="Xác nhận xóa bảng giá này"
-                                onConfirm={() => {
-                                  remove(name);
-                                  var _baseUnitOptions = [...baseUnitOptions];
-                                  _baseUnitOptions.splice(name, 1);
-                                  setBaseUnitOptions(_baseUnitOptions);
-                                }}
-                                okText="Đồng ý"
-                                okType="danger"
-                                cancelText="Hủy bỏ"
-                                disabled={is_create ? false : true}
-                              >
-                                <MinusCircleOutlined />
-                              </Popconfirm>
                             </Col>
                             <Col span={1}></Col>
                           </Row></>
                       ))}
-                      <Row>
-
-                        <Form.Item style={{ width: '170px', margin: 'auto' }}>
-                          <Button type="dashed" disabled={is_create ? false : true} onClick={() => add()} block icon={<PlusOutlined />} >
-                            Thêm giá sản phẩm
-                          </Button>
-                        </Form.Item>
-
-                      </Row>
+                      </div>
                     </>
                   )}
                 </Form.List>

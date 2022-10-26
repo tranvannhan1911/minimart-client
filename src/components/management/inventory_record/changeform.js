@@ -426,6 +426,16 @@ const InventoryRecordChangeForm = (props) => {
   }, [refAutoFocus])
 
   const onSelectProduct = async (product_id, add) => {
+    
+    if(form.getFieldValue("details")){
+      for(var i=0; i < form.getFieldValue("details").length; i++){
+        if(form.getFieldValue("details")[i].key == product_id){
+          message.error("Đã tồn tại sản phẩm này!")
+          return 
+        }
+      }
+    }
+
     const response = await api.product.get(product_id)
     console.log("onSelectProduct", response.data)
     if (response.data.code == 1) {
@@ -514,6 +524,7 @@ const InventoryRecordChangeForm = (props) => {
                         style={{
                           marginBottom: '20px'
                         }}
+                        placeholder="Thêm sản phẩm vào phiếu kiểm kê"
                         onSelectProduct={(value) => onSelectProduct(value, add)} /><Upload showUploadList={false} {...uploadData} style={{}}>
                           <Button icon={<UploadOutlined />}>Nhập Excel</Button>
                         </Upload></> : null}
@@ -544,6 +555,11 @@ const InventoryRecordChangeForm = (props) => {
                         </Col>
                         <Col span={2}></Col>
                       </Row>
+                      
+                      <div style={{
+                        maxHeight: '350px',
+                        overflow: 'auto'
+                      }}>
                       {fields.map(({ key, name, ...restField }) => (
                         <Row>
                           <Col span={1}></Col>
@@ -673,6 +689,7 @@ const InventoryRecordChangeForm = (props) => {
                           <Col span={1}></Col>
                         </Row>
                       ))}
+                      </div>
                     </>
                   )}
                 </Form.List>
