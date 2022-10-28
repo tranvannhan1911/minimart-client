@@ -1,5 +1,5 @@
 import {
-    PlusOutlined, UploadOutlined, ReloadOutlined,
+    PlusOutlined, ReloadOutlined,
     SearchOutlined, DownloadOutlined
 } from '@ant-design/icons';
 import { Button, Input, message, Upload } from 'antd';
@@ -10,8 +10,6 @@ import api from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
-import { ExportReactCSV } from '../../../utils/exportExcel';
-import * as XLSX from 'xlsx';
 import ShowForPermission from '../../basic/permission';
 import ExcelJS from "exceljs";
 import saveAs from "file-saver";
@@ -31,45 +29,7 @@ const CustomerListForm = (props) => {
     const navigate = useNavigate()
     const refSearch = useRef()
 
-    const uploadData = {
-        async beforeUpload(file) {
-            // console.log(file.name)
-            var typeFile = file.name.split('.').pop().toLowerCase();
-            if (typeFile == "xlsx" || typeFile == "csv") {
-                setLoading(true);
-                const data = await file.arrayBuffer();
-                const workbook = XLSX.read(data);
-
-                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet);
-                for (let index = 0; index < jsonData.length; index++) {
-                    const element = jsonData[index];
-                    const response = await api.customer.add({
-                        "phone": "0" + element.phone,
-                        "fullname": element.fullname,
-                        "gender": element.gender,
-                        "address": element.address,
-                        "note": element.note,
-                        "is_active": element.is_active,
-                        "customer_group": [
-
-                        ]
-                    });
-                    if (index == jsonData.length - 1) {
-                        console.log(index)
-                        message.success("Xong quá trình thêm dữ liệu");
-                        setLoading(false);
-                        handleGetData();
-                    }
-                }
-            } else {
-                message.error("Chỉ nhập dữ liệu bằng file .csv, .xlsx");
-                return;
-            }
-
-        }
-    };
-
+    
     const handleGetData = async () => {
         setLoading(true)
         try {
@@ -246,10 +206,6 @@ const CustomerListForm = (props) => {
             title="Khách hàng"
             actions={[
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                
-                <Upload showUploadList={false} {...uploadData}>
-                    <Button icon={<UploadOutlined />}>Nhập Excel</Button>
-                </Upload>,
                 <ShowForPermission>
                     <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                 </ShowForPermission>,

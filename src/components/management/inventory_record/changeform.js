@@ -276,14 +276,14 @@ const InventoryRecordChangeForm = (props) => {
     if (is_create) {
       await create(values)
     } else {
-      // if (is_status == "complete") {
-      //   if (values.status == "pending" || values.status == "cancel") {
-      //     message.error("Phiếu kiểm kê này đã hoàn thành không thể sửa trạng thái!")
-      //     stopLoading(idxBtnSave)
-      //     setDisableSubmit(false)
-      //     return;
-      //   }
-      // }
+      if (is_status == "complete") {
+        if (values.status == "pending" || values.status == "cancel") {
+          message.error("Phiếu kiểm kê này đã hoàn thành không thể sửa trạng thái!")
+          stopLoading(idxBtnSave)
+          setDisableSubmit(false)
+          return;
+        }
+      }
       await update(values)
     }
     stopLoading(idxBtnSave)
@@ -513,7 +513,7 @@ const InventoryRecordChangeForm = (props) => {
                     >
                       <Option value="pending">Chờ xác nhận</Option>
                       <Option value="complete">Hoàn thành</Option>
-                      <Option value="cancel">Hủy</Option>
+                      {/* <Option value="cancel">Hủy</Option> */}
                     </Select>
                   </Form.Item>
                 </Col>

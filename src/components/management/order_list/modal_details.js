@@ -116,7 +116,7 @@ const OrderDetailModal = (props) => {
       <Divider />
 
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Danh sách sản phẩm mua</p>
-      <Table dataSource={dataSourceIndex} columns={columns} />
+      <Table dataSource={dataSourceIndex} columns={columns} size='small'/>
 
       <Divider />
       <p className="site-description-item-profile-p" style={{ fontSize: '15px', marginTop: '20px', fontWeight: 'bold',color:'red', textAlign:'right' }}>Tổng tiền: {props.data.final_total} đ</p>

@@ -154,22 +154,28 @@ const PromotionChangeForm = (props) => {
       return;
     }
     if (values.end_date < values.start_date) {
-      message.error('Ngày kết thúc phải sau hoặc cùng ngày bắt đầu');
-      stopLoading(idxBtnSave)
-      setDisableSubmit(false)
-      return;
+      if (values.start_date._d - values.end_date._d > 1) {
+        message.error('Ngày kết thúc phải sau hoặc cùng ngày bắt đầu');
+        stopLoading(idxBtnSave)
+        setDisableSubmit(false)
+        return;
+      }
+    }
+    if(values.status == null){
+      values.status = "true";
     }
     values.image = imageUrl;
     if (is_create) {
-      // let datenow= new Date();
-      // if (values.start_date < datenow) {
-      //   if (datenow - values.start_date > 1) {
-      //     message.error('Ngày bắt đầu phải không được sau ngày hiện tại');
-      //     stopLoading(idxBtnSave)
-      //     setDisableSubmit(false)
-      //     return;
-      //   }
-      // }
+      let datenow = new Date();
+      datenow = moment(datenow);
+      if (values.start_date < datenow) {
+        if (datenow + 0 > values.start_date + 24000000) {
+          message.error('Ngày bắt đầu không được sau ngày hiện tại');
+          stopLoading(idxBtnSave)
+          setDisableSubmit(false)
+          return;
+        }
+      }
       await create(values)
     } else {
       console.log(values.start_date._i)

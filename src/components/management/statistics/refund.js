@@ -17,7 +17,7 @@ const { TextArea } = Input;
 const idCity = 0;
 const { RangePicker } = DatePicker;
 
-const StatisticsProfitRevenue = () => {
+const StatisticsRefund = () => {
   const [loadings, setLoadings] = useState([]);
   const [data, setData] = useState([]);
   
@@ -45,67 +45,91 @@ const StatisticsProfitRevenue = () => {
 
   const columns = [
       {
-        title: 'Ngày',
+        title: 'STT',
         dataIndex: 'name',
         key: 'name',
       },
       {
-        title: 'Tổng tiền bán hàng',
+        title: 'Hóa Đơn Mua',
         dataIndex: 'address',
         key: 'address',
       },
         {
-          title: 'Số lượng khuyến mãi dùng',
+          title: 'Ngày đơn hàng mua',
           dataIndex: 'address',
           key: 'address',
         },
         {
-          title: 'Tổng tiền khuyến mãi',
+          title: 'Hóa Đơn Trả',
           dataIndex: 'address',
           key: 'address',
         },
         
         {
-          title: 'Lợi nhuận',
+          title: 'Ngày đơn hàng trả',
           dataIndex: 'address',
           key: 'address',
         },
+        {
+            title: 'Nhóm Sản Phẩm',
+            dataIndex: 'address',
+            key: 'address',
+          },
+          {
+            title: 'Ngành Hàng',
+            dataIndex: 'address',
+            key: 'address',
+          },
+          {
+            title: 'Mã sản phẩm',
+            dataIndex: 'address',
+            key: 'address',
+          },
+          {
+            title: 'Tên Sản Phẩm',
+            dataIndex: 'address',
+            key: 'address',
+          },
+          {
+            title: 'Số lượng thùng',
+            dataIndex: 'address',
+            key: 'address',
+          },
+          {
+            title: 'Số lượng lẻ',
+            dataIndex: 'address',
+            key: 'address',
+          },
+          {
+            title: 'Tổng số lượng',
+            dataIndex: 'address',
+            key: 'address',
+          },
+          {
+            title: 'Doanh Thu',
+            dataIndex: 'address',
+            key: 'address',
+          },
     ];
+
+    const onThongKe = () =>{
+      
+    }
 
   return (
       <div>
-          <Row style={{ marginBottom: '10px' }}><Col span={24}><h1 style={{ textAlign: 'center', fontSize: '25px' }}>Thống kê lợi nhuận doanh thu</h1></Col></Row>
-          <Row>
-              <Col span={8} style={{ display: 'flex' }}>
-                  <label style={{ marginRight: '10px' }}>Theo ngày:</label>
-                  <RangePicker onChange={onChange} />
-              </Col>
-              {/* <Col span={8}>
-              <label style={{ marginRight: '10px' }}>Theo tuần:</label>
-                  <DatePicker onChange={onChange} picker="week" />
-              </Col>
-              <Col span={8}>
-              <label style={{ marginRight: '10px' }}>Theo tháng:</label>
-                  <DatePicker onChange={onChange} picker="month" />
-              </Col> */}
+          <Row style={{ marginBottom: '0px' }}><Col span={24}><h1 style={{ textAlign: 'center', fontSize: '25px', margin:'0px' }}>Thống kê trả hàng</h1></Col></Row>
+          <Row style={{ marginTop: '5px' }}>
+                <Col span={24}>
+                    <label style={{ paddingRight: '10px' }}>Ngày thống kê:</label>
+                    <RangePicker onChange={onChange} />
+                    <Button type="primary" style={{ marginLeft: '10px' }} onClick={() => onThongKe()}>Thống kê</Button>
+                    {/* <Button style={{ marginLeft: '10px' }} onClick={() => exportExcel()}> <DownloadOutlined /> Xuất báo cáo</Button> */}
 
-          </Row>
-
-          {/* <Row style={{ marginTop: '20px' }}>
-              <Col span={8} style={{ display: 'flex' }}>
-              <label style={{ marginRight: '10px' }}>Theo quý:</label>
-                  <DatePicker onChange={onChange} picker="quarter" />
-              </Col>
-              <Col span={8}>
-              <label style={{ marginRight: '10px' }}>Theo năm:</label>
-                  <DatePicker onChange={onChange} picker="year" />
-              </Col>
-              <Col span={8}>
-                  
-              </Col>
-          </Row> */}
+                </Col>
+            </Row>
           {/* <Row style={{ marginTop: '10px', marginBottom: '10px' }}><Col span={24}><h2 style={{ textAlign: 'center' }}>Đồ thị</h2></Col></Row> */}
-          <Row style={{ marginTop: '20px', marginBottom: '10px' }}>
+          <Row style={{ marginTop: '5px', marginBottom: '10px' }}>
               <Col span={24}>
                   <Table dataSource={data}
                   columns={columns}
@@ -154,4 +178,4 @@ const StatisticsProfitRevenue = () => {
 
 }
 
-export default StatisticsProfitRevenue;
+export default StatisticsRefund;

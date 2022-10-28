@@ -1,5 +1,6 @@
 import { Button, Modal, Result, Row, Col, Table } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
+import moment from "moment";
 
 const SuccessModal = (props) => {
   const [open, setOpen] = useState(false);
@@ -45,9 +46,12 @@ const SuccessModal = (props) => {
     if (props.order != "") {
       let details = [];
 
-      let date = props.dateBuy.slice(0, 10);
-      let time = props.dateBuy.slice(11, 19);
-      setDateBuy(date + " " + time);
+      // let date = props.dateBuy.slice(0, 10);
+      // let time = props.dateBuy.slice(11, 19);
+      // setDateBuy(date + " " + time);
+
+      let date = moment(props.dateBuy).format('DD-MM-YYYY hh:mm:ss a');
+      setDateBuy(date);
 
       props.order.forEach(element => {
         let index = {

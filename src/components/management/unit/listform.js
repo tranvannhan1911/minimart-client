@@ -1,9 +1,9 @@
 import {
-    PlusOutlined, UploadOutlined,
-    ExportOutlined, ReloadOutlined,
+    PlusOutlined,
+    ReloadOutlined,
     SearchOutlined, DownloadOutlined
 } from '@ant-design/icons';
-import { Button, Col, Row, Space, Input, message, Upload, Modal } from 'antd';
+import { Button, Col, Row, Space, Input, message} from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import ListForm from '../templates/listform';
@@ -12,8 +12,6 @@ import api from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
-import { ExportReactCSV } from '../../../utils/exportExcel';
-import * as XLSX from 'xlsx';
 import ShowForPermission from '../../basic/permission';
 import ExcelJS from "exceljs";
 import saveAs from "file-saver";
@@ -30,35 +28,7 @@ const UnitListForm = (props) => {
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
-    const uploadData = {
-        async beforeUpload(file) {
-            // console.log(file.name)
-            var typeFile = file.name.split('.').pop().toLowerCase();
-            if (typeFile == "xlsx" || typeFile == "csv") {
-                setLoading(true);
-                const data = await file.arrayBuffer();
-                const workbook = XLSX.read(data);
-
-                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet);
-                for (let index = 0; index < jsonData.length; index++) {
-                    const element = jsonData[index];
-                    const response = await api.unit.add({ "name": element.name, "note": element.note });
-                    if (index == jsonData.length - 1) {
-                        console.log(index)
-                        message.success("Xong quá trình thêm dữ liệu");
-                        setLoading(false);
-                        handleGetData();
-                    }
-                }
-            } else {
-                message.error("Chỉ nhập dữ liệu bằng file .csv, .xlsx");
-                return;
-            }
-
-        }
-    };
-
+    
     const handleGetData = async () => {
         setLoading(true)
         try {
@@ -189,12 +159,6 @@ const UnitListForm = (props) => {
             title="Đơn vị tính"
             actions={[
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                
-                <ShowForPermission>
-                    <Upload showUploadList={false} {...uploadData}>
-                        <Button icon={<UploadOutlined />}>Nhập Excel</Button>
-                    </Upload>
-                </ShowForPermission>,
                 <ShowForPermission>
                     <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                 </ShowForPermission>,

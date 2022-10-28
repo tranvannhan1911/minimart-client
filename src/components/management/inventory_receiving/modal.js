@@ -67,6 +67,14 @@ const InventoryReceivingModal = (props) => {
       ),
     },
     {
+      title: 'Thành tiền',
+      dataIndex: 'quantity_base_unit',
+      key: 'quantity_base_unit',
+      render: (quantity_base_unit, record) => (
+        <Typography>{Number(quantity_base_unit)*Number(record.price)}</Typography>
+      ),
+    },
+    {
       title: 'Ghi chú',
       dataIndex: 'note',
       key: 'address',
@@ -93,7 +101,7 @@ const InventoryReceivingModal = (props) => {
 
     customCell.value = "Thông tin phiếu nhập hàng";
 
-    let header = ["Mã sản phẩm", "Sản phẩm", "Giá", "Số lượng", "Thành tiền", "Ghi chú"];
+    let header = ["Mã sản phẩm", "Sản phẩm", "Giá", "Số lượng (DVT cơ bản)", "Thành tiền", "Ghi chú"];
 
     var headerRow = worksheet.addRow();
     var headerRow = worksheet.addRow();
@@ -158,7 +166,7 @@ const InventoryReceivingModal = (props) => {
     };
 
     dataSource.forEach(element => {
-      worksheet.addRow([element.product.product_code, element.product.name, element.price, element.quantity, (element.quantity * element.price), element.note]);
+      worksheet.addRow([element.product.product_code, element.product.name, element.price, element.quantity_base_unit, (element.quantity_base_unit * element.price), element.note]);
     });
 
     const customCellTotal = worksheet.getCell("D" + (12 + dataSource.length));
@@ -251,7 +259,7 @@ const InventoryReceivingModal = (props) => {
 
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Danh sách sản phẩm nhập
       </p>
-      <Table dataSource={dataSource} columns={columns} />
+      <Table dataSource={dataSource} columns={columns} size='small'/>
 
       <Divider />
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin lịch sử</p>

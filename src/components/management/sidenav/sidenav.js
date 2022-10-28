@@ -159,10 +159,11 @@ const SideNav = (props) => {
         getChildItem('Nhân viên', 'nhan-vien', true),
       ]),
       getItem('Thống kê - Báo cáo', 'quan-ly-bao-cao', <BarChartOutlined />, [
-        getChildItem('Bán hàng - Trả hàng', 'ban-hang-tra-hang'),
-        getChildItem('Lợi nhuận - Doanh thu', 'loi-nhuan-doanh-thu'),
-        getChildItem('Kiểm kê', 'kiem-ke'),
-        getChildItem('Nhập hàng', 'nhap-hang'),
+        getChildItem('Doanh số bán hàng', 'thong-ke-doanh-so-ban-hang'),
+        getChildItem('Trả hàng', 'thong-ke-tra-hang'),
+        getChildItem('Khuyến mãi', 'thong-ke-khuyen-mai'),
+        getChildItem('Nhập hàng', 'thong-ke-nhap-hang'),
+        getChildItem('Tồn kho', 'thong-ke-ton-kho'),
       ], true),
     ];
     setItems(_items)

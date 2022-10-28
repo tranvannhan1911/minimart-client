@@ -289,14 +289,14 @@ const InventoryReceivingChangeForm = (props) => {
 
       await create(values)
     } else {
-      // if (is_status == "complete") {
-      //   if (values.status == "pending" || values.status == "cancel") {
-      //     message.error("Phiếu nhập hàng này đã hoàn thành không thể sửa trạng thái!")
-      //     stopLoading(idxBtnSave)
-      //     setDisableSubmit(false)
-      //     return;
-      //   }
-      // }
+      if (is_status == "complete") {
+        if (values.status == "pending" || values.status == "cancel") {
+          message.error("Phiếu nhập hàng này đã hoàn thành không thể sửa trạng thái!")
+          stopLoading(idxBtnSave)
+          setDisableSubmit(false)
+          return;
+        }
+      }
       // values.details = detailss;
       await update(values)
     }
@@ -315,7 +315,7 @@ const InventoryReceivingChangeForm = (props) => {
     try {
       const response = await api.inventory_receiving.get(id);
       const values = response.data.data;
-      // setStatus(values.status);
+      setStatus(values.status);
       // let details = values.details.map(elm => {
       //   let i = {
       //     "product": elm.product.id,
@@ -334,7 +334,7 @@ const InventoryReceivingChangeForm = (props) => {
         // elm.unit_exchange = elm.unit_exchange.unit_name;
         // elm.product = elm.product.id;
         // return elm;
-        elm.quantity_base_unit = String(elm.quantity_base_unit) + " " + elm.product.base_unit.name;
+        elm.quantity_base_unit = String(elm.quantity) + " " + elm.product.base_unit.name;
         elm.unit_exchange_obj = elm.unit_exchange
         elm.unit_exchange = elm.unit_exchange.unit_name
         elm.product_obj = elm.product

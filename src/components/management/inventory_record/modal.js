@@ -87,7 +87,7 @@ const InventoryRecordModal = (props) => {
 
     customCell.value = "Thông tin phiếu kiểm kê";
 
-    let header = ["Mã sản phẩm", "Sản phẩm", "Số lượng trước", "Số lượng sau", "Chênh lệch", "Ghi chú"];
+    let header = ["Mã sản phẩm", "Sản phẩm", "Số lượng trước (DVT cơ bản)", "Số lượng sau (DVT cơ bản)", "Chênh lệch", "Ghi chú"];
 
     var headerRow = worksheet.addRow();
     var headerRow = worksheet.addRow();
@@ -207,7 +207,7 @@ const InventoryRecordModal = (props) => {
       <Divider />
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px' }}>Danh sách sản phẩm
       </p>
-      <Table dataSource={dataSource} columns={columns} />
+      <Table dataSource={dataSource} columns={columns} size='small'/>
 
       <Divider />
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin lịch sử</p>
