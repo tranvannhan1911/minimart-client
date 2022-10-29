@@ -1,9 +1,9 @@
 import {
     PlusOutlined, ReloadOutlined,
-    SearchOutlined
-  } from '@ant-design/icons';
+    SearchOutlined, DownloadOutlined
+} from '@ant-design/icons';
 import { Button, Input, message } from 'antd';
-import React, { useState, useEffect,  } from 'react';
+import React, { useState, useEffect, } from 'react';
 import ListForm from '../templates/listform';
 import PriceTable from './table';
 import api from '../../../api/apis'
@@ -12,6 +12,8 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
 import ShowForPermission from '../../basic/permission';
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 
 const PriceListForm = (props) => {
     const [dataMain, setDataMain] = useState([])
@@ -29,7 +31,7 @@ const PriceListForm = (props) => {
 
     const handleGetData = async () => {
         setLoading(true)
-        try{
+        try {
             const response = await api.product.list()
             console.log("handleGetData", response)
             const _data = response.data.data.results.map(elm => {
@@ -37,8 +39,8 @@ const PriceListForm = (props) => {
                 elm.product_groups.forEach(gr => _product_groups.push(gr.name));
                 elm.product_groups = _product_groups;
                 // elm.base_unit= elm.base_unit.name;
-                elm.stock= elm.stock+"";
-                elm.product_category=elm.product_category ? elm.product_category.name: "";
+                elm.stock = elm.stock + "";
+                elm.product_category = elm.product_category ? elm.product_category.name : "";
 
                 let date = elm.date_created.slice(0, 10);
                 let time = elm.date_created.slice(11, 19);
@@ -53,7 +55,7 @@ const PriceListForm = (props) => {
             })
             setData(_data)
             setDataMain(_data)
-        }catch(error){
+        } catch (error) {
             console.log('Failed:', error)
             message.error(messages.ERROR_REFRESH)
         }
@@ -62,10 +64,10 @@ const PriceListForm = (props) => {
 
     const handleGetDataProductGroups = async () => {
         setLoading(true)
-        try{
+        try {
             const response = await api.product_group.list()
             setDataProductGroups(response.data.data.results)
-        }catch(error){
+        } catch (error) {
             console.log('Failed:', error)
             message.error(messages.ERROR_REFRESH)
         }
@@ -74,10 +76,10 @@ const PriceListForm = (props) => {
 
     const handleGetDataCategory = async () => {
         setLoading(true)
-        try{
+        try {
             const response = await api.category.list()
             setDataCategory(response.data.data.results)
-        }catch(error){
+        } catch (error) {
             console.log('Failed:', error)
             message.error(messages.ERROR_REFRESH)
         }
@@ -101,59 +103,125 @@ const PriceListForm = (props) => {
         setSearchInfo([])
     };
 
-    const searchName = (value) =>{
+    const searchName = (value) => {
         setDataSearchName(value);
         let data_ = [];
         dataMain.forEach(element => {
-            if(element.name.toLowerCase().includes(value.toLowerCase())){
+            if (element.name.toLowerCase().includes(value.toLowerCase())) {
                 data_.push(element);
             }
         });
         setData(data_);
     }
 
-    const searchCode = (value) =>{
+    const searchCode = (value) => {
         setDataSearchCode(value);
         let data_ = [];
         dataMain.forEach(element => {
-            if(element.product_code.toLowerCase().includes(value.toLowerCase())){
+            if (element.product_code.toLowerCase().includes(value.toLowerCase())) {
                 data_.push(element);
             }
         });
         setData(data_);
     }
 
-    const searchBarcode = (value) =>{
+    const searchBarcode = (value) => {
         setDataSearchBarcode(value);
         let data_ = [];
         dataMain.forEach(element => {
-            if(element.barcode.toString().toLowerCase().includes(value.toString().toLowerCase())){
+            if (element.barcode.toString().toLowerCase().includes(value.toString().toLowerCase())) {
                 data_.push(element);
             }
         });
         setData(data_);
     }
 
+    /////////////////
+
+    const exportExcel = () => {
+        var ExcelJSWorkbook = new ExcelJS.Workbook();
+        var worksheet = ExcelJSWorkbook.addWorksheet("SanPham");
+
+        worksheet.mergeCells("A2:E2");
+
+        const customCell = worksheet.getCell("A2");
+        customCell.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 20,
+            underline: true,
+            bold: true,
+        };
+        customCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+        customCell.value = "Danh sách sản phẩm";
+
+        let header = ["Mã sản phẩm", "Tên sản phẩm", "Mã vạch", "Đơn vị tính", "Số lượng tồn", "Nhóm sản phẩm", "Ngành hàng", "Mô tả"];
+
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+
+        worksheet.getRow(5).font = { bold: true };
+
+        for (let i = 0; i < 8; i++) {
+            let currentColumnWidth = "123";
+            worksheet.getColumn(i + 1).width =
+                currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
+            let cell = headerRow.getCell(i + 1);
+            cell.value = header[i];
+        }
+
+        worksheet.autoFilter = {
+            from: {
+                row: 5,
+                column: 1
+            },
+            to: {
+                row: 5,
+                column: 8
+            }
+        };
+
+        data.forEach(element => {
+            let nhomsp="";
+            element.product_groups.forEach(elm => {
+                nhomsp += elm+", ";
+            })
+            worksheet.addRow([element.product_code, element.name, element.barcode, element.base_unit.name, element.stock, nhomsp,
+            element.product_category, element.description]);
+        });
+
+        ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+            saveAs(
+                new Blob([buffer], { type: "application/octet-stream" }),
+                `SanPham.xlsx`
+            );
+        });
+    };
+
+    ////////////////
+
     return (
-        <ListForm 
-            title="Sản phẩm" 
+        <ListForm
+            title="Sản phẩm"
             actions={[
-                
-                <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
-                
+
+                <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
+
                 <ShowForPermission>
-                    <ExportReactCSV csvData={data} fileName='product.xlsx' />
+                    <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                 </ShowForPermission>,
                 <ShowForPermission>
                     <Button onClick={() => navigate(paths.product.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>
                 </ShowForPermission>,
             ]}
             table={
-                <PriceTable 
-                    data={data} 
-                    dataProductGroups={dataProductGroups} 
+                <PriceTable
+                    data={data}
+                    dataProductGroups={dataProductGroups}
                     dataCategory={dataCategory}
-                    loading={loading} 
+                    loading={loading}
                     setLoading={setLoading}
                     filteredInfo={filteredInfo}
                     setFilteredInfo={setFilteredInfo}
@@ -168,9 +236,9 @@ const PriceListForm = (props) => {
                 />
             }
             extra_actions={[
-                <Input 
-                    placeholder="Tìm kiếm sản phẩm" 
-                    allowClear value={searchInfo[0]} 
+                <Input
+                    placeholder="Tìm kiếm sản phẩm"
+                    allowClear value={searchInfo[0]}
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
                 />,

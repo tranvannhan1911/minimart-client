@@ -40,10 +40,11 @@ const Paths = {
     order_refund: getPaths("don-tra-hang","id"),
     sell: getPaths("ban-hang","id"),
     category: getPaths("nganh-hang", "id"),
-    statistics_order_refund: getPaths("ban-hang-tra-hang","id"),
-    statistics_profit_revenue: getPaths("loi-nhuan-doanh-thu","id"),
-    statistics_received: getPaths("nhap-hang","id"),
-    statistics_record: getPaths("kiem-ke","id"),
+    statistics_sales: getPaths("thong-ke-doanh-so-ban-hang","id"),
+    statistics_refund: getPaths("thong-ke-tra-hang","id"),
+    statistics_promotion: getPaths("thong-ke-khuyen-mai","id"),
+    statistics_receiving: getPaths("thong-ke-nhap-hang","id"),
+    statistics_inventory: getPaths("thong-ke-ton-kho","id"),
 
     
     s3: (filename) => `https://minimart-tvn1911.s3.ap-southeast-1.amazonaws.com/${filename}`,

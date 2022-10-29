@@ -49,8 +49,9 @@ const TabContent = (props) => {
             const response = await api.staff.list()
             setListStaff(response.data.data.results);
             const options = response.data.data.results.map(elm => {
+                let label= elm.fullname+" - "+elm.phone;
                 return (
-                    <Option key={elm.id} value={elm.id}>{elm.fullname} - {elm.phone}</Option>
+                    <Option key={elm.id} value={elm.id}>{label}</Option>
                 )
             })
             setStaffOptions(options);
@@ -64,8 +65,9 @@ const TabContent = (props) => {
             const response = await api.customer.list()
             // console.log(response.data)
             const options = response.data.data.results.map(elm => {
+                let label= elm.fullname+" - "+elm.phone;
                 return (
-                    <Option key={elm.id} value={elm.id}>{elm.fullname} - {elm.phone}</Option>
+                    <Option key={elm.id} value={elm.id}>{label}</Option>
                 )
             })
             setCustomerOptions(options);
@@ -420,29 +422,29 @@ const TabContent = (props) => {
                     <Form.Item>
                         <div className='sb'>
                             <span>Tạm tính</span>
-                            <span>{totalProduct} đ</span>
+                            <span>{totalProduct.toLocaleString()} đ</span>
                         </div>
                         <div className='sb'>
                             <span>giảm giá</span>
-                            <span>{voucher} đ</span>
+                            <span>{voucher.toLocaleString()} đ</span>
                         </div>
                         <div className='sb' style={{ fontWeight: '600' }}>
                             <span>Thành tiền</span>
-                            <span>{total} đ</span>
+                            <span>{total.toLocaleString()} đ</span>
                         </div>
                     </Form.Item>
                     <div className='sb'>
-                        <div>
-                            <Form.Item label="Tiền khách đưa" name='money_given'>
-                                <InputNumber step={1000} min='0' value={moneyGiven} onChange={(value) => {
+                        <div style={{width:"60%"}}>
+                            <Form.Item label="Tiền khách đưa" name='money_given' style={{width:"100%"}}>
+                                <InputNumber step={1000} min='0' value={moneyGiven} style={{width:"100%"}} onChange={(value) => {
                                     setMoneyGiven(value)
                                     calculateMoneyChange(value)
                                     }} />
                             </Form.Item>
                         </div>
-                        <div>
+                        <div style={{width:"40%"}}>
                             <Form.Item label=" ">
-                                <span>Trả lại {moneyChange}đ</span>
+                                <span>Trả lại {moneyChange.toLocaleString()}đ</span>
                             </Form.Item>
                         </div>
                     </div>

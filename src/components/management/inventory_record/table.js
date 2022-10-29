@@ -129,6 +129,8 @@ const InventoryRecordTable = (props) => {
   const handleSearch = (data, column) => {
     if (column == "mã") {
       props.dataSearchId(data)
+    }else{
+      props.dataSearchUserCreated(data)
     }
 
 
@@ -190,9 +192,10 @@ const InventoryRecordTable = (props) => {
   
   const columns = [
     {
-      title: 'Mã',
+      title: 'Mã phiếu kiểm kê',
       dataIndex: 'id',
       key: 'id',
+      width: "13%",
       sorter: {
         compare: (a, b) => a.id > b.id,
         multiple: 1
@@ -206,12 +209,19 @@ const InventoryRecordTable = (props) => {
       ...getColumnSearchProps('mã')
     },
     {
+      title: 'Người kiểm kê',
+      dataIndex: 'user_created',
+      key: 'user_created',
+      ...getColumnSearchProps('người kiểm kê')
+    },
+    {
       title: 'Ngày kiểm kê',
       dataIndex: 'date_created',
       key: 'date_created',
     },
     {
       title: 'Trạng thái',
+      // width: "15%",
       dataIndex: 'status',
       key: 'status',
       filters: [

@@ -16,8 +16,9 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import ProductSelect from '../barcode/input';
 import * as XLSX from 'xlsx';
-import { CSVLink } from 'react-csv'
 import { validNumber } from '../../../resources/regexp';
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -32,7 +33,6 @@ const InventoryRecordChangeForm = (props) => {
   const [formPrice] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
   const [baseProductOptions, setBaseProductOptions] = useState([]);
-  const [dataError, setDataError] = useState([])
   const [loadingData, setLoadingData] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
   const [idxBtnSave, setIdxBtnSave] = useState([]);
@@ -47,13 +47,10 @@ const InventoryRecordChangeForm = (props) => {
   const listPrice = [];
   const [unit, setUnit] = useState("")
   const [quantity, setQuantity] = useState("")
-  // const onChange = (checked) => {
-  //   console.log(`switch to ${checked}`);
-  // };
+  
 
   const uploadData = {
     async beforeUpload(file) {
-      // console.log(file.name)
       var typeFile = file.name.split('.').pop().toLowerCase();
       if (typeFile == "xlsx" || typeFile == "csv") {
         const data = await file.arrayBuffer();
@@ -62,7 +59,6 @@ const InventoryRecordChangeForm = (props) => {
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-        setDataError([]);
         let datadetail = [];
         let dataFormDetails = form.getFieldValue("details");
         if (dataFormDetails != null) {
@@ -77,10 +73,10 @@ const InventoryRecordChangeForm = (props) => {
           const element = jsonData[index];
           let loi = "";
           if (!validNumber.test(element.soluong)) {
-            loi = "So luong phai la so, ";
+            loi = "Số lượng phải là số, ";
           }
           dataProduct.forEach(elementt => {
-            if (elementt.product_code == element.maSP || elementt.barcode == element.maSP) {
+            if (elementt.product_code.toLowerCase() == element.maSP.toLowerCase() || elementt.barcode == element.maSP) {
               if (validNumber.test(element.soluong)) {
                 let indexx = {
                   key: elementt.id,
@@ -113,7 +109,7 @@ const InventoryRecordChangeForm = (props) => {
                 'Không tìm thấy mã sản phẩm ' + element.maSP + " để thêm dữ liệu !!",
               // duration: 0,
             });
-            loi += "Ma san pham khong chinh xac, ";
+            loi += "Mã sản phẩm không chính xác, ";
 
           }
           if (loi != "") {
@@ -125,14 +121,13 @@ const InventoryRecordChangeForm = (props) => {
             });
           }
           if (index == jsonData.length - 1) {
-            setDataError(dataerrorr);
             if (resultTotal == jsonData.length) {
               message.success("Xong quá trình thêm dữ liệu");
               form.setFieldValue("details", datadetail)
             } else {
               message.error("Dữ liệu lỗi!!");
               setTimeout(() => {
-                document.getElementById("excelExport").click();
+                exportDataError(dataerrorr);
               }, 500);
             }
           }
@@ -141,8 +136,32 @@ const InventoryRecordChangeForm = (props) => {
         message.error("Chỉ nhập dữ liệu bằng file .csv, .xlsx");
         return;
       }
-
     }
+  };
+
+  const exportDataError = (data) => {
+    var ExcelJSWorkbook = new ExcelJS.Workbook();
+    var worksheet = ExcelJSWorkbook.addWorksheet("Data");
+
+    worksheet.addRow(["maSP", "soluong", "ghichu", "loi", "(Số lượng theo đơn vị cơ bản)"]);
+    let i = 2;
+    data.forEach(element => {
+      if (element.loi == "") {
+        worksheet.addRow([element.maSP, element.soluong, element.ghichu, element.loi]);
+        i++;
+      } else {
+        worksheet.addRow([element.maSP, element.soluong, element.ghichu, element.loi]);
+        worksheet.getRow(i).font = { color: {argb:'ffff0000'} };
+        i++;
+      }
+    });
+
+    ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+      saveAs(
+        new Blob([buffer], { type: "application/octet-stream" }),
+        `DataError.xlsx`
+      );
+    });
   };
 
   const enterLoading = (index) => {
@@ -257,14 +276,14 @@ const InventoryRecordChangeForm = (props) => {
     if (is_create) {
       await create(values)
     } else {
-      // if (is_status == "complete") {
-      //   if (values.status == "pending" || values.status == "cancel") {
-      //     message.error("Phiếu kiểm kê này đã hoàn thành không thể sửa trạng thái!")
-      //     stopLoading(idxBtnSave)
-      //     setDisableSubmit(false)
-      //     return;
-      //   }
-      // }
+      if (is_status == "complete") {
+        if (values.status == "pending" || values.status == "cancel") {
+          message.error("Phiếu kiểm kê này đã hoàn thành không thể sửa trạng thái!")
+          stopLoading(idxBtnSave)
+          setDisableSubmit(false)
+          return;
+        }
+      }
       await update(values)
     }
     stopLoading(idxBtnSave)
@@ -494,7 +513,7 @@ const InventoryRecordChangeForm = (props) => {
                     >
                       <Option value="pending">Chờ xác nhận</Option>
                       <Option value="complete">Hoàn thành</Option>
-                      <Option value="cancel">Hủy</Option>
+                      {/* <Option value="cancel">Hủy</Option> */}
                     </Select>
                   </Form.Item>
                 </Col>
@@ -726,7 +745,6 @@ const InventoryRecordChangeForm = (props) => {
 
         </ChangeForm>
       }
-      <CSVLink data={dataError} filename='dataerror.xlsx' id="excelExport"></CSVLink>
 
     </>
   )

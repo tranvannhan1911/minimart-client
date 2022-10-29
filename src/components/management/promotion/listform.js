@@ -1,6 +1,6 @@
 import {
     PlusOutlined, ReloadOutlined,
-    SearchOutlined
+    SearchOutlined, DownloadOutlined
 } from '@ant-design/icons';
 import { Button, Input, message, DatePicker } from 'antd';
 import React, { useState, useEffect,  } from 'react';
@@ -12,6 +12,8 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { ExportReactCSV } from '../../../utils/exportExcel';
 import ShowForPermission from '../../basic/permission';
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 
 
 const PromotionListForm = (props) => {
@@ -141,6 +143,73 @@ const PromotionListForm = (props) => {
         setData(data_);
     }
 
+    /////////////////
+
+    const exportExcel = () => {
+        var ExcelJSWorkbook = new ExcelJS.Workbook();
+        var worksheet = ExcelJSWorkbook.addWorksheet("CTKM");
+
+        worksheet.mergeCells("A2:E2");
+
+        const customCell = worksheet.getCell("A2");
+        customCell.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 20,
+            underline: true,
+            bold: true,
+        };
+        customCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+        customCell.value = "Danh sách chương trình khuyến mãi";
+
+        let header = ["Mã chương trình khuyến mãi", "Tiêu đề", "Mô tả", "Ngày bắt đầu","Ngày kết thúc", "Trạng thái", "Ghi chú"];
+
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+
+        worksheet.getRow(5).font = { bold: true };
+
+        for (let i = 0; i < 7; i++) {
+            let currentColumnWidth = "123";
+            worksheet.getColumn(i + 1).width =
+                currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
+            let cell = headerRow.getCell(i + 1);
+            cell.value = header[i];
+        }
+
+        worksheet.autoFilter = {
+            from: {
+                row: 5,
+                column: 1
+            },
+            to: {
+                row: 5,
+                column: 7
+            }
+        };
+
+        data.forEach(element => {
+            let status ="";
+            if(element.status == true){
+                status ="Hoạt động";
+            }else{
+                status="Khóa";
+            }
+            worksheet.addRow([element.id, element.title, element.description, element.start_date, element.end_date, status, element.note]);
+        });
+
+        ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+            saveAs(
+                new Blob([buffer], { type: "application/octet-stream" }),
+                `CTKhuyenMai.xlsx`
+            );
+        });
+    };
+
+    ////////////////
+
     return (
         <>
 
@@ -149,18 +218,8 @@ const PromotionListForm = (props) => {
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
                     <ShowForPermission>
-                        <ExportReactCSV csvData={data} fileName='listrpromotion.xlsx' 
-                        header={[
-                            { label: 'Mã', key: 'id' },
-                            { label: 'Tiêu đề', key: 'title' },
-                            { label: 'Mô tả', key: 'description' },
-                            { label: 'Ngày bắt đầu', key: 'start_date' },
-                            { label: 'Ngày kết thúc', key: 'end_date' },
-                            // { label: 'Nhóm khách hàng', key: 'applicable_customer_groups' },
-                            { label: 'Trạng thái', key: 'status' },
-                            { label: 'Ghi chú', key: 'note' },
-                        ]} 
-                        />
+                        <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
+                        
                     </ShowForPermission>,
                     <ShowForPermission>
                         <Button onClick={() => navigate(paths.promotion.add)} type="primary" icon={<PlusOutlined />}

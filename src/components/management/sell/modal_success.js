@@ -1,5 +1,6 @@
-import { Button, Modal, Result, Row, Col, Table } from 'antd';
+import { Button, Modal, Result, Row, Col, Table, Typography } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
+import moment from "moment";
 
 const SuccessModal = (props) => {
   const [open, setOpen] = useState(false);
@@ -45,9 +46,12 @@ const SuccessModal = (props) => {
     if (props.order != "") {
       let details = [];
 
-      let date = props.dateBuy.slice(0, 10);
-      let time = props.dateBuy.slice(11, 19);
-      setDateBuy(date + " " + time);
+      // let date = props.dateBuy.slice(0, 10);
+      // let time = props.dateBuy.slice(11, 19);
+      // setDateBuy(date + " " + time);
+
+      let date = moment(props.dateBuy).format('DD-MM-YYYY hh:mm:ss a');
+      setDateBuy(date);
 
       props.order.forEach(element => {
         let index = {
@@ -88,6 +92,9 @@ const SuccessModal = (props) => {
       title: 'Đơn giá',
       dataIndex: 'price',
       key: 'price',
+      render: (price, record) => (
+        <Typography>{`${record.price?.toLocaleString()}`}</Typography>
+      ),
     },
     {
       title: 'Số lượng',
@@ -98,6 +105,9 @@ const SuccessModal = (props) => {
       title: 'Thành tiền',
       dataIndex: 'total',
       key: 'total',
+      render: (total, record) => (
+        <Typography>{`${record.total?.toLocaleString()}`}</Typography>
+      ),
     },
   ];
 
@@ -171,19 +181,19 @@ const SuccessModal = (props) => {
           <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px' }}>Số lượng sản phẩm: {props.order.length}</Col>
         </Row>
         <Row>
-          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px', fontWeight: 'bold' }}>Tổng tiền hàng: {props.totalProduct} vnđ</Col>
+          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px', fontWeight: 'bold' }}>Tổng tiền hàng: {props.totalProduct?.toLocaleString()} vnđ</Col>
         </Row>
         <Row>
-          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px' }}>Giảm giá: {props.totalProduct - props.total} vnđ</Col>
+          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px' }}>Giảm giá: {(props.totalProduct - props.total)?.toLocaleString()} vnđ</Col>
         </Row>
         <Row>
-          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px', fontWeight: 'bold', color: 'red' }}>Tổng tiền thanh toán: {props.total} vnđ</Col>
+          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px', fontWeight: 'bold', color: 'red' }}>Tổng tiền thanh toán: {props.total?.toLocaleString()} vnđ</Col>
         </Row>
         <Row>
-          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px'}}>Tiền khách đưa: {props.dataMoneyChange + props.total} vnđ</Col>
+          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px'}}>Tiền khách đưa: {(props.dataMoneyChange + props.total)?.toLocaleString()} vnđ</Col>
         </Row>
         <Row>
-          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px'}}>Tiền thừa: {props.dataMoneyChange} vnđ</Col>
+          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px'}}>Tiền thừa: {props.dataMoneyChange?.toLocaleString()} vnđ</Col>
         </Row>
 
         <Row>

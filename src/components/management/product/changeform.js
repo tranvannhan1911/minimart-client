@@ -259,12 +259,12 @@ const PriceChangeForm = (props) => {
   const onFinish = async (values) => {
     setDisableSubmit(true)
     enterLoading(idxBtnSave)
-    if (!validName1.test(values.name)) {
-      message.error('Tên không hợp lệ! Chữ cái đầu của từ đầu tiên phải viết hoa');
-      setDisableSubmit(false)
-      stopLoading(idxBtnSave)
-      return;
-    }
+    // if (!validName1.test(values.name)) {
+    //   message.error('Tên không hợp lệ! Chữ cái đầu của từ đầu tiên phải viết hoa');
+    //   setDisableSubmit(false)
+    //   stopLoading(idxBtnSave)
+    //   return;
+    // }
     if (!validCode.test(values.product_code)) {
       message.error('Code sản phẩm không hợp lệ! Code bao gồm 3 ký tự in hoa và 3 ký tự số phía sau (VD: AAA000)');
       setDisableSubmit(false)

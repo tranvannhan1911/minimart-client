@@ -1,5 +1,5 @@
 import {
-  FormOutlined, DeleteOutlined, HistoryOutlined, ReloadOutlined, PlusOutlined, LoadingOutlined
+  FormOutlined, DeleteOutlined, HistoryOutlined, ReloadOutlined, PlusOutlined, LoadingOutlined, DownloadOutlined
 } from '@ant-design/icons';
 import {
   Button, Form, Input, Select, message, Popconfirm, DatePicker,
@@ -17,6 +17,8 @@ import { ExportReactCSV } from '../../../../utils/exportExcel';
 import { validName1 } from '../../../../resources/regexp'
 import PromotionLineModal from './modal';
 import moment from "moment";
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 
 const dateFormat = "YYYY/MM/DD";
 
@@ -26,6 +28,8 @@ const PromotionChangeForm = (props) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
+  const [dataMain, setDataMain] = useState([]);
+  const [dataCustomerGroup, setDataCustomerGroup] = useState([]);
   const [dataUpdate, setDataUpdate] = useState([]);
   const [loadings, setLoadings] = useState([]);
   const [customerGroupOptions, setCustomerGroupOptions] = useState([]);
@@ -44,10 +48,166 @@ const PromotionChangeForm = (props) => {
   const [productGroup, setProductGroup] = useState([]);
   const [dataLine, setDataLine] = useState([]);
 
+  /////////////////
+
+  const exportExcel = () => {
+    var ExcelJSWorkbook = new ExcelJS.Workbook();
+    var worksheet = ExcelJSWorkbook.addWorksheet("KhuyenMai");
+
+    worksheet.mergeCells("A2:E2");
+
+    const customCell = worksheet.getCell("A2");
+    customCell.font = {
+      name: "Times New Roman",
+      family: 4,
+      size: 20,
+      underline: true,
+      bold: true,
+    };
+    customCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+    customCell.value = dataMain.title;
+
+    let header = ["Mã áp dụng", "Tiêu đề", "Diễn giải", "Loại khuyến mãi",
+      "Ngày bắt đầu", "Ngày kết thúc", "Trạng thái",
+      "Số lượng tối đa áp dụng", "Số lượng tối đa cho 1 khách", "Số lượng tối đa cho 1 khách trong 1 ngày",
+      "Ghi chú", "Nhóm sản phẩm áp dụng", "Sản phẩm áp dụng", "Số lượng mua", "Sản phẩm khuyến mãi",
+      "Số lượng khuyến mãi", "Số tiền ít nhất để được khuyến mãi", "Chiết khấu",
+      "Số tiền giảm giá", "Số tiền giảm tối đa"];
+
+    var headerRow = worksheet.addRow();
+    var headerRow = worksheet.addRow();
+
+    const customCellA5 = worksheet.getCell("A5");
+    customCellA5.value = "Mã chương trình khuyến mãi:";
+    const customCellB5 = worksheet.getCell("B5");
+    customCellB5.value = dataMain.id + "";
+
+    const customCellC5 = worksheet.getCell("C5");
+    customCellC5.value = "Mô tả:";
+    const customCellD5 = worksheet.getCell("D5");
+    customCellD5.value = dataMain.description;
+
+    let tt = "";
+    if (dataMain.status == true) {
+      tt = "Hoạt động";
+    } else {
+      tt = 'Khóa';
+    }
+
+    const customCellA6 = worksheet.getCell("A6");
+    customCellA6.value = "Ngày bắt đầu:";
+    const customCellB6 = worksheet.getCell("B6");
+    customCellB6.value = start_date.format('DD-MM-YYYY');
+
+    const customCellC6 = worksheet.getCell("C6");
+    customCellC6.value = "Ngày kết thúc:";
+    const customCellD6 = worksheet.getCell("D6");
+    customCellD6.value = end_date.format('DD-MM-YYYY');
+
+    const customCellA7 = worksheet.getCell("A7");
+    customCellA7.value = "Trạng thái:";
+    const customCellB7 = worksheet.getCell("B7");
+    customCellB7.value = tt;
+
+    let groupcustomer = "";
+    if (dataMain.applicable_customer_groups.length != 0) {
+      dataMain.applicable_customer_groups.forEach(element => {
+        dataCustomerGroup.forEach(elementt => {
+          if (element == elementt.id) {
+            groupcustomer += elementt.name + ", ";
+          }
+        });
+      });
+    }
+
+    const customCellC7 = worksheet.getCell("C7");
+    customCellC7.value = "Nhóm khách hàng áp dụng:";
+    const customCellD7 = worksheet.getCell("D7");
+    customCellD7.value = groupcustomer;
+
+    const customCellA8 = worksheet.getCell("A8");
+    customCellA8.value = "Ghi chú:";
+    const customCellB8 = worksheet.getCell("B8");
+    customCellB8.value = dataMain.note == null ? "" : dataMain.note;
+
+    var headerRow = worksheet.addRow();
+    var headerRow = worksheet.addRow();
+    var headerRow = worksheet.addRow();
+
+    worksheet.getRow(11).font = { bold: true };
+
+    for (let i = 0; i < 20; i++) {
+      let currentColumnWidth = "123";
+      worksheet.getColumn(i + 1).width =
+        currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
+      let cell = headerRow.getCell(i + 1);
+      cell.value = header[i];
+    }
+
+    worksheet.autoFilter = {
+      from: {
+        row: 11,
+        column: 1
+      },
+      to: {
+        row: 11,
+        column: 20
+      }
+    };
+
+    dataLine.forEach(element => {
+
+      let groupproduct = "";
+      element.detail.applicable_products.forEach(element => {
+        products.forEach(elementt => {
+          if (element == elementt.id) {
+            groupproduct += elementt.name + ", ";
+          }
+        });
+      });
+
+      let listgroupproduct = "";
+      element.detail.applicable_product_groups.forEach(element => {
+        productGroup.forEach(elementt => {
+          if (element == elementt.id) {
+            listgroupproduct += elementt.name + ", ";
+          }
+        });
+      });
+
+      let product_received = "";
+      products.forEach(elementt => {
+        if (element.detail.product_received == elementt.id) {
+          product_received = elementt.name;
+        }
+      });
+
+      worksheet.addRow([element.promotion_code, element.title, element.description, element.type,
+      element.start_date, element.end_date, element.status, element.max_quantity,
+      element.max_quantity_per_customer, element.max_quantity_per_customer_per_day,
+      element.note, listgroupproduct,
+        groupproduct, element.detail.quantity_buy,
+        product_received, element.detail.quantity_received,
+      element.detail.minimum_total?.toLocaleString(), element.detail.percent,
+      element.detail.reduction_amount?.toLocaleString(), element.detail.maximum_reduction_amount?.toLocaleString()]);
+    });
+
+    ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+      saveAs(
+        new Blob([buffer], { type: "application/octet-stream" }),
+        `KhuyenMaiSo${dataMain.id}.xlsx`
+      );
+    });
+  };
+
+  ////////////////
+
   const handleDataCustomerGroup = async () => {
     setLoadingData(true)
     try {
       const response = await api.customer_group.list();
+      setDataCustomerGroup(response.data.data.results);
       const options = response.data.data.results.map(elm => {
         return (
           <Option key={elm.id}>{elm.name}</Option>
@@ -168,11 +328,12 @@ const PromotionChangeForm = (props) => {
           loai = 'Chiết khấu';
         }
 
-        let date = element.start_date.slice(0, 10);
+        let date = moment(element.start_date).format('DD-MM-YYYY');
 
-        let date2 = element.end_date.slice(0, 10);
+        let date2 = moment(element.end_date).format('DD-MM-YYYY');
 
         let lineIndex = {
+          title: element.title,
           detail: element.detail,
           promotion_code: element.promotion_code,
           description: element.description,
@@ -189,7 +350,7 @@ const PromotionChangeForm = (props) => {
         dataline.push(lineIndex);
       });
       setDataLine(dataline);
-      // console.log(values.lines)
+      setDataMain(values);
       setData(values.lines);
       setStartDate(values.start_date);
       setEndDate(values.end_date);
@@ -315,7 +476,7 @@ const PromotionChangeForm = (props) => {
       // <Button type="info" icon={<HistoryOutlined />}
       // >Lịch sử chỉnh sửa</Button>,
       <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.promotion.list) }}
-        >Thoát</Button>
+      >Thoát</Button>
     ])
     // } else {
     //   props.setBreadcrumbExtras(null)
@@ -608,7 +769,7 @@ const PromotionChangeForm = (props) => {
                 </Form.Item>
               </Col>
             </Row>
-            <Form.Item style={{marginTop:'-70px'}}>
+            <Form.Item style={{ marginTop: '-70px' }}>
               <Space>
                 <Button
                   type="primary"
@@ -625,30 +786,7 @@ const PromotionChangeForm = (props) => {
               <label><h2 style={{ marginRight: '20px', marginBottom: '30px', textAlign: 'left' }}>Dòng</h2></label>
               <Button type="primary" onClick={() => onOpen()}>Thêm mới</Button>
               <span style={{ marginLeft: '10px' }}>
-                <ExportReactCSV csvData={dataLine} fileName='promotionline.xlsx'
-                  header={[
-                    { label: 'Mã áp dụng', key: 'id' },
-                    { label: 'Tiêu đề', key: 'title' },
-                    { label: 'Diễn giải', key: 'description' },
-                    { label: 'Loại khuyến mãi', key: 'type' },
-                    { label: 'Ngày bắt đầu', key: 'start_date' },
-                    { label: 'Ngày kết thúc', key: 'end_date' },
-                    { label: 'Trạng thái', key: 'status' },
-                    { label: 'Số lượng tối đa áp dụng', key: 'max_quantity' },
-                    { label: 'Số lượng tối đa cho 1 khách', key: 'max_quantity_per_customer' },
-                    { label: 'Số lượng tối đa cho 1 khách trong 1 ngày', key: 'max_quantity_per_customer_per_day' },
-                    { label: 'Ghi chú', key: 'note' },
-                    { label: 'Nhóm sản phẩm áp dụng', key: 'detail.applicable_product_groups' },
-                    { label: 'Sản phẩm áp dụng', key: 'detail.applicable_products' },
-                    { label: 'Số lượng mua', key: 'detail.quantity_buy' },
-                    { label: 'Sản phẩm khuyến mãi', key: 'detail.product_received' },
-                    { label: 'Số lượng khuyến mãi', key: 'detail.quantity_received' },
-                    { label: 'Số tiền ít nhất để được khuyến mãi', key: 'detail.minimum_total' },
-                    { label: 'Chiết khấu', key: 'detail.percent' },
-                    { label: 'Số tiền giảm tối đa', key: 'detail.maximum_reduction_amount' },
-                    { label: 'Số tiền giảm giá', key: 'detail.reduction_amount' },
-                  ]}
-                />
+                <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
               </span>
             </Row>
             <Col>
