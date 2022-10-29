@@ -1,7 +1,7 @@
 import {
   DownloadOutlined
 } from '@ant-design/icons';
-import { Drawer, Row, Col, Divider, Table, Button } from 'antd';
+import { Drawer, Row, Col, Divider, Table, Button,Typography, } from 'antd';
 import React, { useState, useEffect } from 'react';
 import ExcelJS from "exceljs";
 import saveAs from "file-saver";
@@ -41,6 +41,9 @@ const PriceModal = (props) => {
       title: 'Giá',
       dataIndex: 'price',
       key: 'address',
+      render: (price, record) => (
+        <Typography>{price?.toLocaleString()}</Typography>
+      ),
     },
   ];
 
@@ -132,7 +135,7 @@ const PriceModal = (props) => {
     };
 
     dataSource.forEach(element => {
-      worksheet.addRow([element.product_obj.product_code, element.product, element.unit_exchange, element.price]);
+      worksheet.addRow([element.product_obj.product_code, element.product, element.unit_exchange, element.price.toLocaleString()]);
     });
 
     ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {

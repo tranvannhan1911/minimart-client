@@ -2,6 +2,7 @@ import {
   EyeOutlined, FormOutlined, SearchOutlined
 } from '@ant-design/icons'
 import { Table as AntdTable, Tag, Button, Space,Input } from 'antd';
+import { Typography } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
@@ -233,6 +234,9 @@ const InventoryReceivingTable = (props) => {
       //   multiple: 1
       // },
       // ...renderSearch(),
+      render: (product, record) => (
+        <Typography>{`${record.total.toLocaleString()}`}</Typography>
+      ),
       ...getColumnSearchProps('tổng tiền')
     },
     {

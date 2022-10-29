@@ -422,15 +422,15 @@ const TabContent = (props) => {
                     <Form.Item>
                         <div className='sb'>
                             <span>Tạm tính</span>
-                            <span>{totalProduct} đ</span>
+                            <span>{totalProduct.toLocaleString()} đ</span>
                         </div>
                         <div className='sb'>
                             <span>giảm giá</span>
-                            <span>{voucher} đ</span>
+                            <span>{voucher.toLocaleString()} đ</span>
                         </div>
                         <div className='sb' style={{ fontWeight: '600' }}>
                             <span>Thành tiền</span>
-                            <span>{total} đ</span>
+                            <span>{total.toLocaleString()} đ</span>
                         </div>
                     </Form.Item>
                     <div className='sb'>
@@ -444,7 +444,7 @@ const TabContent = (props) => {
                         </div>
                         <div style={{width:"40%"}}>
                             <Form.Item label=" ">
-                                <span>Trả lại {moneyChange}đ</span>
+                                <span>Trả lại {moneyChange.toLocaleString()}đ</span>
                             </Form.Item>
                         </div>
                     </div>

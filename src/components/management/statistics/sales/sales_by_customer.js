@@ -61,7 +61,17 @@ const StatisticsSalesByCustomer = () => {
             return;
         }
         console.log(date, customer)
-        
+        const params = {
+            params: {
+                start_date: date[0],
+                end_date: date[1],
+                customer_id: customer
+            }
+        }
+        const response = await api.statistics_sales.by_customer(params);
+        setData(response.data.data.results);
+        console.log(data)
+
     }
 
     const handleDataCustomer = async () => {
@@ -83,7 +93,7 @@ const StatisticsSalesByCustomer = () => {
         if (dates) {
             console.log('From: ', dates[0], ', to: ', dates[1]);
             console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
-            setDate([dateStrings[0], dateStrings[1]])
+            setDate([dateStrings[0]+"T05:10:10.357Z", dateStrings[1]+"T23:10:10.357Z"])
         } else {
             console.log('Clear');
             setDate([]);
@@ -91,15 +101,18 @@ const StatisticsSalesByCustomer = () => {
     };
 
     const columns = [
-        {
-            title: 'STT',
-            dataIndex: 'name',
-            key: 'name',
-        },
+        // {
+        //     title: 'STT',
+        //     dataIndex: 'name',
+        //     key: 'name',
+        // },
         {
             title: 'Mã KH',
             dataIndex: 'name',
             key: 'name',
+            render: (product, record) => (
+                <Typography>{`${record.user_created.code}`}</Typography>
+            ),
         },
         {
             title: 'Tên KH',
@@ -223,7 +236,7 @@ const StatisticsSalesByCustomer = () => {
         customCell5.value = "Từ ngày: 01/08/2019      Đến ngày: 22/10/2019 ";
 
         let header = ["STT", "Mã KH", "Tên KH", "Địa chỉ", "Phường/Xã", "Quận/Huyện", "Tỉnh/Thành phố", "Nhóm Khách Hàng", "Nhóm Sản Phẩm",
-        "Ngành Hàng", "Doanh số trước CK", "Chiết khấu", "Doanh số sau CK"];
+            "Ngành Hàng", "Doanh số trước CK", "Chiết khấu", "Doanh số sau CK"];
 
         worksheet.mergeCells("A6:M6");
         var headerRow = worksheet.addRow();
@@ -295,6 +308,7 @@ const StatisticsSalesByCustomer = () => {
                 <Col span={24}>
                     <Table dataSource={data}
                         columns={columns}
+                        size="small"
                     >
                     </Table>
                 </Col>

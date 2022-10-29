@@ -61,7 +61,16 @@ const StatisticsSalesByStaff = () => {
             return;
         }
         console.log(date, staff)
-        
+        const params = {
+            params: {
+                start_date: date[0],
+                end_date: date[1],
+                staff_id: staff
+            }
+        }
+        const response = await api.statistics_sales.by_staff(params);
+        setData(response.data.data.results);
+        console.log(data)
     }
 
     const handleDataStaff = async () => {
@@ -83,7 +92,7 @@ const StatisticsSalesByStaff = () => {
         if (dates) {
             console.log('From: ', dates[0], ', to: ', dates[1]);
             console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
-            setDate([dateStrings[0], dateStrings[1]])
+            setDate([dateStrings[0]+"T05:10:10.357Z", dateStrings[1]+"T23:10:10.357Z"])
         } else {
             console.log('Clear');
             setDate([]);
@@ -91,49 +100,75 @@ const StatisticsSalesByStaff = () => {
     };
 
     const columns = [
-        {
-            title: 'STT',
-            dataIndex: 'name',
-            key: 'name',
-        },
+        // {
+        //     title: 'STT',
+        //     dataIndex: 'name',
+        //     key: 'name',
+        // },
         {
             title: 'NVBH',
             dataIndex: 'name',
             key: 'name',
+            render: (product, record) => (
+                <Typography>{`${record.user_created.code}`}</Typography>
+              ),
         },
         {
             title: 'Tên NVBH',
             dataIndex: 'age',
             key: 'age',
+            render: (product, record) => (
+                <Typography>{`${record.user_created.fullname}`}</Typography>
+              ),
         },
         {
             title: 'Ngày',
-            dataIndex: 'address',
+            dataIndex: 'date_created',
             key: 'address',
+            render: (product, record) => (
+                <Typography>{`${record.date_created.slice(0,10)}`}</Typography>
+              ),
         },
         {
             title: 'Chiết khấu',
             dataIndex: 'address',
             key: 'address',
+            render: (product, record) => (
+                <Typography>0</Typography>
+              ),
+        },
+        {
+            title: 'Khuyến mãi',
+            dataIndex: 'discount',
+            key: 'address',
+            render: (product, record) => (
+                <Typography>{`${record.discount.toLocaleString()}`}</Typography>
+              ),
         },
         {
             title: 'Doanh số trước chiết khấu',
-            dataIndex: 'address',
+            dataIndex: 'final_total',
             key: 'address',
+            render: (product, record) => (
+                <Typography>{`${record.final_total.toLocaleString()}`}</Typography>
+              ),
         },
         {
             title: 'Doanh số sau chiết khấu',
-            dataIndex: 'address',
+            dataIndex: 'final_total',
             key: 'address',
+            render: (product, record) => (
+                <Typography>{`${record.final_total.toLocaleString()}`}</Typography>
+              ),
         },
 
     ];
 
     const exportExcel = () => {
-        // if (data.length == 0) {
-        //     message.error("Vui lòng thống kê trước khi xuất báo cáo");
-        //     return;
-        // }
+        if (data.length == 0) {
+            message.error("Vui lòng thống kê trước khi xuất báo cáo");
+            return;
+        }
         var ExcelJSWorkbook = new ExcelJS.Workbook();
         var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO");
 
@@ -190,7 +225,7 @@ const StatisticsSalesByStaff = () => {
         };
         customCell5.alignment = { vertical: 'middle', horizontal: 'center' };
 
-        customCell5.value = "Từ ngày: 01/08/2019      Đến ngày: 22/10/2019 ";
+        customCell5.value = "Từ ngày: "+date[0].slice(0,10)+"      Đến ngày: "+date[1].slice(0,10)+" ";
 
         let header = ["STT", "NVBH", "Tên NVBH", "Ngày", "Chiết khấu", "Doanh số trước chiết khấu", "Doanh số sau chiết khấu"];
 
@@ -217,11 +252,54 @@ const StatisticsSalesByStaff = () => {
                 column: 7
             }
         };
+        let i=1;
+        let total=0;
+        data.forEach(element => {
+            worksheet.addRow([i, element.user_created.code, element.user_created.fullname, element.date_created.slice(0,10),
+            "0", element.final_total.toLocaleString(), element.final_total.toLocaleString()]);
+            i++;
+            total=total+element.final_total;
+        });
+        worksheet.mergeCells("A"+(i+8)+":D"+(i+8));
+        const customCellTT = worksheet.getCell("A"+(i+8));
+        customCellTT.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 11,
+            bold: true,
+        };
 
-        // data.forEach(element => {
-        //     worksheet.addRow([element.product_obj.product_code, element.product, element.quantity_before, element.quantity_after, (element.quantity_after - element.quantity_before) + " " + element.product_obj.base_unit.name, element.note]);
-        // });
+        customCellTT.value = "Tổng cộng: ";
 
+        const customCellTT1 = worksheet.getCell("E"+(i+8));
+        customCellTT1.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 11,
+            bold: true,
+        };
+
+        customCellTT1.value = 0;
+
+        const customCellTT2 = worksheet.getCell("F"+(i+8));
+        customCellTT2.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 11,
+            bold: true,
+        };
+
+        customCellTT2.value = total.toLocaleString();
+
+        const customCellTT3 = worksheet.getCell("G"+(i+8));
+        customCellTT3.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 11,
+            bold: true,
+        };
+
+        customCellTT3.value = total.toLocaleString();
         ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
             saveAs(
                 new Blob([buffer], { type: "application/octet-stream" }),
@@ -263,6 +341,7 @@ const StatisticsSalesByStaff = () => {
                 <Col span={24}>
                     <Table dataSource={data}
                         columns={columns}
+                        size="small"
                     >
                     </Table>
                 </Col>

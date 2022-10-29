@@ -1,4 +1,4 @@
-import { Drawer, Row, Col, Divider, Table } from 'antd';
+import { Drawer, Row, Col, Divider, Table, Typography } from 'antd';
 import React, { useState, useEffect } from 'react';
 
 const OrderDetailModal = (props) => {
@@ -40,6 +40,9 @@ const OrderDetailModal = (props) => {
       title: 'Giá',
       dataIndex: 'price',
       key: 'address',
+      render: (price, record) => (
+        <Typography>{price?.toLocaleString()}</Typography>
+      ),
     },
     {
       title: 'Số lượng',
@@ -50,6 +53,9 @@ const OrderDetailModal = (props) => {
       title: 'Thành tiền',
       dataIndex: 'total',
       key: 'address',
+      render: (total, record) => (
+        <Typography>{total?.toLocaleString()}</Typography>
+      ),
     },
   ];
 
@@ -96,12 +102,12 @@ const OrderDetailModal = (props) => {
       <Row>
       <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Khuyến mãi: {props.data.total-props.data.final_total}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Khuyến mãi: {(props.data.total-props.data.final_total)?.toLocaleString()}</p>
           </div>
         </Col>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Tổng tiền: {props.data.final_total}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Tổng tiền: {props.data.final_total?.toLocaleString()}</p>
           </div>
         </Col>
       </Row>
@@ -119,7 +125,7 @@ const OrderDetailModal = (props) => {
       <Table dataSource={dataSourceIndex} columns={columns} size='small'/>
 
       <Divider />
-      <p className="site-description-item-profile-p" style={{ fontSize: '15px', marginTop: '20px', fontWeight: 'bold',color:'red', textAlign:'right' }}>Tổng tiền: {props.data.final_total} đ</p>
+      <p className="site-description-item-profile-p" style={{ fontSize: '15px', marginTop: '20px', fontWeight: 'bold',color:'red', textAlign:'right' }}>Tổng tiền: {props.data.final_total?.toLocaleString()} đ</p>
       
     </Drawer>
   );

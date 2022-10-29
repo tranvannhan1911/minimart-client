@@ -189,8 +189,8 @@ const PromotionChangeForm = (props) => {
       element.note, listgroupproduct,
         groupproduct, element.detail.quantity_buy,
         product_received, element.detail.quantity_received,
-      element.detail.minimum_total, element.detail.percent,
-      element.detail.reduction_amount, element.detail.maximum_reduction_amount]);
+      element.detail.minimum_total?.toLocaleString(), element.detail.percent,
+      element.detail.reduction_amount?.toLocaleString(), element.detail.maximum_reduction_amount?.toLocaleString()]);
     });
 
     ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {

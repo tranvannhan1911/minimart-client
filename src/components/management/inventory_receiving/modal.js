@@ -71,7 +71,7 @@ const InventoryReceivingModal = (props) => {
       dataIndex: 'quantity_base_unit',
       key: 'quantity_base_unit',
       render: (quantity_base_unit, record) => (
-        <Typography>{Number(quantity_base_unit)*Number(record.price)}</Typography>
+        <Typography>{(Number(quantity_base_unit)*Number(record.price)).toLocaleString()}</Typography>
       ),
     },
     {
@@ -166,7 +166,7 @@ const InventoryReceivingModal = (props) => {
     };
 
     dataSource.forEach(element => {
-      worksheet.addRow([element.product.product_code, element.product.name, element.price, element.quantity_base_unit, (element.quantity_base_unit * element.price), element.note]);
+      worksheet.addRow([element.product.product_code, element.product.name, element.price.toLocaleString(), element.quantity_base_unit, (element.quantity_base_unit * element.price).toLocaleString(), element.note]);
     });
 
     const customCellTotal = worksheet.getCell("D" + (12 + dataSource.length));
@@ -184,7 +184,7 @@ const InventoryReceivingModal = (props) => {
       bold: true,
       color: { argb: 'ffff0000' }
     };
-    customCellTotal1.value = props.data.total;
+    customCellTotal1.value = props.data.total.toLocaleString();
 
     ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
       saveAs(
@@ -236,7 +236,7 @@ const InventoryReceivingModal = (props) => {
       <Row> */}
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Tổng tiền: {props.data.total}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Tổng tiền: {props.data.total?.toLocaleString()}</p>
           </div>
         </Col>
       </Row>
