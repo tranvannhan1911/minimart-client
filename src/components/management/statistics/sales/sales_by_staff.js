@@ -92,7 +92,7 @@ const StatisticsSalesByStaff = () => {
         if (dates) {
             console.log('From: ', dates[0], ', to: ', dates[1]);
             console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
-            setDate([dateStrings[0]+"T05:10:10.357Z", dateStrings[1]+"T23:10:10.357Z"])
+            setDate([dateStrings[0] + "T05:10:10.357Z", dateStrings[1] + "T23:10:10.357Z"])
         } else {
             console.log('Clear');
             setDate([]);
@@ -111,7 +111,7 @@ const StatisticsSalesByStaff = () => {
             key: 'name',
             render: (product, record) => (
                 <Typography>{`${record.user_created.code}`}</Typography>
-              ),
+            ),
         },
         {
             title: 'Tên NVBH',
@@ -119,15 +119,15 @@ const StatisticsSalesByStaff = () => {
             key: 'age',
             render: (product, record) => (
                 <Typography>{`${record.user_created.fullname}`}</Typography>
-              ),
+            ),
         },
         {
             title: 'Ngày',
             dataIndex: 'date_created',
             key: 'address',
             render: (product, record) => (
-                <Typography>{`${record.date_created.slice(0,10)}`}</Typography>
-              ),
+                <Typography>{`${record.date_created.slice(0, 10)}`}</Typography>
+            ),
         },
         {
             title: 'Chiết khấu',
@@ -135,7 +135,7 @@ const StatisticsSalesByStaff = () => {
             key: 'address',
             render: (product, record) => (
                 <Typography>0</Typography>
-              ),
+            ),
         },
         {
             title: 'Khuyến mãi',
@@ -143,7 +143,7 @@ const StatisticsSalesByStaff = () => {
             key: 'address',
             render: (product, record) => (
                 <Typography>{`${record.discount.toLocaleString()}`}</Typography>
-              ),
+            ),
         },
         {
             title: 'Doanh số trước chiết khấu',
@@ -151,7 +151,7 @@ const StatisticsSalesByStaff = () => {
             key: 'address',
             render: (product, record) => (
                 <Typography>{`${record.final_total.toLocaleString()}`}</Typography>
-              ),
+            ),
         },
         {
             title: 'Doanh số sau chiết khấu',
@@ -159,7 +159,7 @@ const StatisticsSalesByStaff = () => {
             key: 'address',
             render: (product, record) => (
                 <Typography>{`${record.final_total.toLocaleString()}`}</Typography>
-              ),
+            ),
         },
 
     ];
@@ -180,7 +180,7 @@ const StatisticsSalesByStaff = () => {
             family: 4,
             size: 8,
         };
-        customCell1.value = "Tên cửa hàng";
+        customCell1.value = "Tên cửa hàng: SIÊU THỊ MINI";
 
         worksheet.mergeCells("A2:G2");
 
@@ -190,7 +190,7 @@ const StatisticsSalesByStaff = () => {
             family: 4,
             size: 8,
         };
-        customCell2.value = "Địa chỉ cửa hàng";
+        customCell2.value = "Địa chỉ: Gò Vấp - Tp.Hồ Chí Minh";
 
         worksheet.mergeCells("A3:G3");
 
@@ -200,11 +200,22 @@ const StatisticsSalesByStaff = () => {
             family: 4,
             size: 8,
         };
-        customCell3.value = "Ngày in:";
+        const day= new Date();
+        customCell3.value = "Ngày in: "+ day.getDate()+"/"+(day.getMonth()+1)+"/"+day.getFullYear() ;
 
         worksheet.mergeCells("A4:G4");
 
-        const customCell = worksheet.getCell("A4");
+        const customCell4 = worksheet.getCell("A4");
+        customCell4.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 8,
+        };
+        customCell4.value = "Người xuất báo cáo: "+sessionStorage.getItem("nameStaff") + ' - ' + sessionStorage.getItem("phoneStaff") ;
+
+        worksheet.mergeCells("A5:G5");
+
+        const customCell = worksheet.getCell("A5");
         customCell.font = {
             name: "Times New Roman",
             family: 4,
@@ -215,9 +226,9 @@ const StatisticsSalesByStaff = () => {
 
         customCell.value = "DOANH SỐ BÁN HÀNG THEO NGÀY";
 
-        worksheet.mergeCells("A5:G5");
+        worksheet.mergeCells("A6:G6");
 
-        const customCell5 = worksheet.getCell("A5");
+        const customCell5 = worksheet.getCell("A6");
         customCell5.font = {
             name: "Times New Roman",
             family: 4,
@@ -225,43 +236,71 @@ const StatisticsSalesByStaff = () => {
         };
         customCell5.alignment = { vertical: 'middle', horizontal: 'center' };
 
-        customCell5.value = "Từ ngày: "+date[0].slice(0,10)+"      Đến ngày: "+date[1].slice(0,10)+" ";
+        customCell5.value = "Từ ngày: " + date[0].slice(0, 10) + "      Đến ngày: " + date[1].slice(0, 10) + " ";
 
-        let header = ["STT", "NVBH", "Tên NVBH", "Ngày", "Chiết khấu", "Doanh số trước chiết khấu", "Doanh số sau chiết khấu"];
+        let header = ["STT", "NVBH", "Tên NVBH", "Ngày", "Chiết khấu", "Doanh số trước CK", "Doanh số sau CK"];
+        let headerColumn = ["A", "B", "C", "D", "E", "F", "G"];
 
-        worksheet.mergeCells("A6:M6");
+        worksheet.mergeCells("A7:G7");
         var headerRow = worksheet.addRow();
 
-        worksheet.getRow(7).font = { bold: true };
+        worksheet.getRow(8).font = { bold: true };
 
-        for (let i = 0; i < 7; i++) {
-            let currentColumnWidth = "125";
-            worksheet.getColumn(i + 1).width =
-                currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
-            let cell = headerRow.getCell(i + 1);
-            cell.value = header[i];
+        for (let i = 0; i < headerColumn.length; i++) {
+            const columnn = worksheet.getCell(headerColumn[i] + 8);
+            columnn.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+            if (i == 0) {
+                worksheet.getColumn(i + 1).width = "10";
+            } else {
+                worksheet.getColumn(i + 1).width = "20";
+            }
+            columnn.alignment = { vertical: 'middle', horizontal: 'center' };
+            columnn.value = header[i];
         }
 
         worksheet.autoFilter = {
             from: {
-                row: 7,
+                row: 8,
                 column: 1
             },
             to: {
-                row: 7,
+                row: 8,
                 column: 7
             }
         };
-        let i=1;
-        let total=0;
+        let i = 1;
+        let total = 0;
         data.forEach(element => {
-            worksheet.addRow([i, element.user_created.code, element.user_created.fullname, element.date_created.slice(0,10),
-            "0", element.final_total.toLocaleString(), element.final_total.toLocaleString()]);
+            worksheet.addRow([i, element.user_created.code, element.user_created.fullname, element.date_created.slice(0, 10),
+                "0", element.final_total.toLocaleString(), element.final_total.toLocaleString()]);
+            for (let j = 0; j < headerColumn.length; j++) {
+                const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
+                columnn.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+                if (j == 0 || j == 3) {
+                    columnn.alignment = { vertical: 'middle', horizontal: 'center' };
+                } else if (j == 1 || j == 2) {
+                    columnn.alignment = { vertical: 'middle', horizontal: 'left' };
+                } else {
+                    columnn.alignment = { vertical: 'middle', horizontal: 'right' };
+                }
+
+            }
+
             i++;
-            total=total+element.final_total;
+            total = total + element.final_total;
         });
-        worksheet.mergeCells("A"+(i+8)+":D"+(i+8));
-        const customCellTT = worksheet.getCell("A"+(i+8));
+        worksheet.mergeCells("A" + (i + 9) + ":D" + (i + 9));
+        const customCellTT = worksheet.getCell("A" + (i + 9));
         customCellTT.font = {
             name: "Times New Roman",
             family: 4,
@@ -271,7 +310,7 @@ const StatisticsSalesByStaff = () => {
 
         customCellTT.value = "Tổng cộng: ";
 
-        const customCellTT1 = worksheet.getCell("E"+(i+8));
+        const customCellTT1 = worksheet.getCell("E" + (i + 9));
         customCellTT1.font = {
             name: "Times New Roman",
             family: 4,
@@ -281,24 +320,24 @@ const StatisticsSalesByStaff = () => {
 
         customCellTT1.value = 0;
 
-        const customCellTT2 = worksheet.getCell("F"+(i+8));
+        const customCellTT2 = worksheet.getCell("F" + (i + 9));
         customCellTT2.font = {
             name: "Times New Roman",
             family: 4,
             size: 11,
             bold: true,
         };
-
+        customCellTT2.alignment = { vertical: 'middle', horizontal: 'right' };
         customCellTT2.value = total.toLocaleString();
 
-        const customCellTT3 = worksheet.getCell("G"+(i+8));
+        const customCellTT3 = worksheet.getCell("G" + (i + 9));
         customCellTT3.font = {
             name: "Times New Roman",
             family: 4,
             size: 11,
             bold: true,
         };
-
+        customCellTT3.alignment = { vertical: 'middle', horizontal: 'right' };
         customCellTT3.value = total.toLocaleString();
         ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
             saveAs(

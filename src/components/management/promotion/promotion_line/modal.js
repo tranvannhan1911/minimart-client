@@ -124,10 +124,10 @@ const PromotionLineModal = (props) => {
         return;
       }
     }
-    if (!validCode.test(form.getFieldValue("promotion_code"))) {
-      message.error("Mã khuyến mãi không hợp lệ! Mã bao gồm 3 ký tự in hoa và 3 ký tự số phía sau (VD: AAA000)");
-      return;
-    }
+    // if (!validCode.test(form.getFieldValue("promotion_code"))) {
+    //   message.error("Mã khuyến mãi không hợp lệ! Mã bao gồm 3 ký tự in hoa và 3 ký tự số phía sau (VD: AAA000)");
+    //   return;
+    // }
     // console.log(form.getFieldValue("title"))
     let sta = "";
     let typ = "";
@@ -357,7 +357,7 @@ const PromotionLineModal = (props) => {
             >
               <Select defaultValue='true'>
                 <Option value="true">Hoạt động</Option>
-                <Option value="false">Khóa</Option>
+                <Option value="false">Ngưng hoạt động</Option>
               </Select>
             </Form.Item>
 
@@ -517,7 +517,7 @@ const PromotionLineModal = (props) => {
               <Input placeholder="Số lượng giảm giá" type='number' min='0' disabled={is_create ? false : true} />
             </Form.Item>
             <Form.Item
-              name='percent' label='Chiết khấu'
+              name='percent' label='Chiết khấu (%)'
               style={{ display: typeIndex == 'Product' ? 'none' : "" || typeIndex == 'Fixed' ? 'none' : "" || typeIndex == 'Percent' ? 'block' : "" }}
               rules={[
                 {

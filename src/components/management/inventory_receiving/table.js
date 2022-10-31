@@ -65,11 +65,11 @@ const InventoryReceivingTable = (props) => {
 
   const tagStatus = (status) => {
     if (status == 'pending') {
-      return 'CHỜ XÁC NHẬN';
+      return 'TẠO MỚI';
     } else if (status == 'complete') {
       return 'HOÀN THÀNH';
     } else if (status == 'cancel') {
-      return 'HỦY';
+      return 'ĐÃ HỦY';
     }
   };
 
@@ -249,11 +249,11 @@ const InventoryReceivingTable = (props) => {
           value: 'complete',
         },
         {
-          text: 'CHỜ XÁC NHẬN',
+          text: 'TẠO MỚI',
           value: 'pending',
         },
         {
-          text: 'HỦY',
+          text: 'ĐÃ HỦY',
           value: 'cancel',
         },
       ],

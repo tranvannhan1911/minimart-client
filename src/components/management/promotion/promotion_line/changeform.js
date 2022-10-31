@@ -50,156 +50,156 @@ const PromotionChangeForm = (props) => {
 
   /////////////////
 
-  const exportExcel = () => {
-    var ExcelJSWorkbook = new ExcelJS.Workbook();
-    var worksheet = ExcelJSWorkbook.addWorksheet("KhuyenMai");
+  // const exportExcel = () => {
+  //   var ExcelJSWorkbook = new ExcelJS.Workbook();
+  //   var worksheet = ExcelJSWorkbook.addWorksheet("KhuyenMai");
 
-    worksheet.mergeCells("A2:E2");
+  //   worksheet.mergeCells("A2:E2");
 
-    const customCell = worksheet.getCell("A2");
-    customCell.font = {
-      name: "Times New Roman",
-      family: 4,
-      size: 20,
-      underline: true,
-      bold: true,
-    };
-    customCell.alignment = { vertical: 'middle', horizontal: 'center' };
+  //   const customCell = worksheet.getCell("A2");
+  //   customCell.font = {
+  //     name: "Times New Roman",
+  //     family: 4,
+  //     size: 20,
+  //     underline: true,
+  //     bold: true,
+  //   };
+  //   customCell.alignment = { vertical: 'middle', horizontal: 'center' };
 
-    customCell.value = dataMain.title;
+  //   customCell.value = dataMain.title;
 
-    let header = ["Mã áp dụng", "Tiêu đề", "Diễn giải", "Loại khuyến mãi",
-      "Ngày bắt đầu", "Ngày kết thúc", "Trạng thái",
-      "Số lượng tối đa áp dụng", "Số lượng tối đa cho 1 khách", "Số lượng tối đa cho 1 khách trong 1 ngày",
-      "Ghi chú", "Nhóm sản phẩm áp dụng", "Sản phẩm áp dụng", "Số lượng mua", "Sản phẩm khuyến mãi",
-      "Số lượng khuyến mãi", "Số tiền ít nhất để được khuyến mãi", "Chiết khấu",
-      "Số tiền giảm giá", "Số tiền giảm tối đa"];
+  //   let header = ["Mã áp dụng", "Tiêu đề", "Diễn giải", "Loại khuyến mãi",
+  //     "Ngày bắt đầu", "Ngày kết thúc", "Trạng thái",
+  //     "Số lượng tối đa áp dụng", "Số lượng tối đa cho 1 khách", "Số lượng tối đa cho 1 khách trong 1 ngày",
+  //     "Ghi chú", "Nhóm sản phẩm áp dụng", "Sản phẩm áp dụng", "Số lượng mua", "Sản phẩm khuyến mãi",
+  //     "Số lượng khuyến mãi", "Số tiền ít nhất để được khuyến mãi", "Chiết khấu",
+  //     "Số tiền giảm giá", "Số tiền giảm tối đa"];
 
-    var headerRow = worksheet.addRow();
-    var headerRow = worksheet.addRow();
+  //   var headerRow = worksheet.addRow();
+  //   var headerRow = worksheet.addRow();
 
-    const customCellA5 = worksheet.getCell("A5");
-    customCellA5.value = "Mã chương trình khuyến mãi:";
-    const customCellB5 = worksheet.getCell("B5");
-    customCellB5.value = dataMain.id + "";
+  //   const customCellA5 = worksheet.getCell("A5");
+  //   customCellA5.value = "Mã chương trình khuyến mãi:";
+  //   const customCellB5 = worksheet.getCell("B5");
+  //   customCellB5.value = dataMain.id + "";
 
-    const customCellC5 = worksheet.getCell("C5");
-    customCellC5.value = "Mô tả:";
-    const customCellD5 = worksheet.getCell("D5");
-    customCellD5.value = dataMain.description;
+  //   const customCellC5 = worksheet.getCell("C5");
+  //   customCellC5.value = "Mô tả:";
+  //   const customCellD5 = worksheet.getCell("D5");
+  //   customCellD5.value = dataMain.description;
 
-    let tt = "";
-    if (dataMain.status == true) {
-      tt = "Hoạt động";
-    } else {
-      tt = 'Khóa';
-    }
+  //   let tt = "";
+  //   if (dataMain.status == true) {
+  //     tt = "Hoạt động";
+  //   } else {
+  //     tt = 'Khóa';
+  //   }
 
-    const customCellA6 = worksheet.getCell("A6");
-    customCellA6.value = "Ngày bắt đầu:";
-    const customCellB6 = worksheet.getCell("B6");
-    customCellB6.value = start_date.format('DD-MM-YYYY');
+  //   const customCellA6 = worksheet.getCell("A6");
+  //   customCellA6.value = "Ngày bắt đầu:";
+  //   const customCellB6 = worksheet.getCell("B6");
+  //   customCellB6.value = start_date.format('DD-MM-YYYY');
 
-    const customCellC6 = worksheet.getCell("C6");
-    customCellC6.value = "Ngày kết thúc:";
-    const customCellD6 = worksheet.getCell("D6");
-    customCellD6.value = end_date.format('DD-MM-YYYY');
+  //   const customCellC6 = worksheet.getCell("C6");
+  //   customCellC6.value = "Ngày kết thúc:";
+  //   const customCellD6 = worksheet.getCell("D6");
+  //   customCellD6.value = end_date.format('DD-MM-YYYY');
 
-    const customCellA7 = worksheet.getCell("A7");
-    customCellA7.value = "Trạng thái:";
-    const customCellB7 = worksheet.getCell("B7");
-    customCellB7.value = tt;
+  //   const customCellA7 = worksheet.getCell("A7");
+  //   customCellA7.value = "Trạng thái:";
+  //   const customCellB7 = worksheet.getCell("B7");
+  //   customCellB7.value = tt;
 
-    let groupcustomer = "";
-    if (dataMain.applicable_customer_groups.length != 0) {
-      dataMain.applicable_customer_groups.forEach(element => {
-        dataCustomerGroup.forEach(elementt => {
-          if (element == elementt.id) {
-            groupcustomer += elementt.name + ", ";
-          }
-        });
-      });
-    }
+  //   let groupcustomer = "";
+  //   if (dataMain.applicable_customer_groups.length != 0) {
+  //     dataMain.applicable_customer_groups.forEach(element => {
+  //       dataCustomerGroup.forEach(elementt => {
+  //         if (element == elementt.id) {
+  //           groupcustomer += elementt.name + ", ";
+  //         }
+  //       });
+  //     });
+  //   }
 
-    const customCellC7 = worksheet.getCell("C7");
-    customCellC7.value = "Nhóm khách hàng áp dụng:";
-    const customCellD7 = worksheet.getCell("D7");
-    customCellD7.value = groupcustomer;
+  //   const customCellC7 = worksheet.getCell("C7");
+  //   customCellC7.value = "Nhóm khách hàng áp dụng:";
+  //   const customCellD7 = worksheet.getCell("D7");
+  //   customCellD7.value = groupcustomer;
 
-    const customCellA8 = worksheet.getCell("A8");
-    customCellA8.value = "Ghi chú:";
-    const customCellB8 = worksheet.getCell("B8");
-    customCellB8.value = dataMain.note == null ? "" : dataMain.note;
+  //   const customCellA8 = worksheet.getCell("A8");
+  //   customCellA8.value = "Ghi chú:";
+  //   const customCellB8 = worksheet.getCell("B8");
+  //   customCellB8.value = dataMain.note == null ? "" : dataMain.note;
 
-    var headerRow = worksheet.addRow();
-    var headerRow = worksheet.addRow();
-    var headerRow = worksheet.addRow();
+  //   var headerRow = worksheet.addRow();
+  //   var headerRow = worksheet.addRow();
+  //   var headerRow = worksheet.addRow();
 
-    worksheet.getRow(11).font = { bold: true };
+  //   worksheet.getRow(11).font = { bold: true };
 
-    for (let i = 0; i < 20; i++) {
-      let currentColumnWidth = "123";
-      worksheet.getColumn(i + 1).width =
-        currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
-      let cell = headerRow.getCell(i + 1);
-      cell.value = header[i];
-    }
+  //   for (let i = 0; i < 20; i++) {
+  //     let currentColumnWidth = "123";
+  //     worksheet.getColumn(i + 1).width =
+  //       currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
+  //     let cell = headerRow.getCell(i + 1);
+  //     cell.value = header[i];
+  //   }
 
-    worksheet.autoFilter = {
-      from: {
-        row: 11,
-        column: 1
-      },
-      to: {
-        row: 11,
-        column: 20
-      }
-    };
+  //   worksheet.autoFilter = {
+  //     from: {
+  //       row: 11,
+  //       column: 1
+  //     },
+  //     to: {
+  //       row: 11,
+  //       column: 20
+  //     }
+  //   };
 
-    dataLine.forEach(element => {
+  //   dataLine.forEach(element => {
 
-      let groupproduct = "";
-      element.detail.applicable_products.forEach(element => {
-        products.forEach(elementt => {
-          if (element == elementt.id) {
-            groupproduct += elementt.name + ", ";
-          }
-        });
-      });
+  //     let groupproduct = "";
+  //     element.detail.applicable_products.forEach(element => {
+  //       products.forEach(elementt => {
+  //         if (element == elementt.id) {
+  //           groupproduct += elementt.name + ", ";
+  //         }
+  //       });
+  //     });
 
-      let listgroupproduct = "";
-      element.detail.applicable_product_groups.forEach(element => {
-        productGroup.forEach(elementt => {
-          if (element == elementt.id) {
-            listgroupproduct += elementt.name + ", ";
-          }
-        });
-      });
+  //     let listgroupproduct = "";
+  //     element.detail.applicable_product_groups.forEach(element => {
+  //       productGroup.forEach(elementt => {
+  //         if (element == elementt.id) {
+  //           listgroupproduct += elementt.name + ", ";
+  //         }
+  //       });
+  //     });
 
-      let product_received = "";
-      products.forEach(elementt => {
-        if (element.detail.product_received == elementt.id) {
-          product_received = elementt.name;
-        }
-      });
+  //     let product_received = "";
+  //     products.forEach(elementt => {
+  //       if (element.detail.product_received == elementt.id) {
+  //         product_received = elementt.name;
+  //       }
+  //     });
 
-      worksheet.addRow([element.promotion_code, element.title, element.description, element.type,
-      element.start_date, element.end_date, element.status, element.max_quantity,
-      element.max_quantity_per_customer, element.max_quantity_per_customer_per_day,
-      element.note, listgroupproduct,
-        groupproduct, element.detail.quantity_buy,
-        product_received, element.detail.quantity_received,
-      element.detail.minimum_total?.toLocaleString(), element.detail.percent,
-      element.detail.reduction_amount?.toLocaleString(), element.detail.maximum_reduction_amount?.toLocaleString()]);
-    });
+  //     worksheet.addRow([element.promotion_code, element.title, element.description, element.type,
+  //     element.start_date, element.end_date, element.status, element.max_quantity,
+  //     element.max_quantity_per_customer, element.max_quantity_per_customer_per_day,
+  //     element.note, listgroupproduct,
+  //       groupproduct, element.detail.quantity_buy,
+  //       product_received, element.detail.quantity_received,
+  //     element.detail.minimum_total?.toLocaleString(), element.detail.percent,
+  //     element.detail.reduction_amount?.toLocaleString(), element.detail.maximum_reduction_amount?.toLocaleString()]);
+  //   });
 
-    ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
-      saveAs(
-        new Blob([buffer], { type: "application/octet-stream" }),
-        `KhuyenMaiSo${dataMain.id}.xlsx`
-      );
-    });
-  };
+  //   ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+  //     saveAs(
+  //       new Blob([buffer], { type: "application/octet-stream" }),
+  //       `KhuyenMaiSo${dataMain.id}.xlsx`
+  //     );
+  //   });
+  // };
 
   ////////////////
 
@@ -345,7 +345,7 @@ const PromotionChangeForm = (props) => {
           max_quantity: element.max_quantity,
           max_quantity_per_customer: element.max_quantity_per_customer,
           max_quantity_per_customer_per_day: element.max_quantity_per_customer_per_day,
-          status: element.status ? 'Hoạt động' : 'Khóa'
+          status: element.status ? 'Hoạt động' : 'Ngưng hoạt động'
         }
         dataline.push(lineIndex);
       });
@@ -705,7 +705,7 @@ const PromotionChangeForm = (props) => {
                     }}
                   >
                     <Option value="true">Hoạt động</Option>
-                    <Option value="false">Khóa</Option>
+                    <Option value="false">Ngưng hoạt động</Option>
                   </Select>
                 </Form.Item>
               </Col>
@@ -785,9 +785,9 @@ const PromotionChangeForm = (props) => {
             <Row>
               <label><h2 style={{ marginRight: '20px', marginBottom: '30px', textAlign: 'left' }}>Dòng</h2></label>
               <Button type="primary" onClick={() => onOpen()}>Thêm mới</Button>
-              <span style={{ marginLeft: '10px' }}>
+              {/* <span style={{ marginLeft: '10px' }}>
                 <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
-              </span>
+              </span> */}
             </Row>
             <Col>
               <Table columns={columns} dataSource={dataLine} size='small'>

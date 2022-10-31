@@ -436,7 +436,7 @@ const TabContent = (props) => {
                     <div className='sb'>
                         <div style={{width:"60%"}}>
                             <Form.Item label="Tiền khách đưa" name='money_given' style={{width:"100%"}}>
-                                <InputNumber step={1000} min='0' value={moneyGiven} style={{width:"100%"}} onChange={(value) => {
+                                <InputNumber step={1000} min={total} value={moneyGiven} style={{width:"100%"}} onChange={(value) => {
                                     setMoneyGiven(value)
                                     calculateMoneyChange(value)
                                     }} />

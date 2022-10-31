@@ -238,9 +238,9 @@ const OrderListForm = (props) => {
             actions={[
 
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                <ShowForPermission>
-                    <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
-                </ShowForPermission>,
+                // <ShowForPermission>
+                //     <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
+                // </ShowForPermission>,
             ]}
             table={
                 <OrderTable

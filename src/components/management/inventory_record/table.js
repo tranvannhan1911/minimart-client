@@ -72,7 +72,7 @@ const InventoryRecordTable = (props) => {
 
   const tagStatus = (status) => {
     if (status == 'pending') {
-      return 'CHỜ XÁC NHẬN';
+      return 'TẠO MỚI';
     } else if (status == 'complete') {
       return 'HOÀN THÀNH';
     } else if (status == 'cancel') {
@@ -230,13 +230,13 @@ const InventoryRecordTable = (props) => {
           value: 'complete',
         },
         {
-          text: 'CHỜ XÁC NHẬN',
+          text: 'TẠO MỚI',
           value: 'pending',
         },
-        {
-          text: 'HỦY',
-          value: 'cancel',
-        },
+        // {
+        //   text: 'HỦY',
+        //   value: 'cancel',
+        // },
       ],
       filteredValue: props.filteredInfo.status || null,
       onFilter: (value, record) => record.status.includes(value),

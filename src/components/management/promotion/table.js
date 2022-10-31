@@ -44,7 +44,7 @@ const PromotionTable = (props) => {
     if (status == true) {
       return 'HOẠT ĐỘNG';
     } else {
-      return 'KHÓA';
+      return 'NGƯNG HOẠT ĐỘNG';
     }
   };
 
@@ -232,7 +232,7 @@ const PromotionTable = (props) => {
           value: 'true',
         },
         {
-          text: 'KHÓA',
+          text: 'NGƯNG HOẠT ĐỘNG',
           value: 'false',
         },
       ],

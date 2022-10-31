@@ -136,9 +136,9 @@ const SideNav = (props) => {
       getItem('Dashboard', '', <DashboardOutlined />,),
       getItem('Bán hàng', 'quan-ly-ban-hang', <ShoppingCartOutlined />, [
         getChildItem('Bán hàng', 'ban-hang'),
-        getChildItem('Đơn bán hàng', 'don-ban-hang'),
-        getChildItem('Đơn trả hàng', 'don-tra-hang'),
-        getChildItem('Khuyến mãi', 'khuyen-mai'),
+        getChildItem('Hóa đơn bán hàng', 'don-ban-hang'),
+        getChildItem('Hóa đơn trả hàng', 'don-tra-hang'),
+        getChildItem('Chương trình khuyến mãi', 'khuyen-mai'),
       ]),
       getItem('Sản phẩm', 'quan-ly-san-pham', <TagsOutlined />, [
         getChildItem('Nhóm sản phẩm', 'nhom-san-pham'),

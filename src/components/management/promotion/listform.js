@@ -195,7 +195,7 @@ const PromotionListForm = (props) => {
             if(element.status == true){
                 status ="Hoạt động";
             }else{
-                status="Khóa";
+                status="Ngưng hoạt động";
             }
             worksheet.addRow([element.id, element.title, element.description, element.start_date, element.end_date, status, element.note]);
         });
@@ -217,10 +217,10 @@ const PromotionListForm = (props) => {
                 title="Chương trình khuyến mãi"
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                    <ShowForPermission>
-                        <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
+                    // <ShowForPermission>
+                    //     <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                         
-                    </ShowForPermission>,
+                    // </ShowForPermission>,
                     <ShowForPermission>
                         <Button onClick={() => navigate(paths.promotion.add)} type="primary" icon={<PlusOutlined />}
                         style={{

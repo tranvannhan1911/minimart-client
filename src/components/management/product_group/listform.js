@@ -157,9 +157,9 @@ const ProductGroupListForm = (props) => {
             title="Nhóm sản phẩm" 
             actions={[
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
-                <ShowForPermission>
-                    <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
-                </ShowForPermission>,
+                // <ShowForPermission>
+                //     <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
+                // </ShowForPermission>,
                 <ShowForPermission>
                     <Button onClick={() => navigate(paths.product_group.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>
                 </ShowForPermission>
