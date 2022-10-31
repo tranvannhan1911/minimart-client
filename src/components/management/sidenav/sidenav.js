@@ -169,7 +169,7 @@ const SideNav = (props) => {
   }, [userInfo])
 
   const onOpenChange = (keys) => {
-    const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
+    const latestOpenKey = keys.find((key) => openKeys?.indexOf(key) === -1);
 
     if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
       setOpenKeys(keys);
