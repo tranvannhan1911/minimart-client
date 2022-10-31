@@ -124,9 +124,12 @@ const OrderItem = (props) => {
                 const options = response.data.data.units.map(elm => {
                     elm.unit_exchange_value = elm.value
                     delete elm.value
-                    return (
-                        <Option key={elm.id} value={elm.id} {...elm}>{elm.unit_name}</Option>
-                    )
+                    if(elm.allow_sale){
+                        return (
+                            <Option key={elm.id} value={elm.id} {...elm}>{elm.unit_name}</Option>
+                        )
+                    }
+                    return null
                 })
                 setBaseUnitOptions([...baseUnitOptions, options]);
                 // add(index);
