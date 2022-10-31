@@ -101,7 +101,7 @@ const CustomerModal = (props) => {
         <Row>
           <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Trạng thái: {props.data.is_active ? 'Hoạt động':'Khóa'}</p>
+              <p className="site-description-item-profile-p-label" style={{fontSize:'15px'}}>Trạng thái: {props.data.is_active ? 'Hoạt động':'Ngưng hoạt động'}</p>
             </div>
           </Col>
           <Col span={12}>

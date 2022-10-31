@@ -146,9 +146,9 @@ const CustomerGroupListForm = (props) => {
             title="Nhóm khách hàng" 
             actions={[
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
-                <ShowForPermission>
-                    <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
-                </ShowForPermission>,
+                // <ShowForPermission>
+                //     <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
+                // </ShowForPermission>,
                 <Button onClick={() => navigate(paths.customer_group.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}
             table={

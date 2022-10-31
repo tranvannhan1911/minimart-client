@@ -174,7 +174,7 @@ const InventoryRecordListForm = (props) => {
             if (element.status == "complete") {
                 status = "Hoàn thành";
             } else if (element.status == "pending") {
-                status = "Chờ xác nhận";
+                status = "Tạo mới";
             } else {
                 status = "Hủy";
             }
@@ -199,19 +199,19 @@ const InventoryRecordListForm = (props) => {
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
 
-                    <ShowForPermission>
-                        <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
-                    </ShowForPermission>,
-                    <ShowForPermission>
-                        <ExportTemplateReactCSV csvData={[]} fileName='template_kiem_ke.xlsx'
-                            header={[
-                                { label: 'maSP', key: 'maSP' },
-                                { label: 'soluong', key: 'soluong' },
-                                { label: 'ghichu', key: 'ghichu' },
-                                { label: '(So luong theo don vi co ban)', key: 'note' },
-                            ]}
-                        />
-                    </ShowForPermission>,
+                    // <ShowForPermission>
+                    //     <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
+                    // </ShowForPermission>,
+                    // <ShowForPermission>
+                    //     <ExportTemplateReactCSV csvData={[]} fileName='template_kiem_ke.xlsx'
+                    //         header={[
+                    //             { label: 'maSP', key: 'maSP' },
+                    //             { label: 'soluong', key: 'soluong' },
+                    //             { label: 'ghichu', key: 'ghichu' },
+                    //             { label: '(So luong theo don vi co ban)', key: 'note' },
+                    //         ]}
+                    //     />
+                    // </ShowForPermission>,
                     <ShowForPermission>
                         <Button onClick={() => navigate(paths.inventory_record.add)} type="primary" icon={<PlusOutlined />}>Kiểm kê</Button>
                     </ShowForPermission>,

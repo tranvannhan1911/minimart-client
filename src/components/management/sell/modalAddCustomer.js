@@ -1,4 +1,7 @@
-import { Modal, Form, Input, message, Col, Row, Select } from 'antd';
+import {
+    PlusOutlined
+  } from '@ant-design/icons';
+import { Modal, Form, Input, message, Col, Row, Select,Space, Button } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import api from '../../../api/apis'
 import { validPhone, validName } from '../../../resources/regexp'
@@ -128,7 +131,16 @@ const ModalLogin = (props) => {
 
     return (
         <>
-            <Modal title="Thêm khách hàng" open={props.open} onOk={onFinish} onCancel={handleCancel} okText="Lưu" cancelText="Thoát" width={1000}>
+            <Modal title={is_create? "Thêm khách hàng":"Thông tin khách hàng"} open={props.open} onCancel={handleCancel} width={1000}
+            footer={[
+                <Button key="back" onClick={handleCancel}>
+                  Thoát
+                </Button>,
+                <Button key="submit" type="primary" onClick={onFinish}  disabled={is_create ? false : true}>
+                  Lưu
+                </Button>,
+                
+              ]}>
                 <Form
                     form={form}
                     // name="basic"
@@ -151,7 +163,7 @@ const ModalLogin = (props) => {
                                     },
                                 ]}
                             >
-                                <Input autoFocus ref={refAutoFocus} style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} />
+                                <Input autoFocus ref={refAutoFocus} disabled={is_create ? false : true} style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} />
                             </Form.Item>
                         </Col>
                         <Col span={2}></Col>
@@ -164,7 +176,7 @@ const ModalLogin = (props) => {
                                     },
                                 ]}
                             >
-                                <Input style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} />
+                                <Input style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} disabled={is_create ? false : true}/>
                             </Form.Item>
                         </Col>
                     </Row>
@@ -178,6 +190,7 @@ const ModalLogin = (props) => {
                                     mode="multiple"
                                     allowClear
                                     style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }}
+                                    disabled={is_create ? false : true}
                                 // placeholder="Please select"
                                 // defaultValue={['a10', 'c12']}
                                 // onChange={handleChange}
@@ -195,6 +208,7 @@ const ModalLogin = (props) => {
                                 <Select
                                     defaultValue="U"
                                     style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }}
+                                    disabled={is_create ? false : true}
                                 >
                                     <Option value="M">Nam</Option>
                                     <Option value="F">Nữ</Option>
@@ -216,14 +230,14 @@ const ModalLogin = (props) => {
                         <Col span={1}></Col>
                         <Col span={10}>
                             <Form.Item label="Số nhà, tên đường" name="address">
-                                <Input style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} />
+                                <Input style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} disabled={is_create ? false : true}/>
                             </Form.Item>
                         </Col>
                         <Col span={2}></Col>
                         <Col span={10}>
                             <Form.Item label="Địa chỉ" name="ward" >
                                 <span style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }}>
-                                    <AddressSelect addressValue={addressValue} setAddressValue={setAddressValue}
+                                    <AddressSelect addressValue={addressValue} setAddressValue={setAddressValue} 
                                     />
                                 </span>
                             </Form.Item>
@@ -238,10 +252,11 @@ const ModalLogin = (props) => {
                                 }}>
                                 <Select
                                     defaultValue='true'
+                                    disabled={is_create ? false : true}
                                     style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }}
                                 >
                                     <Option value="true">Hoạt động</Option>
-                                    <Option value="false">Khóa</Option>
+                                    <Option value="false">Ngưng hoạt động</Option>
                                 </Select>
                             </Form.Item>
                         </Col>
@@ -249,12 +264,12 @@ const ModalLogin = (props) => {
                         <Col span={10}>
 
                             <Form.Item label="Ghi chú" name="note" >
-                                <TextArea rows={1} style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} />
+                                <TextArea rows={1} style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} disabled={is_create ? false : true}/>
                             </Form.Item>
 
                         </Col>
                     </Row>
-
+                    
                 </Form>
             </Modal>
         </>

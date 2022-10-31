@@ -21,6 +21,8 @@ import ProductSelect from '../barcode/input';
 import Item from 'antd/lib/list/Item';
 import ExcelJS from "exceljs";
 import saveAs from "file-saver";
+import { ExportTemplateReactCSV } from '../../../utils/exportTemplate';
+import ShowForPermission from '../../basic/permission';
 
 
 const dateFormat = "YYYY/MM/DD";
@@ -326,7 +328,7 @@ const PriceChangeForm = (props) => {
         return;
       }
     }
-    if(values.status == null){
+    if (values.status == null) {
       values.status = "false";
     }
     if (is_create) {
@@ -491,6 +493,15 @@ const PriceChangeForm = (props) => {
       ])
     } else {
       props.setBreadcrumbExtras([
+        <ShowForPermission>
+          <ExportTemplateReactCSV csvData={[]} fileName='template_bang_gia.xlsx'
+            header={[
+              { label: 'maSP', key: 'maSP' },
+              { label: 'maDonVi', key: 'maDonVi' },
+              { label: 'gia', key: 'gia' },
+            ]}
+          />
+        </ShowForPermission>,
         <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.price.list) }}
         >Thoát</Button>,
 
@@ -647,7 +658,7 @@ const PriceChangeForm = (props) => {
                       }}
                     >
                       <Option value="true">Hoạt động</Option>
-                      <Option value="false">Khóa</Option>
+                      <Option value="false">Ngưng hoạt động</Option>
                     </Select>
                   </Form.Item>
                 </Col>

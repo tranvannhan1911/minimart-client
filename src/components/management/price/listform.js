@@ -176,7 +176,7 @@ const PriceListForm = (props) => {
             if(element.status == true){
                 status="Hoạt động";
             }else{
-                status="Khóa";
+                status="Ngưng hoạt động";
             }
             worksheet.addRow([element.price_list_id, element.name, element.start_date, element.end_date, status,element.note]);
         });
@@ -198,18 +198,18 @@ const PriceListForm = (props) => {
                 title="Bảng giá"
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                    <ShowForPermission>
-                        <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
-                    </ShowForPermission>,
-                    <ShowForPermission>
-                    <ExportTemplateReactCSV csvData={[]} fileName='template_bang_gia.xlsx'
-                        header={[
-                            { label: 'maSP', key: 'maSP' },
-                            { label: 'maDonVi', key: 'maDonVi' },
-                            { label: 'gia', key: 'gia' },
-                        ]}
-                    />
-                </ShowForPermission>,
+                    // <ShowForPermission>
+                    //     <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
+                    // </ShowForPermission>,
+                //     <ShowForPermission>
+                //     <ExportTemplateReactCSV csvData={[]} fileName='template_bang_gia.xlsx'
+                //         header={[
+                //             { label: 'maSP', key: 'maSP' },
+                //             { label: 'maDonVi', key: 'maDonVi' },
+                //             { label: 'gia', key: 'gia' },
+                //         ]}
+                //     />
+                // </ShowForPermission>,
                     <ShowForPermission>
                         <Button onClick={() => navigate(paths.price.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>
                     </ShowForPermission>,
