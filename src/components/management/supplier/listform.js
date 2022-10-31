@@ -3,7 +3,7 @@ import {
     ReloadOutlined,
     SearchOutlined, DownloadOutlined
 } from '@ant-design/icons';
-import { Button,Input, message} from 'antd';
+import { Button, Input, message } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import ListForm from '../templates/listform';
@@ -76,44 +76,44 @@ const SupplierListForm = (props) => {
         setSearchInfo([])
     };
 
-    const searchCode = (value) =>{
+    const searchCode = (value) => {
         setDataSearchCode(value);
         let data_ = [];
         dataMain.forEach(element => {
-            if(element.code.toLowerCase().includes(value.toLowerCase())){
+            if (element.code.toLowerCase().includes(value.toLowerCase())) {
                 data_.push(element);
             }
         });
         setData(data_);
     }
 
-    const searchName = (value) =>{
+    const searchName = (value) => {
         setDataSearchName(value);
         let data_ = [];
         dataMain.forEach(element => {
-            if(element.name.toLowerCase().includes(value.toLowerCase())){
+            if (element.name.toLowerCase().includes(value.toLowerCase())) {
                 data_.push(element);
             }
         });
         setData(data_);
     }
 
-    const searchPhone = (value) =>{
+    const searchPhone = (value) => {
         setDataSearchPhone(value);
         let data_ = [];
         dataMain.forEach(element => {
-            if(element.phone.toString().toLowerCase().includes(value.toString().toLowerCase())){
+            if (element.phone.toString().toLowerCase().includes(value.toString().toLowerCase())) {
                 data_.push(element);
             }
         });
         setData(data_);
     }
 
-    const searchEmail = (value) =>{
+    const searchEmail = (value) => {
         setDataSearchEmail(value);
         let data_ = [];
         dataMain.forEach(element => {
-            if(element.email.toLowerCase().includes(value.toLowerCase())){
+            if (element.email.toLowerCase().includes(value.toLowerCase())) {
                 data_.push(element);
             }
         });
@@ -122,59 +122,128 @@ const SupplierListForm = (props) => {
 
     /////////////////
 
+    
     const exportExcel = () => {
         var ExcelJSWorkbook = new ExcelJS.Workbook();
-        var worksheet = ExcelJSWorkbook.addWorksheet("NhaCungCap");
+        var worksheet = ExcelJSWorkbook.addWorksheet("DSNhaCungCap");
 
-        worksheet.mergeCells("A2:E2");
+        worksheet.mergeCells("A1:F1");
 
-        const customCell = worksheet.getCell("A2");
+        const customCell1 = worksheet.getCell("A1");
+        customCell1.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 8,
+        };
+        customCell1.value = "Tên cửa hàng: SIÊU THỊ MINI";
+
+        worksheet.mergeCells("A2:F2");
+
+        const customCell2 = worksheet.getCell("A2");
+        customCell2.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 8,
+        };
+        customCell2.value = "Địa chỉ: Gò Vấp - Tp.Hồ Chí Minh";
+
+        worksheet.mergeCells("A3:F3");
+
+        const customCell3 = worksheet.getCell("A3");
+        customCell3.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 8,
+        };
+        const day = new Date();
+        customCell3.value = "Ngày in: " + day.getDate() + "/" + (day.getMonth() + 1) + "/" + day.getFullYear();
+
+        worksheet.mergeCells("A4:F4");
+
+        const customCell4 = worksheet.getCell("A4");
+        customCell4.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 8,
+        };
+        customCell4.value = "Người xuất báo cáo: " + sessionStorage.getItem("nameStaff") + ' - ' + sessionStorage.getItem("phoneStaff");
+
+        worksheet.mergeCells("A5:F5");
+
+        const customCell = worksheet.getCell("A5");
         customCell.font = {
             name: "Times New Roman",
             family: 4,
-            size: 20,
-            underline: true,
+            size: 14,
             bold: true,
         };
         customCell.alignment = { vertical: 'middle', horizontal: 'center' };
 
+        worksheet.mergeCells("A6:F6");
+
+        const customCell5 = worksheet.getCell("A6");
+        customCell5.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 8,
+        };
+        customCell5.alignment = { vertical: 'middle', horizontal: 'center' };
+
+        let headerColumn = ["A", "B", "C", "D", "E", "F"];
+
+        var headerRow = worksheet.addRow();
+
+        worksheet.getRow(7).font = { bold: true };
+
         customCell.value = "Danh sách nhà cung cấp";
 
-        let header = ["Mã nhà cung cấp", "Tên nhà cung cấp", "Số điện thoại", "Email", "Ghi chú"];
+        let header = ["STT", "Mã nhà cung cấp", "Tên nhà cung cấp", "Số điện thoại", "Email", "Ghi chú"];
 
-        var headerRow = worksheet.addRow();
-        var headerRow = worksheet.addRow();
-        var headerRow = worksheet.addRow();
-
-        worksheet.getRow(5).font = { bold: true };
-
-        for (let i = 0; i < 5; i++) {
-            let currentColumnWidth = "123";
-            worksheet.getColumn(i + 1).width =
-                currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
-            let cell = headerRow.getCell(i + 1);
-            cell.value = header[i];
+        for (let i = 0; i < headerColumn.length; i++) {
+            const columnn = worksheet.getCell(headerColumn[i] + 7);
+            columnn.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+            if (i == 0) {
+                worksheet.getColumn(i + 1).width = "10";
+            } else {
+                worksheet.getColumn(i + 1).width = "20";
+            }
+            columnn.alignment = { vertical: 'middle', horizontal: 'center' };
+            columnn.value = header[i];
         }
 
         worksheet.autoFilter = {
             from: {
-                row: 5,
+                row: 7,
                 column: 1
             },
             to: {
-                row: 5,
-                column: 5
+                row: 7,
+                column: 6
             }
         };
-
+        let i = 1;
         data.forEach(element => {
-            let status ="";
-            if(element.is_active == true){
-                status ="Hoạt động";
-            }else{
-                status="Khóa";
+            worksheet.addRow([i, element.code, element.name, element.phone, element.email, element.note]);
+            for (let j = 0; j < headerColumn.length; j++) {
+                const columnn = worksheet.getCell(headerColumn[j] + (i + 7));
+                columnn.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+                if (j == 0) {
+                    columnn.alignment = { vertical: 'middle', horizontal: 'center' };
+                }
+                
             }
-            worksheet.addRow([element.code, element.name, element.phone, element.email, element.note]);
+
+            i++;
         });
 
         ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
@@ -191,7 +260,7 @@ const SupplierListForm = (props) => {
         <ListForm
             title="Nhà cung cấp"
             actions={[
-                <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>, 
+                <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
                 <ShowForPermission >
                     <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                 </ShowForPermission>,

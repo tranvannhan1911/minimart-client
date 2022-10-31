@@ -34,14 +34,14 @@ const WarehouseTransactionListForm = (props) => {
     const handleGetData = async () => {
         setLoading(true)
         try {
-            
+
             const response = await api.warehouse_transaction.list()
             console.log(response.data.data)
             const _data = response.data.data.results.map(elm => {
                 elm.key = elm.id;
                 let date = elm.date_created.slice(0, 10);
                 let time = elm.date_created.slice(11, 19);
-                elm.date_created = date + " " + time;                
+                elm.date_created = date + " " + time;
                 // elm.change = elm.change > 0 ? `+${elm.change}` : elm.change;
                 // elm.unit_exchange = elm.reference?.unit_exchange?.unit_name;
                 // elm.unit_exchange = elm.product.base_unit.name;
@@ -49,25 +49,29 @@ const WarehouseTransactionListForm = (props) => {
                 //     elm.quantity_base_unit = elm.reference.quantity * elm.reference.unit_exchange.value + " " + elm.reference?.unit_exchange.unit_name
                 // else
                 //     elm.quantity_base_unit = elm.reference.quantity
-                
-                
+
+
                 console.log("elm", elm)
-                if(elm.reference){
-                    let reference='';
-                    let link="";
-                    if(elm.type.type == "promotion"){
-                        reference="";
-                    }else if(elm.type.type == "order" || elm.type.type == "order_cancel"){
-                        reference=elm.reference.order;
-                    }else if(elm.type.type == "inventory_receiving" || elm.type.type == "inventory_receiving_cancel"){
-                        reference=elm.reference.receiving_voucher
-                    }else if(elm.type.type == "refund"){
-                        reference=elm.reference.receiving_voucher
-                    }else if(elm.type.type == "inventory" || elm.type.type == "inventory_cancel"){
-                        reference=elm.reference.receiving_voucher
+                if (elm.reference) {
+                    let reference = '';
+                    let link = "";
+                    if (elm.type.type == "promotion") {
+                        reference = "";
+                    } else if (elm.type.type == "order" || elm.type.type == "order_cancel") {
+                        if (elm.reference == null) {
+                            reference = "";
+                        } else {
+                            reference = elm.reference.order;
+                        }
+                    } else if (elm.type.type == "inventory_receiving" || elm.type.type == "inventory_receiving_cancel") {
+                        reference = elm.reference.receiving_voucher
+                    } else if (elm.type.type == "refund") {
+                        reference = elm.reference.receiving_voucher
+                    } else if (elm.type.type == "inventory" || elm.type.type == "inventory_cancel") {
+                        reference = elm.reference.receiving_voucher
                     }
 
-                    let elmm={
+                    let elmm = {
                         key: elm.id,
                         id: elm.id,
                         unit: elm.product.base_unit.name,
@@ -114,7 +118,7 @@ const WarehouseTransactionListForm = (props) => {
 
     const onChange = (dates, dateStrings) => {
         if (dates) {
-            setSearchDate([dates[0],dates[1]])
+            setSearchDate([dates[0], dates[1]])
             setLoading(true);
             console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
             const datest = new Date(dateStrings[0].slice(0, 10));
@@ -165,50 +169,130 @@ const WarehouseTransactionListForm = (props) => {
         var ExcelJSWorkbook = new ExcelJS.Workbook();
         var worksheet = ExcelJSWorkbook.addWorksheet("BienDongKho");
 
-        worksheet.mergeCells("A2:E2");
+        worksheet.mergeCells("A1:I1");
 
-        const customCell = worksheet.getCell("A2");
+        const customCell1 = worksheet.getCell("A1");
+        customCell1.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 8,
+        };
+        customCell1.value = "Tên cửa hàng: SIÊU THỊ MINI";
+
+        worksheet.mergeCells("A2:I2");
+
+        const customCell2 = worksheet.getCell("A2");
+        customCell2.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 8,
+        };
+        customCell2.value = "Địa chỉ: Gò Vấp - Tp.Hồ Chí Minh";
+
+        worksheet.mergeCells("A3:I3");
+
+        const customCell3 = worksheet.getCell("A3");
+        customCell3.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 8,
+        };
+        const day = new Date();
+        customCell3.value = "Ngày in: " + day.getDate() + "/" + (day.getMonth() + 1) + "/" + day.getFullYear();
+
+        worksheet.mergeCells("A4:I4");
+
+        const customCell4 = worksheet.getCell("A4");
+        customCell4.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 8,
+        };
+        customCell4.value = "Người xuất báo cáo: " + sessionStorage.getItem("nameStaff") + ' - ' + sessionStorage.getItem("phoneStaff");
+
+        worksheet.mergeCells("A5:I5");
+
+        const customCell = worksheet.getCell("A5");
         customCell.font = {
             name: "Times New Roman",
             family: 4,
-            size: 20,
-            underline: true,
+            size: 14,
             bold: true,
         };
         customCell.alignment = { vertical: 'middle', horizontal: 'center' };
 
+        worksheet.mergeCells("A6:I6");
+
+        const customCell5 = worksheet.getCell("A6");
+        customCell5.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 8,
+        };
+        customCell5.alignment = { vertical: 'middle', horizontal: 'center' };
+
+        let headerColumn = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
+
+        var headerRow = worksheet.addRow();
+
+        worksheet.getRow(7).font = { bold: true };
+
         customCell.value = "Danh sách biến động kho";
 
-        let header = ["Mã biến động kho", "Sản phẩm", "Số lượng thay đổi", "Đơn vị tính", "Loại thay đổi","Mã đối tượng thay đổi","Ngày thay đổi", "Ghi chú"];
+        let header = ["STT", "Mã biến động kho", "Sản phẩm", "Số lượng thay đổi", "Đơn vị tính", "Loại thay đổi", "Mã đối tượng thay đổi", "Ngày thay đổi", "Ghi chú"];
 
-        var headerRow = worksheet.addRow();
-        var headerRow = worksheet.addRow();
-        var headerRow = worksheet.addRow();
-
-        worksheet.getRow(5).font = { bold: true };
-
-        for (let i = 0; i < 8; i++) {
-            let currentColumnWidth = "123";
-            worksheet.getColumn(i + 1).width =
-                currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
-            let cell = headerRow.getCell(i + 1);
-            cell.value = header[i];
+        for (let i = 0; i < headerColumn.length; i++) {
+            const columnn = worksheet.getCell(headerColumn[i] + 7);
+            columnn.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+            if (i == 0) {
+                worksheet.getColumn(i + 1).width = "10";
+            } else if (i == 2) {
+                worksheet.getColumn(i + 1).width = "30";
+            } else {
+                worksheet.getColumn(i + 1).width = "20";
+            }
+            columnn.alignment = { vertical: 'middle', horizontal: 'center' };
+            columnn.value = header[i];
         }
 
         worksheet.autoFilter = {
             from: {
-                row: 5,
+                row: 7,
                 column: 1
             },
             to: {
-                row: 5,
-                column: 8
+                row: 7,
+                column: 9
             }
         };
-
+        let i = 1;
         data.forEach(element => {
-            
-            worksheet.addRow([element.id, element.product, element.change, element.unit, element.type, element.reference, element.date_created, element.note]);
+            worksheet.addRow([i, element.id, element.product, element.change, element.unit, element.type, element.reference, element.date_created.slice(0, 10), element.note]);
+            for (let j = 0; j < headerColumn.length; j++) {
+                const columnn = worksheet.getCell(headerColumn[j] + (i + 7));
+                columnn.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+                if (j == 0 || j == 7) {
+                    columnn.alignment = { vertical: 'middle', horizontal: 'center' };
+                }
+                else if (j == 1 || j == 2 || j == 4 || j == 5) {
+                    columnn.alignment = { vertical: 'middle', horizontal: 'left' };
+                } else {
+                    columnn.alignment = { vertical: 'middle', horizontal: 'right' };
+                }
+
+            }
+
+            i++;
         });
 
         ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
@@ -218,6 +302,7 @@ const WarehouseTransactionListForm = (props) => {
             );
         });
     };
+
 
     ////////////////
 
@@ -230,7 +315,7 @@ const WarehouseTransactionListForm = (props) => {
                 title="Lịch sử biến động kho"
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                    
+
                     <ShowForPermission >
                         <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                     </ShowForPermission>,
@@ -245,11 +330,11 @@ const WarehouseTransactionListForm = (props) => {
                     searchInfo={searchInfo}
                     setSearchInfo={setSearchInfo}
                     sortedInfo={sortedInfo}
-                    setSortedInfo={setSortedInfo} 
-                    dataSearchId={searchId} 
+                    setSortedInfo={setSortedInfo}
+                    dataSearchId={searchId}
                     dataSearchProduct={searchProduct}
                     clearFiltersAndSort={clearFiltersAndSort}
-                    />}
+                />}
                 extra_actions={[
                     <Input
                         placeholder="Tìm kiếm biến động kho"

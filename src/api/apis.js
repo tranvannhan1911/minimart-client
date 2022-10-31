@@ -167,6 +167,20 @@ const sales_extras = {
     
 }
 
+const refund_extras = {
+    refund: (params) => {
+        const url = `/statistic/refund/`
+        return axiosApi.get(url, params)
+    },
+}
+
+const promotion_extras = {
+    promotion: (params) => {
+        const url = `/statistic/promotion/`
+        return axiosApi.get(url, params)
+    },
+}
+
 const api = {
     customer: getApi("customer"),
     customer_group: getApi("customer-group"),
@@ -186,6 +200,9 @@ const api = {
     category: getApi("category", category_extras),
     address: getApi("address", address_extras),
     statistics_sales: getApi("statistic", sales_extras),
+    statistics_refund: getApi("statistic", refund_extras),
+    statistics_promotion: getApi("statistic", promotion_extras),
+
 }
 
 export {AccountApi};

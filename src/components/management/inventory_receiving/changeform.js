@@ -1,5 +1,5 @@
 import {
-  PlusOutlined, EditOutlined, MinusCircleOutlined, HistoryOutlined, UploadOutlined
+  PlusOutlined, EditOutlined, MinusCircleOutlined, HistoryOutlined, UploadOutlined, DeleteOutlined
 } from '@ant-design/icons';
 import {
   Button, Form, Input, Select, message, Space, Popconfirm,
@@ -17,6 +17,8 @@ import * as XLSX from 'xlsx';
 import { validNumber } from '../../../resources/regexp';
 import ExcelJS from "exceljs";
 import saveAs from "file-saver";
+import { ExportTemplateReactCSV } from '../../../utils/exportTemplate';
+import ShowForPermission from '../../basic/permission';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -149,7 +151,7 @@ const InventoryReceivingChangeForm = (props) => {
     var ExcelJSWorkbook = new ExcelJS.Workbook();
     var worksheet = ExcelJSWorkbook.addWorksheet("Data");
 
-    worksheet.addRow(["maSP", "soluong", "gia", "ghichu", "loi", "(Số lượng theo đơn vị cơ bản)"]);
+    worksheet.addRow(["maSP", "soluong", "gia", "ghichu", "loi", "", "", "", "(Số lượng theo đơn vị cơ bản)"]);
     let i = 2;
     data.forEach(element => {
       if (element.loi == "") {
@@ -157,7 +159,7 @@ const InventoryReceivingChangeForm = (props) => {
         i++;
       } else {
         worksheet.addRow([element.maSP, element.soluong, element.gia, element.ghichu, element.loi]);
-        worksheet.getRow(i).font = { color: {argb:'ffff0000'} };
+        worksheet.getRow(i).font = { color: { argb: 'ffff0000' } };
         i++;
       }
     });
@@ -256,6 +258,10 @@ const InventoryReceivingChangeForm = (props) => {
   }
 
   const _delete = async () => {
+    if (form.getFieldValue("status") != "pending") {
+      message.error("Chỉ xóa được phiếu nhập hàng ở trạng thái tạo mới");
+      return;
+    }
     try {
       const response = await api.inventory_receiving.delete(id)
       if (response.data.code == 1) {
@@ -442,24 +448,39 @@ const InventoryReceivingChangeForm = (props) => {
 
     if (is_create == false) {
       props.setBreadcrumbExtras([
-        // <Popconfirm
-        //   placement="bottomRight"
-        //   title="Xác nhận xóa phiếu nhập hàng này"
-        //   onConfirm={_delete}
-        //   okText="Đồng ý"
-        //   okType="danger"
-        //   cancelText="Hủy bỏ"
-        // >
-        //   <Button type="danger" icon={<DeleteOutlined />}
-        //   >Xóa</Button>
-        // </Popconfirm>,
+        <Popconfirm
+          placement="bottomRight"
+          title="Xác nhận xóa phiếu nhập hàng này"
+          onConfirm={_delete}
+          okText="Đồng ý"
+          okType="danger"
+          cancelText="Hủy bỏ"
+        >
+          <Button type="danger" icon={<DeleteOutlined />}
+          >Xóa</Button>
+        </Popconfirm>,
         // <Button type="info" icon={<HistoryOutlined />}
         // >Lịch sử chỉnh sửa</Button>
         <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.inventory_receiving.list) }}
         >Thoát</Button>
       ])
     } else {
+
       props.setBreadcrumbExtras([
+        <ShowForPermission>
+          <ExportTemplateReactCSV csvData={[]} fileName='template_nhap_hang.xlsx'
+            header={[
+              { label: 'maSP', key: 'maSP' },
+              { label: 'soluong', key: 'soluong' },
+              { label: 'gia', key: 'gia' },
+              { label: 'ghichu', key: 'ghichu' },
+              { label: '', key: '' },
+              { label: '', key: '' },
+              { label: '', key: '' },
+              { label: '(So luong theo don vi co ban)', key: 'note' },
+            ]}
+          />
+        </ShowForPermission>,
         <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.inventory_receiving.list) }}
         >Thoát</Button>
       ])
@@ -574,9 +595,9 @@ const InventoryReceivingChangeForm = (props) => {
                         width: '100%',
                       }}
                     >
-                      <Option value="pending">Chờ giao hàng</Option>
+                      <Option value="pending">Tạo mới</Option>
                       <Option value="complete">Hoàn thành</Option>
-                      <Option value="cancel">Hủy</Option>
+                      <Option value="cancel">Đã hủy</Option>
                     </Select>
                   </Form.Item>
                 </Col>

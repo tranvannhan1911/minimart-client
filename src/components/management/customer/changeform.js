@@ -338,7 +338,7 @@ const CustomerChangeForm = (props) => {
                       }}
                     >
                       <Option value="true">Hoạt động</Option>
-                      <Option value="false">Khóa</Option>
+                      <Option value="false">Ngưng hoạt động</Option>
                     </Select>
                   </Form.Item>
                 </Col>

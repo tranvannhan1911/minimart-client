@@ -183,9 +183,9 @@ const InventoryReceivingListForm = (props) => {
             if(element.status == "complete"){
                 status ="Hoàn thành";
             }else if(element.status == "pending"){
-                status="Chờ xác nhận";
+                status="Tạo mới";
             }else{
-                status="Hủy";
+                status="Đã hủy";
             }
             worksheet.addRow([element.id, element.supplier, element.date_created, element.total, status, element.note]);
         });
@@ -208,21 +208,21 @@ const InventoryReceivingListForm = (props) => {
                 actions={[
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
 
-                    <ShowForPermission>
-                        <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
+                    // <ShowForPermission>
+                    //     <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                         
-                    </ShowForPermission>,
-                    <ShowForPermission>
-                        <ExportTemplateReactCSV csvData={[]} fileName='template_nhap_hang.xlsx'
-                            header={[
-                                { label: 'maSP', key: 'maSP' },
-                                { label: 'soluong', key: 'soluong' },
-                                { label: 'gia', key: 'gia' },
-                                { label: 'ghichu', key: 'ghichu' },
-                                { label: '(So luong theo don vi co ban)', key: 'note' },
-                            ]}
-                        />
-                    </ShowForPermission>,
+                    // </ShowForPermission>,
+                    // <ShowForPermission>
+                    //     <ExportTemplateReactCSV csvData={[]} fileName='template_nhap_hang.xlsx'
+                    //         header={[
+                    //             { label: 'maSP', key: 'maSP' },
+                    //             { label: 'soluong', key: 'soluong' },
+                    //             { label: 'gia', key: 'gia' },
+                    //             { label: 'ghichu', key: 'ghichu' },
+                    //             { label: '(So luong theo don vi co ban)', key: 'note' },
+                    //         ]}
+                    //     />
+                    // </ShowForPermission>,
                     <ShowForPermission>
                         <Button onClick={() => navigate(paths.inventory_receiving.add)} type="primary" icon={<PlusOutlined />}>Nhập hàng</Button>
                     </ShowForPermission>,
