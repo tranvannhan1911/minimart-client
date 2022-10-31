@@ -1,6 +1,6 @@
 import {
     PlusOutlined, UploadOutlined,
-    ReloadOutlined, SearchOutlined
+    ReloadOutlined, SearchOutlined, DownloadOutlined
   } from '@ant-design/icons';
 import { Button, Input, message, Upload } from 'antd';
 import React, { useState, useEffect,  } from 'react';
@@ -10,9 +10,9 @@ import api from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
-import { ExportReactCSV } from '../../../utils/exportExcel';
-import * as XLSX from 'xlsx';
 import ShowForPermission from '../../basic/permission';
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 
 const ProductGroupListForm = (props) => {
     const [dataMain, setDataMain] = useState([])
@@ -24,35 +24,7 @@ const ProductGroupListForm = (props) => {
     const [sortedInfo, setSortedInfo] = useState({})
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
-
-    const uploadData = {
-        async beforeUpload(file) {
-            // console.log(file.name)
-            var typeFile = file.name.split('.').pop().toLowerCase();
-            if (typeFile == "xlsx" || typeFile == "csv") {
-                setLoading(true);
-                const data = await file.arrayBuffer();
-                const workbook = XLSX.read(data);
-
-                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet);
-                for (let index = 0; index < jsonData.length; index++) {
-                    const element = jsonData[index];
-                    const response = await api.product_group.add({ 'product_group_code':element.product_group_code,"name": element.name, 'description':element.description,"note": element.note });
-                    if (index == jsonData.length - 1) {
-                        console.log(index)
-                        message.success("Xong quá trình thêm dữ liệu");
-                        setLoading(false);
-                        handleGetData();
-                    }
-                }
-            } else {
-                message.error("Chỉ nhập dữ liệu bằng file .csv, .xlsx");
-                return;
-            }
-
-        }
-    };
+    
     
     const handleGetData = async () => {
         setLoading(true)
@@ -117,19 +89,76 @@ const ProductGroupListForm = (props) => {
         setData(data_);
     }
 
+    /////////////////
+
+    const exportExcel = () => {
+        var ExcelJSWorkbook = new ExcelJS.Workbook();
+        var worksheet = ExcelJSWorkbook.addWorksheet("NhomSanPham");
+
+        worksheet.mergeCells("A2:E2");
+
+        const customCell = worksheet.getCell("A2");
+        customCell.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 20,
+            underline: true,
+            bold: true,
+        };
+        customCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+        customCell.value = "Danh sách nhóm sản phẩm";
+
+        let header = ["Mã nhóm sản phẩm", "Tên nhóm sản phẩm", "Mô tả", "Ghi chú"];
+
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+
+        worksheet.getRow(5).font = { bold: true };
+
+        for (let i = 0; i < 4; i++) {
+            let currentColumnWidth = "123";
+            worksheet.getColumn(i + 1).width =
+                currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
+            let cell = headerRow.getCell(i + 1);
+            cell.value = header[i];
+        }
+
+        worksheet.autoFilter = {
+            from: {
+                row: 5,
+                column: 1
+            },
+            to: {
+                row: 5,
+                column: 4
+            }
+        };
+
+        data.forEach(element => {
+            
+            worksheet.addRow([element.product_group_code, element.name, element.description, element.note]);
+        });
+
+        ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+            saveAs(
+                new Blob([buffer], { type: "application/octet-stream" }),
+                `DSNhomSanPham.xlsx`
+            );
+        });
+    };
+
+    ////////////////
+
+
     return (
         <ListForm 
             title="Nhóm sản phẩm" 
             actions={[
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
-                
                 <ShowForPermission>
-                    <Upload showUploadList={false} {...uploadData}>
-                        <Button icon={<UploadOutlined />}>Nhập Excel</Button>
-                    </Upload>
-                </ShowForPermission>,
-                <ShowForPermission>
-                    <ExportReactCSV csvData={data} fileName='productgroup.xlsx' />
+                    <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                 </ShowForPermission>,
                 <ShowForPermission>
                     <Button onClick={() => navigate(paths.product_group.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>

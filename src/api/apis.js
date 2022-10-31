@@ -155,6 +155,18 @@ const address_extras = {
     }
 }
 
+const sales_extras = {
+    by_staff: (params) => {
+        const url = `/statistic/sales-staff/`
+        return axiosApi.get(url, params)
+    },
+    by_customer: (params) => {
+        const url = `/statistic/sales-customer/`
+        return axiosApi.get(url, params)
+    },
+    
+}
+
 const api = {
     customer: getApi("customer"),
     customer_group: getApi("customer-group"),
@@ -173,6 +185,7 @@ const api = {
     order_refund: getApi("refund"),
     category: getApi("category", category_extras),
     address: getApi("address", address_extras),
+    statistics_sales: getApi("statistic", sales_extras),
 }
 
 export {AccountApi};

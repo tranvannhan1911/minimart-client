@@ -14,8 +14,9 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import ProductSelect from '../barcode/input';
 import * as XLSX from 'xlsx';
-import { CSVLink } from 'react-csv'
 import { validNumber } from '../../../resources/regexp';
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -28,7 +29,6 @@ const InventoryReceivingChangeForm = (props) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
-  const [dataError, setDataError] = useState([])
   const [baseProductOptions, setBaseProductOptions] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
@@ -53,7 +53,6 @@ const InventoryReceivingChangeForm = (props) => {
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-        setDataError([]);
         let datadetail = [];
         let dataFormDetails = form.getFieldValue("details");
         if (dataFormDetails != null) {
@@ -68,10 +67,10 @@ const InventoryReceivingChangeForm = (props) => {
           const element = jsonData[index];
           let loi = "";
           if ((!validNumber.test(element.soluong)) || (!validNumber.test(element.gia))) {
-            loi = "So luong va gia phai la so,  ";
+            loi = "Số lượng và giá phải là số,  ";
           }
           dataProduct.forEach(elementt => {
-            if (elementt.product_code == element.maSP || elementt.barcode == element.maSP) {
+            if (elementt.product_code.toLowerCase() == element.maSP.toLowerCase() || elementt.barcode == element.maSP) {
               if (validNumber.test(element.soluong) && validNumber.test(element.gia)) {
                 let unit = "";
                 let unitname = "";
@@ -115,7 +114,7 @@ const InventoryReceivingChangeForm = (props) => {
               // duration: 50,
             });
 
-            loi = loi + "Ma san pham khong chinh xac, ";
+            loi = loi + "Mã sản phẩm không chính xác, ";
           }
           if (loi != '') {
             dataerrorr.push({
@@ -131,10 +130,9 @@ const InventoryReceivingChangeForm = (props) => {
               message.success("Xong quá trình thêm dữ liệu");
               form.setFieldValue("details", datadetail)
             } else {
-              setDataError(dataerrorr);
               message.error("Dữ liệu lỗi!!");
               setTimeout(() => {
-                document.getElementById("excelExport").click();
+                exportDataError(dataerrorr);
               }, 500);
             }
           }
@@ -145,6 +143,31 @@ const InventoryReceivingChangeForm = (props) => {
       }
 
     }
+  };
+
+  const exportDataError = (data) => {
+    var ExcelJSWorkbook = new ExcelJS.Workbook();
+    var worksheet = ExcelJSWorkbook.addWorksheet("Data");
+
+    worksheet.addRow(["maSP", "soluong", "gia", "ghichu", "loi", "(Số lượng theo đơn vị cơ bản)"]);
+    let i = 2;
+    data.forEach(element => {
+      if (element.loi == "") {
+        worksheet.addRow([element.maSP, element.soluong, element.gia, element.ghichu, element.loi]);
+        i++;
+      } else {
+        worksheet.addRow([element.maSP, element.soluong, element.gia, element.ghichu, element.loi]);
+        worksheet.getRow(i).font = { color: {argb:'ffff0000'} };
+        i++;
+      }
+    });
+
+    ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+      saveAs(
+        new Blob([buffer], { type: "application/octet-stream" }),
+        `DataError.xlsx`
+      );
+    });
   };
 
   const enterLoading = (index) => {
@@ -266,14 +289,14 @@ const InventoryReceivingChangeForm = (props) => {
 
       await create(values)
     } else {
-      // if (is_status == "complete") {
-      //   if (values.status == "pending" || values.status == "cancel") {
-      //     message.error("Phiếu nhập hàng này đã hoàn thành không thể sửa trạng thái!")
-      //     stopLoading(idxBtnSave)
-      //     setDisableSubmit(false)
-      //     return;
-      //   }
-      // }
+      if (is_status == "complete") {
+        if (values.status == "pending" || values.status == "cancel") {
+          message.error("Phiếu nhập hàng này đã hoàn thành không thể sửa trạng thái!")
+          stopLoading(idxBtnSave)
+          setDisableSubmit(false)
+          return;
+        }
+      }
       // values.details = detailss;
       await update(values)
     }
@@ -292,7 +315,7 @@ const InventoryReceivingChangeForm = (props) => {
     try {
       const response = await api.inventory_receiving.get(id);
       const values = response.data.data;
-      // setStatus(values.status);
+      setStatus(values.status);
       // let details = values.details.map(elm => {
       //   let i = {
       //     "product": elm.product.id,
@@ -311,7 +334,7 @@ const InventoryReceivingChangeForm = (props) => {
         // elm.unit_exchange = elm.unit_exchange.unit_name;
         // elm.product = elm.product.id;
         // return elm;
-        elm.quantity_base_unit = String(elm.quantity_base_unit) + " " + elm.product.base_unit.name;
+        elm.quantity_base_unit = String(elm.quantity) + " " + elm.product.base_unit.name;
         elm.unit_exchange_obj = elm.unit_exchange
         elm.unit_exchange = elm.unit_exchange.unit_name
         elm.product_obj = elm.product
@@ -835,8 +858,6 @@ const InventoryReceivingChangeForm = (props) => {
 
         </ChangeForm>
       }
-
-      <CSVLink data={dataError} filename='dataerror.xlsx' id="excelExport"></CSVLink>
     </>
   )
 

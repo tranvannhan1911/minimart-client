@@ -36,15 +36,16 @@ const PromotionLineChangeForm = lazy(() => import("../promotion/promotion_line/c
 const OrderListForm = lazy(() => import("../order_list/listform"));
 const RefundListForm = lazy(() => import("../refund_list/listform"));
 const SellPage = lazy(() => import("../sell/sell"));
-const StatisticsOrderRefund = lazy(() => import("../statistics/order_refund"));
-const StatisticsProfitRevenue = lazy(() => import("../statistics/profit_revenue"));
+const StatisticsSales = lazy(() => import("../statistics/sales"));
+const StatisticsRefund = lazy(() => import("../statistics/refund"));
 const StatisticsReceived = lazy(() => import("../statistics/received"));
-const StatisticsRecord = lazy(() => import("../statistics/record"));
+const StatisticsPromotion = lazy(() => import("../statistics/promotion"));
+const StatisticsInventory = lazy(() => import("../statistics/inventory"));
 
 const CategoryListForm = lazy(() => import("../category/listform"));
 const CategoryChangeForm = lazy(() => import("../category/changeform"));
 
-const Dashboard= lazy(() => import("../dashboard/dashboard"));
+const Dashboard = lazy(() => import("../dashboard/dashboard"));
 
 const MyContent = (props) => {
     const [container, setContainer] = useState(null);
@@ -52,11 +53,11 @@ const MyContent = (props) => {
     const [breadcrumb_extras, setBreadcrumbExtras] = useState(null);
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState({})
-  
+
     useEffect(() => {
-      store.subscribe(() => {
-        setUserInfo(store.getState().user.info)
-      })
+        store.subscribe(() => {
+            setUserInfo(store.getState().user.info)
+        })
     }, [])
 
     const breadcrumbComponent = () => {
@@ -124,139 +125,139 @@ const MyContent = (props) => {
                     <Routes >
 
                         <Route path="" key="" element={<Dashboard title="Chung" />} />
-                        
+
                         <Route path={paths.customer.rlist} key={paths.customer.key}
-                            element={<CustomerListForm setBreadcrumb={setBreadcrumb}  {...props}/>} />
+                            element={<CustomerListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
                         <Route path={paths.customer.radd} key={paths.customer.key}
                             element={<CustomerChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props} />} />
                         <Route path={paths.customer.rchange} key={paths.customer.key}
                             element={<CustomerChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
 
                         <Route path={paths.staff.rlist} key={paths.staff.key}
-                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <StaffListForm setBreadcrumb={setBreadcrumb}  {...props}/>} />
+                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <StaffListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
                         <Route path={paths.staff.radd} key={paths.staff.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <StaffChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props} />} />
                         <Route path={paths.staff.rchange} key={paths.staff.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <StaffChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
 
 
                         <Route path={paths.customer_group.rlist} key={paths.customer_group.key}
-                            element={<CustomerGroupListForm setBreadcrumb={setBreadcrumb}  {...props}/>} />
+                            element={<CustomerGroupListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
                         <Route path={paths.customer_group.radd} key={paths.customer_group.key}
                             element={<CustomerGroupChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props} />} />
                         <Route path={paths.customer_group.rchange} key={paths.customer_group.key}
                             element={<CustomerGroupChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
 
                         <Route path={paths.supplier.rlist} key={paths.supplier.key}
-                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <SupplierListForm setBreadcrumb={setBreadcrumb}  {...props}/>} />
+                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <SupplierListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
                         <Route path={paths.supplier.radd} key={paths.supplier.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <SupplierChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props} />} />
                         <Route path={paths.supplier.rchange} key={paths.supplier.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <SupplierChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
 
                         <Route path={paths.product_group.rlist} key={paths.product_group.key}
-                            element={<ProductGroupListForm setBreadcrumb={setBreadcrumb}  {...props}/>} />
+                            element={<ProductGroupListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
                         <Route path={paths.product_group.radd} key={paths.product_group.key}
                             element={<ProductGroupChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props} />} />
                         <Route path={paths.product_group.rchange} key={paths.product_group.key}
                             element={<ProductGroupChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
 
                         <Route path={paths.unit.rlist} key={paths.unit.key}
-                            element={<UnitListForm setBreadcrumb={setBreadcrumb}  {...props}/>} />
+                            element={<UnitListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
                         <Route path={paths.unit.radd} key={paths.unit.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <UnitChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props} />} />
                         <Route path={paths.unit.rchange} key={paths.unit.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <UnitChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
 
                         <Route path={paths.product.rlist} key={paths.product.key}
-                            element={<ProductListForm setBreadcrumb={setBreadcrumb}  {...props}/>} />
+                            element={<ProductListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
                         <Route path={paths.product.radd} key={paths.product.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <ProductChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props} />} />
                         <Route path={paths.product.rchange} key={paths.product.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <ProductChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
 
                         <Route path={paths.price.rlist} key={paths.price.key}
-                            element={<PriceListForm setBreadcrumb={setBreadcrumb}  {...props}/>} />
+                            element={<PriceListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
                         <Route path={paths.price.radd} key={paths.price.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <PriceChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props} />} />
                         <Route path={paths.price.rchange} key={paths.price.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <PriceChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
 
                         <Route path={paths.inventory_receiving.rlist} key={paths.inventory_receiving.key}
-                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <InventoryReceivingListForm setBreadcrumb={setBreadcrumb}  {...props}/>} />
+                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <InventoryReceivingListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
                         <Route path={paths.inventory_receiving.radd} key={paths.inventory_receiving.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <InventoryReceivingChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props} />} />
                         <Route path={paths.inventory_receiving.rchange} key={paths.inventory_receiving.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <InventoryReceivingChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
 
                         <Route path={paths.inventory_record.rlist} key={paths.inventory_record.key}
-                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <InventoryRecordListForm setBreadcrumb={setBreadcrumb}  {...props}/>} />
+                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <InventoryRecordListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
                         <Route path={paths.inventory_record.radd} key={paths.inventory_record.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <InventoryRecordChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props} />} />
                         <Route path={paths.inventory_record.rchange} key={paths.inventory_record.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <InventoryRecordChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
 
                         <Route path={paths.warehouse_transaction.rlist} key={paths.warehouse_transaction.key}
-                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <WarehouseTransactionListForm setBreadcrumb={setBreadcrumb}  {...props}/>} />
+                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <WarehouseTransactionListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
 
                         <Route path={paths.promotion.rlist} key={paths.promotion.key}
-                            element={<PromotionListForm setBreadcrumb={setBreadcrumb}  {...props}/>} />
+                            element={<PromotionListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
                         <Route path={paths.promotion.radd} key={paths.promotion.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <PromotionChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props} />} />
                         <Route path={paths.promotion.rchange} key={paths.promotion.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <PromotionChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
 
                         <Route path={paths.promotion.raddline} key={paths.promotion.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <PromotionLineChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props}/>} />
+                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props} />} />
 
                         <Route path={paths.category.rlist} key={paths.category.key}
-                            element={<CategoryListForm setBreadcrumb={setBreadcrumb}  {...props}/>} />
+                            element={<CategoryListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
                         <Route path={paths.category.radd} key={paths.category.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <CategoryChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
@@ -273,19 +274,22 @@ const MyContent = (props) => {
                             element={<RefundListForm setBreadcrumb={setBreadcrumb} {...props} />} />
 
                         <Route path={paths.sell.rlist} key={paths.sell.key}
-                            element={<SellPage setBreadcrumb={setBreadcrumb} {...props}/>} />
+                            element={<SellPage setBreadcrumb={setBreadcrumb} {...props} />} />
 
-                        <Route path={paths.statistics_order_refund.rlist} key={paths.statistics_order_refund.key}
-                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <StatisticsOrderRefund setBreadcrumb={setBreadcrumb} {...props} />} />
+                        <Route path={paths.statistics_sales.rlist} key={paths.statistics_sales.key}
+                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <StatisticsSales setBreadcrumb={setBreadcrumb} {...props} />} />
 
-                        <Route path={paths.statistics_profit_revenue.rlist} key={paths.statistics_profit_revenue.key}
-                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <StatisticsProfitRevenue setBreadcrumb={setBreadcrumb} {...props} />} />
+                        <Route path={paths.statistics_refund.rlist} key={paths.statistics_refund.key}
+                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <StatisticsRefund setBreadcrumb={setBreadcrumb} {...props} />} />
 
-                        <Route path={paths.statistics_received.rlist} key={paths.statistics_received.key}
+                        <Route path={paths.statistics_promotion.rlist} key={paths.statistics_promotion.key}
+                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <StatisticsPromotion setBreadcrumb={setBreadcrumb} {...props} />} />
+
+                        <Route path={paths.statistics_receiving.rlist} key={paths.statistics_receiving.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <StatisticsReceived setBreadcrumb={setBreadcrumb} {...props} />} />
 
-                        <Route path={paths.statistics_record.rlist} key={paths.statistics_record.key}
-                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <StatisticsRecord setBreadcrumb={setBreadcrumb} {...props} />} />
+                        <Route path={paths.statistics_inventory.rlist} key={paths.statistics_inventory.key}
+                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <StatisticsInventory setBreadcrumb={setBreadcrumb} {...props} />} />
                     </Routes >
                 </Suspense>
             </Content>

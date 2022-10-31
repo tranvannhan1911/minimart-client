@@ -1,9 +1,11 @@
 import {
-  PlusOutlined, EditOutlined, DeleteOutlined, 
+  PlusOutlined, EditOutlined, DeleteOutlined,
   HistoryOutlined, LoadingOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, Select, message, 
-  Space, Popconfirm, DatePicker, Col, Row, Upload } from 'antd';
+import {
+  Button, Form, Input, Select, message,
+  Space, Popconfirm, DatePicker, Col, Row, Upload
+} from 'antd';
 
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
@@ -152,13 +154,28 @@ const PromotionChangeForm = (props) => {
       return;
     }
     if (values.end_date < values.start_date) {
-      message.error('Ngày kết thúc phải sau ngày bắt đầu');
-      stopLoading(idxBtnSave)
-      setDisableSubmit(false)
-      return;
+      if (values.start_date._d - values.end_date._d > 1) {
+        message.error('Ngày kết thúc phải sau hoặc cùng ngày bắt đầu');
+        stopLoading(idxBtnSave)
+        setDisableSubmit(false)
+        return;
+      }
+    }
+    if(values.status == null){
+      values.status = "true";
     }
     values.image = imageUrl;
     if (is_create) {
+      let datenow = new Date();
+      datenow = moment(datenow);
+      if (values.start_date < datenow) {
+        if (datenow + 0 > values.start_date + 24000000) {
+          message.error('Ngày bắt đầu không được sau ngày hiện tại');
+          stopLoading(idxBtnSave)
+          setDisableSubmit(false)
+          return;
+        }
+      }
       await create(values)
     } else {
       console.log(values.start_date._i)
@@ -348,7 +365,7 @@ const PromotionChangeForm = (props) => {
           forms={
             <><>
               <Row>
-              <Col span={1}></Col>
+                <Col span={1}></Col>
                 <Col span={10} style={{ backgroundColor: "white" }}>
                   <Form.Item label="Tiêu đề" name="title" required
                     rules={[
@@ -382,7 +399,7 @@ const PromotionChangeForm = (props) => {
                 </Col>
               </Row>
               <Row>
-              <Col span={1}></Col>
+                <Col span={1}></Col>
                 <Col span={10} style={{ backgroundColor: "white" }}>
                   <Form.Item label="Mô tả" name="description" required
                     rules={[
@@ -415,7 +432,7 @@ const PromotionChangeForm = (props) => {
                 </Col>
               </Row>
               <Row>
-              <Col span={1}></Col>
+                <Col span={1}></Col>
                 <Col span={10} style={{ backgroundColor: "white" }}>
                   <Form.Item label="Trạng thái" name="status" required
                     style={{
@@ -450,11 +467,11 @@ const PromotionChangeForm = (props) => {
                 </Col>
               </Row>
               <Row>
-              <Col span={1}></Col>
+                <Col span={1}></Col>
                 <Col span={10} style={{ backgroundColor: "white" }}>
                   <Form.Item label="Hình ảnh" name="image"
                     style={{
-                      textAlign: 'left' 
+                      textAlign: 'left'
                     }}>
                     <Upload
                       listType="picture-card"

@@ -1,7 +1,7 @@
 import {
     PlusOutlined, ImportOutlined,
     ExportOutlined, ReloadOutlined,
-    SearchOutlined
+    SearchOutlined, DownloadOutlined
 } from '@ant-design/icons';
 import { Button, Col, Row, Space, Input, message, Modal, DatePicker } from 'antd';
 import { Typography } from 'antd';
@@ -15,6 +15,8 @@ import messages from '../../../utils/messages'
 import axios from 'axios';
 import { ExportReactCSV } from '../../../utils/exportExcel';
 import ShowForPermission from '../../basic/permission';
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 const { RangePicker } = DatePicker;
 
 const WarehouseTransactionListForm = (props) => {
@@ -32,8 +34,7 @@ const WarehouseTransactionListForm = (props) => {
     const handleGetData = async () => {
         setLoading(true)
         try {
-            // const response = (await axios.get('https://63252b299075b9cbee471829.mockapi.io/api/warehouse-transaction')).data;
-            // const _data = response.map(elm => {
+            
             const response = await api.warehouse_transaction.list()
             console.log(response.data.data)
             const _data = response.data.data.results.map(elm => {
@@ -158,6 +159,68 @@ const WarehouseTransactionListForm = (props) => {
         setData(data_);
     }
 
+    /////////////////
+
+    const exportExcel = () => {
+        var ExcelJSWorkbook = new ExcelJS.Workbook();
+        var worksheet = ExcelJSWorkbook.addWorksheet("BienDongKho");
+
+        worksheet.mergeCells("A2:E2");
+
+        const customCell = worksheet.getCell("A2");
+        customCell.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 20,
+            underline: true,
+            bold: true,
+        };
+        customCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+        customCell.value = "Danh sách biến động kho";
+
+        let header = ["Mã biến động kho", "Sản phẩm", "Số lượng thay đổi", "Đơn vị tính", "Loại thay đổi","Mã đối tượng thay đổi","Ngày thay đổi", "Ghi chú"];
+
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+
+        worksheet.getRow(5).font = { bold: true };
+
+        for (let i = 0; i < 8; i++) {
+            let currentColumnWidth = "123";
+            worksheet.getColumn(i + 1).width =
+                currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
+            let cell = headerRow.getCell(i + 1);
+            cell.value = header[i];
+        }
+
+        worksheet.autoFilter = {
+            from: {
+                row: 5,
+                column: 1
+            },
+            to: {
+                row: 5,
+                column: 8
+            }
+        };
+
+        data.forEach(element => {
+            
+            worksheet.addRow([element.id, element.product, element.change, element.unit, element.type, element.reference, element.date_created, element.note]);
+        });
+
+        ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+            saveAs(
+                new Blob([buffer], { type: "application/octet-stream" }),
+                `DSBienDongKho.xlsx`
+            );
+        });
+    };
+
+    ////////////////
+
     return (
         <>
             {/* <ModalStaff >
@@ -169,16 +232,7 @@ const WarehouseTransactionListForm = (props) => {
                     <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
                     
                     <ShowForPermission >
-                        <ExportReactCSV csvData={data} fileName='warehousetransaction.xlsx' 
-                        header={[
-                            { label: 'Mã', key: 'id' },
-                            { label: 'Sản phẩm', key: 'product' },
-                            { label: 'Loại', key: 'type' },
-                            { label: 'Số lượng thay đổi', key: 'change' },
-                            { label: 'Ngày thay đổi', key: 'date_created' },
-                            { label: 'Ghi chú', key: 'note' },
-                        ]} 
-                        />
+                        <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                     </ShowForPermission>,
                     // <Button onClick={() => navigate(paths.staff.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
                 ]}

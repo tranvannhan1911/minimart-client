@@ -1,5 +1,5 @@
 import { RollbackOutlined, EyeOutlined, CloseCircleOutlined,SearchOutlined } from '@ant-design/icons';
-import { Button, Space, Table as AntdTable, Popconfirm, Tooltip, message, Tag, Input } from 'antd';
+import { Button, Space, Table as AntdTable, Popconfirm, Tooltip, message, Tag, Input, Typography } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
@@ -204,15 +204,26 @@ const OrderTable = (props) => {
       ...renderSearch(),
     },
     {
+      title: 'Khuyến mãi',
+      dataIndex: 'final_total',
+      key: 'final_total',
+      render: (final_total, record) => (
+        <Typography>{(record.total-record.final_total)?.toLocaleString()}</Typography>
+      ),
+    },
+    {
       title: 'Tổng tiền',
       dataIndex: 'final_total',
       key: 'final_total',
-      sorter: {
-        compare: (a, b) => a.final_total > b.final_total,
-        multiple: 1
-      },
-      defaultSortOrder: 'descend',
-      ...renderSearch(),
+      // sorter: {
+      //   compare: (a, b) => a.final_total > b.final_total,
+      //   multiple: 1
+      // },
+      // defaultSortOrder: 'descend',
+      render: (final_total, record) => (
+        <Typography>{record.final_total?.toLocaleString()}</Typography>
+      ),
+      // ...renderSearch(),
     },
     {
       title: 'Trạng thái',

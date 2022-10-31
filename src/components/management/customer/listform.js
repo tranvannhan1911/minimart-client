@@ -1,6 +1,6 @@
 import {
-    PlusOutlined, UploadOutlined, ReloadOutlined,
-    SearchOutlined
+    PlusOutlined, ReloadOutlined,
+    SearchOutlined, DownloadOutlined
 } from '@ant-design/icons';
 import { Button, Input, message, Upload } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
@@ -10,9 +10,9 @@ import api from '../../../api/apis'
 import { useNavigate } from 'react-router-dom'
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
-import { ExportReactCSV } from '../../../utils/exportExcel';
-import * as XLSX from 'xlsx';
 import ShowForPermission from '../../basic/permission';
+import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 
 
 const CustomerListForm = (props) => {
@@ -29,45 +29,7 @@ const CustomerListForm = (props) => {
     const navigate = useNavigate()
     const refSearch = useRef()
 
-    const uploadData = {
-        async beforeUpload(file) {
-            // console.log(file.name)
-            var typeFile = file.name.split('.').pop().toLowerCase();
-            if (typeFile == "xlsx" || typeFile == "csv") {
-                setLoading(true);
-                const data = await file.arrayBuffer();
-                const workbook = XLSX.read(data);
-
-                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet);
-                for (let index = 0; index < jsonData.length; index++) {
-                    const element = jsonData[index];
-                    const response = await api.customer.add({
-                        "phone": "0" + element.phone,
-                        "fullname": element.fullname,
-                        "gender": element.gender,
-                        "address": element.address,
-                        "note": element.note,
-                        "is_active": element.is_active,
-                        "customer_group": [
-
-                        ]
-                    });
-                    if (index == jsonData.length - 1) {
-                        console.log(index)
-                        message.success("Xong quá trình thêm dữ liệu");
-                        setLoading(false);
-                        handleGetData();
-                    }
-                }
-            } else {
-                message.error("Chỉ nhập dữ liệu bằng file .csv, .xlsx");
-                return;
-            }
-
-        }
-    };
-
+    
     const handleGetData = async () => {
         setLoading(true)
         try {
@@ -168,17 +130,84 @@ const CustomerListForm = (props) => {
         setData(data_);
     }
 
+    /////////////////
+
+    const exportExcel = () => {
+        var ExcelJSWorkbook = new ExcelJS.Workbook();
+        var worksheet = ExcelJSWorkbook.addWorksheet("KhachHang");
+
+        worksheet.mergeCells("A2:E2");
+
+        const customCell = worksheet.getCell("A2");
+        customCell.font = {
+            name: "Times New Roman",
+            family: 4,
+            size: 20,
+            underline: true,
+            bold: true,
+        };
+        customCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+        customCell.value = "Danh sách khách hàng";
+
+        let header = ["Mã khách hàng", "Tên khách hàng", "Số điện thoại", "Giới tính","Nhóm khách hàng", "Trạng thái", "Ghi chú"];
+
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+        var headerRow = worksheet.addRow();
+
+        worksheet.getRow(5).font = { bold: true };
+
+        for (let i = 0; i < 7; i++) {
+            let currentColumnWidth = "123";
+            worksheet.getColumn(i + 1).width =
+                currentColumnWidth !== undefined ? currentColumnWidth / 6 : 20;
+            let cell = headerRow.getCell(i + 1);
+            cell.value = header[i];
+        }
+
+        worksheet.autoFilter = {
+            from: {
+                row: 5,
+                column: 1
+            },
+            to: {
+                row: 5,
+                column: 7
+            }
+        };
+
+        data.forEach(element => {
+            let status ="";
+            if(element.is_active == true){
+                status ="Hoạt động";
+            }else{
+                status="Khóa";
+            }
+            let nhomkh="";
+            element.customer_group.forEach(elm => {
+                nhomkh += elm;
+            })
+            worksheet.addRow([element.id, element.fullname, element.phone, element.gender, nhomkh, status, element.note]);
+        });
+
+        ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+            saveAs(
+                new Blob([buffer], { type: "application/octet-stream" }),
+                `DSKhachHang.xlsx`
+            );
+        });
+    };
+
+    ////////////////
+
     return (
         <ListForm
             title="Khách hàng"
             actions={[
                 <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
-                
-                <Upload showUploadList={false} {...uploadData}>
-                    <Button icon={<UploadOutlined />}>Nhập Excel</Button>
-                </Upload>,
                 <ShowForPermission>
-                    <ExportReactCSV csvData={data} fileName='customer.xlsx' />
+                    <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                 </ShowForPermission>,
                 <Button onClick={() => navigate(paths.customer.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
             ]}

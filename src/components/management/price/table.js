@@ -70,7 +70,8 @@ const PriceTable = (props) => {
             "note": elementt.note,
             "product": elementt.product.name,
             "price": elementt.price,
-            "unit_exchange": elementt.unit_exchange.unit_name
+            "unit_exchange": elementt.unit_exchange.unit_name,
+            "product_obj": elementt.product
           }
           detail.push(ind);
         });

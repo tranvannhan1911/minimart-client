@@ -16,7 +16,7 @@ import {
   const { TextArea } = Input;
   const idCity = 0;
   
-  const StatisticsRecord = () => {
+  const StatisticsInventory = () => {
     // const navigate = useNavigate();
     // const [form] = Form.useForm();
     // const [loadings, setLoadings] = useState([]);
@@ -90,10 +90,10 @@ import {
     // }
   
     return (
-        <div><h3 style={{textAlign:'center'}}>Thống kê kiểm kê</h3></div>
+        <div><h3 style={{textAlign:'center'}}>Thống kê tồn kho</h3></div>
         
     )
   
   }
   
-  export default StatisticsRecord;
+  export default StatisticsInventory;
