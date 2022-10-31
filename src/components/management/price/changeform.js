@@ -43,6 +43,7 @@ const PriceChangeForm = (props) => {
   const [disableSubmit, setDisableSubmit] = useState(false);
   const [idxBtnSave, setIdxBtnSave] = useState([]);
   const [baseUnitOptions, setBaseUnitOptions] = useState([]);
+  const [currentUnitExchange, setCurrentUnitExchange] = useState([]);
   const [dataProduct, setDataProduct] = useState([]); // create
   const [dataUnit, setDataUnit] = useState([]); // create
   let { id } = useParams();
@@ -366,7 +367,7 @@ const PriceChangeForm = (props) => {
           key: elm.product.id,
           product: elm.product.id,
           product_name: elm.product.name,
-          unit_exchange: elm.unit_exchange.id,
+          unit_exchange: elm.unit_exchange.unit_name,
           unit_exchange_name: elm.unit_exchange.unit_name,
           unit_exchange_value: elm.unit_exchange.value,
           unit_exchange_value_str: `${elm.unit_exchange.value} ${elm.product.base_unit.name}`,
@@ -374,6 +375,7 @@ const PriceChangeForm = (props) => {
           price: elm.price,
           note: elm.note,
         }
+        setCurrentUnitExchange([...currentUnitExchange, elm.unit_exchange.unit_name])
         return i;
       });
       values.start_date = moment(values.start_date)
@@ -436,10 +438,10 @@ const PriceChangeForm = (props) => {
         const elm = unit_exchange[i]
         elm.unit_exchange_value = elm.value
         delete elm.value
-        // console.log("handleDataBaseUnit", elm, disable_base_unit && elm.is_base_unit)
-        if (disable_base_unit && elm.is_base_unit) {
-          continue;
-        }
+        // // console.log("handleDataBaseUnit", elm, disable_base_unit && elm.is_base_unit)
+        // if (disable_base_unit && elm.is_base_unit) {
+        //   continue;
+        // }
         options.push(
           <Option key={elm.id} value={elm.id} {...elm}>{elm.unit_name}</Option>
         )
@@ -505,7 +507,7 @@ const PriceChangeForm = (props) => {
 
   const onSelectProduct = async (product_id, add) => {
     const response = await api.product.get(product_id)
-    console.log("onSelectProduct", response.data)
+    // console.log("onSelectProduct", response.data)
     if (response.data.code == 1) {
       // console.log(response.data.data)
       const product = response.data.data
@@ -515,31 +517,58 @@ const PriceChangeForm = (props) => {
           base_unit_exchange = elm
         }
       })
+      product.base_unit_exchange = base_unit_exchange
 
-      if (!checkUnitAvail(base_unit_exchange.id, product.id)) {
-        message.error("Sản phẩm và đã tồn tại!")
+      var unitAvail = null;
+      if (checkUnitAvail(base_unit_exchange.id, product.id)) {
+        unitAvail = base_unit_exchange;
+      }
+      
+      var _unitAvail = getUnitAvail(product)
+      if(!unitAvail && !_unitAvail){
+        message.error("Sản phẩm và đơn vị tính đã tồn tại!")
         return
+      }else{
+        unitAvail = _unitAvail
       }
-      for (var i = 0; i < product.units.length; i++) {
-        const value = {
-          ...product,
-          _product: product,
-          key: product.id,
-          product: product.id,
-          product_name: product.name,
-          unit_exchange: product.units[i].id,
-          unit_exchange_value: product.units[i].value,
-          unit_exchange_value_str: `${product.units[i].value} ${base_unit_exchange.unit_name}`,
-          unit_exchange_name: product.units[i].unit_name,
-          disable_unit: true,
-          price: 0,
-        }
-        if (product.units[i].id == base_unit_exchange.id) {
-          value.is_base_unit = true
-        }
-        add(value)
+      
+      const value = {
+        ...product,
+        _product: product,
+        key: product.id,
+        product: product.id,
+        product_name: product.name,
+        unit_exchange: unitAvail.id,
+        unit_exchange_value: unitAvail.value,
+        unit_exchange_value_str: `${unitAvail.value} ${base_unit_exchange.unit_name}`,
+        unit_exchange_name: unitAvail.unit_name,
+        disable_unit: false,
+        is_base_unit: unitAvail.id == base_unit_exchange.id,
+        price: 0,
+      }
+      add(value)
+      handleDataBaseUnit(product.units)
+      setCurrentUnitExchange([...currentUnitExchange, unitAvail.id])
+      // for (var i = 0; i < product.units.length; i++) {
+      //   const value = {
+      //     ...product,
+      //     _product: product,
+      //     key: product.id,
+      //     product: product.id,
+      //     product_name: product.name,
+      //     unit_exchange: product.units[i].id,
+      //     unit_exchange_value: product.units[i].value,
+      //     unit_exchange_value_str: `${product.units[i].value} ${base_unit_exchange.unit_name}`,
+      //     unit_exchange_name: product.units[i].unit_name,
+      //     disable_unit: true,
+      //     price: 0,
+      //   }
+      //   if (product.units[i].id == base_unit_exchange.id) {
+      //     value.is_base_unit = true
+      //   }
+      //   add(value)
 
-      }
+      // }
     } else {
       message.error(messages.ERROR_REFRESH)
     }
@@ -551,7 +580,7 @@ const PriceChangeForm = (props) => {
       return true
 
     for (var i = 0; i < pricedetails.length; i++) {
-      console.log("checkUnitAvail", pricedetails[i], unit_exchange)
+      // console.log("checkUnitAvail", pricedetails[i], unit_exchange)
       if (pricedetails[i].id == product_id && pricedetails[i].unit_exchange == unit_exchange) {
         return false
       }
@@ -575,14 +604,30 @@ const PriceChangeForm = (props) => {
       const pricedetails = form.getFieldValue("pricedetails")
       const currentRecord = pricedetails[name]
       for (var i = 0; i < pricedetails.length; i++) {
-        console.log("onUnitSelect", pricedetails[i], value)
+        // console.log("onUnitSelect", pricedetails[i], value)
         if (i != name && pricedetails[i].id == currentRecord.id) {
           if (pricedetails[i].unit_exchange == value) {
+            pricedetails[name].unit_exchange = currentUnitExchange[name]
             message.error("Đã tồn tại sản phẩm với đơn vị tính này")
-            return
+            break
           }
         }
       }
+      const _currentUnitExchange = [...currentUnitExchange]
+      _currentUnitExchange[name] = pricedetails[name].unit_exchange
+      setCurrentUnitExchange(_currentUnitExchange)
+      pricedetails[name]._product.units.forEach(ux => {
+        // console.log(ux, ux.id == pricedetails[name].unit_exchange)
+        if(ux.id == pricedetails[name].unit_exchange){
+          pricedetails[name].unit_exchange_value = ux.unit_exchange_value
+          pricedetails[name].unit_exchange_value_str = `${ux.unit_exchange_value} ${pricedetails[name]._product.base_unit_exchange.unit_name}`
+          pricedetails[name].unit_exchange_name = ux.unit_name
+          pricedetails[name].is_base_unit = ux.id == pricedetails[name]._product.base_unit_exchange.id
+        }
+      })
+      
+      // pricedetails[name] = 
+      form.setFieldValue("pricedetails", pricedetails)
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -730,10 +775,7 @@ const PriceChangeForm = (props) => {
                       }}>
                         {fields.map(({ key, name, ...restField }) => (
                           <>
-                            <Row style={{
-                              borderTop: `${form.getFieldValue("pricedetails")[name].is_base_unit ? '1px solid #eee' : '0px'}`,
-                              paddingTop: `${form.getFieldValue("pricedetails")[name].is_base_unit ? '10px' : '0px'}`,
-                            }}>
+                            <Row>
                               <Col span={1}></Col>
                               <Col span={2}>
                                 <Form.Item
@@ -768,6 +810,29 @@ const PriceChangeForm = (props) => {
                               <Col span={4}>
                                 <Form.Item
                                   {...restField}
+                                  name={[name, 'unit_exchange']}
+                                  style={{
+                                    textAlign: 'left'
+                                  }}
+                                >
+                                  <Select
+                                    showSearch
+                                    placeholder="Đơn vị tính"
+                                    optionFilterProp="children"
+                                    filterOption={(input, option) => option.children.includes(input)}
+                                    filterSort={(optionA, optionB) => optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())}
+
+                                    disabled={is_create ? false : true}
+                                    onChange={(value) => onUnitSelect(value, name)}
+                                    value={currentUnitExchange[name]}
+                                  >
+                                    {baseUnitOptions[name]}
+                                  </Select>
+                                </Form.Item>
+                              </Col>
+                              {/* <Col span={4}>
+                                <Form.Item
+                                  {...restField}
                                   name={[name, 'unit_exchange_name']}
                                   rules={[
                                     {
@@ -781,10 +846,10 @@ const PriceChangeForm = (props) => {
                                   }}
                                 >
                                   <Input
-                                    disabled={true}
+                                    disabled={false}
                                     className='inputDisableText' />
                                 </Form.Item>
-                              </Col>
+                              </Col> */}
                               <Col span={1}></Col>
                               <Col span={4}>
                                 <Form.Item
@@ -808,6 +873,11 @@ const PriceChangeForm = (props) => {
                                       required: true,
                                       message: 'Vui lòng nhập giá!',
                                     },
+                                    {
+                                      type: 'number',
+                                      min: 1,
+                                      message: 'Giá phải lớn hơn 0!',
+                                    }
                                   ]}
                                 >
                                   <InputNumber
@@ -821,7 +891,7 @@ const PriceChangeForm = (props) => {
                                         const _pricedetails = form.getFieldValue("pricedetails")
                                         const product_id = _pricedetails[name]._product.id
                                         for (var i = _pricedetails.length - 1; i >= 0; i--) {
-                                          console.log(_pricedetails[i])
+                                          // console.log(_pricedetails[i])
                                           if (_pricedetails[i]._product.id == product_id) {
                                             // remove(i);
                                             _pricedetails[i].price = value * _pricedetails[i].unit_exchange_value
@@ -833,31 +903,34 @@ const PriceChangeForm = (props) => {
                                 </Form.Item>
                               </Col>
                               <Col span={1}>
-                                {
-                                  form.getFieldValue("pricedetails")[name].is_base_unit ?
-                                    <Popconfirm
-                                      placement="bottomRight"
-                                      title="Xác nhận xóa bảng giá này"
-                                      onConfirm={() => {
-                                        const _pricedetails = form.getFieldValue("pricedetails")
-                                        const product_id = _pricedetails[name]._product.id
-                                        for (var i = _pricedetails.length - 1; i >= 0; i--) {
-                                          if (_pricedetails[i]._product.id == product_id) {
-                                            remove(i);
-                                          }
-                                        }
-                                      }}
-                                      okText="Đồng ý"
-                                      okType="danger"
-                                      cancelText="Hủy bỏ"
-                                      disabled={is_create ? false : true}
-                                    >
-                                      <MinusCircleOutlined />
-                                    </Popconfirm>
-                                    :
-                                    null
-                                }
-
+                                
+                                <Popconfirm
+                                  placement="bottomRight"
+                                  title="Xác nhận xóa bảng giá này"
+                                  onConfirm={() => {
+                                    remove(name);
+                                    var _baseUnitOptions = [...baseUnitOptions];
+                                    _baseUnitOptions.splice(name, 1);
+                                    setBaseUnitOptions(_baseUnitOptions);
+                                    var _currentUnitExchange = [...currentUnitExchange];
+                                    _currentUnitExchange.splice(name, 1);
+                                    setCurrentUnitExchange(_currentUnitExchange);
+                                    // const _pricedetails = form.getFieldValue("pricedetails")
+                                    // const product_id = _pricedetails[name]._product.id
+                                    // for (var i = _pricedetails.length - 1; i >= 0; i--) {
+                                    //   if (_pricedetails[i]._product.id == product_id) {
+                                    //     remove(i);
+                                    //   }
+                                    // }
+                                  }}
+                                  okText="Đồng ý"
+                                  okType="danger"
+                                  cancelText="Hủy bỏ"
+                                  disabled={is_create ? false : true}
+                                >
+                                  <MinusCircleOutlined />
+                                </Popconfirm>
+                                
                               </Col>
                               <Col span={1}></Col>
                             </Row></>
