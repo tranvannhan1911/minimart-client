@@ -110,10 +110,12 @@ const OrderItem = (props) => {
                     stock: response.data.data.stock,
                     _base_unit_exchange: base_unit_exchange,
                     unit_exchange: base_unit_exchange.id,
+                    previous_unit_exchange: base_unit_exchange.id,
                     unit_exchange_value: 1,
                     price: base_unit_exchange.price,
                     total: base_unit_exchange.price,
                     promotion_line: null // default 
+
                 };
                 setNumberDe(numberDe + 1);
                 setCurrentProduct(index)
@@ -145,12 +147,15 @@ const OrderItem = (props) => {
         const _productlist = form.getFieldValue("productlist")
         if(item.price == null){
             message.error("Không có giá của đơn vị tính này !!")
-            // return;
+            _productlist[name].unit_exchange = _productlist[name].previous_unit_exchange
+            form.setFieldValue("productlist", _productlist);
+            return
         }
         _productlist[name].price = item.price
         _productlist[name].total = item.price * _productlist[name].quantity
         _productlist[name].unit_exchange_value = item.unit_exchange_value
         _productlist[name].quantity_base_unit = _productlist[name].unit_exchange_value * _productlist[name].quantity
+        _productlist[name].previous_unit_exchange = item.id
         updateQuantity(_productlist[name].quantity, name)
         form.setFieldValue("productlist", _productlist);
         calculateTotalAmount(_productlist);
