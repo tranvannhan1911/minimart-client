@@ -268,6 +268,7 @@ const PromotionLineModal = (props) => {
             <Form.Item
               name="title"
               label="Tiêu đề"
+              required
               rules={[
                 {
                   required: true,
@@ -275,7 +276,7 @@ const PromotionLineModal = (props) => {
                 },
               ]}
             >
-              <Input placeholder="Hãy nhập tiêu đề khuyến mãi" />
+              <Input placeholder="Hãy nhập tiêu đề khuyến mãi" required/>
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -293,7 +294,7 @@ const PromotionLineModal = (props) => {
                 },
               ]}
             >
-              <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} />
+              <DatePicker required format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
         </Row>
@@ -559,7 +560,13 @@ const PromotionLineModal = (props) => {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item
+            
+          </Col>
+        </Row>
+
+        <Row gutter={16}>
+          <Col span={12}>
+          <Form.Item
               name='product_received' label='Sản phẩm khuyến mãi'
               style={{ display: typeIndex == 'Product' ? 'block' : "" || typeIndex == 'Fixed' ? 'none' : "" || typeIndex == 'Percent' ? 'none' : "" }}
               rules={[
@@ -586,10 +593,8 @@ const PromotionLineModal = (props) => {
                 {baseProductOptions}
               </Select>
             </Form.Item>
+            
           </Col>
-        </Row>
-
-        <Row gutter={16}>
           <Col span={12}>
             <Form.Item
               name='quantity_received' label="Số lượng khuyến mãi"
@@ -597,15 +602,12 @@ const PromotionLineModal = (props) => {
               rules={[
                 {
                   required: true,
-                  message: 'Vui lòng nhập số lượng nhân!',
+                  message: 'Vui lòng nhập số lượng nhận!',
                 },
               ]}
             >
               <Input placeholder="Số lượng nhận" type='number' min='0' disabled={is_create ? false : true} />
             </Form.Item>
-          </Col>
-          <Col span={12}>
-
           </Col>
         </Row>
 

@@ -451,7 +451,7 @@ const PromotionChangeForm = (props) => {
                 </Col>
                 <Col span={2}></Col>
                 <Col span={10} style={{ backgroundColor: "white" }}>
-                  <Form.Item label="Nhóm khách hàng áp dụng" name="applicable_customer_groups" required
+                  <Form.Item label="Nhóm khách hàng áp dụng" name="applicable_customer_groups"
                   >
                     <Select
                       mode="multiple"
