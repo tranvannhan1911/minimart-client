@@ -24,6 +24,7 @@ const ProductSelect = (props) => {
         try {
           const response = await api.product.list();
           var results = response.data.data.results
+          console.log("data list ->>>>>>>>>>", results)
           if(props.sellable){
             results = results.filter(elm => {
               return elm.have_price && elm.stock > 0;
