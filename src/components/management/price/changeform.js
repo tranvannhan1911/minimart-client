@@ -534,15 +534,15 @@ const PriceChangeForm = (props) => {
       if (checkUnitAvail(base_unit_exchange.id, product.id)) {
         unitAvail = base_unit_exchange;
       }
-      
+
       var _unitAvail = getUnitAvail(product)
-      if(!unitAvail && !_unitAvail){
+      if (!unitAvail && !_unitAvail) {
         message.error("Sản phẩm và đơn vị tính đã tồn tại!")
         return
-      }else{
+      } else {
         unitAvail = _unitAvail
       }
-      
+
       const value = {
         ...product,
         _product: product,
@@ -629,14 +629,14 @@ const PriceChangeForm = (props) => {
       setCurrentUnitExchange(_currentUnitExchange)
       pricedetails[name]._product.units.forEach(ux => {
         // console.log(ux, ux.id == pricedetails[name].unit_exchange)
-        if(ux.id == pricedetails[name].unit_exchange){
+        if (ux.id == pricedetails[name].unit_exchange) {
           pricedetails[name].unit_exchange_value = ux.unit_exchange_value
           pricedetails[name].unit_exchange_value_str = `${ux.unit_exchange_value} ${pricedetails[name]._product.base_unit_exchange.unit_name}`
           pricedetails[name].unit_exchange_name = ux.unit_name
           pricedetails[name].is_base_unit = ux.id == pricedetails[name]._product.base_unit_exchange.id
         }
       })
-      
+
       // pricedetails[name] = 
       form.setFieldValue("pricedetails", pricedetails)
     } catch (error) {
@@ -655,6 +655,19 @@ const PriceChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <><>
+              {is_create ? null :
+                <Row>
+                  <Col span={1}></Col>
+                  <Col span={10} style={{ backgroundColor: "white" }}>
+                    <Form.Item label="Mã id bảng giá" name="price_list_id">
+                      <Input name="price_list_id" disabled={true} className="inputBorderDisableText"/>
+                    </Form.Item>
+                  </Col>
+                  <Col span={2}></Col>
+                  <Col span={10} style={{ backgroundColor: "white" }}>
+                  </Col>
+                </Row>
+              }
               <Row>
                 <Col span={1}></Col>
                 <Col span={10}>
@@ -914,7 +927,7 @@ const PriceChangeForm = (props) => {
                                 </Form.Item>
                               </Col>
                               <Col span={1}>
-                                
+
                                 <Popconfirm
                                   placement="bottomRight"
                                   title="Xác nhận xóa bảng giá này"
@@ -941,7 +954,7 @@ const PriceChangeForm = (props) => {
                                 >
                                   <MinusCircleOutlined />
                                 </Popconfirm>
-                                
+
                               </Col>
                               <Col span={1}></Col>
                             </Row></>

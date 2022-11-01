@@ -242,6 +242,19 @@ const CustomerChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <>
+              {is_create ? null :
+                <Row>
+                  <Col span={1}></Col>
+                  <Col span={10} style={{ backgroundColor: "white" }}>
+                    <Form.Item label="Mã id khách hàng" name="id">
+                      <Input name="id" disabled={true} className="inputBorderDisableText"/>
+                    </Form.Item>
+                  </Col>
+                  <Col span={2}></Col>
+                  <Col span={10} style={{ backgroundColor: "white" }}>
+                  </Col>
+                </Row>
+              }
               <Row>
                 <Col span={1}></Col>
                 <Col span={10}>

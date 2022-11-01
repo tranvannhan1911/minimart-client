@@ -273,6 +273,7 @@ const StaffTable = (props) => {
     {
       title: '',
       dataIndex: 'id',
+      width: '10%',
       key: 'id',
       render: (id, record) => (
         <Space>

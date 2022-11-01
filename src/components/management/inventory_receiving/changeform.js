@@ -457,17 +457,19 @@ const InventoryReceivingChangeForm = (props) => {
 
     if (is_create == false) {
       props.setBreadcrumbExtras([
-        <Popconfirm
-          placement="bottomRight"
-          title="Xác nhận xóa phiếu nhập hàng này"
-          onConfirm={_delete}
-          okText="Đồng ý"
-          okType="danger"
-          cancelText="Hủy bỏ"
-        >
-          <Button type="danger" icon={<DeleteOutlined />}
-          >Xóa</Button>
-        </Popconfirm>,
+        <ShowForPermission>
+          <Popconfirm
+            placement="bottomRight"
+            title="Xác nhận xóa phiếu nhập hàng này"
+            onConfirm={_delete}
+            okText="Đồng ý"
+            okType="danger"
+            cancelText="Hủy bỏ"
+          >
+            <Button type="danger" icon={<DeleteOutlined />}
+            >Xóa</Button>
+          </Popconfirm>
+        </ShowForPermission>,
         // <Button type="info" icon={<HistoryOutlined />}
         // >Lịch sử chỉnh sửa</Button>
         <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.inventory_receiving.list) }}
@@ -560,6 +562,20 @@ const InventoryReceivingChangeForm = (props) => {
               >
                 <Input value={0} />
               </Form.Item>
+              
+              {is_create ? null :
+                <Row>
+                  <Col span={1}></Col>
+                  <Col span={10} style={{ backgroundColor: "white" }}>
+                    <Form.Item label="Mã id phiếu nhập hàng" name="id">
+                      <Input name="id" disabled={true} className="inputBorderDisableText"/>
+                    </Form.Item>
+                  </Col>
+                  <Col span={2}></Col>
+                  <Col span={10} style={{ backgroundColor: "white" }}>
+                  </Col>
+                </Row>
+              }
               <Row>
                 <Col span={1}></Col>
                 <Col span={10}>
