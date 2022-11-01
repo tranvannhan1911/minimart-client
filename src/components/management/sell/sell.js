@@ -168,9 +168,9 @@ const SellPage = () => {
             activeKey={activeKey}
             onEdit={onEdit}
             items={items}
-            tabBarExtraContent={{
-                right: <Button type="info" icon={<ExpandOutlined />}>Mở rộng</Button>
-            }}
+            // tabBarExtraContent={{
+            //     right: <Button type="info" icon={<ExpandOutlined />}>Mở rộng</Button>
+            // }}
         />
     );
 };
