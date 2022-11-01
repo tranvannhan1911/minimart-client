@@ -256,6 +256,7 @@ const OrderRefundModal = (props) => {
       title="Tạo đơn trả hàng"
       centered
       visible={props.open}
+      okType="danger"
       onOk={() => onSave()}
       onCancel={() => onExit()}
       width={900}
