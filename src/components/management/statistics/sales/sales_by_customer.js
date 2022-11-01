@@ -110,9 +110,12 @@ const StatisticsSalesByCustomer = () => {
             title: 'Mã KH',
             dataIndex: 'name',
             key: 'name',
-            render: (product, record) => (
-                <Typography>{`${record.user_created.code}`}</Typography>
-            ),
+            render: (product, record) => {
+                console.log("record", record)
+                return (
+                    <Typography>{`${record.customer?.id}`}</Typography>
+                )
+            },
         },
         {
             title: 'Tên KH',
