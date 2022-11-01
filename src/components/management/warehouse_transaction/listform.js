@@ -52,44 +52,42 @@ const WarehouseTransactionListForm = (props) => {
 
 
                 console.log("elm", elm)
-                if (elm.reference) {
-                    let reference = '';
-                    let link = "";
-                    if (elm.type.type == "promotion") {
-                        reference = "";
-                    } else if (elm.type.type == "order" || elm.type.type == "order_cancel") {
-                        if (elm.reference == null) {
-                            reference = "";
-                        } else {
-                            reference = elm.reference.order;
-                        }
-                    } else if (elm.type.type == "inventory_receiving" || elm.type.type == "inventory_receiving_cancel") {
-                        reference = elm.reference.receiving_voucher
-                    } else if (elm.type.type == "refund") {
-                        reference = elm.reference.receiving_voucher
-                    } else if (elm.type.type == "inventory" || elm.type.type == "inventory_cancel") {
-                        reference = elm.reference.receiving_voucher
-                    }
+                // if (elm.reference) {
+                //     let reference = '';
+                //     let link = "";
+                //     if (elm.type.type == "order" || elm.type.type == "order_cancel" || elm.type.type == "promotion") {
+                //         if (elm.reference == null) {
+                //             reference = "";
+                //         } else {
+                //             reference = elm.reference.order;
+                //         }
+                //     } else if (elm.type.type == "inventory_receiving" || elm.type.type == "inventory_receiving_cancel") {
+                //         reference = elm.reference.receiving_voucher
+                //     } else if (elm.type.type == "refund") {
+                //         reference = elm.reference.order_refund
+                //     } else if (elm.type.type == "inventory" || elm.type.type == "inventory_cancel") {
+                //         reference = elm.reference.receiving_voucher
+                //     }
 
-                    let elmm = {
-                        key: elm.id,
-                        id: elm.id,
-                        unit: elm.product.base_unit.name,
-                        product: elm.product.name,
-                        change: elm.change > 0 ? `+${elm.change}` : elm.change,
-                        date_created: date + " " + time,
-                        reference: reference,
-                        type: elm.type.type_name,
-                        note: elm.note,
-                        link: link
-                    }
-                    return elmm;
-                }
+                //     let elmm = {
+                //         key: elm.id,
+                //         id: elm.id,
+                //         unit: elm.product.base_unit.name,
+                //         product: elm.product.name,
+                //         change: elm.change > 0 ? `+${elm.change}` : elm.change,
+                //         date_created: date + " " + time,
+                //         reference: reference,
+                //         type: elm.type.type_name,
+                //         note: elm.note,
+                //         link: link
+                //     }
+                //     return elmm;
+                // }
+                elm.unit = elm.product.base_unit.name
                 elm.product_obj = elm.product;
                 elm.product = elm.product.name;
                 elm.type = elm.type.type_name;
                 elm.change = elm.change > 0 ? `+${elm.change}` : elm.change;
-                // elm.reference = elm.product.base_unit.name;
                 return elm
             })
             setData(_data)
