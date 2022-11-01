@@ -13,12 +13,13 @@ const OrderTable = (props) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [openDetails, setOpenDetails] = useState(false);
-  const [dataIndex, setDataIndex] = useState("");
+  const [dataIndex, setDataIndex] = useState({});
   const [idIndex, setIdIndex] = useState("");
   const [currentCountData, SetCurrentCountData] = useState(0);
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef(null);
+  const [wantCancel, setWantCancel] = useState(false);
 
   const handleChange = (pagination, filters, sorter, extras) => {
     console.log('Various parameters\n', pagination, filters, sorter);
@@ -245,39 +246,40 @@ const OrderTable = (props) => {
         <Space>
           <Button
             type="text"
-            onClick={() => onOpenDetails(key)}
+            onClick={() => {
+              
+              setWantCancel(false)
+              onOpenDetails(key)
+            }}
             icon={<EyeOutlined />}></Button>
           {
             record.status != "complete" ? null :
-              <Popconfirm
-                title="Trả đơn hàng này?"
-                onConfirm={() => onOpen(key)}
-                okText="Đồng ý"
-                okType="danger"
-                cancelText="Không"
-              >
-                <Tooltip placement="right" title="Trả hàng">
+              // <Popconfirm
+              //   title="Trả đơn hàng này?"
+              //   onConfirm={() => onOpen(key)}
+              //   okText="Đồng ý"
+              //   okType="danger"
+              //   cancelText="Không"
+              // >
+                <Tooltip placement="top" title="Trả hàng">
                   <Button
                     type="text"
-                    icon={<RollbackOutlined style={{ color: 'red' }} />}></Button>
+                    icon={<RollbackOutlined />}
+                    onClick={() => onOpen(key)}></Button>
                 </Tooltip>
-              </Popconfirm>
+              // </Popconfirm>
           }
           {
             record.status != "complete" ? null :
-              <Popconfirm
-                title="Hủy hóa đơn này?"
-                onConfirm={() => onOrderCancel(record)}
-                okText="Đồng ý"
-                okType="danger"
-                cancelText="Không"
-              >
-                <Tooltip placement="right" title="Hủy hóa đơn">
+                <Tooltip placement="top" title="Hủy hóa đơn">
                   <Button
                     type="text"
-                    icon={<CloseCircleOutlined style={{ color: 'red' }} />}></Button>
+                    icon={<CloseCircleOutlined />}
+                    onClick={() => {
+                      setWantCancel(true)
+                      onOpenDetails(key)
+                    }}></Button>
                 </Tooltip>
-              </Popconfirm>
           }
         </Space>
       ),
@@ -319,7 +321,12 @@ const OrderTable = (props) => {
         setOpen={setOpen}
         idOrder={idIndex}
         handleGetData={props.handleGetData} />
-      <OrderDetailModal openDetails={openDetails} data={dataIndex} setOpenDetails={setOpenDetails} />
+      <OrderDetailModal 
+        openDetails={openDetails} 
+        data={dataIndex} 
+        setOpenDetails={setOpenDetails}
+        handleGetData={props.handleGetData} 
+        wantCancel={wantCancel}/>
     </>
   );
 };
