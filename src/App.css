@@ -87,6 +87,11 @@
   border: none!important;
 }
 
+.inputBorderDisableText{
+  background-color: white!important;
+  color: black!important;
+}
+
 .sb{
   display: flex;
   justify-content: space-between;

@@ -1,7 +1,7 @@
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined
 } from '@ant-design/icons';
-import { Button, Form, Input, message, Space, Popconfirm } from 'antd';
+import { Button, Form, Input, message, Space, Popconfirm, Row, Col } from 'antd';
 
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
@@ -41,7 +41,7 @@ const CustomerGroupChangeForm = (props) => {
       { title: "Nhóm khách hàng", href: paths.customer_group.list },
       { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
 
-    if (is_create==false) {
+    if (is_create == false) {
       props.setBreadcrumbExtras([
         <ShowForPermission>
           <Popconfirm
@@ -72,7 +72,7 @@ const CustomerGroupChangeForm = (props) => {
   useEffect(() => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
-  
+
   const handleData = async () => {
     setLoadingData(true)
     try {
@@ -155,7 +155,7 @@ const CustomerGroupChangeForm = (props) => {
     }
     return false
   }
-  
+
   const _delete = async () => {
     try {
       const response = await api.customer_group.delete(id)
@@ -207,16 +207,40 @@ const CustomerGroupChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <>
-              <Form.Item label="Tên nhóm khách hàng" name="name" required
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng nhập tên nhóm khách hàng!',
-                  },
-                ]}
-              >
-                <Input autoFocus ref={refAutoFocus} />
-              </Form.Item>
+              {is_create ?
+                <Form.Item label="Tên nhóm khách hàng" name="name" required
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Vui lòng nhập tên nhóm khách hàng!',
+                    },
+                  ]}
+                >
+                  <Input autoFocus ref={refAutoFocus} />
+                </Form.Item>
+                :
+                <Row>
+                  <Col span={11} style={{ backgroundColor: "white" }}>
+                    <Form.Item label="Mã id nhóm khách hàng" name="id">
+                      <Input name="id" disabled={true} className="inputBorderDisableText" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={2}></Col>
+                  <Col span={11} style={{ backgroundColor: "white" }}>
+                    <Form.Item label="Tên nhóm khách hàng" name="name" required
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng nhập tên nhóm khách hàng!',
+                        },
+                      ]}
+                    >
+                      <Input autoFocus ref={refAutoFocus} />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              }
+
               <Form.Item label="Mô tả" name="description">
                 <TextArea rows={4} />
               </Form.Item>

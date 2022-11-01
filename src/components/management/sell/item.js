@@ -114,7 +114,8 @@ const OrderItem = (props) => {
                     unit_exchange_value: 1,
                     price: base_unit_exchange.price,
                     total: base_unit_exchange.price,
-                    promotion_line: null // default 
+                    promotion_line: null, // default 
+                    // note: ""
 
                 };
                 setNumberDe(numberDe + 1);
@@ -516,7 +517,7 @@ const OrderItem = (props) => {
                             <Col style={titleCol} span={2}>
                                 <Typography.Text>Mã SP</Typography.Text>
                             </Col>
-                            <Col style={titleCol} span={5}>
+                            <Col style={titleCol} span={7}>
                                 <Typography.Text>Sản phẩm</Typography.Text>
                             </Col>
                             <Col style={titleCol} span={3}>
@@ -528,12 +529,12 @@ const OrderItem = (props) => {
                             <Col style={titleCol} span={3}>
                                 <Typography.Text>Số lượng</Typography.Text>
                             </Col>
-                            <Col style={titleCol} span={3}>
+                            <Col style={titleCol} span={4}>
                                 <Typography.Text>Thành tiền</Typography.Text>
                             </Col>
-                            <Col style={titleCol} span={3}>
+                            {/* <Col style={titleCol} span={3}>
                                 <Typography.Text>Ghi chú</Typography.Text>
-                            </Col>
+                            </Col> */}
                             <Col span={2}></Col>
                         </Row>
                         {fields.map(({ key, name, ...restField }) => (
@@ -560,7 +561,7 @@ const OrderItem = (props) => {
                                             className='inputDisableText' />
                                     </Form.Item>
                                 </Col>
-                                <Col span={5} style={{ paddingRight: '5px' }}>
+                                <Col span={7} style={{ paddingRight: '5px' }}>
                                     <Form.Item
                                         {...restField}
                                         name={[name, 'product']}
@@ -681,7 +682,7 @@ const OrderItem = (props) => {
                                             disabled={productData[name].promotion_by_product_id ? true : false} />
                                     </Form.Item>
                                 </Col>
-                                <Col span={3} style={col}>
+                                <Col span={4} style={col}>
                                     <Form.Item
                                         {...restField}
                                         name={[name, 'total']}
@@ -690,14 +691,14 @@ const OrderItem = (props) => {
                                             className='inputDisableText' />
                                     </Form.Item>
                                 </Col>
-                                <Col span={3} style={col}>
+                                {/* <Col span={3} style={col}>
                                     <Form.Item
                                         {...restField}
                                         name={[name, 'note']}
                                     >
                                         <Input placeholder="Ghi chú" />
                                     </Form.Item>
-                                </Col>
+                                </Col> */}
                                 <Col span={2}>
 
                                     <Form.Item

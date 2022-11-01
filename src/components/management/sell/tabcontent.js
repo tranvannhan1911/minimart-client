@@ -117,6 +117,7 @@ const TabContent = (props) => {
                 promotion: (plOrder ? plOrder.id : null),
             }
             const _listProduct = listProduct.map(item => {
+                console.log("item", item)
                 const _item = {
                     product: item.id,
                     quantity: Number(item.quantity),

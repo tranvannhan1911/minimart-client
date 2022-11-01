@@ -49,6 +49,7 @@ const InventoryRecordChangeForm = (props) => {
   const listPrice = [];
   const [unit, setUnit] = useState("")
   const [quantity, setQuantity] = useState("")
+  const [dataPrimary, setDataPrimary] = useState({});
 
 
   const uploadData = {
@@ -145,7 +146,7 @@ const InventoryRecordChangeForm = (props) => {
     var ExcelJSWorkbook = new ExcelJS.Workbook();
     var worksheet = ExcelJSWorkbook.addWorksheet("Data");
 
-    worksheet.addRow(["maSP", "soluong", "ghichu", "loi", "","","","(Số lượng theo đơn vị cơ bản)"]);
+    worksheet.addRow(["maSP", "soluong", "ghichu", "loi", "", "", "", "(Số lượng theo đơn vị cơ bản)"]);
     let i = 2;
     data.forEach(element => {
       if (element.loi == "") {
@@ -304,6 +305,7 @@ const InventoryRecordChangeForm = (props) => {
       const response = await api.inventory_record.get(id);
       const values = response.data.data
       setStatus(values.status);
+      setDataPrimary(response.data.data)
       // values.start_date = moment(values.start_date)
       // values.status = values.status.toString()
       // values.end_date = moment(values.end_date)
@@ -459,6 +461,10 @@ const InventoryRecordChangeForm = (props) => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
 
+  useEffect(() => {
+    console.log("dataPrimary", dataPrimary)
+  }, [dataPrimary])
+
   const onSelectProduct = async (product_id, add) => {
 
     if (form.getFieldValue("details")) {
@@ -513,6 +519,19 @@ const InventoryRecordChangeForm = (props) => {
           forms={
             <><>
             </>
+              {is_create ? null :
+                <Row>
+                  <Col span={1}></Col>
+                  <Col span={10} style={{ backgroundColor: "white" }}>
+                    <Form.Item label="Mã id phiếu kiểm kê" name="id">
+                      <Input name="id" disabled={true} className="inputBorderDisableText" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={2}></Col>
+                  <Col span={10} style={{ backgroundColor: "white" }}>
+                  </Col>
+                </Row>
+              }
               <Row>
                 <Col span={1}></Col>
                 <Col span={10}>
