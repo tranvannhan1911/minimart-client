@@ -49,6 +49,7 @@ const InventoryRecordChangeForm = (props) => {
   const listPrice = [];
   const [unit, setUnit] = useState("")
   const [quantity, setQuantity] = useState("")
+  const [dataPrimary, setDataPrimary] = useState({});
 
 
   const uploadData = {
@@ -304,6 +305,7 @@ const InventoryRecordChangeForm = (props) => {
       const response = await api.inventory_record.get(id);
       const values = response.data.data
       setStatus(values.status);
+      setDataPrimary(response.data.data)
       // values.start_date = moment(values.start_date)
       // values.status = values.status.toString()
       // values.end_date = moment(values.end_date)
@@ -458,6 +460,10 @@ const InventoryRecordChangeForm = (props) => {
   useEffect(() => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
+
+  useEffect(() => {
+    console.log("dataPrimary", dataPrimary)
+  }, [dataPrimary])
 
   const onSelectProduct = async (product_id, add) => {
 

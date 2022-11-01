@@ -31,6 +31,7 @@ const InventoryReceivingChangeForm = (props) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
+  const [data, setData] = useState();
   const [baseProductOptions, setBaseProductOptions] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
   const [disableSubmit, setDisableSubmit] = useState(false);
@@ -258,10 +259,11 @@ const InventoryReceivingChangeForm = (props) => {
   }
 
   const _delete = async () => {
-    if (form.getFieldValue("status") != "pending") {
-      message.error("Chỉ xóa được phiếu nhập hàng ở trạng thái tạo mới");
-      return;
-    }
+    // console.log("_delete", form.getFieldValue("status"), data, is_status)
+    // if (form.getFieldValue("status") != "pending") {
+    //   message.error("Chỉ xóa được phiếu nhập hàng ở trạng thái tạo mới");
+    //   return;
+    // }
     try {
       const response = await api.inventory_receiving.delete(id)
       if (response.data.code == 1) {
@@ -269,7 +271,7 @@ const InventoryReceivingChangeForm = (props) => {
         navigate(paths.inventory_receiving.list)
         return true
       } else {
-        message.error(messages.inventory_receiving.ERROR_DELETE(id))
+        message.error("Chỉ xóa được phiếu nhập hàng ở trạng thái tạo mới")
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -316,12 +318,16 @@ const InventoryReceivingChangeForm = (props) => {
     stopLoading(0)
   };
 
+  const setDataVoucher = (values) => {
+    setStatus(values.status);
+    setData(values)
+  }
+
   const handleData = async () => {
     setLoadingData(true)
     try {
       const response = await api.inventory_receiving.get(id);
       const values = response.data.data;
-      setStatus(values.status);
       // let details = values.details.map(elm => {
       //   let i = {
       //     "product": elm.product.id,
@@ -350,6 +356,9 @@ const InventoryReceivingChangeForm = (props) => {
       })
 
       form.setFieldsValue(values)
+      // console.log("setData", values)
+      // // setDataVoucher(values)
+      // setData({...values})
 
     } catch (error) {
       message.error(messages.ERROR)
@@ -594,6 +603,7 @@ const InventoryReceivingChangeForm = (props) => {
                       style={{
                         width: '100%',
                       }}
+                      name="status"
                     >
                       <Option value="pending">Tạo mới</Option>
                       <Option value="complete">Hoàn thành</Option>
