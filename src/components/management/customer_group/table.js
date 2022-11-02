@@ -184,6 +184,7 @@ const CustomerGroupTable = (props) => {
       //   selectedRowKeys,
       //   onChange: onSelectChange
       // }} 
+      bordered
       size='small'
       columns={columns} 
       dataSource={props.data} 

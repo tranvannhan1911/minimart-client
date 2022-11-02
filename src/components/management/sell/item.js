@@ -11,12 +11,14 @@ import PromotionPicker from './promotion/modal';
 const { Option } = Select;
 
 const col = {
-    padding: '0 5px'
+    padding: '0 5px', 
+    borderRight: '1px solid #eee' 
 }
 
 const titleCol = {
     paddingLeft: '11px',
-    fontWeight: 500
+    fontWeight: 500,
+    borderRight: '1px solid #eee'
 }
 
 
@@ -505,7 +507,10 @@ const OrderItem = (props) => {
             <Form.List name="productlist" label="Sanpham">
                 {(fields, { add, remove }) => (
                     <>
-                        <Form.Item>
+                        <Form.Item 
+                            style={{
+                                marginBottom: '10px'
+                            }}>
                             <ProductSelect
                                 onSelectProduct={(value) => onSelectProduct(value, add)}
                                 sellable={true} />
@@ -547,32 +552,36 @@ const OrderItem = (props) => {
                 }}
                 align="baseline"
             > */}
-                                <Col span={2} style={{ paddingRight: '5px' }}>
+                                <Col span={2} style={{ paddingRight: '5px', borderRight: '1px solid #eee' }}>
                                     <Form.Item
                                         {...restField}
                                         name={[name, '_product', 'product_code']}
                                         style={{
-                                            textAlign: 'left'
+                                            textAlign: 'left',
+                                            marginBottom: '10px'
                                         }}
                                     >
                                         <Input
                                             disabled={true}
                                             placeholder="Sản phẩm"
-                                            className='inputDisableText' />
+                                            className='inputDisableText'
+                                            size='small'/>
                                     </Form.Item>
                                 </Col>
-                                <Col span={7} style={{ paddingRight: '5px' }}>
+                                <Col span={7} style={{ paddingRight: '5px', borderRight: '1px solid #eee'  }}>
                                     <Form.Item
                                         {...restField}
                                         name={[name, 'product']}
                                         style={{
-                                            textAlign: 'left'
+                                            textAlign: 'left',
+                                            marginBottom: '10px'
                                         }}
                                     >
                                         <Input
                                             disabled={true}
                                             placeholder="Sản phẩm"
-                                            className='inputDisableText' />
+                                            className='inputDisableText'
+                                            size='small' />
                                     </Form.Item>
                                 </Col>
                                 <Col span={3} style={col}>
@@ -585,6 +594,10 @@ const OrderItem = (props) => {
                                                 message: 'Vui lòng chọn đơn vị tính',
                                             },
                                         ]}
+                                        style={{
+                                            textAlign: 'left',
+                                            marginBottom: '10px'
+                                        }}
                                     >
                                         <Select
                                             showSearch
@@ -598,6 +611,7 @@ const OrderItem = (props) => {
                                                 changeUnitExchange(item, name, key)
 
                                             }}
+                                            size='small'
                                             // onChange={(value) => {
                                             //     console.log("onechange", productData[name].unit_exchange, value)
                                             //     var flag = true;
@@ -638,11 +652,16 @@ const OrderItem = (props) => {
                                                 message: 'Giá bán không được để trống',
                                             },
                                         ]}
+                                        style={{
+                                            textAlign: 'left',
+                                            marginBottom: '10px'
+                                        }}
                                     >
                                         <Input
                                             placeholder="Giá"
                                             disabled={true}
-                                            className='inputDisableText' />
+                                            className='inputDisableText'
+                                            size='small' />
                                     </Form.Item>
                                 </Col>
                                 <Col span={3} style={col}>
@@ -652,14 +671,16 @@ const OrderItem = (props) => {
                                         {...restField}
                                         name={[name, 'quantity_base_unit']}
                                     >
-                                        <Input type="hidden" />
+                                        <Input type="hidden"
+                                            size='small' />
                                     </Form.Item>
                                     <Form.Item
                                         style={{ display: 'none' }}
                                         {...restField}
                                         name={[name, 'unit_exchange_value']}
                                     >
-                                        <Input type="hidden" />
+                                        <Input type="hidden"
+                                            size='small' />
                                     </Form.Item>
                                     <Form.Item
                                         {...restField}
@@ -670,6 +691,10 @@ const OrderItem = (props) => {
                                                 message: 'Số lượng không được bỏ trống',
                                             },
                                         ]}
+                                        style={{
+                                            textAlign: 'left',
+                                            marginBottom: '10px'
+                                        }}
                                     >
                                         <Input
                                             type="number"
@@ -679,6 +704,7 @@ const OrderItem = (props) => {
                                             onChange={(e) => {
                                                 updateQuantity(e.target.value, name)
                                             }}
+                                            size='small'
                                             disabled={productData[name].promotion_by_product_id ? true : false} />
                                     </Form.Item>
                                 </Col>
@@ -686,9 +712,14 @@ const OrderItem = (props) => {
                                     <Form.Item
                                         {...restField}
                                         name={[name, 'total']}
+                                        style={{
+                                            textAlign: 'left',
+                                            marginBottom: '10px'
+                                        }}
                                     >
                                         <Input placeholder="Thành tiền" disabled={true}
-                                            className='inputDisableText' />
+                                            className='inputDisableText'
+                                            size='small' />
                                     </Form.Item>
                                 </Col>
                                 {/* <Col span={3} style={col}>
@@ -706,7 +737,8 @@ const OrderItem = (props) => {
                                         {...restField}
                                         name={[name, 'promotion_line']}
                                     >
-                                        <Input type="hidden" />
+                                        <Input type="hidden"
+                                            size='small' />
                                     </Form.Item>
                                     
                                     <Form.Item
@@ -714,7 +746,8 @@ const OrderItem = (props) => {
                                         {...restField}
                                         name={[name, 'promotion_by_product_id']}
                                     >
-                                        <Input type="hidden" />
+                                        <Input type="hidden"
+                                            size='small' />
                                     </Form.Item>
                                     {!ableApplyPromotion(name) ? null :
                                         <>

@@ -109,6 +109,13 @@ const TabContent = (props) => {
             message.error("Vui lòng nhập số tiền khách đưa!")
             return;
         }
+
+        for(var i=0; i<listProduct.length; i++){
+            if(Number(listProduct[i].quantity) <= 0){
+                message.error("Không thể tạo hóa đơn, tồn tại sản phẩm số lượng không hợp lệ!")
+                return
+            }
+        }
         setDisabledCreateOrder(true)
         try {
             const info = {
@@ -334,7 +341,10 @@ const TabContent = (props) => {
                         disabledCreateOrder={disabledCreateOrder} />
                 </Col>
                 <Col span={6} style={{ paddingLeft: '10px', borderLeft: '1px solid #eee' }}>
-                    <Form.Item label="Nhân viên bán hàng" name="user_created" >
+                    <Form.Item label="Nhân viên bán hàng" name="user_created" 
+                            style={{
+                                marginBottom: '10px'
+                            }}>
                         <Select
                             showSearch
                             style={{
@@ -350,7 +360,10 @@ const TabContent = (props) => {
                             {staffOptions}
                         </Select>
                     </Form.Item>
-                    <Form.Item label="Khách hàng" name="customer" >
+                    <Form.Item label="Khách hàng" name="customer" 
+                            style={{
+                                marginBottom: '10px'
+                            }}>
                         <Select
                             showSearch
                             allowClear
@@ -389,7 +402,8 @@ const TabContent = (props) => {
                     </Form.Item>
                     {/* <Divider/> */}
                     <Form.Item label="Khuyến mãi" name="promotion" style={{
-                        textAlign: 'left'
+                        textAlign: 'left',
+                        marginBottom: '10px'
                     }}>
                         <span style={{
                             cursor: 'pointer',
@@ -416,11 +430,17 @@ const TabContent = (props) => {
 
                     </Form.Item>
 
-                    <Form.Item label="Ghi chú" name="note" >
+                    <Form.Item label="Ghi chú" name="note" 
+                            style={{
+                                marginBottom: '10px'
+                            }}>
                         <TextArea rows={1}
                             disabled={disabledCreateOrder} />
                     </Form.Item>
-                    <Form.Item>
+                    <Form.Item
+                            style={{
+                                marginBottom: '10px'
+                            }}>
                         <div className='sb'>
                             <span>Tạm tính</span>
                             <span>{totalProduct.toLocaleString()} đ</span>
@@ -436,7 +456,7 @@ const TabContent = (props) => {
                     </Form.Item>
                     <div className='sb'>
                         <div style={{width:"60%"}}>
-                            <Form.Item label="Tiền khách đưa" name='money_given' style={{width:"100%"}}>
+                            <Form.Item label="Tiền khách đưa" name='money_given' style={{width:"100%", marginBottom: '10px'}}>
                                 <InputNumber step={1000} min={total} value={moneyGiven} style={{width:"100%"}} onChange={(value) => {
                                     setMoneyGiven(value)
                                     calculateMoneyChange(value)
@@ -444,12 +464,15 @@ const TabContent = (props) => {
                             </Form.Item>
                         </div>
                         <div style={{width:"40%"}}>
-                            <Form.Item label=" ">
+                            <Form.Item label=" "
+                            style={{
+                                marginBottom: '10px'
+                            }}>
                                 <span>Trả lại {moneyChange.toLocaleString()}đ</span>
                             </Form.Item>
                         </div>
                     </div>
-                    <Form.Item style={{ width: '100%' }}>
+                    <Form.Item style={{ width: '100%', marginBottom: '10px' }}>
                     {/* <Space> */}
                         <Button
                             type="primary"

@@ -165,9 +165,8 @@ const OrderTable = (props) => {
       with: '10%',
       sorter: {
         compare: (a, b) => a.key > b.key,
-        multiple: 1
+        // multiple: 1
       },
-      defaultSortOrder: 'descend',
       filteredValue: props.searchInfo || null,
       onFilter: (value, record) => {
         return (record.customer && record.customer.toLowerCase().includes(value.toLowerCase()))
@@ -185,7 +184,7 @@ const OrderTable = (props) => {
       with: '20%',
       sorter: {
         compare: (a, b) => a.user_created.toLowerCase().localeCompare(b.user_created.toLowerCase()),
-        multiple: 2
+        // multiple: 2
       },
       ...renderSearch(),
       ...getColumnSearchProps('nhân viên')
@@ -203,6 +202,16 @@ const OrderTable = (props) => {
       dataIndex: 'date_created',
       key: 'date_created',
       ...renderSearch(),
+      // defaultSortOrder: 'descend',
+      // sorter: {
+      //   compare: (a, b) => {
+      //     var d1 = new Date(a.date_created);
+      //     var d2 = new Date(b.date_created);
+      //     console.log(d1, d2, d1 > d2)
+      //     return d1 > d2
+      //   },
+      //   // multiple: 1
+      // }
     },
     {
       title: 'Khuyến mãi',

@@ -158,6 +158,7 @@ const Table = (props) => {
         />
       </Space>
       <AntdTable 
+        bordered
         rowSelection={rowSelection} 
         columns={columns} 
         dataSource={data} 
