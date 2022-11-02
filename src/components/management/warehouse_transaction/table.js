@@ -287,6 +287,7 @@ const WarehouseTransactionTable = (props) => {
         //   onChange: onSelectChange
         // }}
         size='small'
+        bordered
         columns={columns}
         dataSource={props.data}
         onChange={handleChange}
