@@ -17,7 +17,7 @@ const ChangePassword = () => {
     // let history = useHistory();
     const navigate = useNavigate();
     const [loadings, setLoadings] = useState([]);
-    const [password, setPassword]= useState("");
+    const [password, setPassword] = useState("");
     // const [mess, setMess]= useState("Vui lòng nhập mật khẩu mới!");
 
     const testResult = zxcvbn(password);
@@ -83,7 +83,7 @@ const ChangePassword = () => {
     };
 
     const onFinish = async (values) => {
-        values.new_password= password;
+        values.new_password = password;
         if (!validPhone.test(values.phone)) {
             message.error('Số điện thoại không hợp lệ! Số điện thoại bao gồm 10 ký tự số bắt đầu là 84 hoặc 03, 05, 07, 08, 09');
             stopLoading(0);
@@ -110,7 +110,7 @@ const ChangePassword = () => {
             return;
         }
 
-        if (testResult.score == 1 || testResult.score==0) {
+        if (testResult.score == 1 || testResult.score == 0) {
 
             message.error('Vui lòng chọn mật khẩu an toàn hơn');
             stopLoading(0);
@@ -147,111 +147,139 @@ const ChangePassword = () => {
     };
 
     return (
-        <Row justify="space-around" align="middle" style={{
-            height: '100vh'
-        }}>
-            <Col span={8} xs={18} sm={14} md={10} lg={8} style={{ backgroundColor: "white", padding: "50px", borderRadius: "10px" }}>
-                <Title level={2} style={{ marginBottom: '20px' }}>
-                    Đổi mật khẩu
-                </Title>
-                <Form
-                    name="normal_login"
-                    className="login-form"
-                    initialValues={{
-                        remember: true,
-                    }}
-                    onFinish={onFinish}
-                >
-                    <Form.Item
-                        name="phone"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Vui lòng nhập số điện thoại!',
-                            },
-                        ]}
-                    >
-                        <Input
-                            size="large"
-                            prefix={<PhoneOutlined className="site-form-item-icon" />}
-                            placeholder="Số điện thoại"
-                            autoFocus />
-                    </Form.Item>
-                    <Form.Item
-                        name="old_password"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Vui lòng nhập mật khẩu cũ!',
-                            },
-                        ]}
-                    >
-                        <Input.Password
-                            size="large"
-                            prefix={<LockOutlined className="site-form-item-icon" />}
-                            type="password"
-                            placeholder="Mật khẩu cũ"
-                        />
-                    </Form.Item>
-                    <Form.Item
-                        name="new_password"
-                        style={{
-                            marginBottom:'0px'
+        <>
+            <div style={{
+                backgroundImage: `url(${require("../../assets/bg.jpg")})`,
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: 'cover',
+                position: 'absolute',
+                top: '0',
+                left: '0',
+                height: '100vh',
+                width: '100vw',
+                filter: 'brightness(0.5)'
+            }}>
+            </div>
+            <Row justify="space-around" align="middle" style={{
+                height: '100vh'
+            }}>
+                <Col span={8} xs={18} sm={14} md={10} lg={8} style={{}}>
+                    <div style={{
+                        transform: 'translateY(-90px)'
+                    }}>
+                        <img style={{
+                            filter: 'invert(1)',
+                            width: '150px'
+                        }} src={require('../../assets/logo.png')}></img>
+                        <Title level={2} style={{
+                            color: 'white'
+                        }}>Công ty Siêu thị mini NT</Title>
+                    </div>
+                </Col>
+                <Col span={8} xs={18} sm={14} md={10} lg={8} style={{ backgroundColor: "white", padding: "50px", borderRadius: "10px" }}>
+                    <Title level={2} style={{ marginBottom: '20px' }}>
+                        Đổi mật khẩu
+                    </Title>
+                    <Form
+                        name="normal_login"
+                        className="login-form"
+                        initialValues={{
+                            remember: true,
                         }}
+                        onFinish={onFinish}
+                    >
+                        <Form.Item
+                            name="phone"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Vui lòng nhập số điện thoại!',
+                                },
+                            ]}
+                        >
+                            <Input
+                                size="large"
+                                prefix={<PhoneOutlined className="site-form-item-icon" />}
+                                placeholder="Số điện thoại"
+                                autoFocus />
+                        </Form.Item>
+                        <Form.Item
+                            name="old_password"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Vui lòng nhập mật khẩu cũ!',
+                                },
+                            ]}
+                        >
+                            <Input.Password
+                                size="large"
+                                prefix={<LockOutlined className="site-form-item-icon" />}
+                                type="password"
+                                placeholder="Mật khẩu cũ"
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name="new_password"
+                            style={{
+                                marginBottom: '0px'
+                            }}
                         // rules={[
                         //     {
                         //         required: true,
                         //         message: "Vui lòng nhập mật khẩu mới!",
                         //     },
                         // ]}
-                    >
-                        <Input.Password
-                            size="large"
-                            prefix={<LockOutlined className="site-form-item-icon" />}
-                            type="password"
-                            placeholder="Mật khẩu mới"
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <div className="progress" style={{ height: '7px' }}>
-                            <div className="progress-bar" style={changePasswordColor()}></div>
-                        </div>
-                        <p style={{ color: funcProgressColor(), textAlign:'right', marginTop:'0px' }}>{createPassLabel()}</p>
-                    </Form.Item>
-                    
-                    <Form.Item
-                        name="repeat_password"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Vui lòng lặp lại mật khẩu mới!',
-                            },
-                        ]}
-                    >
-                        <Input.Password
-                            size="large"
-                            prefix={<LockOutlined className="site-form-item-icon" />}
-                            type="password"
-                            placeholder="Lặp lại mật khẩu mới"
-                        />
-                    </Form.Item>
+                        >
+                            <Input.Password
+                                size="large"
+                                prefix={<LockOutlined className="site-form-item-icon" />}
+                                type="password"
+                                placeholder="Mật khẩu mới"
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <div className="progress" style={{ height: '7px' }}>
+                                <div className="progress-bar" style={changePasswordColor()}></div>
+                            </div>
+                            <p style={{ color: funcProgressColor(), textAlign: 'right', marginTop: '0px' }}>{createPassLabel()}</p>
+                        </Form.Item>
 
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" className="login-form-button" size="large"
-                            loading={loadings[0]} onClick={() => enterLoading(0)}>
-                            Đổi mật khẩu
-                        </Button>
-                    </Form.Item>
+                        <Form.Item
+                            name="repeat_password"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Vui lòng lặp lại mật khẩu mới!',
+                                },
+                            ]}
+                        >
+                            <Input.Password
+                                size="large"
+                                prefix={<LockOutlined className="site-form-item-icon" />}
+                                type="password"
+                                placeholder="Lặp lại mật khẩu mới"
+                            />
+                        </Form.Item>
 
-                    <p>
-                        <Space>
-                            <Link to="/dang-nhap">Đăng nhập ngay</Link>
-                            hoặc
-                            <Link to="/quen-mat-khau">Lấy lại mật khẩu</Link>
-                        </Space>
-                    </p>
-                </Form>
-            </Col>
-        </Row >
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" className="login-form-button" size="large"
+                                loading={loadings[0]} onClick={() => enterLoading(0)}>
+                                Đổi mật khẩu
+                            </Button>
+                        </Form.Item>
+
+                        <p>
+                            <Space>
+                                <Link to="/dang-nhap">Đăng nhập ngay</Link>
+                                hoặc
+                                <Link to="/quen-mat-khau">Lấy lại mật khẩu</Link>
+                            </Space>
+                        </p>
+                    </Form>
+                </Col>
+            </Row >
+        </>
     )
 }
 

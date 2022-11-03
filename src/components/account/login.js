@@ -89,65 +89,94 @@ const Login = () => {
     };
 
     return (
-        <Row justify="space-around" align="middle" style={{
-            height: '100vh'
-        }}>
-            <Col span={8} xs={18} sm={14} md={10} lg={8} style={{ backgroundColor: "white", padding: "50px", borderRadius: "10px" }}>
-                <Title level={2} style={{ marginBottom: '20px' }}>
-                    Đăng nhập
-                </Title>
-                <Form
-                    name="normal_login"
-                    className="login-form"
-                    initialValues={{
-                        remember: true,
-                    }}
-                    onFinish={onFinish}
-                >
-                    <Form.Item
-                        name="phone"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Vui lòng nhập số điện thoại!',
-                            },
-                        ]}
-                    >
-                        <Input
-                            size="large"
-                            ref={phoneRef}
-                            prefix={<PhoneOutlined className="site-form-item-icon" />}
-                            placeholder="Số điện thoại"
-                            autoFocus />
-                    </Form.Item>
-                    <Form.Item
-                        name="password"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Vui lòng nhập mật khẩu!',
-                            },
-                        ]}
-                    >
-                        <Input.Password
-                            size="large"
-                            ref={passwordRef}
-                            prefix={<LockOutlined className="site-form-item-icon" />}
-                            type="password"
-                            placeholder="Mật khẩu"
-                        />
-                    </Form.Item>
+        <>
+            <div style={{
+                backgroundImage: `url(${require("../../assets/bg.jpg")})`,
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: 'cover',
+                position: 'absolute',
+                top: '0',
+                left: '0',
+                height: '100vh',
+                width: '100vw',
+                filter: 'brightness(0.5)'
+            }}>
+            </div>
+            <Row justify="space-around" align="middle" style={{
+                height: '100vh',
 
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" className="login-form-button" size="large"
-                            loading={loadings[0]} onClick={() => enterLoading(0)}>
-                            Đăng nhập
-                        </Button>
-                    </Form.Item>
-                    <p>Quên mật khẩu ? <Link to="/quen-mat-khau">Lấy lại mật khẩu</Link> </p>
-                </Form>
-            </Col>
-        </Row >
+            }}>
+                <Col span={8} xs={18} sm={14} md={10} lg={8} style={{}}>
+                    <div style={{
+                        transform: 'translateY(-90px)'
+                    }}>
+                        <img style={{
+                            filter: 'invert(1)',
+                            width: '150px'
+                        }} src={require('../../assets/logo.png')}></img>
+                        <Title level={2} style={{
+                            color: 'white'
+                        }}>Công ty Siêu thị mini NT</Title>
+                    </div>
+                </Col>
+                <Col span={8} xs={18} sm={14} md={10} lg={8} style={{ backgroundColor: "white", padding: "50px", borderRadius: "10px" }}>
+                    <Title level={2} style={{ marginBottom: '20px' }}>
+                        Đăng nhập
+                    </Title>
+                    <Form
+                        name="normal_login"
+                        className="login-form"
+                        initialValues={{
+                            remember: true,
+                        }}
+                        onFinish={onFinish}
+                    >
+                        <Form.Item
+                            name="phone"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Vui lòng nhập số điện thoại!',
+                                },
+                            ]}
+                        >
+                            <Input
+                                size="large"
+                                ref={phoneRef}
+                                prefix={<PhoneOutlined className="site-form-item-icon" />}
+                                placeholder="Số điện thoại"
+                                autoFocus />
+                        </Form.Item>
+                        <Form.Item
+                            name="password"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Vui lòng nhập mật khẩu!',
+                                },
+                            ]}
+                        >
+                            <Input.Password
+                                size="large"
+                                ref={passwordRef}
+                                prefix={<LockOutlined className="site-form-item-icon" />}
+                                type="password"
+                                placeholder="Mật khẩu"
+                            />
+                        </Form.Item>
+
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" className="login-form-button" size="large"
+                                loading={loadings[0]} onClick={() => enterLoading(0)}>
+                                Đăng nhập
+                            </Button>
+                        </Form.Item>
+                        <p>Quên mật khẩu ? <Link to="/quen-mat-khau">Lấy lại mật khẩu</Link> </p>
+                    </Form>
+                </Col>
+            </Row >
+        </>
     )
 }
 
