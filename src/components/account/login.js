@@ -3,7 +3,7 @@ import {
 } from '@ant-design/icons'
 import { Button, Col, Row, Checkbox, Form, Input, message } from 'antd'
 import { Typography } from 'antd'
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { AccountApi } from "../../api/apis"
@@ -20,6 +20,10 @@ const Login = () => {
     const passwordRef = useRef();
     const navigate = useNavigate();
     const [loadings, setLoadings] = useState([]);
+
+    useEffect(() => {
+        document.title = "Đăng nhập - Quản lý siêu thị mini NT"
+    }, [])
 
     const enterLoading = (index) => {
         setLoadings((prevLoadings) => {

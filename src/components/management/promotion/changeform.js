@@ -37,6 +37,10 @@ const PromotionChangeForm = (props) => {
   const [is_create, setCreate] = useState(null); // create
   const refAutoFocus = useRef(null)
 
+  useEffect(() => {
+    document.title = "Chương trình khuyến mãi - Quản lý siêu thị mini NT"
+  }, [])
+
   const handleDataCustomerGroup = async () => {
     setLoadingData(true)
     try {
@@ -394,7 +398,8 @@ const PromotionChangeForm = (props) => {
                       },
                     ]}
                   >
-                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} />
+                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} 
+                      defaultValue={moment()} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -427,7 +432,8 @@ const PromotionChangeForm = (props) => {
                       },
                     ]}
                   >
-                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} />
+                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} 
+                      defaultValue={moment()}/>
                   </Form.Item>
                 </Col>
               </Row>

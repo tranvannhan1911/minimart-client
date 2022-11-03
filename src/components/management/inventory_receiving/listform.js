@@ -31,6 +31,10 @@ const InventoryReceivingListForm = (props) => {
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
+    useEffect(() => {
+      document.title = "Phiếu nhập hàng - Quản lý siêu thị mini NT"
+    }, [])
+
     const handleGetData = async () => {
         setLoading(true)
         try {

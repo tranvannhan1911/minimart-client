@@ -26,6 +26,10 @@ const StaffListForm = (props) => {
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
+    useEffect(() => {
+      document.title = "Nhân viên - Quản lý siêu thị mini NT"
+    }, [])
+
     
     const handleGetData = async () => {
         setLoading(true)

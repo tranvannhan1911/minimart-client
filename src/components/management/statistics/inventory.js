@@ -25,6 +25,10 @@ const StatisticsInventory = () => {
   const [date, setDate] = useState([]);
 
   useEffect(() => {
+    document.title = "Thống kê tồn kho - Quản lý siêu thị mini NT"
+  }, [])
+
+  useEffect(() => {
     onThongKe();
   }, [])
   // const navigate = useNavigate();

@@ -3,7 +3,7 @@ import {
 } from '@ant-design/icons'
 import { Button, Col, Row, Checkbox, Form, Input, message, Space } from 'antd'
 import { Typography } from 'antd'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { AccountApi } from "../../api/apis"
@@ -140,6 +140,10 @@ const ChangePassword = () => {
             stopLoading(0)
         }
     };
+
+    useEffect(() => {
+        document.title = "Đổi mật khẩu - Quản lý siêu thị mini NT"
+    }, [])
 
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);

@@ -29,6 +29,10 @@ const PriceListForm = (props) => {
     const [dataSearchBarcode, setDataSearchBarcode] = useState("")
     const navigate = useNavigate()
 
+    useEffect(() => {
+      document.title = "Sản phẩm - Quản lý siêu thị mini NT"
+    }, [])
+
     const handleGetData = async () => {
         setLoading(true)
         try {

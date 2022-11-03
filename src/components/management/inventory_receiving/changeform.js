@@ -46,6 +46,10 @@ const InventoryReceivingChangeForm = (props) => {
   const [is_status, setStatus] = useState(null);
   const refAutoFocus = useRef(null)
 
+  useEffect(() => {
+    document.title = "Phiếu nhập hàng - Quản lý siêu thị mini NT"
+  }, [])
+
   const uploadData = {
     async beforeUpload(file) {
       // console.log(file.name)

@@ -39,6 +39,10 @@ const CustomerChangeForm = (props) => {
     });
   };
 
+  useEffect(() => {
+    document.title = "Khách hàng - Quản lý siêu thị mini NT"
+  }, [])
+
   const stopLoading = (index) => {
     setLoadings((prevLoadings) => {
       const newLoadings = [...prevLoadings];

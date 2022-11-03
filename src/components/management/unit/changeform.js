@@ -28,6 +28,10 @@ const UnitChangeForm = (props) => {
   const refAutoFocus = useRef(null)
 
   useEffect(() => {
+    document.title = "Đơn vị tính - Quản lý siêu thị mini NT"
+  }, [])
+
+  useEffect(() => {
     if (is_create == null) {
       setCreate(props.is_create)
       if (!props.is_create) {

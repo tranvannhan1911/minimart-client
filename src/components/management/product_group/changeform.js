@@ -27,6 +27,10 @@ const ProductGroupForm = (props) => {
   const refAutoFocus = useRef(null)
 
   useEffect(() => {
+    document.title = "Nhóm sản phẩm - Quản lý siêu thị mini NT"
+  }, [])
+
+  useEffect(() => {
     if (is_create == null) {
       setCreate(props.is_create)
       if (!props.is_create) {

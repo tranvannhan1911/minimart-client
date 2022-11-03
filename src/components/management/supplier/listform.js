@@ -31,6 +31,10 @@ const SupplierListForm = (props) => {
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
+    useEffect(() => {
+      document.title = "Nhà cung cấp - Quản lý siêu thị mini NT"
+    }, [])
+
 
     const handleGetData = async () => {
         setLoading(true)

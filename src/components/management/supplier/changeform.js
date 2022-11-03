@@ -28,6 +28,10 @@ const SupplierChangeForm = (props) => {
   const [is_create, setCreate] = useState(null); // create
   const refAutoFocus = useRef(null)
   const [addressValue, setAddressValue] = useState([]);
+
+  useEffect(() => {
+    document.title = "Nhà cung cấp - Quản lý siêu thị mini NT"
+  }, [])
   
 
   useEffect(() => {

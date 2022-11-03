@@ -17,6 +17,11 @@ const SellPage = () => {
     const [items, setItems] = useState([]);
     const newTabIndex = useRef(0);
     let init = false;
+
+    useEffect(() => {
+      document.title = "Bán hàng - Quản lý siêu thị mini NT"
+    }, [])
+
     // const initialItems = [
     //     {
     //         label: 'Đơn hàng 1',

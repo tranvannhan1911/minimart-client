@@ -48,6 +48,10 @@ const CustomerGroupListForm = (props) => {
         props.setBreadcrumb(false)
     }, []);
 
+    useEffect(() => {
+      document.title = "Nhóm khách hàng - Quản lý siêu thị mini NT"
+    }, [])
+
     const clearFiltersAndSort = () => {
         setData(dataMain)
         setDataSearchName("")

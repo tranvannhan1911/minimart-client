@@ -26,6 +26,10 @@ const StatisticsReceived = () => {
   const [date, setDate] = useState([]);
 
   useEffect(() => {
+    document.title = "Thống kê nhập hàng - Quản lý siêu thị mini NT"
+  }, [])
+
+  useEffect(() => {
     onThongKeToDay()
 }, [])
 

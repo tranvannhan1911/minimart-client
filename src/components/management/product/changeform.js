@@ -36,6 +36,10 @@ const PriceChangeForm = (props) => {
   const [categoryParent, setCategoryParent] = useState();
 
   useEffect(() => {
+    document.title = "Sản phẩm - Quản lý siêu thị mini NT"
+  }, [])
+
+  useEffect(() => {
     if (is_create == null) {
       setCreate(props.is_create)
       if (!props.is_create) {

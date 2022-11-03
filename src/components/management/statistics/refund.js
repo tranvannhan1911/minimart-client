@@ -27,6 +27,7 @@ const StatisticsRefund = () => {
   const [date, setDate] = useState([]);
 
   useEffect(() => {
+    document.title = "Thống kê trả hàng - Quản lý siêu thị mini NT"
     onThongKeToDay()
   }, [])
 

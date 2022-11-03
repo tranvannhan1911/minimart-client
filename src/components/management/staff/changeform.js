@@ -29,6 +29,10 @@ const StaffChangeForm = (props) => {
   const refAutoFocus = useRef(null)
   const [addressValue, setAddressValue] = useState([]);
 
+  useEffect(() => {
+    document.title = "Nhân viên - Quản lý siêu thị mini NT"
+  }, [])
+
   // const onChange = (checked) => {
   //   console.log(`switch to ${checked}`);
   // };

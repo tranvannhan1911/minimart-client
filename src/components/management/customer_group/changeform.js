@@ -38,6 +38,10 @@ const CustomerGroupChangeForm = (props) => {
   }, [])
 
   useEffect(() => {
+    document.title = "Nhóm khách hàng - Quản lý siêu thị mini NT"
+  }, [])
+
+  useEffect(() => {
     props.setBreadcrumb([
       { title: "Nhóm khách hàng", href: paths.customer_group.list },
       { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])

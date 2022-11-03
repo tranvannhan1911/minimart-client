@@ -83,6 +83,10 @@ const latestOrders = {
 
 const Dashboard = () => {
 
+    useEffect(() => {
+      document.title = "Trang chủ - Quản lý siêu thị mini NT"
+    }, [])
+
     const [dataOrder, setDataOrder] = useState([]);
     const [dataCustomer, setDataCustomer] = useState([]);
     const [dataTotalMoney, setDataTotalMoney] = useState("");

@@ -49,6 +49,10 @@ const PromotionChangeForm = (props) => {
   const [productGroup, setProductGroup] = useState([]);
   const [dataLine, setDataLine] = useState([]);
 
+  useEffect(() => {
+    document.title = "Chương trình khuyến mãi - Quản lý siêu thị mini NT"
+  }, [])
+
   /////////////////
 
   // const exportExcel = () => {

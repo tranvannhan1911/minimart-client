@@ -33,6 +33,10 @@ const StatisticsSalesByCustomer = () => {
     const [date, setDate] = useState([]);
 
     useEffect(() => {
+      document.title = "Thống kê bán hàng theo khách hàng - Quản lý siêu thị mini NT"
+    }, [])
+
+    useEffect(() => {
         handleDataCustomer()
         onThongKeToDay()
     }, [])
