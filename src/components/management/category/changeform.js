@@ -10,6 +10,7 @@ import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import ParentSelect from './category_select'
+import store, { setInfoCreateUpdate } from '../../../store/store';
 const { TextArea } = Input;
 
 const CategoryChangeForm = (props) => {
@@ -81,6 +82,7 @@ const CategoryChangeForm = (props) => {
         const response2 = await api.category.get_parent(values.parent);
         setCategoryParent(response2.data.data.tree)
       }
+      store.dispatch(setInfoCreateUpdate(values))
     } catch (error) {
       message.error(messages.ERROR)
     } finally {

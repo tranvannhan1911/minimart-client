@@ -146,7 +146,9 @@ const PriceTable = (props) => {
           || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.product_code && record.product_code.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.barcode && record.barcode.toString().toLowerCase().includes(value.toLowerCase()))
-          || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))},
+          || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))
+          || (record.product_category && record.product_category.toString().toLowerCase().includes(value.toLowerCase()))
+        },
       ...renderSearch(),
       ...getColumnSearchProps('mã')
     },
@@ -189,11 +191,16 @@ const PriceTable = (props) => {
       ...getColumnSearchProps('barcode')
     },
     {
-      title: 'Số lượng tồn kho (DVT cơ bản)',
+      title: 'Số lượng tồn kho (ĐVT cơ bản)',
       dataIndex: 'stock',
       key: 'stock',
       width:"12%",
-      ...renderSearch(),
+      // ...renderSearch(),
+      render: (stock, record) => (
+        <span>
+          {`${stock} ${record.base_unit.name}`}
+        </span>
+      ),
     },
     {
       title: 'Ngành hàng',
@@ -207,7 +214,7 @@ const PriceTable = (props) => {
         return _elm
       }),
       filteredValue: props.filteredInfo.product_category || null,
-      onFilter: (value, record) => record.product_category && record.product_category.toString().includes(value),
+      onFilter: (value, record) => record.product_category && record.product_category.toString().toLowerCase().includes(value.toLowerCase()),
       render: (product_category) => (
         <span>
               <Tag color='geekblue' key={product_category}>

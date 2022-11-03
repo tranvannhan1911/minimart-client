@@ -12,6 +12,7 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { validName1 } from '../../../resources/regexp'
 import ShowForPermission from '../../basic/permission';
+import store, { setInfoCreateUpdate } from '../../../store/store';
 
 const { TextArea } = Input;
 
@@ -79,6 +80,7 @@ const CustomerGroupChangeForm = (props) => {
       const response = await api.customer_group.get(id);
       const values = response.data.data
       form.setFieldsValue(values)
+      store.dispatch(setInfoCreateUpdate(values))
     } catch (error) {
       message.error(messages.ERROR)
     } finally {

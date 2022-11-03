@@ -11,6 +11,7 @@ import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { validName1 } from '../../../resources/regexp'
+import store, { setInfoCreateUpdate } from '../../../store/store';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -76,6 +77,7 @@ const UnitChangeForm = (props) => {
       const response = await api.unit.get(id);
       const values = response.data.data
       form.setFieldsValue(values)
+      store.dispatch(setInfoCreateUpdate(values))
     } catch (error) {
       message.error(messages.ERROR)
     } finally {

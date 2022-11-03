@@ -1,11 +1,12 @@
 import { HomeOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import React, { Component, useEffect, useState } from 'react';
-import { Breadcrumb, Layout, Affix, Space, Col, Row, Button } from 'antd';
+import { Breadcrumb, Layout, Affix, Space, Col, Row, Button, Typography } from 'antd';
 import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes, useMatch, useNavigate } from "react-router-dom";
 import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import store from '../../../store/store';
+import { formater } from '../../../utils/util';
 const { Content } = Layout;
 
 const ListForm = lazy(() => import("../templates/listform"));
@@ -53,12 +54,38 @@ const MyContent = (props) => {
     const [breadcrumb_extras, setBreadcrumbExtras] = useState(null);
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState({})
+    const [dateCreatedInfo, setDateCreatedInfo] = useState();
+
 
     useEffect(() => {
         store.subscribe(() => {
+            console.log("store.getState()", store.getState())
             setUserInfo(store.getState().user.info)
+            // setDateCreatedInfo(store.getState().infoCreateUpdate.info)
+            if(store.getState().infoCreateUpdate?.info){
+                const createUpdateInfo = store.getState().infoCreateUpdate.info
+                if (createUpdateInfo.date_updated || createUpdateInfo.date_created) {
+                    setDateCreatedInfo(
+                        <Typography.Text style={{ marginRight: '10px' }}>
+                            {createUpdateInfo.date_updated ?
+                                `Cập nhật lúc ${formater(createUpdateInfo.date_updated)} bởi ${createUpdateInfo.user_updated ? createUpdateInfo.user_updated.fullname : "---"}`
+                                :
+                                `Tạo mới lúc ${formater(createUpdateInfo.date_created)} bởi ${createUpdateInfo.user_created ? createUpdateInfo.user_created.fullname : "---"}`
+                            }
+                        </Typography.Text>
+                    )
+                } else {
+                    setDateCreatedInfo(null)
+                }
+            }
         })
     }, [])
+
+
+
+    useEffect(() => {
+        console.log("dateCreatedInfo change", dateCreatedInfo)
+    }, [dateCreatedInfo])
 
     const breadcrumbComponent = () => {
         console.log(paths.customer.list);
@@ -97,6 +124,7 @@ const MyContent = (props) => {
                     </Col>
                     <Col flex="null">
                         <Space direction="horizontal" style={{ width: '100%', justifyContent: 'end' }}>
+                            {dateCreatedInfo}
                             {breadcrumb_extras}
                         </Space>
                     </Col>
@@ -224,7 +252,8 @@ const MyContent = (props) => {
                         <Route path={paths.inventory_receiving.rchange} key={paths.inventory_receiving.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <InventoryReceivingChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
+                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props}
+                            />} />
 
                         <Route path={paths.inventory_record.rlist} key={paths.inventory_record.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <InventoryRecordListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
@@ -235,7 +264,8 @@ const MyContent = (props) => {
                         <Route path={paths.inventory_record.rchange} key={paths.inventory_record.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <InventoryRecordChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
+                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props}
+                            />} />
 
                         <Route path={paths.warehouse_transaction.rlist} key={paths.warehouse_transaction.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <WarehouseTransactionListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
@@ -249,12 +279,14 @@ const MyContent = (props) => {
                         <Route path={paths.promotion.rchange} key={paths.promotion.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <PromotionChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
+                                setBreadcrumb={setBreadcrumb} is_create={false}  {...props}
+                            />} />
 
                         <Route path={paths.promotion.raddline} key={paths.promotion.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <PromotionLineChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
-                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props} />} />
+                                setBreadcrumb={setBreadcrumb} is_create={true}  {...props}
+                            />} />
 
                         <Route path={paths.category.rlist} key={paths.category.key}
                             element={<CategoryListForm setBreadcrumb={setBreadcrumb}  {...props} />} />

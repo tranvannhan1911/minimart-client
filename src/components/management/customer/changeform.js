@@ -13,6 +13,7 @@ import messages from '../../../utils/messages'
 import { validPhone, validName } from '../../../resources/regexp'
 import AddressSelect from '../address/address_select';
 import ShowForPermission from '../../basic/permission';
+import store, { setInfoCreateUpdate } from '../../../store/store';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -160,6 +161,7 @@ const CustomerChangeForm = (props) => {
       values.customer_group = values.customer_group.map(elm => elm.id.toString())
       values.is_active= values.is_active+"";
       form.setFieldsValue(values)
+      store.dispatch(setInfoCreateUpdate(values))
       
       if(values.ward){
         const response2 = await api.address.get_parent(values.ward);

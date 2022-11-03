@@ -25,11 +25,20 @@ const userSlice = createSlice({
   }
 })
 
-export const { setUser, getUser } = userSlice.actions
+const infoCreateUpdateSlice = createSlice({
+  name: 'infoCreateUpdate',
+  initialState: {},
+  reducers: {
+    setInfoCreateUpdate: (state, value) => {
+      state.info = value.payload
+    }
+  }
+})
 
 const rootReducer = combineReducers({
   drawerPlacement: drawerPlacement.reducer, 
-  user: userSlice.reducer
+  user: userSlice.reducer, 
+  infoCreateUpdate: infoCreateUpdateSlice.reducer
 });
 
 const persistConfig = {
@@ -44,3 +53,5 @@ const store = configureStore({
 })
 
 export default store;
+export const { setUser, getUser } = userSlice.actions
+export const { setInfoCreateUpdate } = infoCreateUpdateSlice.actions

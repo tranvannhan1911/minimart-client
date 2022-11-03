@@ -21,6 +21,7 @@ import ExcelJS from "exceljs";
 import saveAs from "file-saver";
 import { ExportTemplateReactCSV } from '../../../utils/exportTemplate';
 import ShowForPermission from '../../basic/permission';
+import store, { setInfoCreateUpdate } from '../../../store/store';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -325,6 +326,7 @@ const InventoryRecordChangeForm = (props) => {
       console.log("handleData", values)
 
       form.setFieldsValue(values)
+      store.dispatch(setInfoCreateUpdate(values))
 
     } catch (error) {
       message.error(messages.ERROR)
