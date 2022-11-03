@@ -10,6 +10,7 @@ import { Provider } from 'react-redux'
 import store from './store/store'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+document.title = "Quản lý siêu thị mini NT"
 root.render(
   <React.StrictMode>
     <Provider store={store}>

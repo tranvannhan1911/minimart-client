@@ -26,7 +26,12 @@ const Header = (props) => {
 
     setInterval(() => {
       var today = new Date();
-      var _welcome = `bây giờ là ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()} ngày ${today.getDate()}/${today.getMonth()+1}/${today.getFullYear()}`;
+      const hour = today.getHours() < 10 ? "0"+today.getHours() : today.getHours()
+      const minute = today.getMinutes() < 10 ? "0"+today.getMinutes() : today.getMinutes()
+      const second = today.getSeconds() < 10 ? "0"+today.getSeconds() : today.getSeconds()
+      const date = today.getDate() < 10 ? "0"+today.getDate() : today.getDate()
+      const month = today.getMonth() + 1 < 10 ? "0"+(today.getMonth()+1) : today.getMonth()+1
+      var _welcome = `bây giờ là ${hour}:${minute}:${second} ngày ${date}/${month}/${today.getFullYear()}`;
       setWelcome(_welcome)
     }, 1000)
   }, [])

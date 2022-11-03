@@ -398,7 +398,8 @@ const PromotionChangeForm = (props) => {
                       },
                     ]}
                   >
-                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} />
+                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} 
+                      defaultValue={moment()} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -431,7 +432,8 @@ const PromotionChangeForm = (props) => {
                       },
                     ]}
                   >
-                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} />
+                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} 
+                      defaultValue={moment()}/>
                   </Form.Item>
                 </Col>
               </Row>
