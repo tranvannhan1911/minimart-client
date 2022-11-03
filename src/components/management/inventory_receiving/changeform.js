@@ -19,6 +19,7 @@ import ExcelJS from "exceljs";
 import saveAs from "file-saver";
 import { ExportTemplateReactCSV } from '../../../utils/exportTemplate';
 import ShowForPermission from '../../basic/permission';
+import store, { setInfoCreateUpdate } from '../../../store/store';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -360,6 +361,7 @@ const InventoryReceivingChangeForm = (props) => {
       // // setDataVoucher(values)
       // setData({...values})
 
+      store.dispatch(setInfoCreateUpdate(values))
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -697,7 +699,7 @@ const InventoryReceivingChangeForm = (props) => {
                         </Col>
                         <Col span={1}></Col>
                         <Col span={2} style={titleCol}>
-                          <Typography.Text>Giá nhập</Typography.Text>
+                          <Typography.Text>Đơn giá nhập (ĐVT đang chọn)</Typography.Text>
                         </Col>
                         <Col span={1}></Col>
                         <Col span={3} style={titleCol}>

@@ -19,6 +19,7 @@ import PromotionLineModal from './modal';
 import moment from "moment";
 import ExcelJS from "exceljs";
 import saveAs from "file-saver";
+import store, { setInfoCreateUpdate } from '../../../../store/store';
 
 const dateFormat = "YYYY/MM/DD";
 
@@ -316,6 +317,7 @@ const PromotionChangeForm = (props) => {
       values.start_date = moment(values.start_date);
       values.status = values.status.toString();
       values.end_date = moment(values.end_date);
+      
       values.applicable_customer_groups = values.applicable_customer_groups.map(elm => elm.toString());
       form.setFieldsValue(values);
       setImageUrl(values.image)
@@ -354,6 +356,7 @@ const PromotionChangeForm = (props) => {
       setData(values.lines);
       setStartDate(values.start_date);
       setEndDate(values.end_date);
+      store.dispatch(setInfoCreateUpdate(values))
     } catch (error) {
       message.error(messages.ERROR)
     } finally {

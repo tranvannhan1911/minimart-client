@@ -14,6 +14,7 @@ import messages from '../../../utils/messages'
 import uploadFile from '../../../utils/s3';
 import { validName1, validBarCode, validCode } from '../../../resources/regexp'
 import ParentSelect from '../category/category_select';
+import store, { setInfoCreateUpdate } from '../../../store/store';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -94,6 +95,7 @@ const PriceChangeForm = (props) => {
       const values = response.data.data
       values.product_groups = values.product_groups.map(elm => elm.id.toString());
       values.base_unit= values.base_unit?.id
+      // props.setDateCreatedInfo(values)
       values.units = values.units.filter(unitexchange => unitexchange.is_active && !unitexchange.is_base_unit)
       form.setFieldsValue(values)
       setImageUrl(values.image)
@@ -102,7 +104,7 @@ const PriceChangeForm = (props) => {
         const response2 = await api.category.get_parent(values.product_category.id);
         setCategoryParent(response2.data.data.tree)
       }
-
+      store.dispatch(setInfoCreateUpdate(values))
     } catch (error) {
       console.log(error)
       message.error(messages.ERROR)

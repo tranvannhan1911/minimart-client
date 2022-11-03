@@ -13,6 +13,7 @@ import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { validPhone, validName1, validEmail, validCodeSupplier } from '../../../resources/regexp'
 import AddressSelect from '../address/address_select';
+import store, { setInfoCreateUpdate } from '../../../store/store';
 
 const { TextArea } = Input;
 
@@ -84,6 +85,7 @@ const SupplierChangeForm = (props) => {
         const response2 = await api.address.get_parent(values.ward);
         setAddressValue(response2.data.data.tree)
       }
+      store.dispatch(setInfoCreateUpdate(values))
     } catch (error) {
       message.error(messages.ERROR)
     } finally {

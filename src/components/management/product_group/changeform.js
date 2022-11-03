@@ -11,6 +11,7 @@ import Loading from '../../basic/loading';
 import paths from '../../../utils/paths'
 import messages from '../../../utils/messages'
 import { validName1, validCode } from '../../../resources/regexp'
+import store, { setInfoCreateUpdate } from '../../../store/store';
 
 const { TextArea } = Input;
 
@@ -86,6 +87,7 @@ const ProductGroupForm = (props) => {
       const response = await api.product_group.get(id);
       const values = response.data.data
       form.setFieldsValue(values)
+      store.dispatch(setInfoCreateUpdate(values))
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -255,20 +257,26 @@ const ProductGroupForm = (props) => {
               </Row>
               <Row>
                 <Col span={1}></Col>
-                <Col span={22}>
+                <Col span={10}>
                   <Form.Item label="Mô tả" name="description" >
                     <TextArea rows={4} />
                   </Form.Item>
                 </Col>
+                <Col span={2}></Col>
+                <Col span={10}>
+                  <Form.Item label="Ghi chú nội bộ" name="note" >
+                    <TextArea rows={4} />
+                  </Form.Item>
+                </Col>
               </Row>
-              <Row>
+              {/* <Row>
                 <Col span={1}></Col>
                 <Col span={22}>
                   <Form.Item label="Ghi chú" name="note" >
                     <TextArea rows={4} />
                   </Form.Item>
                 </Col>
-              </Row>
+              </Row> */}
 
               <Form.Item>
                 <Space>
