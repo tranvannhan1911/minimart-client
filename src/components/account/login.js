@@ -75,7 +75,7 @@ const Login = () => {
                 // const action = setUser(response.data.data)
                 // store.dispatch(action)
 
-                navigate('/quan-ly/ban-hang')
+                navigate('/quan-ly')
             } else {
                 error_msg()
             }

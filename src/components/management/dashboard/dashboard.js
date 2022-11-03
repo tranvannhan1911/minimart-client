@@ -3,10 +3,12 @@ import {
     ShoppingCartOutlined,
     DollarCircleOutlined,
 } from '@ant-design/icons';
-import React, { useEffect } from 'react'
-import { Space, Table, Tag, Row, Col, Card } from 'antd';
+import React, { useEffect, useState } from 'react'
+import { Space, Table, Tag, Row, Col, Card, Typography } from 'antd';
 import { Bar } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
+import api from '../../../api/apis'
+
 
 const topCustomers = {
     head: [
@@ -14,45 +16,28 @@ const topCustomers = {
             title: 'Họ tên',
             dataIndex: 'username',
             key: 'name',
+            render: (product, record) => (
+                <Typography>{`${record.customer?.fullname}`}</Typography>
+            ),
         },
         {
             title: 'Số hóa đơn',
             dataIndex: 'order',
             key: 'age',
+            render: (product, record) => (
+                <Typography>{`${record.count}`}</Typography>
+            ),
         },
         {
             title: 'Tổng tiền',
-            dataIndex: 'price',
+            dataIndex: 'final_total',
             key: 'address',
+            render: (product, record) => (
+                <Typography>{`${record.final_total.toLocaleString()}`}</Typography>
+            ),
         },
     ],
-    body: [
-        {
-            "username": "john doe",
-            "order": "490",
-            "price": "15,870"
-        },
-        {
-            "username": "frank iva",
-            "order": "250",
-            "price": "12,251"
-        },
-        {
-            "username": "anthony baker",
-            "order": "120",
-            "price": "10,840"
-        },
-        {
-            "username": "frank iva",
-            "order": "110",
-            "price": "9,251"
-        },
-        {
-            "username": "anthony baker",
-            "order": "80",
-            "price": "8,840"
-        }
-    ]
+    
 }
 
 const latestOrders = {
@@ -64,63 +49,36 @@ const latestOrders = {
         },
         {
             title: 'Khách hàng',
-            dataIndex: 'user',
+            dataIndex: 'customer',
             key: 'name',
         },
         {
             title: 'Ngày mua',
             dataIndex: 'date',
             key: 'name',
+            render: (product, record) => (
+                <Typography>{`${record.date_created.slice(0,10)}`}</Typography>
+            ),
         },
 
         {
             title: 'Tổng tiền',
             dataIndex: 'price',
             key: 'address',
+            render: (product, record) => (
+                <Typography>{`${record.final_total.toLocaleString()}`}</Typography>
+            ),
         },
         {
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'age',
+            render: (product, record) => (
+                <Typography>{`${record.status == "complete" ? "Hoàn thành":"Trả hàng"}`}</Typography>
+            ),
         },
     ],
-    body: [
-        {
-            id: "#OD1711",
-            user: "john doe",
-            date: "17 Jun 2021",
-            price: "900000",
-            status: ""
-        },
-        {
-            id: "#OD1712",
-            user: "frank iva",
-            date: "1 Jun 2021",
-            price: "400000",
-            status: ""
-        },
-        {
-            id: "#OD1713",
-            user: "anthony baker",
-            date: "27 Jun 2021",
-            price: "200000",
-            status: ""
-        },
-        {
-            id: "#OD1712",
-            user: "frank iva",
-            date: "1 Jun 2021",
-            price: "40000",
-            status: ""
-        },
-        {
-            id: "#OD1713",
-            user: "anthony baker",
-            date: "27 Jun 2021",
-            price: "$200",
-            status: "refund"
-        }
-    ]
+    
 }
 
 const Dashboard = () => {
@@ -128,6 +86,37 @@ const Dashboard = () => {
     useEffect(() => {
       document.title = "Trang chủ - Quản lý siêu thị mini NT"
     }, [])
+
+    const [dataOrder, setDataOrder] = useState([]);
+    const [dataCustomer, setDataCustomer] = useState([]);
+    const [dataTotalMoney, setDataTotalMoney] = useState("");
+    const [dataTotalOrder, setDataTotalOrder] = useState("");
+    const [dataTotalOrderRefund, setDataTotalOrderRefund] = useState("");
+    const [dataTotalCustomer, setDataTotalCustomer] = useState("");
+    const [dataDT, setDataDT] = useState([]);
+    const [dataLabel, setDataLabel] = useState([]);
+
+    useEffect(() => {
+        getData()
+    }, [])
+
+    const getData = async () =>{
+        const response = await api.dashboard.list();
+        setDataTotalCustomer(response.data.data.count_customer_7_days)
+        setDataTotalMoney(response.data.data.total_money_7_days)
+        setDataTotalOrder(response.data.data.count_order_7_days)
+        setDataTotalOrderRefund(response.data.data.count_order_refund_7_days)
+        setDataCustomer(response.data.data.top_5_customer)
+        setDataOrder(response.data.data.top_5_order)
+        let label = [];
+        let dataDuLieu= [];
+        response.data.data.order_7_days.forEach(element => {
+            label.push(element.date);
+            dataDuLieu.push(element.final_total);
+        });
+        setDataLabel(label);
+        setDataDT(dataDuLieu)
+    }
 
     return (
         <div>
@@ -142,7 +131,7 @@ const Dashboard = () => {
                                         <DollarCircleOutlined style={{ fontSize: '50px' }} />
                                     </Col>
                                     <Col span={14}>
-                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>12,000,000</div>
+                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalMoney.toLocaleString()}</div>
                                         <div>Tổng tiền</div>
                                     </Col>
 
@@ -157,7 +146,7 @@ const Dashboard = () => {
                                         <UserOutlined style={{ fontSize: '50px' }} />
                                     </Col>
                                     <Col span={14}>
-                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>1200</div>
+                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalCustomer.toLocaleString()}</div>
                                         <div>Tổng khách hàng</div>
                                     </Col>
 
@@ -174,7 +163,7 @@ const Dashboard = () => {
                                         <ShoppingCartOutlined style={{ fontSize: '50px' }} />
                                     </Col>
                                     <Col span={14}>
-                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>1200</div>
+                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalOrder.toLocaleString()}</div>
                                         <div style={{ fontSize: '15px' }}>Tổng hóa đơn</div>
                                     </Col>
 
@@ -189,7 +178,7 @@ const Dashboard = () => {
                                         <ShoppingCartOutlined style={{ fontSize: '50px' }} />
                                     </Col>
                                     <Col span={14}>
-                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>0</div>
+                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalOrderRefund.toLocaleString()}</div>
                                         <div>Tổng hóa đơn trả</div>
                                     </Col>
                                 </Row>
@@ -209,16 +198,10 @@ const Dashboard = () => {
                             height={70}
                             width={200}
                             data={{
-                                labels: [
-                                    "Africa",
-                                    "Asia",
-                                    "Europe",
-                                    "Latin America",
-                                    "North America"
-                                ],
+                                labels: dataLabel,
                                 datasets: [
                                     {
-                                        label: "Population (millions)",
+                                        label: "Doanh thu (VND)",
                                         backgroundColor: [
                                             "#3e95cd",
                                             "#8e5ea2",
@@ -226,7 +209,7 @@ const Dashboard = () => {
                                             "#e8c3b9",
                                             "#c45850"
                                         ],
-                                        data: [2478, 5267, 734, 784, 433]
+                                        data: dataDT
                                     }
                                 ]
                             }}
@@ -250,7 +233,7 @@ const Dashboard = () => {
                         <div className="card__body">
                             <Table
                                 columns={topCustomers.head}
-                                dataSource={topCustomers.body}
+                                dataSource={dataCustomer}
                                 pagination={false}
                                 size="small"
                             />
@@ -267,7 +250,7 @@ const Dashboard = () => {
                         <div className="card__body">
                             <Table
                                 columns={latestOrders.header}
-                                dataSource={latestOrders.body}
+                                dataSource={dataOrder}
                                 pagination={false}
                                 size="small"
                             />

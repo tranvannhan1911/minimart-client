@@ -212,6 +212,10 @@ const InventoryRecordTable = (props) => {
       title: 'Người kiểm kê',
       dataIndex: 'user_created',
       key: 'user_created',
+      sorter: {
+        compare: (a, b) => a.user_created?.toLowerCase().localeCompare(b.user_created?.toLowerCase()),
+        // multiple: 2
+      },
       ...getColumnSearchProps('người kiểm kê')
     },
     {

@@ -200,10 +200,10 @@ const RefundTable = (props) => {
     {
       title: 'Người tạo',
       dataIndex: 'user_created',
-      key: 'user_created',
+      key: 'user_created', 
       // with:'20%',
       sorter: {
-        compare: (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+        compare: (a, b) => a.user_created.toLowerCase().localeCompare(b.user_created.toLowerCase()),
         multiple: 2
       },
       ...renderSearch(),
