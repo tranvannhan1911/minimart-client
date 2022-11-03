@@ -5,6 +5,7 @@ import { Button, Form, Input, Select, message, Space, Popconfirm, Switch, Row, C
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
+import moment from "moment";
 import ChangeForm from '../templates/changeform';
 import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../../basic/loading';
@@ -23,8 +24,12 @@ const { RangePicker } = DatePicker;
 const StatisticsPromotion = () => {
 
   const [data, setData] = useState([]);
-  const [type, setType] = useState("Order");
+  const [type, setType] = useState("");
   const [date, setDate] = useState([]);
+
+  useEffect(() => {
+    onThongKeToDay()
+}, [])
 
   // const navigate = useNavigate();
   // const [form] = Form.useForm();
@@ -114,86 +119,78 @@ const StatisticsPromotion = () => {
       title: 'Mã CTKM',
       dataIndex: 'id',
       key: 'name',
-      // render: (product, record) => (
-      //   <Typography>{`${record.promotion_line.promotion_code}`}</Typography>
-      // ),
+      
     },
     {
       title: 'Tên CTKM',
       dataIndex: 'name',
       key: 'address',
-      // render: (product, record) => (
-      //   <Typography>{`${record.promotion_line.title}`}</Typography>
-      // ),
+      
     },
     {
       title: 'Ngày bắt đầu',
       dataIndex: 'end_date',
       key: 'address',
-      // render: (product, record) => (
-      //   <Typography>{`${record.promotion_line.start_date?.slice(0, 10)}`}</Typography>
-      // ),
+      
     },
     {
       title: 'Ngày kết thúc',
       dataIndex: 'start_date',
       key: 'address',
-      // render: (product, record) => (
-      //   <Typography>{`${record.promotion_line.end_date?.slice(0, 10)}`}</Typography>
-      // ),
+      
     },
 
-    {
-      title: 'Mã SP tặng',
-      dataIndex: 'idProduct',
-      key: 'address',
-    },
-    {
-      title: 'Tên SP tặng',
-      dataIndex: 'nameProduct',
-      key: 'address',
-    },
-    {
-      title: 'SL tặng',
-      dataIndex: 'quantity',
-      key: 'address',
-    },
-    {
-      title: 'Đơn vị tính',
-      dataIndex: 'unit',
-      key: 'address',
-    },
+    // {
+    //   title: 'Mã SP tặng',
+    //   dataIndex: 'idProduct',
+    //   key: 'address',
+    // },
+    // {
+    //   title: 'Tên SP tặng',
+    //   dataIndex: 'nameProduct',
+    //   key: 'address',
+    // },
+    // {
+    //   title: 'SL tặng',
+    //   dataIndex: 'quantity',
+    //   key: 'address',
+    // },
+    // {
+    //   title: 'Đơn vị tính',
+    //   dataIndex: 'unit',
+    //   key: 'address',
+    // },
     {
       title: 'Số tiền chiết khấu',
       dataIndex: 'money',
       key: 'address',
-      // render: (product, record) => (
-      //   <Typography>{`${record.promotion_line.detail.reduction_amount == null ? record.promotion_line.detail.percent + "%" : record.promotion_line.detail.reduction_amount}`}</Typography>
-      // ),
+      render: (product, record) => (
+        <Typography>{`${record.money.toLocaleString()}`}</Typography>
+    ),
     },
     {
       title: 'Ngân sách tổng',
       dataIndex: 'moneyTotal',
       key: 'address',
-      // render: (product, record) => (
-      //   <Typography>{`${record.promotion_line.max_quantity == null ? "" : record.promotion_line.max_quantity}`}</Typography>
-      // ),
+      render: (product, record) => (
+        <Typography>{`${record.moneyTotal.toLocaleString()}`}</Typography>
+    ),
     },
     {
       title: 'Ngân sách đã sử dụng',
       dataIndex: 'moneyUsed',
       key: 'address',
-      // render: (product, record) => (
-      //   <Typography>{`${record.quantity}`}</Typography>
-      // ),
+      render: (product, record) => (
+        <Typography>{`${record.moneyUsed.toLocaleString()}`}</Typography>
+    ),
     },
     {
       title: 'Ngân sách còn lại',
       dataIndex: 'moneyRecord',
       key: 'address',
-      // render: (product, record) => (
-      //   <Typography>{`${record.promotion_line.max_quantity == null ? "" : record.promotion_line.max_quantity - record.quantity}`}</Typography>
-      // ),
+      render: (product, record) => (
+        <Typography>{`${record.moneyRecord.toLocaleString()}`}</Typography>
+    ),
     },
 
   ];
@@ -213,6 +210,28 @@ const StatisticsPromotion = () => {
     const response = await api.statistics_promotion.promotion(params);
     statisticData(response.data.data.results);
   }
+
+  const onThongKeToDay = async () => {
+    let day = new Date();
+    let ng = day.getDate();
+    if (ng < 10) {
+        ng = "0" + ng;
+    }
+    let th = day.getMonth() + 1;
+    if (th < 10) {
+        th = "0" + th;
+    }
+    let da= day.getFullYear() + "-" + th + "-" + ng + "T05:10:10.357Z";
+    setDate([da,da])
+    const params = {
+        params: {
+            start_date: da,
+            end_date: da,
+        }
+    }
+    const response = await api.statistics_promotion.promotion(params);
+    statisticData(response.data.data.results);
+}
 
   const statisticData = (data) => {
     let dataMain = [];
@@ -243,7 +262,7 @@ const StatisticsPromotion = () => {
           nameProduct: "",
           quantity: "",
           unit: "",
-          money: element.promotion_line.detail.reduction_amount == null ? element.promotion_line.detail.percent + "%" : element.promotion_line.detail.reduction_amount,
+          money: "",
           moneyTotal: element.promotion_line.max_quantity == null ? "" : element.promotion_line.max_quantity*element.promotion_line.detail.reduction_amount,
           moneyUsed: element.amount,
           moneyRecord: element.promotion_line.max_quantity == null ? "" : (element.promotion_line.max_quantity*element.promotion_line.detail.reduction_amount)-element.amount
@@ -291,7 +310,7 @@ const StatisticsPromotion = () => {
         size: 8,
     };
     const day= new Date();
-    customCell3.value = "Ngày in: "+ day.getDate()+"/"+(day.getMonth()+1)+"/"+day.getFullYear() ;
+    customCell3.value = "Ngày xuất báo cáo: "+ day.getDate()+"/"+(day.getMonth()+1)+"/"+day.getFullYear() ;
 
     worksheet.mergeCells("A4:M4");
 
@@ -444,15 +463,16 @@ const StatisticsPromotion = () => {
       <Row style={{ marginTop: '5px' }}>
         <Col span={24}>
           <label style={{ paddingRight: '10px' }}>Ngày thống kê:</label>
-          <RangePicker onChange={onChange} />
+          <RangePicker onChange={onChange} defaultValue={[moment(new Date()),moment(new Date())]}/>
           <label style={{ paddingLeft: '10px', paddingRight: '10px' }}>Loại khuyến mãi:</label>
           <Select
+            allowClear
             showSearch
             style={{
               width: '200px',
               textAlign: 'left'
             }}
-            defaultValue={type}
+            // defaultValue={type}
             optionFilterProp="children"
             onChange={(option) => { setType(option); console.log(option) }}
             filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
@@ -470,6 +490,7 @@ const StatisticsPromotion = () => {
         <Col span={24}>
           <Table dataSource={data}
             columns={columns}
+            size="small"
           >
           </Table>
         </Col>

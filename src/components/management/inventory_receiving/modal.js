@@ -49,6 +49,9 @@ const InventoryReceivingModal = (props) => {
       title: 'Giá',
       dataIndex: 'price',
       key: 'address',
+      render: (price, record) => (
+        <Typography>{`${record.price.toLocaleString()}`}</Typography>
+      ),
     },
     {
       title: 'Số lượng',
@@ -229,6 +232,40 @@ const InventoryReceivingModal = (props) => {
 
       i++;
     });
+
+    worksheet.mergeCells("A" + (i + 9) + ":E" + (i + 9));
+    const customCellTT = worksheet.getCell("A" + (i + 9));
+    customCellTT.font = {
+      name: "Times New Roman",
+      family: 4,
+      size: 11,
+      bold: true,
+    };
+    customCellTT.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
+    };
+    customCellTT.alignment = { vertical: 'middle', horizontal: 'right' };
+    customCellTT.value = "Tổng cộng: ";
+
+    const customCellTT2 = worksheet.getCell("F" + (i + 9));
+    customCellTT2.font = {
+      name: "Times New Roman",
+      family: 4,
+      size: 11,
+      bold: true,
+    };
+    customCellTT2.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
+    };
+    customCellTT2.alignment = { vertical: 'middle', horizontal: 'right' };
+    customCellTT2.value = props.data.total.toLocaleString();
+
 
     ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
       saveAs(

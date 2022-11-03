@@ -181,6 +181,20 @@ const promotion_extras = {
     },
 }
 
+const inventory_extras = {
+    inventory: (params) => {
+        const url = `/statistic/stock/`
+        return axiosApi.get(url, params)
+    },
+}
+
+const received_extras = {
+    receiving: (params) => {
+        const url = `/statistic/receiving/`
+        return axiosApi.get(url, params)
+    },
+}
+
 const api = {
     customer: getApi("customer"),
     customer_group: getApi("customer-group"),
@@ -199,9 +213,12 @@ const api = {
     order_refund: getApi("refund"),
     category: getApi("category", category_extras),
     address: getApi("address", address_extras),
+    dashboard: getApi("statistic/dashboard"),
     statistics_sales: getApi("statistic", sales_extras),
     statistics_refund: getApi("statistic", refund_extras),
     statistics_promotion: getApi("statistic", promotion_extras),
+    statistics_inventory: getApi("statistic", inventory_extras),
+    statistics_received: getApi("statistic", received_extras),
 
 }
 

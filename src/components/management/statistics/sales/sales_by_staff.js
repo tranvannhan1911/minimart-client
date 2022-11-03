@@ -11,8 +11,9 @@ import Loading from '../../../basic/loading';
 import paths from '../../../../utils/paths'
 import messages from '../../../../utils/messages'
 import { validPhone, validName } from '../../../../resources/regexp'
+import moment from "moment";
 import { Bar } from 'react-chartjs-2';
-import Chart from 'chart.js/auto';
+import Chart, { _adapters } from 'chart.js/auto';
 import ExcelJS from "exceljs";
 import saveAs from "file-saver";
 
@@ -32,7 +33,9 @@ const StatisticsSalesByStaff = () => {
     const [date, setDate] = useState([]);
 
     useEffect(() => {
-        handleDataStaff()
+
+        handleDataStaff();
+        onThongKeToDay();
     }, [])
 
     // const enterLoading = (index) => {
@@ -56,16 +59,33 @@ const StatisticsSalesByStaff = () => {
             message.error("Vui lòng chọn ngày cần thống kê");
             return;
         }
-        if (staff == "") {
-            message.error("Vui lòng chọn nhân viên cần thống kê");
-            return;
-        }
-        console.log(date, staff)
         const params = {
             params: {
                 start_date: date[0],
                 end_date: date[1],
                 staff_id: staff
+            }
+        }
+        const response = await api.statistics_sales.by_staff(params);
+        setData(response.data.data.results);
+    }
+
+    const onThongKeToDay = async () => {
+        let day = new Date();
+        let ng = day.getDate();
+        if (ng < 10) {
+            ng = "0" + ng;
+        }
+        let th = day.getMonth() + 1;
+        if (th < 10) {
+            th = "0" + th;
+        }
+        let da= day.getFullYear() + "-" + th + "-" + ng + "T05:10:10.357Z";
+        setDate([da,da])
+        const params = {
+            params: {
+                start_date: da,
+                end_date: da,
             }
         }
         const response = await api.statistics_sales.by_staff(params);
@@ -110,7 +130,7 @@ const StatisticsSalesByStaff = () => {
             dataIndex: 'name',
             key: 'name',
             render: (product, record) => (
-                <Typography>{`${record.user_created.code}`}</Typography>
+                <Typography>{`${record.user_created?.code}`}</Typography>
             ),
         },
         {
@@ -118,7 +138,7 @@ const StatisticsSalesByStaff = () => {
             dataIndex: 'age',
             key: 'age',
             render: (product, record) => (
-                <Typography>{`${record.user_created.fullname}`}</Typography>
+                <Typography>{`${record.user_created?.fullname}`}</Typography>
             ),
         },
         {
@@ -200,8 +220,8 @@ const StatisticsSalesByStaff = () => {
             family: 4,
             size: 8,
         };
-        const day= new Date();
-        customCell3.value = "Ngày in: "+ day.getDate()+"/"+(day.getMonth()+1)+"/"+day.getFullYear() ;
+        const day = new Date();
+        customCell3.value = "Ngày xuất báo cáo: " + day.getDate() + "/" + (day.getMonth() + 1) + "/" + day.getFullYear();
 
         worksheet.mergeCells("A4:G4");
 
@@ -211,7 +231,7 @@ const StatisticsSalesByStaff = () => {
             family: 4,
             size: 8,
         };
-        customCell4.value = "Người xuất báo cáo: "+sessionStorage.getItem("nameStaff") + ' - ' + sessionStorage.getItem("phoneStaff") ;
+        customCell4.value = "Người xuất báo cáo: " + sessionStorage.getItem("nameStaff") + ' - ' + sessionStorage.getItem("phoneStaff");
 
         worksheet.mergeCells("A5:G5");
 
@@ -276,7 +296,7 @@ const StatisticsSalesByStaff = () => {
         let i = 1;
         let total = 0;
         data.forEach(element => {
-            worksheet.addRow([i, element.user_created.code, element.user_created.fullname, element.date_created.slice(0, 10),
+            worksheet.addRow([i, element.user_created?.code, element.user_created?.fullname, element.date_created.slice(0, 10),
                 "0", element.final_total.toLocaleString(), element.final_total.toLocaleString()]);
             for (let j = 0; j < headerColumn.length; j++) {
                 const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
@@ -299,43 +319,66 @@ const StatisticsSalesByStaff = () => {
             i++;
             total = total + element.final_total;
         });
-        worksheet.mergeCells("A" + (i + 9) + ":D" + (i + 9));
-        const customCellTT = worksheet.getCell("A" + (i + 9));
+        worksheet.mergeCells("A" + (i + 8) + ":D" + (i + 8));
+        const customCellTT = worksheet.getCell("A" + (i + 8));
         customCellTT.font = {
             name: "Times New Roman",
             family: 4,
             size: 11,
             bold: true,
         };
-
+        customCellTT.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+        };
+        customCellTT.alignment = { vertical: 'middle', horizontal: 'right' };
         customCellTT.value = "Tổng cộng: ";
 
-        const customCellTT1 = worksheet.getCell("E" + (i + 9));
+        const customCellTT1 = worksheet.getCell("E" + (i + 8));
         customCellTT1.font = {
             name: "Times New Roman",
             family: 4,
             size: 11,
             bold: true,
         };
-
+        customCellTT1.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+        };
         customCellTT1.value = 0;
 
-        const customCellTT2 = worksheet.getCell("F" + (i + 9));
+        const customCellTT2 = worksheet.getCell("F" + (i + 8));
         customCellTT2.font = {
             name: "Times New Roman",
             family: 4,
             size: 11,
             bold: true,
         };
+        customCellTT2.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+        };
         customCellTT2.alignment = { vertical: 'middle', horizontal: 'right' };
         customCellTT2.value = total.toLocaleString();
 
-        const customCellTT3 = worksheet.getCell("G" + (i + 9));
+        const customCellTT3 = worksheet.getCell("G" + (i + 8));
         customCellTT3.font = {
             name: "Times New Roman",
             family: 4,
             size: 11,
             bold: true,
+        };
+        customCellTT3.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
         };
         customCellTT3.alignment = { vertical: 'middle', horizontal: 'right' };
         customCellTT3.value = total.toLocaleString();
@@ -352,10 +395,11 @@ const StatisticsSalesByStaff = () => {
             <Row style={{ marginTop: '10px' }}>
                 <Col span={24}>
                     <label style={{ paddingRight: '10px' }}>Ngày thống kê:</label>
-                    <RangePicker onChange={onChange} />
+                    <RangePicker onChange={onChange} defaultValue={[moment(new Date()),moment(new Date())]}/>
 
                     <label style={{ paddingLeft: '10px', paddingRight: '10px' }}>Nhân viên:</label>
                     <Select
+                        allowClear
                         showSearch
                         style={{
                             width: '200px',

@@ -279,10 +279,10 @@ const WarehouseTransactionListForm = (props) => {
                     bottom: { style: 'thin' },
                     right: { style: 'thin' }
                 };
-                if (j == 0 || j == 7) {
+                if (j == 0 || j == 7 || j == 4) {
                     columnn.alignment = { vertical: 'middle', horizontal: 'center' };
                 }
-                else if (j == 1 || j == 2 || j == 4 || j == 5) {
+                else if (j == 1 || j == 2 || j == 5 || j == 6) {
                     columnn.alignment = { vertical: 'middle', horizontal: 'left' };
                 } else {
                     columnn.alignment = { vertical: 'middle', horizontal: 'right' };

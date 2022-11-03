@@ -162,7 +162,7 @@ const OrderTable = (props) => {
       title: 'Mã hóa đơn',
       dataIndex: 'key',
       key: 'key',
-      with: '10%',
+      with: '15%',
       sorter: {
         compare: (a, b) => a.key > b.key,
         // multiple: 1

@@ -134,7 +134,7 @@ const PriceTable = (props) => {
       title: 'Mã sản phẩm',
       dataIndex: 'product_code',
       key: 'product_code',
-      // width:"8%",
+      width:"10%",
       // sorter: {
       //   compare: (a, b) => a.id > b.id,
       //   multiple: 1
