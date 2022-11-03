@@ -26,7 +26,7 @@ const Header = (props) => {
 
     setInterval(() => {
       var today = new Date();
-      var _welcome = `bây giờ là ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()} ngày ${today.getDate()}/${today.getMonth()}/${today.getFullYear()}`;
+      var _welcome = `bây giờ là ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()} ngày ${today.getDate()}/${today.getMonth()+1}/${today.getFullYear()}`;
       setWelcome(_welcome)
     }, 1000)
   }, [])

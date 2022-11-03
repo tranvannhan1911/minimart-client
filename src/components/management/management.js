@@ -55,6 +55,10 @@ const Managememt = () => {
     handleAuthentication()
   }, []);
 
+  useEffect(() => {
+      document.title = "Quản lý siêu thị mini NT"
+  }, [])
+
   return (
     <Layout>{ hasPerms == false ? null :(
         <>

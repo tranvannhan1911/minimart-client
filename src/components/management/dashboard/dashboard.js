@@ -125,6 +125,10 @@ const latestOrders = {
 
 const Dashboard = () => {
 
+    useEffect(() => {
+      document.title = "Trang chủ - Quản lý siêu thị mini NT"
+    }, [])
+
     return (
         <div>
             <Row><h2 className="page-header">Dashboard</h2></Row>

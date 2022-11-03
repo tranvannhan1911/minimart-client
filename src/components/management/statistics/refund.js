@@ -22,6 +22,10 @@ const StatisticsRefund = () => {
   const [data, setData] = useState([]);
   const [date, setDate] = useState([]);
 
+  useEffect(() => {
+    document.title = "Thống kê trả hàng - Quản lý siêu thị mini NT"
+  }, [])
+
 
   // const enterLoading = (index) => {
   //   setLoadings((prevLoadings) => {

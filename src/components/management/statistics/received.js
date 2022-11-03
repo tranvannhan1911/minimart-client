@@ -27,6 +27,10 @@ import {
     // const [is_create, setCreate] = useState(null); // create
     // const refAutoFocus = useRef(null)
 
+    useEffect(() => {
+      document.title = "Thống kê nhập hàng - Quản lý siêu thị mini NT"
+    }, [])
+
   
     // const enterLoading = (index) => {
     //   setLoadings((prevLoadings) => {

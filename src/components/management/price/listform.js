@@ -29,6 +29,10 @@ const PriceListForm = (props) => {
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
+    useEffect(() => {
+      document.title = "Bảng giá - Quản lý siêu thị mini NT"
+    }, [])
+
     const handleGetData = async () => {
         setLoading(true)
         try {

@@ -37,6 +37,10 @@ const PromotionChangeForm = (props) => {
   const [is_create, setCreate] = useState(null); // create
   const refAutoFocus = useRef(null)
 
+  useEffect(() => {
+    document.title = "Chương trình khuyến mãi - Quản lý siêu thị mini NT"
+  }, [])
+
   const handleDataCustomerGroup = async () => {
     setLoadingData(true)
     try {

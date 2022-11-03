@@ -29,6 +29,10 @@ const PromotionListForm = (props) => {
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
+    useEffect(() => {
+      document.title = "Chương trình khuyến mãi - Quản lý siêu thị mini NT"
+    }, [])
+
     const handleGetData = async () => {
         setLoading(true)
         try {

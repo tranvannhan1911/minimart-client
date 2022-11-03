@@ -54,6 +54,10 @@ const PriceChangeForm = (props) => {
   const [priceDetails, setPriceDetails] = useState([]);
   const refAutoFocus = useRef(null)
 
+  useEffect(() => {
+    document.title = "Bảng giá - Quản lý siêu thị mini NT"
+  }, [])
+
   const uploadData = {
     async beforeUpload(file) {
       // console.log(file.name)

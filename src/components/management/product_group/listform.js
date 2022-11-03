@@ -1,9 +1,9 @@
 import {
     PlusOutlined, UploadOutlined,
     ReloadOutlined, SearchOutlined, DownloadOutlined
-  } from '@ant-design/icons';
+} from '@ant-design/icons';
 import { Button, Input, message, Upload } from 'antd';
-import React, { useState, useEffect,  } from 'react';
+import React, { useState, useEffect, } from 'react';
 import ListForm from '../templates/listform';
 import ProductGroupTable from './table';
 import api from '../../../api/apis'
@@ -24,11 +24,15 @@ const ProductGroupListForm = (props) => {
     const [sortedInfo, setSortedInfo] = useState({})
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
-    
-    
+
+
+    useEffect(() => {
+        document.title = "Nhóm sản phẩm - Quản lý siêu thị mini NT"
+    }, [])
+
     const handleGetData = async () => {
         setLoading(true)
-        try{
+        try {
             const response = await api.product_group.list()
             const _data = response.data.data.results.map(elm => {
 
@@ -40,13 +44,13 @@ const ProductGroupListForm = (props) => {
                     let date2 = elm.date_updated.slice(0, 10);
                     let time2 = elm.date_updated.slice(11, 19);
                     elm.date_updated = date2 + " " + time2;
-                } 
+                }
 
                 return elm
             })
             setData(_data)
             setDataMain(_data)
-        }catch(error){
+        } catch (error) {
             console.log('Failed:', error)
             message.error(messages.ERROR_REFRESH)
         }
@@ -67,22 +71,22 @@ const ProductGroupListForm = (props) => {
         setSearchInfo([])
     };
 
-    const searchName = (value) =>{
+    const searchName = (value) => {
         setDataSearchName(value);
         let data_ = [];
         dataMain.forEach(element => {
-            if(element.name.toLowerCase().includes(value.toLowerCase())){
+            if (element.name.toLowerCase().includes(value.toLowerCase())) {
                 data_.push(element);
             }
         });
         setData(data_);
     }
 
-    const searchCode = (value) =>{
+    const searchCode = (value) => {
         setDataSearchCode(value);
         let data_ = [];
         dataMain.forEach(element => {
-            if(element.product_group_code.toLowerCase().includes(value.toLowerCase())){
+            if (element.product_group_code.toLowerCase().includes(value.toLowerCase())) {
                 data_.push(element);
             }
         });
@@ -137,7 +141,7 @@ const ProductGroupListForm = (props) => {
         };
 
         data.forEach(element => {
-            
+
             worksheet.addRow([element.product_group_code, element.name, element.description, element.note]);
         });
 
@@ -153,10 +157,10 @@ const ProductGroupListForm = (props) => {
 
 
     return (
-        <ListForm 
-            title="Nhóm sản phẩm" 
+        <ListForm
+            title="Nhóm sản phẩm"
             actions={[
-                <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
+                <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
                 // <ShowForPermission>
                 //     <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                 // </ShowForPermission>,
@@ -165,9 +169,9 @@ const ProductGroupListForm = (props) => {
                 </ShowForPermission>
             ]}
             table={
-                <ProductGroupTable 
-                    data={data} 
-                    loading={loading} 
+                <ProductGroupTable
+                    data={data}
+                    loading={loading}
                     setLoading={setLoading}
                     filteredInfo={filteredInfo}
                     setFilteredInfo={setFilteredInfo}
@@ -181,9 +185,9 @@ const ProductGroupListForm = (props) => {
                 />
             }
             extra_actions={[
-                <Input 
-                    placeholder="Tìm kiếm nhóm sản phẩm" 
-                    allowClear value={searchInfo[0]} 
+                <Input
+                    placeholder="Tìm kiếm nhóm sản phẩm"
+                    allowClear value={searchInfo[0]}
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
                 />,

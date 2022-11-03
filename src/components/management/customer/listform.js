@@ -71,6 +71,10 @@ const CustomerListForm = (props) => {
         setLoading(false)
     }
 
+    useEffect(() => {
+      document.title = "Khách hàng - Quản lý siêu thị mini NT"
+    }, [])
+
     const handleGetDataCustomerGroup = async () => {
         try {
             const response = await api.customer_group.list()

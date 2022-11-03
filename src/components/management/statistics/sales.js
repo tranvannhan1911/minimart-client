@@ -29,6 +29,10 @@ const StatisticsSales = () => {
     const [data, setData] = useState([]);
     const [typeStatistics, setTypeStatistics] = useState("true");
 
+    useEffect(() => {
+      document.title = "Thống kê bán hàng - Quản lý siêu thị mini NT"
+    }, [])
+
     const onChange = (e) => {
         console.log('radio checked', e.target.value);
         setTypeStatistics(e.target.value);

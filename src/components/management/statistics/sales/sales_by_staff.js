@@ -32,6 +32,10 @@ const StatisticsSalesByStaff = () => {
     const [date, setDate] = useState([]);
 
     useEffect(() => {
+      document.title = "Thống kê bán hàng theo nhân viên - Quản lý siêu thị mini NT"
+    }, [])
+
+    useEffect(() => {
         handleDataStaff()
     }, [])
 

@@ -26,6 +26,10 @@ const StatisticsPromotion = () => {
   const [type, setType] = useState("Order");
   const [date, setDate] = useState([]);
 
+  useEffect(() => {
+    document.title = "Thống kê chương trình khuyến mãi - Quản lý siêu thị mini NT"
+  }, [])
+
   // const navigate = useNavigate();
   // const [form] = Form.useForm();
   // const [loadings, setLoadings] = useState([]);

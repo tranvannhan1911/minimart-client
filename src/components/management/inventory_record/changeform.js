@@ -52,6 +52,10 @@ const InventoryRecordChangeForm = (props) => {
   const [quantity, setQuantity] = useState("")
   const [dataPrimary, setDataPrimary] = useState({});
 
+  useEffect(() => {
+    document.title = "Phiếu kiểm kê - Quản lý siêu thị mini NT"
+  }, [])
+
 
   const uploadData = {
     async beforeUpload(file) {

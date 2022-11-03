@@ -30,6 +30,10 @@ const InventoryRecordListForm = (props) => {
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
+    useEffect(() => {
+      document.title = "Phiếu kiểm kê - Quản lý siêu thị mini NT"
+    }, [])
+
     const handleGetData = async () => {
         setLoading(true)
         try {

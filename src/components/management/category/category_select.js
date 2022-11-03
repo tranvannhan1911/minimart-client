@@ -26,6 +26,10 @@ const ParentSelect = (props) => {
     }, [])
 
     useEffect(() => {
+        document.title = "Ngành hàng - Quản lý siêu thị mini NT"
+    }, [])
+
+    useEffect(() => {
       console.log("props.value", props)
     }, [props])
 

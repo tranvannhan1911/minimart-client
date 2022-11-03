@@ -80,6 +80,10 @@ const ForgotPassword = () => {
         }
     }, []);
 
+    useEffect(() => {
+        document.title = "Quên mật khẩu - Quản lý siêu thị mini NT"
+    }, [])
+
     const onFinish = async (values) => {
         enterLoading(1)
         const params = {

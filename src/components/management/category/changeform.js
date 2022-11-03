@@ -35,12 +35,17 @@ const CategoryChangeForm = (props) => {
     }
   }, [])
 
+
+  useEffect(() => {
+    document.title = "Ngành hàng - Quản lý siêu thị mini NT"
+  }, [])
+
   useEffect(() => {
     props.setBreadcrumb([
       { title: "Ngành hàng", href: paths.category.list },
       { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
 
-    if (is_create==false) {
+    if (is_create == false) {
       props.setBreadcrumbExtras([
         <Popconfirm
           placement="bottomRight"
@@ -69,7 +74,7 @@ const CategoryChangeForm = (props) => {
   useEffect(() => {
     setTimeout(() => refAutoFocus.current && refAutoFocus.current.focus(), 500)
   }, [refAutoFocus])
-  
+
   const handleData = async () => {
     setLoadingData(true)
     try {
@@ -77,8 +82,8 @@ const CategoryChangeForm = (props) => {
       const values = response.data.data
       console.log(values)
       form.setFieldsValue(values)
-      
-      if(values.parent){
+
+      if (values.parent) {
         const response2 = await api.category.get_parent(values.parent);
         setCategoryParent(response2.data.data.tree)
       }
@@ -161,7 +166,7 @@ const CategoryChangeForm = (props) => {
     }
     return false
   }
-  
+
   const _delete = async () => {
     try {
       const response = await api.category.delete(id)
@@ -207,16 +212,16 @@ const CategoryChangeForm = (props) => {
           onFinishFailed={onFinishFailed}
           forms={
             <>
-            <Form.Item label="Mã ngành hàng" name="code" required
-              rules={[
-                {
-                  required: true,
-                  message: 'Vui lòng nhập mã ngành hàng!',
-                },
-              ]}
-            >
-              <Input autoFocus ref={refAutoFocus} />
-            </Form.Item>
+              <Form.Item label="Mã ngành hàng" name="code" required
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng nhập mã ngành hàng!',
+                  },
+                ]}
+              >
+                <Input autoFocus ref={refAutoFocus} />
+              </Form.Item>
               <Form.Item label="Tên ngành hàng" name="name" required
                 rules={[
                   {
@@ -228,7 +233,7 @@ const CategoryChangeForm = (props) => {
                 <Input />
               </Form.Item>
               <Form.Item label="Ngành hàng cha" name="parent">
-                <ParentSelect categoryParent={categoryParent} setCategoryParent={setCategoryParent}/>
+                <ParentSelect categoryParent={categoryParent} setCategoryParent={setCategoryParent} />
               </Form.Item>
               <Form.Item label="Ghi chú" name="note" >
                 <TextArea rows={4} />
