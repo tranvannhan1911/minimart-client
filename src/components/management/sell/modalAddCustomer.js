@@ -1,7 +1,7 @@
 import {
     PlusOutlined
-  } from '@ant-design/icons';
-import { Modal, Form, Input, message, Col, Row, Select,Space, Button } from 'antd';
+} from '@ant-design/icons';
+import { Modal, Form, Input, message, Col, Row, Select, Space, Button } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import api from '../../../api/apis'
 import { validPhone, validName } from '../../../resources/regexp'
@@ -18,7 +18,7 @@ const ModalLogin = (props) => {
     const [dataCustomerGroup, setDataCustomerGroup] = useState([]);
     const [addressValue, setAddressValue] = useState([]);
     const [is_create, setCreate] = useState(null); // create
-
+    const [is_update, setUpdate] = useState(false); // create
     useEffect(() => {
         setTimeout(() => {
             if (refAutoFocus.current) {
@@ -32,10 +32,12 @@ const ModalLogin = (props) => {
         // if (is_create == null) {
         setCreate(props.is_create)
         if (!props.is_create && props.customer_id != null) {
+            setUpdate(false)
             handleData()
         } else {
             form.resetFields()
             setAddressValue("")
+            setUpdate(false)
         }
         //   }
         handleDataCustomerGroup()
@@ -108,6 +110,26 @@ const ModalLogin = (props) => {
         return false
     }
 
+    const update = async (values) => {
+        values["ward"] = addressValue && addressValue.length > 0 ? addressValue.at(-1) : undefined
+        try {
+            const response = await api.customer.update(props.customer_id, values)
+            if (response.data.code == 1) {
+                message.success(messages.customer.SUCCESS_SAVE(props.customer_id))
+                form.resetFields();
+                props.setCustomer(response.data.data);
+                props.setOpen(false);
+                return true
+            } else {
+                message.error(response.data.message.toString())
+            }
+        } catch (error) {
+            message.error(messages.ERROR)
+            console.log('Failed:', error)
+        }
+        return false
+    }
+
     const onFinish = async (values) => {
         const value = form.getFieldsValue();
         if (value.status == null) {
@@ -121,9 +143,15 @@ const ModalLogin = (props) => {
             message.error('Số điện thoại không hợp lệ! Số điện thoại bao gồm 10 ký tự số bắt đầu là 84 hoặc 03, 05, 07, 08, 09');
             return;
         }
-        create(value);
+        if (is_update == false) {
+            create(value);
+        } else {
+            update(value)
+        }
+
 
     };
+
 
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
@@ -131,16 +159,19 @@ const ModalLogin = (props) => {
 
     return (
         <>
-            <Modal title={is_create? "Thêm khách hàng":"Thông tin khách hàng"} open={props.open} onCancel={handleCancel} width={1000}
-            footer={[
-                <Button key="back" onClick={handleCancel}>
-                  Thoát
-                </Button>,
-                <Button key="submit" type="primary" onClick={onFinish}  disabled={is_create ? false : true}>
-                  Lưu
-                </Button>,
-                
-              ]}>
+            <Modal title={is_create ? "Thêm khách hàng" : "Thông tin khách hàng"} open={props.open} onCancel={handleCancel} width={1000}
+                footer={[
+                    <Button key="back" onClick={handleCancel}>
+                        Thoát
+                    </Button>,
+                    <Button key="submit" type="primary" onClick={() => { setCreate(true); setUpdate(true) }} style={{display: is_create ? "none" : "inline"}}>
+                        Sửa
+                    </Button>,
+                    <Button key="submit" type="primary" onClick={onFinish} disabled={is_create ? false : true}>
+                        Lưu
+                    </Button>,
+
+                ]}>
                 <Form
                     form={form}
                     // name="basic"
@@ -176,7 +207,7 @@ const ModalLogin = (props) => {
                                     },
                                 ]}
                             >
-                                <Input style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} disabled={is_create ? false : true}/>
+                                <Input style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} disabled={is_create ? false : true} />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -230,14 +261,14 @@ const ModalLogin = (props) => {
                         <Col span={1}></Col>
                         <Col span={10}>
                             <Form.Item label="Số nhà, tên đường" name="address">
-                                <Input style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} disabled={is_create ? false : true}/>
+                                <Input style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} disabled={is_create ? false : true} />
                             </Form.Item>
                         </Col>
                         <Col span={2}></Col>
                         <Col span={10}>
                             <Form.Item label="Địa chỉ" name="ward" >
                                 <span style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }}>
-                                    <AddressSelect addressValue={addressValue} setAddressValue={setAddressValue} 
+                                    <AddressSelect addressValue={addressValue} setAddressValue={setAddressValue}
                                     />
                                 </span>
                             </Form.Item>
@@ -264,12 +295,12 @@ const ModalLogin = (props) => {
                         <Col span={10}>
 
                             <Form.Item label="Ghi chú" name="note" >
-                                <TextArea rows={1} style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} disabled={is_create ? false : true}/>
+                                <TextArea rows={1} style={{ width: '250px', position: 'absolute', right: '0px', top: '-2px' }} disabled={is_create ? false : true} />
                             </Form.Item>
 
                         </Col>
                     </Row>
-                    
+
                 </Form>
             </Modal>
         </>

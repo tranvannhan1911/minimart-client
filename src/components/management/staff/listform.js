@@ -142,7 +142,7 @@ const StaffListForm = (props) => {
             family: 4,
             size: 8,
         };
-        customCell1.value = "Tên cửa hàng: SIÊU THỊ MINI";
+        customCell1.value = "Tên cửa hàng: SIÊU THỊ MINI NT";
 
         worksheet.mergeCells("A2:H2");
 

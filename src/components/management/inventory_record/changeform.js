@@ -4,7 +4,7 @@ import {
 } from '@ant-design/icons';
 import {
   Button, Form, Input, Select, message, Space, Popconfirm,
-  Col, Row, Typography, Upload, notification
+  Col, Row, Typography, Upload, notification, Switch
 } from 'antd';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -50,12 +50,22 @@ const InventoryRecordChangeForm = (props) => {
   const listPrice = [];
   const [unit, setUnit] = useState("")
   const [quantity, setQuantity] = useState("")
+  const [checked, setChecked] = useState(false);
   const [dataPrimary, setDataPrimary] = useState({});
 
   useEffect(() => {
     document.title = "Phiếu kiểm kê - Quản lý siêu thị mini NT"
   }, [])
 
+  const onChange = (checked) => {
+    if (checked == true && is_status != "cancel") {
+      setChecked(true);
+      form.setFieldValue("status", "complete");
+      setStatus("complete");
+      console.log("3333");
+      onFinish(form.getFieldsValue());
+    }
+  };
 
   const uploadData = {
     async beforeUpload(file) {
@@ -284,14 +294,14 @@ const InventoryRecordChangeForm = (props) => {
     if (is_create) {
       await create(values)
     } else {
-      if (is_status == "complete") {
-        if (values.status == "pending" || values.status == "cancel") {
-          message.error("Phiếu kiểm kê này đã hoàn thành không thể sửa trạng thái!")
-          stopLoading(idxBtnSave)
-          setDisableSubmit(false)
-          return;
-        }
-      }
+      // if (is_status == "complete") {
+      //   if (values.status == "pending" || values.status == "cancel") {
+      //     message.error("Phiếu kiểm kê này đã hoàn thành không thể sửa trạng thái!")
+      //     stopLoading(idxBtnSave)
+      //     setDisableSubmit(false)
+      //     return;
+      //   }
+      // }
       await update(values)
     }
     stopLoading(idxBtnSave)
@@ -331,7 +341,12 @@ const InventoryRecordChangeForm = (props) => {
 
       form.setFieldsValue(values)
       store.dispatch(setInfoCreateUpdate(values))
-
+      setStatus(values.status);
+      if (values.status == "complete") {
+        setChecked(true);
+      } else {
+        setChecked(false)
+      }
     } catch (error) {
       message.error(messages.ERROR)
     } finally {
@@ -535,6 +550,9 @@ const InventoryRecordChangeForm = (props) => {
                   </Col>
                   <Col span={2}></Col>
                   <Col span={10} style={{ backgroundColor: "white" }}>
+                    <Form.Item label="Kiểm kê">
+                      <Switch checkedChildren="Hoàn thành" unCheckedChildren="Tạo mới" checked={checked} onChange={onChange} style={{ display: 'flex' }} />
+                    </Form.Item>
                   </Col>
                 </Row>
               }

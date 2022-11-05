@@ -154,7 +154,7 @@ const PriceListForm = (props) => {
             family: 4,
             size: 8,
         };
-        customCell1.value = "Tên cửa hàng: SIÊU THỊ MINI";
+        customCell1.value = "Tên cửa hàng: SIÊU THỊ MINI NT";
 
         worksheet.mergeCells("A2:I2");
 
@@ -255,7 +255,7 @@ const PriceListForm = (props) => {
         data.forEach(element => {
             let nhomsp = "";
             element.product_groups.forEach(elm => {
-                nhomsp += elm + ", ";
+                nhomsp += elm + " ";
             })
             worksheet.addRow([i, element.product_code, element.name, element.barcode, element.base_unit.name, element.stock, nhomsp,
                 element.product_category, element.description]);

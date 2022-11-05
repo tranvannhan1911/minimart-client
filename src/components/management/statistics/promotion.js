@@ -247,7 +247,7 @@ const StatisticsPromotion = () => {
           nameProduct: element.promotion_line.detail.product_received,
           quantity: element.promotion_line.detail.quantity_received,
           unit: element.promotion_line.detail.product_received,
-          money: "",
+          money: 0,
           moneyTotal: element.promotion_line.max_quantity,
           moneyUsed: element.quantity,
           moneyRecord: element.promotion_line.max_quantity == null ? "" : element.promotion_line.max_quantity - element.amount
@@ -263,7 +263,7 @@ const StatisticsPromotion = () => {
           nameProduct: "",
           quantity: "",
           unit: "",
-          money: "",
+          money: 0,
           moneyTotal: element.promotion_line.max_quantity == null ? "" : element.promotion_line.max_quantity * element.promotion_line.detail.reduction_amount,
           moneyUsed: element.amount,
           moneyRecord: element.promotion_line.max_quantity == null ? "" : (element.promotion_line.max_quantity * element.promotion_line.detail.reduction_amount) - element.amount
@@ -282,7 +282,7 @@ const StatisticsPromotion = () => {
     var ExcelJSWorkbook = new ExcelJS.Workbook();
     var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO");
 
-    worksheet.mergeCells("A1:M1");
+    worksheet.mergeCells("A1:I1");
 
     const customCell1 = worksheet.getCell("A1");
     customCell1.font = {
@@ -290,9 +290,9 @@ const StatisticsPromotion = () => {
       family: 4,
       size: 8,
     };
-    customCell1.value = "Tên cửa hàng: SIÊU THỊ MINI";
+    customCell1.value = "Tên cửa hàng: SIÊU THỊ MINI NT";
 
-    worksheet.mergeCells("A2:M2");
+    worksheet.mergeCells("A2:I2");
 
     const customCell2 = worksheet.getCell("A2");
     customCell2.font = {
@@ -302,7 +302,7 @@ const StatisticsPromotion = () => {
     };
     customCell2.value = "Địa chỉ: Gò Vấp - Tp.Hồ Chí Minh";
 
-    worksheet.mergeCells("A3:M3");
+    worksheet.mergeCells("A3:I3");
 
     const customCell3 = worksheet.getCell("A3");
     customCell3.font = {
@@ -313,7 +313,7 @@ const StatisticsPromotion = () => {
     const day = new Date();
     customCell3.value = "Ngày xuất báo cáo: " + day.getDate() + "/" + (day.getMonth() + 1) + "/" + day.getFullYear();
 
-    worksheet.mergeCells("A4:M4");
+    worksheet.mergeCells("A4:I4");
 
     const customCell4 = worksheet.getCell("A4");
     customCell4.font = {
@@ -323,7 +323,7 @@ const StatisticsPromotion = () => {
     };
     customCell4.value = "Người xuất báo cáo: " + sessionStorage.getItem("nameStaff") + ' - ' + sessionStorage.getItem("phoneStaff");
 
-    worksheet.mergeCells("A5:M5");
+    worksheet.mergeCells("A5:I5");
 
     const customCell = worksheet.getCell("A5");
     customCell.font = {
@@ -336,7 +336,7 @@ const StatisticsPromotion = () => {
 
     customCell.value = "BÁO CÁO TỔNG KẾT CTKM ";
 
-    worksheet.mergeCells("A6:M6");
+    worksheet.mergeCells("A6:I6");
 
     const customCell5 = worksheet.getCell("A6");
     customCell5.font = {
@@ -348,11 +348,15 @@ const StatisticsPromotion = () => {
 
     customCell5.value = "Từ ngày: " + date[0].slice(0, 10) + "      Đến ngày: " + date[1].slice(0, 10) + " ";
 
-    let header = ["STT", "Mã CTKM", "Tên CTKM", "Ngày bắt đầu", "Ngày kết thúc", "Mã SP tặng", "Tên SP tặng",
-      "SL tặng", "Đơn vị tính", "Số tiền chiết khấu", "Ngân sách tổng", "Ngân sách đã sử dụng", "Ngân sách còn lại"];
-    let headerColumn = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"];
+    // let header = ["STT", "Mã CTKM", "Tên CTKM", "Ngày bắt đầu", "Ngày kết thúc", "Mã SP tặng", "Tên SP tặng",
+    //   "SL tặng", "Đơn vị tính", "Số tiền chiết khấu", "Ngân sách tổng", "Ngân sách đã sử dụng", "Ngân sách còn lại"];
+    // let headerColumn = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"];
 
-    worksheet.mergeCells("A7:M7");
+    let header = ["STT", "Mã CTKM", "Tên CTKM", "Ngày bắt đầu", "Ngày kết thúc"
+      , "Số tiền chiết khấu", "Ngân sách tổng", "Ngân sách đã sử dụng", "Ngân sách còn lại"];
+    let headerColumn = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
+
+    worksheet.mergeCells("A7:I7");
     var headerRow = worksheet.addRow();
 
     worksheet.getRow(8).font = { bold: true };
@@ -381,14 +385,14 @@ const StatisticsPromotion = () => {
       },
       to: {
         row: 8,
-        column: 13
+        column: 9
       }
     };
     let i = 1;
     let total = 0;
     data.forEach(element => {
-      worksheet.addRow([i, element.id, element.name, element.start_date, element.end_date, element.idProduct, element.nameProduct,
-        element.quantity, element.unit, element.money?.toLocaleString(), element.moneyTotal?.toLocaleString(),
+      worksheet.addRow([i, element.id, element.name, element.start_date, element.end_date,
+        element.money?.toLocaleString(), element.moneyTotal?.toLocaleString(),
         element.moneyUsed?.toLocaleString(), element.moneyRecord?.toLocaleString()]);
       for (let j = 0; j < headerColumn.length; j++) {
         const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
@@ -400,7 +404,7 @@ const StatisticsPromotion = () => {
         };
         if (j == 0 || j == 3 || j == 4) {
           columnn.alignment = { vertical: 'middle', horizontal: 'center' };
-        } else if (j == 1 || j == 2 || j == 5 || j == 6 || j == 8) {
+        } else if (j == 1 || j == 2) {
           columnn.alignment = { vertical: 'middle', horizontal: 'left' };
         } else {
           columnn.alignment = { vertical: 'middle', horizontal: 'right' };

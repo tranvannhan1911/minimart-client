@@ -3,7 +3,7 @@ import {
 } from '@ant-design/icons';
 import {
   Button, Form, Input, Select, message, Space, Popconfirm,
-  Col, Row, Typography, InputNumber, Upload, notification
+  Col, Row, Typography, InputNumber, Upload, notification, Switch
 } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/apis'
@@ -44,11 +44,22 @@ const InventoryReceivingChangeForm = (props) => {
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const [is_status, setStatus] = useState(null);
+  const [checked, setChecked] = useState(false);
   const refAutoFocus = useRef(null)
 
   useEffect(() => {
     document.title = "Phiếu nhập hàng - Quản lý siêu thị mini NT"
   }, [])
+
+  const onChange = (checked) => {
+    if (checked == true && is_status != "cancel") {
+      setChecked(true);
+      form.setFieldValue("status", "complete");
+      setStatus("complete");
+      console.log("3333");
+      onFinish(form.getFieldsValue());
+    }
+  };
 
   const uploadData = {
     async beforeUpload(file) {
@@ -303,7 +314,7 @@ const InventoryReceivingChangeForm = (props) => {
       await create(values)
     } else {
       if (is_status == "complete") {
-        if (values.status == "pending" || values.status == "cancel") {
+        if (values.status == "cancel") {
           message.error("Phiếu nhập hàng này đã hoàn thành không thể sửa trạng thái!")
           stopLoading(idxBtnSave)
           setDisableSubmit(false)
@@ -361,10 +372,12 @@ const InventoryReceivingChangeForm = (props) => {
       })
 
       form.setFieldsValue(values)
-      // console.log("setData", values)
-      // // setDataVoucher(values)
-      // setData({...values})
-
+      setStatus(values.status);
+      if (values.status == "complete") {
+        setChecked(true);
+      } else {
+        setChecked(false)
+      }
       store.dispatch(setInfoCreateUpdate(values))
     } catch (error) {
       message.error(messages.ERROR)
@@ -568,17 +581,20 @@ const InventoryReceivingChangeForm = (props) => {
               >
                 <Input value={0} />
               </Form.Item>
-              
+
               {is_create ? null :
                 <Row>
                   <Col span={1}></Col>
                   <Col span={10} style={{ backgroundColor: "white" }}>
                     <Form.Item label="Mã id phiếu nhập hàng" name="id">
-                      <Input name="id" disabled={true} className="inputBorderDisableText"/>
+                      <Input name="id" disabled={true} className="inputBorderDisableText" />
                     </Form.Item>
                   </Col>
                   <Col span={2}></Col>
                   <Col span={10} style={{ backgroundColor: "white" }}>
+                    <Form.Item label="Nhập hàng">
+                      <Switch checkedChildren="Hoàn thành" unCheckedChildren="Tạo mới" checked={checked} onChange={onChange} style={{ display: 'flex' }} />
+                    </Form.Item>
                   </Col>
                 </Row>
               }

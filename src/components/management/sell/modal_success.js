@@ -1,6 +1,7 @@
 import { Button, Modal, Result, Row, Col, Table, Typography } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import moment from "moment";
+import ReactToPrint, {useReactToPrint} from 'react-to-print';
 
 const SuccessModal = (props) => {
   const [open, setOpen] = useState(false);
@@ -10,7 +11,39 @@ const SuccessModal = (props) => {
   const [staffName, setStaffName] = useState(sessionStorage.getItem("nameStaff"));
   const [detailsOrder, setDetailsOrder] = useState([]);
   const [dateBuy, setDateBuy] = useState([]);
-
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    pageStyle: `
+    @media all {
+      .page-break {
+        display: none;
+      }
+    }
+    
+    @media print {
+      html, body {
+        width: 80mm;
+        height: initial !important;
+        overflow: initial !important;
+        -webkit-print-color-adjust: exact;
+      }
+    }
+    
+    @media print {
+      .page-break {
+        margin-top: 1rem;
+        display: block;
+        page-break-before: none;
+      }
+    }
+    
+    @page {
+      size: 80mm auto;
+      margin: 20mm;
+    }
+    `,
+  });
 
   const showModal = () => {
     props.setOpen(true);
@@ -19,7 +52,8 @@ const SuccessModal = (props) => {
   const handleOk = () => {
     setOpenFooter(false)
     setTimeout(() => {
-      window.print()
+      handlePrint()
+      // window.print()
     }, 1000);
     setTimeout(() => {
       props.onFinish(true);
@@ -146,10 +180,11 @@ const SuccessModal = (props) => {
         onPressEnter={() => {
           console.log("enter")
         }}
-        width={900}
+        width={700}
       >
+        <div ref={componentRef}>
         <Row>
-          <Col style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold', marginTop: "-20px" }} span={24}>SIÊU THỊ MINI</Col>
+          <Col style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold'}} span={24}>SIÊU THỊ MINI</Col>
         </Row>
         <Row>
           <Col style={{ textAlign: 'center', fontSize: '17px' }} span={24}>Địa chỉ: Gò Vấp - Tp.Hồ Chí Minh</Col>
@@ -160,40 +195,40 @@ const SuccessModal = (props) => {
         <Row>
           <Col style={{ textAlign: 'center', fontSize: '17px', fontWeight: 'bold', marginTop: '8px', marginBottom: '8px' }} span={24}>HÓA ĐƠN THANH TOÁN</Col>
         </Row>
-        <Row style={{ marginLeft: '0px', marginTop: '8px' }} span={24}>
+        <Row style={{ marginLeft: '10px', marginTop: '8px' }} span={24}>
           <Col span={7}>Mã hóa đơn: {props.orderId}</Col>
           <Col span={17}>Ngày mua: {dateBuy}</Col>
         </Row>
-        <Row style={{ marginLeft: '0px', marginTop: '8px' }} span={24}>
+        <Row style={{ marginLeft: '10px', marginTop: '8px' }} span={24}>
           <Col span={7}>Mã khách hàng: {props.customerId}</Col>
           <Col span={17}>Tên khách hàng: {props.customerName}</Col>
         </Row>
-        <Row style={{ marginLeft: '0px', marginTop: '8px' }} span={24}>
+        <Row style={{ marginLeft: '10px', marginTop: '8px' }} span={24}>
           <Col span={7}>Mã nhân viên: {staffId}</Col>
           <Col span={17}>Tên nhân viên: {staffName}</Col>
         </Row>
         <Row>
-          <Col style={{ marginLeft: '0px', marginTop: '8px' }} span={24}>
+          <Col style={{ marginTop: '8px', marginRight:'10px'}} span={24}>
             <Table columns={columns} dataSource={detailsOrder} pagination={false} />
           </Col>
         </Row>
         <Row>
-          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px' }}>Số lượng sản phẩm: {props.order.length}</Col>
+          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px', paddingRight:'20px'}}>Số lượng sản phẩm: {props.order.length}</Col>
         </Row>
         <Row>
-          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px', fontWeight: 'bold' }}>Tổng tiền hàng: {props.totalProduct?.toLocaleString()} vnđ</Col>
+          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px', fontWeight: 'bold', paddingRight:'20px' }}>Tổng tiền hàng: {props.totalProduct?.toLocaleString()} vnđ</Col>
         </Row>
         <Row>
-          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px' }}>Giảm giá: {(props.totalProduct - props.total)?.toLocaleString()} vnđ</Col>
+          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px', paddingRight:'20px' }}>Giảm giá: {(props.totalProduct - props.total)?.toLocaleString()} vnđ</Col>
         </Row>
         <Row>
-          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px', fontWeight: 'bold', color: 'red' }}>Tổng tiền thanh toán: {props.total?.toLocaleString()} vnđ</Col>
+          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px', fontWeight: 'bold', color: 'red', paddingRight:'20px' }}>Tổng tiền thanh toán: {props.total?.toLocaleString()} vnđ</Col>
         </Row>
         <Row>
-          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px'}}>Tiền khách đưa: {(props.dataMoneyChange + props.total)?.toLocaleString()} vnđ</Col>
+          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px', paddingRight:'20px' }}>Tiền khách đưa: {(props.dataMoneyChange + props.total)?.toLocaleString()} vnđ</Col>
         </Row>
         <Row>
-          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px'}}>Tiền thừa: {props.dataMoneyChange?.toLocaleString()} vnđ</Col>
+          <Col span={24} style={{ textAlign: 'right', fontSize: '13px', marginTop: '8px', paddingRight:'20px' }}>Tiền thừa: {props.dataMoneyChange?.toLocaleString()} vnđ</Col>
         </Row>
 
         <Row>
@@ -202,11 +237,12 @@ const SuccessModal = (props) => {
         <Row>
           <Col style={{ textAlign: 'center' }} span={24}>Hẹn gặp lại quý khách lần sau</Col>
         </Row>
+        </div>
         <Row>
-          <Button type="primary" key="print" onClick={handleOk} ref={refBtnPrint} style={{ display: openFooter == true ? 'block' : "none", position:"absolute", right:'20px' }}>
+          <Button type="primary" key="print" onClick={handleOk} ref={refBtnPrint} style={{ display: openFooter == true ? 'block' : "none", position: "absolute", right: '20px' }}>
             In hóa đơn
           </Button>
-          <Button key="exit" onClick={handleCancel} style={{ display: openFooter == true ? 'block' : "none", position:"absolute", right:'130px'}}>Thoát</Button>,
+          <Button key="exit" onClick={handleCancel} style={{ display: openFooter == true ? 'block' : "none", position: "absolute", right: '130px' }}>Thoát</Button>,
         </Row>
       </Modal>
     </>
