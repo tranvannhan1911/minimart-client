@@ -98,7 +98,7 @@ const PriceChangeForm = (props) => {
       const response = await api.product.get(id);
       const values = response.data.data
       values.product_groups = values.product_groups.map(elm => elm.id.toString());
-      values.base_unit= values.base_unit?.id
+      values.base_unit = values.base_unit?.id
       // props.setDateCreatedInfo(values)
       values.units = values.units.filter(unitexchange => unitexchange.is_active && !unitexchange.is_base_unit)
       form.setFieldsValue(values)
@@ -307,9 +307,9 @@ const PriceChangeForm = (props) => {
         }
         units.push(unit);
       }
-      
+
     });
-    
+
     // if (i == 0) {
     //   message.error('Vui lòng nhập đơn vị tính cơ bản cho sản phẩm');
     //   stopLoading(idxBtnSave)
@@ -512,27 +512,26 @@ const PriceChangeForm = (props) => {
                   </Col>
                 </Row>
 
-                {/* <Row>
-                  <Col flex="auto">
-                    
-                  </Col>
-                  <Col flex="none"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}>
-                    <Button type="link" shape="circle" icon={<PlusOutlined />}
-                      style={{
-                        marginTop: '5px'
-                      }}
-                      onClick={() => {
-                        setOpen(true)
-                      }} />
-                  </Col>
-                </Row> */}
                 <Row>
                   <Col span={1}></Col>
                   <Col span={10}>
+                    <Form.Item label="Đơn vị báo cáo" name="unit_exchange_report"
+                    >
+                      <Select
+                        showSearch
+                        style={{
+                          width: "100%",
+                        }}
+                        placeholder="Đơn vị báo cáo"
+                        optionFilterProp="children"
+                        filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+                        filterSort={(optionA, optionB) =>
+                          optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                        }
+                      >
+                        {unitOptions}
+                      </Select>
+                    </Form.Item>
                     <Form.List name="units" label="Đơn vị tính quy đổi">
                       {(fields, { add, remove }) => (
                         <>
@@ -595,7 +594,7 @@ const PriceChangeForm = (props) => {
                                   },
                                 ]}
                               >
-                                <InputNumber type='number' placeholder="Giá trị quy đổi"/>
+                                <InputNumber type='number' placeholder="Giá trị quy đổi" />
                               </Form.Item>
                               <Form.Item
                                 {...restField}
@@ -624,10 +623,9 @@ const PriceChangeForm = (props) => {
                         </>
                       )}
                     </Form.List>
-
                   </Col>
                   <Col span={2}></Col>
-                  <Col>
+                  <Col span={10}>
                     <Form.Item label="Hình ảnh" name="image"
                       style={{
                         textAlign: 'left'
@@ -661,6 +659,17 @@ const PriceChangeForm = (props) => {
                     </Form.Item>
                   </Col>
                 </Row>
+                {/* <Row>
+                  <Col span={1}></Col>
+                  <Col span={10}>
+                    
+
+                  </Col>
+                  <Col span={2}></Col>
+                  <Col>
+
+                  </Col>
+                </Row> */}
 
 
                 <Form.Item>

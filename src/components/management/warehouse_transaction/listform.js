@@ -32,7 +32,7 @@ const WarehouseTransactionListForm = (props) => {
     const navigate = useNavigate()
 
     useEffect(() => {
-      document.title = "Biến động kho - Quản lý siêu thị mini NT"
+        document.title = "Biến động kho - Quản lý siêu thị mini NT"
     }, [])
 
     const handleGetData = async () => {
@@ -55,7 +55,7 @@ const WarehouseTransactionListForm = (props) => {
                 //     elm.quantity_base_unit = elm.reference.quantity
 
 
-                console.log("elm", elm)
+                // console.log("elm", elm)
                 // if (elm.reference) {
                 //     let reference = '';
                 //     let link = "";
@@ -169,7 +169,7 @@ const WarehouseTransactionListForm = (props) => {
 
     const exportExcel = () => {
         var ExcelJSWorkbook = new ExcelJS.Workbook();
-        var worksheet = ExcelJSWorkbook.addWorksheet("BienDongKho");
+        var worksheet = ExcelJSWorkbook.addWorksheet("BienDongKho", { views: [{ showGridLines: false }] });
 
         worksheet.mergeCells("A1:I1");
 
@@ -238,6 +238,7 @@ const WarehouseTransactionListForm = (props) => {
         var headerRow = worksheet.addRow();
 
         worksheet.getRow(7).font = { bold: true };
+        worksheet.getRow(7).height = "25";
 
         customCell.value = "Danh sách biến động kho";
 
@@ -250,6 +251,12 @@ const WarehouseTransactionListForm = (props) => {
                 left: { style: 'thin' },
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
+            };
+            columnn.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'ffb0e2ff' },
+                bgColor: { argb: 'ffb0e2ff' }
             };
             if (i == 0) {
                 worksheet.getColumn(i + 1).width = "10";
@@ -300,7 +307,7 @@ const WarehouseTransactionListForm = (props) => {
         ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
             saveAs(
                 new Blob([buffer], { type: "application/octet-stream" }),
-                `DSBienDongKho.xlsx`
+                `DSBienDongKho${day.getDate()}${day.getMonth() + 1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
             );
         });
     };

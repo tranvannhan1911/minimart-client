@@ -26,88 +26,23 @@ const StatisticsPromotion = () => {
   const [data, setData] = useState([]);
   const [type, setType] = useState("");
   const [date, setDate] = useState([]);
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     document.title = "Thống kê chương trình khuyến mãi - Quản lý siêu thị mini NT"
     onThongKeToDay()
   }, [])
 
-  // const navigate = useNavigate();
-  // const [form] = Form.useForm();
-  // const [loadings, setLoadings] = useState([]);
-  // const [loadingData, setLoadingData] = useState(true);
-  // const [disableSubmit, setDisableSubmit] = useState(false);
-  // const [idxBtnSave, setIdxBtnSave] = useState([]);
-  // let { id } = useParams();
-  // const [is_create, setCreate] = useState(null); // create
-  // const refAutoFocus = useRef(null)
 
-
-  // const enterLoading = (index) => {
-  //   setLoadings((prevLoadings) => {
-  //     const newLoadings = [...prevLoadings];
-  //     newLoadings[index] = true;
-  //     return newLoadings;
-  //   });
-  // };
-
-  // const stopLoading = (index) => {
-  //   setLoadings((prevLoadings) => {
-  //     const newLoadings = [...prevLoadings];
-  //     newLoadings[index] = false;
-  //     return newLoadings;
-  //   });
-  // }
-
-  // const onFinish = async (values) => {
-  //   setDisableSubmit(true)
-  //   enterLoading(idxBtnSave)
-  //   // console.log(state);
-  //   if (!validName.test(values.fullname)) {
-  //     message.error('Tên không hợp lệ! Ký tự đầu mỗi từ phải viết hoa');
-  //     setDisableSubmit(false)
-  //     stopLoading(idxBtnSave)
-  //     return;
-  //   }
-  //   if (!validPhone.test(values.phone)) {
-  //     message.error('Số điện thoại không hợp lệ! Số điện thoại bao gồm 10 ký tự số bắt đầu là 84 hoặc 03, 05, 07, 08, 09');
-  //     setDisableSubmit(false)
-  //     stopLoading(idxBtnSave)
-  //     return;
-  //   }
-  // //   if (is_create) {
-  // //     await create(values)
-  // //   } else {
-  // //     await update(values)
-  // //   }
-  //   stopLoading(idxBtnSave)
-  //   setDisableSubmit(false)
-  // }
-
-  // const onFinishFailed = (errorInfo) => {
-  //   // console.log("props.create", props.create)
-  //   console.log('Failed:', errorInfo)
-  //   stopLoading(0)
-  // };
-
-  // const handleData = async () => {
-  //   setLoadingData(true)
-  //   try {
-  //     const response = await api.staff.get(id);
-  //     const values = response.data.data
-  //     // console.log(values)
-  //     form.setFieldsValue(values)
-  //   } catch (error) {
-  //     message.error(messages.ERROR)
-  //   } finally {
-  //     setLoadingData(false)
-  //   }
-  // }
 
   const onChange = (dates, dateStrings) => {
     if (dates) {
       console.log('From: ', dates[0], ', to: ', dates[1]);
       console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
+      if (new Date(dateStrings[0]) - new Date(dateStrings[1]) < -31536000000) {
+        message.error("Khoảng thời gian thống kê không quá 1 năm");
+        return;
+      }
       setDate([dateStrings[0] + "T05:10:10.357Z", dateStrings[1] + "T23:10:10.357Z"])
     } else {
       console.log('Clear');
@@ -201,6 +136,7 @@ const StatisticsPromotion = () => {
       message.error("Vui lòng chọn ngày cần thống kê");
       return;
     }
+    setLoading(true)
     const params = {
       params: {
         start_date: date[0],
@@ -272,6 +208,7 @@ const StatisticsPromotion = () => {
       }
     });
     setData(dataMain);
+    setLoading(false)
   }
 
   const exportExcel = () => {
@@ -280,7 +217,7 @@ const StatisticsPromotion = () => {
       return;
     }
     var ExcelJSWorkbook = new ExcelJS.Workbook();
-    var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO");
+    var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO", {views: [{showGridLines: false}]});
 
     worksheet.mergeCells("A1:I1");
 
@@ -458,7 +395,7 @@ const StatisticsPromotion = () => {
     ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
       saveAs(
         new Blob([buffer], { type: "application/octet-stream" }),
-        `BaoCaoTongKetKhuyenMai.xlsx`
+        `BaoCaoTongKetKhuyenMai${day.getDate()}${day.getMonth() + 1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
       );
     });
   }
@@ -496,6 +433,7 @@ const StatisticsPromotion = () => {
           <Table dataSource={data}
             columns={columns}
             size="small"
+            loading={loading}
           >
           </Table>
         </Col>

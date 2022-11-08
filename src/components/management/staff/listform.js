@@ -99,7 +99,7 @@ const StaffListForm = (props) => {
         setDataSearchCode(value);
         let data_ = [];
         dataMain.forEach(element => {
-            if(element.code.toLowerCase().includes(value.toLowerCase())){
+            if(element.id.toString().toLowerCase().includes(value.toLowerCase())){
                 data_.push(element);
             }
         });
@@ -132,7 +132,7 @@ const StaffListForm = (props) => {
 
     const exportExcel = () => {
         var ExcelJSWorkbook = new ExcelJS.Workbook();
-        var worksheet = ExcelJSWorkbook.addWorksheet("DSNhanVien");
+        var worksheet = ExcelJSWorkbook.addWorksheet("DSNhanVien", {views: [{showGridLines: false}]});
 
         worksheet.mergeCells("A1:H1");
 
@@ -201,6 +201,7 @@ const StaffListForm = (props) => {
         var headerRow = worksheet.addRow();
 
         worksheet.getRow(7).font = { bold: true };
+        worksheet.getRow(7).height = "25";
 
         customCell.value = "Danh sách nhân viên";
 
@@ -213,6 +214,12 @@ const StaffListForm = (props) => {
                 left: { style: 'thin' },
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
+            };
+            columnn.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'ffb0e2ff' },
+                bgColor: { argb: 'ffb0e2ff' }
             };
             if (i == 0) {
                 worksheet.getColumn(i + 1).width = "10";
@@ -241,7 +248,7 @@ const StaffListForm = (props) => {
             }else{
                 status="Ngưng hoạt động";
             }
-            worksheet.addRow([i,element.code, element.fullname, element.phone, element.gender, element.is_manager, status, element.note]);
+            worksheet.addRow([i,element.id, element.fullname, element.phone, element.gender, element.is_manager, status, element.note]);
             for (let j = 0; j < headerColumn.length; j++) {
                 const columnn = worksheet.getCell(headerColumn[j] + (i + 7));
                 columnn.border = {
@@ -252,6 +259,8 @@ const StaffListForm = (props) => {
                 };
                 if (j == 0) {
                     columnn.alignment = { vertical: 'middle', horizontal: 'center' };
+                }else if(j ==1){
+                    columnn.alignment = { vertical: 'middle', horizontal: 'left' };
                 }
                 
             }
@@ -262,7 +271,7 @@ const StaffListForm = (props) => {
         ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
             saveAs(
                 new Blob([buffer], { type: "application/octet-stream" }),
-                `DSNhanVien.xlsx`
+                `DSNhanVien${day.getDate()}${day.getMonth()+1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
             );
         });
     };

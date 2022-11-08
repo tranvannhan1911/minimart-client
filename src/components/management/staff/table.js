@@ -173,8 +173,9 @@ const StaffTable = (props) => {
   const columns = [
     {
       title: 'Mã nhân viên',
-      dataIndex: 'code',
-      key: 'code',
+      dataIndex: 'id',
+      key: 'id',
+      width: '10%',
       sorter: {
         compare: (a, b) => a.id > b.id,
         multiple: 1

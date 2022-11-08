@@ -80,6 +80,8 @@ const OrderListForm = (props) => {
                     "customer": elm.customer == null ? "Khách hàng lẻ" : elm.customer.fullname,
                     "user_created": elm.user_created == null ? "" : elm.user_created.fullname,
                     "user_updated": elm.user_updated,
+                    "id_user_created": elm.user_created == null ? "" : elm.user_created.id,
+                    "id_customer": elm.customer == null ? "" : elm.customer.id,
                 };
                 return index;
             })

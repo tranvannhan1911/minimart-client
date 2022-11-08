@@ -98,14 +98,18 @@ const PriceChangeForm = (props) => {
           dataProduct.forEach(elementt => {
             if (elementt.product_code.toLowerCase() == element.maSP.toLowerCase() || elementt.barcode == element.maSP) {
               let unit = "";
+              let unitname="";
+              let quantityQD=0;
               if (kqUnit == true) {
                 elementt.units.forEach(elm => {
                   if (elm.unit_code.toLowerCase() == element.maDonVi.toLowerCase()) {
                     unit = elm.id;
+                    unitname= elm.unit_name;
+                    quantityQD = elm.value;
                   }
                 });
               }
-              if (unit == "" && kqUnit == true) {
+              if (unit == "" && kqUnit == false) {
                 notification.open({
                   message: 'Lỗi tải dữ liệu',
                   description:
@@ -122,6 +126,9 @@ const PriceChangeForm = (props) => {
                   // "key": elementt.id,
                   "price": element.gia,
                   "product": elementt.id,
+                  "product_code": elementt.product_code,
+                  "product_name": elementt.name,
+                  "unit_exchange_value_str": quantityQD + " " + elementt.base_unit.name,
                   "unit_exchange": unit
                 };
                 dataerrorr.push({
@@ -705,7 +712,7 @@ const PriceChangeForm = (props) => {
                     ]}
                   >
                     <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} 
-                      defaultValue={moment()}/>
+                      />
                   </Form.Item>
                 </Col>
               </Row>
@@ -743,7 +750,8 @@ const PriceChangeForm = (props) => {
                     ]}
                   >
                     <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} 
-                      defaultValue={moment()}/>
+                      // defaultValue={moment()}
+                      />
                   </Form.Item>
                 </Col>
               </Row>

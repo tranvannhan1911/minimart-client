@@ -129,7 +129,7 @@ const SupplierListForm = (props) => {
     
     const exportExcel = () => {
         var ExcelJSWorkbook = new ExcelJS.Workbook();
-        var worksheet = ExcelJSWorkbook.addWorksheet("DSNhaCungCap");
+        var worksheet = ExcelJSWorkbook.addWorksheet("DSNhaCungCap", {views: [{showGridLines: false}]});
 
         worksheet.mergeCells("A1:F1");
 
@@ -198,6 +198,7 @@ const SupplierListForm = (props) => {
         var headerRow = worksheet.addRow();
 
         worksheet.getRow(7).font = { bold: true };
+        worksheet.getRow(7).height = "25";
 
         customCell.value = "Danh sách nhà cung cấp";
 
@@ -210,6 +211,12 @@ const SupplierListForm = (props) => {
                 left: { style: 'thin' },
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
+            };
+            columnn.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'ffb0e2ff' },
+                bgColor: { argb: 'ffb0e2ff' }
             };
             if (i == 0) {
                 worksheet.getColumn(i + 1).width = "10";
@@ -253,7 +260,7 @@ const SupplierListForm = (props) => {
         ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
             saveAs(
                 new Blob([buffer], { type: "application/octet-stream" }),
-                `DSNhaCungCap.xlsx`
+                `DSNhaCungCap${day.getDate()}${day.getMonth()+1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
             );
         });
     };

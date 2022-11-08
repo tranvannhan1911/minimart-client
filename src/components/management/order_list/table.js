@@ -217,6 +217,7 @@ const OrderTable = (props) => {
       title: 'Khuyến mãi',
       dataIndex: 'final_total',
       key: 'final_total',
+      width: "8%",
       render: (final_total, record) => (
         <Typography>{(record.total-record.final_total)?.toLocaleString()}</Typography>
       ),

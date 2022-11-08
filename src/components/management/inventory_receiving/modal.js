@@ -74,7 +74,7 @@ const InventoryReceivingModal = (props) => {
       dataIndex: 'quantity_base_unit',
       key: 'quantity_base_unit',
       render: (quantity_base_unit, record) => (
-        <Typography>{(Number(quantity_base_unit) * Number(record.price)).toLocaleString()}</Typography>
+        <Typography>{(Number(record.quantity) * Number(record.price)).toLocaleString()}</Typography>
       ),
     },
     {
@@ -88,7 +88,7 @@ const InventoryReceivingModal = (props) => {
 
   const exportExcel = () => {
     var ExcelJSWorkbook = new ExcelJS.Workbook();
-    var worksheet = ExcelJSWorkbook.addWorksheet("PhieuNhapHang");
+    var worksheet = ExcelJSWorkbook.addWorksheet("PhieuNhapHang", { views: [{ showGridLines: false }] });
 
     worksheet.mergeCells("A1:G1");
 
@@ -147,6 +147,7 @@ const InventoryReceivingModal = (props) => {
     let headerColumn = ["A", "B", "C", "D", "E", "F", "G"];
 
     worksheet.getRow(9).font = { bold: true };
+    worksheet.getRow(9).height = "25";
 
     let header = ["STT", "Mã sản phẩm", "Sản phẩm", "Giá", "Số lượng (DVT cơ bản)", "Thành tiền", "Ghi chú"];
 
@@ -159,7 +160,7 @@ const InventoryReceivingModal = (props) => {
       size: 8,
     };
     customCell7.alignment = { vertical: 'middle', horizontal: 'center' };
-    customCell7.value = "Mã phiếu nhập hàng: " + props.data.id +"       Ngày nhập hàng: "+props.data.date_created.slice(0,10);
+    customCell7.value = "Mã phiếu nhập hàng: " + props.data.id + "       Ngày nhập hàng: " + props.data.date_created.slice(0, 10);
 
     worksheet.mergeCells("A7:G7");
     const customCell8 = worksheet.getCell("A7");
@@ -189,11 +190,17 @@ const InventoryReceivingModal = (props) => {
         bottom: { style: 'thin' },
         right: { style: 'thin' }
       };
+      columnn.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'ffb0e2ff' },
+        bgColor: { argb: 'ffb0e2ff' }
+      };
       if (i == 0) {
         worksheet.getColumn(i + 1).width = "10";
-      } else if(i == 2){
+      } else if (i == 2) {
         worksheet.getColumn(i + 1).width = "30";
-      }else{
+      } else {
         worksheet.getColumn(i + 1).width = "20";
       }
       columnn.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -212,7 +219,7 @@ const InventoryReceivingModal = (props) => {
     };
     let i = 1;
     dataSource.forEach(element => {
-      worksheet.addRow([i, element.product.product_code, element.product.name, element.price.toLocaleString(), element.quantity_base_unit, (element.quantity_base_unit * element.price).toLocaleString(), element.note]);
+      worksheet.addRow([i, element.product.product_code, element.product.name, element.price?.toLocaleString(), element.quantity_base_unit, (element.quantity * element.price)?.toLocaleString(), element.note]);
       for (let j = 0; j < headerColumn.length; j++) {
         const columnn = worksheet.getCell(headerColumn[j] + (i + 9));
         columnn.border = {
@@ -224,8 +231,8 @@ const InventoryReceivingModal = (props) => {
         if (j == 0) {
           columnn.alignment = { vertical: 'middle', horizontal: 'center' };
         }
-         else if (j == 3 || j == 5) {
-            columnn.alignment = { vertical: 'middle', horizontal: 'right' };
+        else if (j == 3 || j == 5) {
+          columnn.alignment = { vertical: 'middle', horizontal: 'right' };
         }
 
       }
@@ -270,7 +277,7 @@ const InventoryReceivingModal = (props) => {
     ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
       saveAs(
         new Blob([buffer], { type: "application/octet-stream" }),
-        `PhieuNhapHangSo${props.data.id}.xlsx`
+        `PhieuNhapHangSo${props.data.id}_${day.getDate()}${day.getMonth() + 1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
       );
     });
   };

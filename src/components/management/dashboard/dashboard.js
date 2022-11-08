@@ -4,10 +4,12 @@ import {
     DollarCircleOutlined,
 } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react'
-import { Space, Table, Tag, Row, Col, Card, Typography } from 'antd';
+import { Space, Table, Tag, Row, Col, Card, Typography, message } from 'antd';
 import { Bar } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import api from '../../../api/apis'
+import { useNavigate } from 'react-router-dom';
+import OrderDetailModal from './modal_details';
 
 
 const topCustomers = {
@@ -37,7 +39,7 @@ const topCustomers = {
             ),
         },
     ],
-    
+
 }
 
 const latestOrders = {
@@ -57,7 +59,7 @@ const latestOrders = {
             dataIndex: 'date',
             key: 'name',
             render: (product, record) => (
-                <Typography>{`${record.date_created.slice(0,10)}`}</Typography>
+                <Typography>{`${record.date_created?.slice(0, 10)}`}</Typography>
             ),
         },
 
@@ -66,7 +68,7 @@ const latestOrders = {
             dataIndex: 'price',
             key: 'address',
             render: (product, record) => (
-                <Typography>{`${record.final_total.toLocaleString()}`}</Typography>
+                <Typography>{`${record.final_total?.toLocaleString()}`}</Typography>
             ),
         },
         {
@@ -74,19 +76,20 @@ const latestOrders = {
             dataIndex: 'status',
             key: 'age',
             render: (product, record) => (
-                <Typography>{`${record.status == "complete" ? "Hoàn thành":"Trả hàng"}`}</Typography>
+                <Typography>{`${record.status == "complete" ? "Hoàn thành" : "Trả hàng"}`}</Typography>
             ),
         },
     ],
-    
+
 }
 
 const Dashboard = () => {
 
     useEffect(() => {
-      document.title = "Trang chủ - Quản lý siêu thị mini NT"
+        document.title = "Trang chủ - Quản lý siêu thị mini NT"
     }, [])
 
+    const navigate = useNavigate();
     const [dataOrder, setDataOrder] = useState([]);
     const [dataCustomer, setDataCustomer] = useState([]);
     const [dataTotalMoney, setDataTotalMoney] = useState("");
@@ -95,12 +98,14 @@ const Dashboard = () => {
     const [dataTotalCustomer, setDataTotalCustomer] = useState("");
     const [dataDT, setDataDT] = useState([]);
     const [dataLabel, setDataLabel] = useState([]);
+    const [openDetails, setOpenDetails] = useState(false);
+    const [dataIndex, setDataIndex] = useState({});
 
     useEffect(() => {
         getData()
     }, [])
 
-    const getData = async () =>{
+    const getData = async () => {
         const response = await api.dashboard.list();
         setDataTotalCustomer(response.data.data.count_customer_7_days)
         setDataTotalMoney(response.data.data.total_money_7_days)
@@ -109,7 +114,7 @@ const Dashboard = () => {
         setDataCustomer(response.data.data.top_5_customer)
         setDataOrder(response.data.data.top_5_order)
         let label = [];
-        let dataDuLieu= [];
+        let dataDuLieu = [];
         response.data.data.order_7_days.forEach(element => {
             label.push(element.date);
             dataDuLieu.push(element.final_total);
@@ -121,68 +126,77 @@ const Dashboard = () => {
     return (
         <div>
             <Row><h2 className="page-header">Dashboard</h2></Row>
+            <Row style={{ marginTop: "-15px" }}><h3>(Từ {dataLabel[0]} đến {dataLabel[6]})</h3></Row>
             <Row>
                 <Col span={13}>
                     <Row style={{ paddingTop: '10px' }}>
                         <Col span={11}>
-                            <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
-                                <Row>
-                                    <Col span={10}>
-                                        <DollarCircleOutlined style={{ fontSize: '50px' }} />
-                                    </Col>
-                                    <Col span={14}>
-                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalMoney.toLocaleString()}</div>
-                                        <div>Tổng tiền</div>
-                                    </Col>
+                            <a href='#' title='Tổng tiền' onClick={() => { navigate("/quan-ly/don-ban-hang") }}>
+                                <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
+                                    <Row>
+                                        <Col span={10}>
+                                            <DollarCircleOutlined style={{ fontSize: '50px' }} />
+                                        </Col>
+                                        <Col span={14}>
+                                            <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalMoney?.toLocaleString()}</div>
+                                            <div>Tổng tiền</div>
+                                        </Col>
 
-                                </Row>
-                            </Card>
+                                    </Row>
+                                </Card>
+                            </a>
                         </Col>
                         <Col span={2}></Col>
                         <Col span={11}>
-                            <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
-                                <Row>
-                                    <Col span={10}>
-                                        <UserOutlined style={{ fontSize: '50px' }} />
-                                    </Col>
-                                    <Col span={14}>
-                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalCustomer.toLocaleString()}</div>
-                                        <div>Tổng khách hàng</div>
-                                    </Col>
+                            <a href='#' title='Tổng khách hàng' onClick={() => { navigate("/quan-ly/don-ban-hang") }}>
+                                <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
+                                    <Row>
+                                        <Col span={10}>
+                                            <UserOutlined style={{ fontSize: '50px' }} />
+                                        </Col>
+                                        <Col span={14}>
+                                            <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalCustomer?.toLocaleString()}</div>
+                                            <div>Tổng khách hàng</div>
+                                        </Col>
 
-                                </Row>
-                            </Card>
+                                    </Row>
+                                </Card>
+                            </a>
                         </Col>
 
                     </Row>
                     <Row style={{ paddingTop: '30px' }}>
                         <Col span={11}>
-                            <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
-                                <Row>
-                                    <Col span={10}>
-                                        <ShoppingCartOutlined style={{ fontSize: '50px' }} />
-                                    </Col>
-                                    <Col span={14}>
-                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalOrder.toLocaleString()}</div>
-                                        <div style={{ fontSize: '15px' }}>Tổng hóa đơn</div>
-                                    </Col>
+                            <a href='#' title='Tổng hóa đơn' onClick={() => { navigate("/quan-ly/don-ban-hang") }}>
+                                <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
+                                    <Row>
+                                        <Col span={10}>
+                                            <ShoppingCartOutlined style={{ fontSize: '50px' }} />
+                                        </Col>
+                                        <Col span={14}>
+                                            <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalOrder?.toLocaleString()}</div>
+                                            <div style={{ fontSize: '15px' }}>Tổng hóa đơn</div>
+                                        </Col>
 
-                                </Row>
-                            </Card>
+                                    </Row>
+                                </Card>
+                            </a>
                         </Col>
                         <Col span={2}></Col>
                         <Col span={11}>
-                            <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
-                                <Row>
-                                    <Col span={10}>
-                                        <ShoppingCartOutlined style={{ fontSize: '50px' }} />
-                                    </Col>
-                                    <Col span={14}>
-                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalOrderRefund.toLocaleString()}</div>
-                                        <div>Tổng hóa đơn trả</div>
-                                    </Col>
-                                </Row>
-                            </Card>
+                            <a href='#' title='Tổng hóa đơn trả' onClick={() => { navigate("/quan-ly/don-tra-hang") }}>
+                                <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
+                                    <Row>
+                                        <Col span={10}>
+                                            <ShoppingCartOutlined style={{ fontSize: '50px' }} />
+                                        </Col>
+                                        <Col span={14}>
+                                            <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalOrderRefund?.toLocaleString()}</div>
+                                            <div>Tổng hóa đơn trả</div>
+                                        </Col>
+                                    </Row>
+                                </Card>
+                            </a>
                         </Col>
 
                     </Row>
@@ -204,10 +218,12 @@ const Dashboard = () => {
                                         label: "Doanh thu (VND)",
                                         backgroundColor: [
                                             "#3e95cd",
-                                            "#8e5ea2",
-                                            "#3cba9f",
-                                            "#e8c3b9",
-                                            "#c45850"
+                                            "#3e95cd",
+                                            "#3e95cd",
+                                            "#3e95cd",
+                                            "#3e95cd",
+                                            "#3e95cd",
+                                            "#3e95cd"
                                         ],
                                         data: dataDT
                                     }
@@ -217,7 +233,7 @@ const Dashboard = () => {
                                 legend: { display: false },
                                 title: {
                                     display: true,
-                                    text: "Predicted world population (millions) in 2050"
+                                    text: `Doanh thu (VND) từ ${dataLabel[0]} đến ${dataLabel[6]}`
                                 }
                             }}
                         />
@@ -253,11 +269,32 @@ const Dashboard = () => {
                                 dataSource={dataOrder}
                                 pagination={false}
                                 size="small"
+                                onRow={(record, rowIndex) => {
+                                    return {
+                                        onClick: event => {
+                                            console.log(record);
+                                            setDataIndex(record);
+                                            setOpenDetails(true)
+                                        }, // click row
+                                        onDoubleClick: event => {
+                                            setDataIndex(record);
+                                            setOpenDetails(true)
+                                        }, // double click row
+                                        onContextMenu: event => { }, // right button click row
+                                        onMouseEnter: event => { }, // mouse enter row
+                                        onMouseLeave: event => { }, // mouse leave row
+                                    };
+                                }}
                             />
                         </div>
                     </Card>
                 </Col>
             </Row>
+            <OrderDetailModal
+                openDetails={openDetails}
+                data={dataIndex}
+                setOpenDetails={setOpenDetails}
+            />
         </div>
     )
 }

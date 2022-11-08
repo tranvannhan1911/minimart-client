@@ -22,7 +22,7 @@ const idCity = 0;
 const { RangePicker } = DatePicker;
 
 const StatisticsRefund = () => {
-  const [loadings, setLoadings] = useState([]);
+  const [loading, setLoading] = useState(true)
   const [data, setData] = useState([]);
   const [date, setDate] = useState([]);
 
@@ -51,6 +51,10 @@ const StatisticsRefund = () => {
     if (dates) {
       console.log('From: ', dates[0], ', to: ', dates[1]);
       console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
+      if (new Date(dateStrings[0]) - new Date(dateStrings[1]) < -31536000000) {
+        message.error("Khoảng thời gian thống kê không quá 1 năm");
+        return;
+      }
       setDate([dateStrings[0] + "T05:10:10.357Z", dateStrings[1] + "T23:10:10.357Z"])
     } else {
       console.log('Clear');
@@ -128,6 +132,7 @@ const StatisticsRefund = () => {
       message.error("Vui lòng chọn ngày cần thống kê");
       return;
     }
+    setLoading(true)
     const params = {
       params: {
         start_date: date[0],
@@ -142,23 +147,23 @@ const StatisticsRefund = () => {
     let day = new Date();
     let ng = day.getDate();
     if (ng < 10) {
-        ng = "0" + ng;
+      ng = "0" + ng;
     }
     let th = day.getMonth() + 1;
     if (th < 10) {
-        th = "0" + th;
+      th = "0" + th;
     }
-    let da= day.getFullYear() + "-" + th + "-" + ng + "T05:10:10.357Z";
-    setDate([da,da])
+    let da = day.getFullYear() + "-" + th + "-" + ng + "T05:10:10.357Z";
+    setDate([da, da])
     const params = {
-        params: {
-            start_date: da,
-            end_date: da,
-        }
+      params: {
+        start_date: da,
+        end_date: da,
+      }
     }
     const response = await api.statistics_refund.refund(params);
     statisticData(response.data.data.results);
-}
+  }
 
   const statisticData = (data) => {
     let dataMain = [];
@@ -185,6 +190,7 @@ const StatisticsRefund = () => {
       dataMain.push(index);
     });
     setData(dataMain);
+    setLoading(false)
   }
 
   const exportExcel = () => {
@@ -193,7 +199,7 @@ const StatisticsRefund = () => {
       return;
     }
     var ExcelJSWorkbook = new ExcelJS.Workbook();
-    var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO");
+    var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO", {views: [{showGridLines: false}]});
 
     worksheet.mergeCells("A1:L1");
 
@@ -381,7 +387,7 @@ const StatisticsRefund = () => {
     ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
       saveAs(
         new Blob([buffer], { type: "application/octet-stream" }),
-        `BaoCaoTongKetKhuyenMai.xlsx`
+        `BaoCaoTraHang${day.getDate()}${day.getMonth() + 1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
       );
     });
   }
@@ -392,7 +398,7 @@ const StatisticsRefund = () => {
       <Row style={{ marginTop: '5px' }}>
         <Col span={24}>
           <label style={{ paddingRight: '10px' }}>Ngày thống kê:</label>
-          <RangePicker onChange={onChange} defaultValue={[moment(new Date()),moment(new Date())]}/>
+          <RangePicker onChange={onChange} defaultValue={[moment(new Date()), moment(new Date())]} />
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={() => onThongKe()}>Thống kê</Button>
           <Button style={{ marginLeft: '10px' }} onClick={() => exportExcel()}> <DownloadOutlined /> Xuất báo cáo</Button>
 
@@ -404,6 +410,7 @@ const StatisticsRefund = () => {
           <Table dataSource={data}
             columns={columns}
             size="small"
+            loading={loading}
           >
           </Table>
         </Col>

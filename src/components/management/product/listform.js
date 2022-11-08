@@ -144,7 +144,7 @@ const PriceListForm = (props) => {
 
     const exportExcel = () => {
         var ExcelJSWorkbook = new ExcelJS.Workbook();
-        var worksheet = ExcelJSWorkbook.addWorksheet("SanPham");
+        var worksheet = ExcelJSWorkbook.addWorksheet("SanPham", {views: [{showGridLines: false}]});
 
         worksheet.mergeCells("A1:I1");
 
@@ -221,6 +221,7 @@ const PriceListForm = (props) => {
         var headerRow = worksheet.addRow();
 
         worksheet.getRow(7).font = { bold: true };
+        worksheet.getRow(7).height = "25";
 
         for (let i = 0; i < headerColumn.length; i++) {
             const columnn = worksheet.getCell(headerColumn[i] + 7);
@@ -229,6 +230,12 @@ const PriceListForm = (props) => {
                 left: { style: 'thin' },
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
+            };
+            columnn.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'ffb0e2ff' },
+                bgColor: { argb: 'ffb0e2ff' }
             };
             if (i == 0) {
                 worksheet.getColumn(i + 1).width = "10";
@@ -282,7 +289,7 @@ const PriceListForm = (props) => {
         ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
             saveAs(
                 new Blob([buffer], { type: "application/octet-stream" }),
-                `DSSanPham.xlsx`
+                `DSSanPham${day.getDate()}${day.getMonth()+1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
             );
         });
     };

@@ -1,5 +1,5 @@
 import {
-  PlusOutlined, EditOutlined,
+  PlusOutlined, EditOutlined, CheckCircleOutlined,
   MinusCircleOutlined, HistoryOutlined, UploadOutlined
 } from '@ant-design/icons';
 import {
@@ -57,13 +57,13 @@ const InventoryRecordChangeForm = (props) => {
     document.title = "Phiếu kiểm kê - Quản lý siêu thị mini NT"
   }, [])
 
-  const onChange = (checked) => {
-    if (checked == true && is_status != "cancel") {
-      setChecked(true);
+  const saveComplete = () => {
+    if (is_status == "pending") {
       form.setFieldValue("status", "complete");
       setStatus("complete");
-      console.log("3333");
       onFinish(form.getFieldsValue());
+    } else {
+      message.warning("Phiếu nhập hàng này đã hoàn thành");
     }
   };
 
@@ -441,6 +441,8 @@ const InventoryRecordChangeForm = (props) => {
 
     if (is_create == false) {
       props.setBreadcrumbExtras([
+        <Button type="primary" icon={<CheckCircleOutlined />} onClick={() => saveComplete()}
+        >Hoàn thành</Button>,
         // <Popconfirm
         //   placement="bottomRight"
         //   title="Xác nhận xóa phiếu kiểm kê này"
@@ -540,25 +542,16 @@ const InventoryRecordChangeForm = (props) => {
           forms={
             <><>
             </>
-              {is_create ? null :
-                <Row>
-                  <Col span={1}></Col>
-                  <Col span={10} style={{ backgroundColor: "white" }}>
-                    <Form.Item label="Mã id phiếu kiểm kê" name="id">
-                      <Input name="id" disabled={true} className="inputBorderDisableText" />
-                    </Form.Item>
-                  </Col>
-                  <Col span={2}></Col>
-                  <Col span={10} style={{ backgroundColor: "white" }}>
-                    <Form.Item label="Kiểm kê">
-                      <Switch checkedChildren="Hoàn thành" unCheckedChildren="Tạo mới" checked={checked} onChange={onChange} style={{ display: 'flex' }} />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              }
+              {/* {is_create ? null : */}
               <Row>
                 <Col span={1}></Col>
-                <Col span={10}>
+                <Col span={10} style={{ backgroundColor: "white" }}>
+                  <Form.Item label="Mã id phiếu kiểm kê" name="id">
+                    <Input name="id" disabled={true} className="inputBorderDisableText" />
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10} style={{ backgroundColor: "white" }}>
                   <Form.Item label="Trạng thái" name="status"
                     style={{
                       textAlign: 'left'
@@ -568,6 +561,7 @@ const InventoryRecordChangeForm = (props) => {
                       style={{
                         width: '100%',
                       }}
+                      disabled={true}
                     >
                       <Option value="pending">Tạo mới</Option>
                       <Option value="complete">Hoàn thành</Option>
@@ -575,7 +569,10 @@ const InventoryRecordChangeForm = (props) => {
                     </Select>
                   </Form.Item>
                 </Col>
-                <Col span={2}></Col>
+              </Row>
+              {/* } */}
+              <Row>
+                <Col span={1}></Col>
                 <Col span={10}>
                   <Form.Item label="Ghi chú" name="note"
                   // rules={[
@@ -587,6 +584,10 @@ const InventoryRecordChangeForm = (props) => {
                   >
                     <TextArea rows={1} />
                   </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10}>
+
                 </Col>
               </Row>
 

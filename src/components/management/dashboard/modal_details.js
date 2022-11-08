@@ -1,7 +1,9 @@
-import { Drawer, Row, Col, Divider, Table, Typography } from 'antd';
+import { Modal, Row, Col, Divider, Table, Typography, Button } from 'antd';
 import React, { useState, useEffect } from 'react';
+import api from '../../../api/apis';
+import messages from '../../../utils/messages';
 
-const OrderDetailCancelModal = (props) => {
+const OrderDetailModal = (props) => {
   const [dataSourceIndex, setDataSourceindex] = useState("");
 
   const showDrawer = () => {
@@ -13,15 +15,9 @@ const OrderDetailCancelModal = (props) => {
   };
 
   useEffect(() => {
-    // detail = props.data.details;
-    // if (props.data.details != null) {
-    //   detail.map(element => {
-    //     element.product = element.product.name;
-    //     return element;
-    //   });
-      setDataSourceindex(props.data.details)
-    // }
-    // console.log(props.data.details, 1111);
+
+    setDataSourceindex(props.data.details)
+
 
   });
 
@@ -30,18 +26,24 @@ const OrderDetailCancelModal = (props) => {
       title: 'Sản phẩm',
       dataIndex: 'product',
       key: 'name',
+      render: (price, record) => (
+        <Typography>{record.product?.name.toLocaleString()}</Typography>
+      ),
     },
     {
       title: 'Đơn vị tính',
       dataIndex: 'unit_exchange',
       key: 'age',
+      render: (price, record) => (
+        <Typography>{record.unit_exchange?.unit_name}</Typography>
+      ),
     },
     {
       title: 'Giá',
       dataIndex: 'price',
       key: 'address',
       render: (price, record) => (
-        <Typography>{price?.toLocaleString()}</Typography>
+        <Typography>{record.price?.price.toLocaleString()}</Typography>
       ),
     },
     {
@@ -60,11 +62,18 @@ const OrderDetailCancelModal = (props) => {
   ];
 
   return (
-    <Drawer width={640} placement="right" closable={false} onClose={onClose} visible={props.openDetails}>
+    <Modal width={640} placement="right"
+      onCancel={onClose} open={props.openDetails}
+      footer={[
+        // <Button key="back" onClick={onClose}>
+        //   Thoát
+        // </Button>,
+        
+      ]}>
       <p
         className="site-description-item-profile-p"
         style={{
-          marginBottom: 24,
+          marginBottom: 15,
           fontSize: 25,
           fontWeight: 'bold'
         }}
@@ -72,26 +81,26 @@ const OrderDetailCancelModal = (props) => {
         Thông tin hóa đơn bán hàng
       </p>
 
-      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin cơ bản</p>
+      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '10px', fontWeight: 'bold' }}>Thông tin cơ bản</p>
       <Row>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Mã hóa đơn: {props.data.key}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Mã hóa đơn: {props.data.id}</p>
           </div>
         </Col>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Ngày tạo: {props.data.date_created}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Ngày tạo: {props.data.date_created?.slice(0, 10)}</p>
           </div>
         </Col>
       </Row>
       <Row>
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Nhân viên bán hàng: {props.data.user_created?.fullname}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Nhân viên bán hàng: {sessionStorage.getItem("nameStaff")}</p>
           </div>
         </Col>
-      {/* </Row>
+        {/* </Row>
       <Row> */}
         <Col span={12}>
           <div className="site-description-item-profile-wrapper">
@@ -100,9 +109,9 @@ const OrderDetailCancelModal = (props) => {
         </Col>
       </Row>
       <Row>
-      <Col span={12}>
+        <Col span={12}>
           <div className="site-description-item-profile-wrapper">
-            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Khuyến mãi: {(props.data.total-props.data.final_total)?.toLocaleString()}</p>
+            <p className="site-description-item-profile-p-label" style={{ fontSize: '15px' }}>Khuyến mãi: {(props.data.total - props.data.final_total)?.toLocaleString()}</p>
           </div>
         </Col>
         <Col span={12}>
@@ -121,13 +130,10 @@ const OrderDetailCancelModal = (props) => {
       </Row>
       <Divider />
 
-      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Danh sách sản phẩm mua</p>
-      <Table dataSource={dataSourceIndex} columns={columns} size='small'/>
+      <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '5px', fontWeight: 'bold' }}>Danh sách sản phẩm mua</p>
+      <Table dataSource={dataSourceIndex} columns={columns} size='small' />
 
-      <Divider />
-      <p className="site-description-item-profile-p" style={{ fontSize: '15px', marginTop: '20px', fontWeight: 'bold',color:'red', textAlign:'right' }}>Tổng tiền: {props.data.final_total?.toLocaleString()} đ</p>
-      
-    </Drawer>
+    </Modal>
   );
 };
-export default OrderDetailCancelModal;
+export default OrderDetailModal;

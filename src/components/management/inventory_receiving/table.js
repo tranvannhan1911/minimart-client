@@ -235,7 +235,7 @@ const InventoryReceivingTable = (props) => {
       // },
       // ...renderSearch(),
       render: (product, record) => (
-        <Typography>{`${record.total.toLocaleString()}`}</Typography>
+        <Typography>{`${record.total?.toLocaleString()}`}</Typography>
       ),
       ...getColumnSearchProps('tổng tiền')
     },

@@ -24,6 +24,7 @@ const StatisticsReceived = () => {
   const [data, setData] = useState([]);
   const [type, setType] = useState("Order");
   const [date, setDate] = useState([]);
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     document.title = "Thống kê nhập hàng - Quản lý siêu thị mini NT"
@@ -31,39 +32,17 @@ const StatisticsReceived = () => {
 
   useEffect(() => {
     onThongKeToDay()
-}, [])
+  }, [])
 
-  // const navigate = useNavigate();
-  // const [form] = Form.useForm();
-  // const [loadings, setLoadings] = useState([]);
-  // const [loadingData, setLoadingData] = useState(true);
-  // const [disableSubmit, setDisableSubmit] = useState(false);
-  // const [idxBtnSave, setIdxBtnSave] = useState([]);
-  // let { id } = useParams();
-  // const [is_create, setCreate] = useState(null); // create
-  // const refAutoFocus = useRef(null)
-
-
-  // const enterLoading = (index) => {
-  //   setLoadings((prevLoadings) => {
-  //     const newLoadings = [...prevLoadings];
-  //     newLoadings[index] = true;
-  //     return newLoadings;
-  //   });
-  // };
-
-  // const stopLoading = (index) => {
-  //   setLoadings((prevLoadings) => {
-  //     const newLoadings = [...prevLoadings];
-  //     newLoadings[index] = false;
-  //     return newLoadings;
-  //   });
-  // }
 
   const onChange = (dates, dateStrings) => {
     if (dates) {
       console.log('From: ', dates[0], ', to: ', dates[1]);
       console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
+      if (new Date(dateStrings[0]) - new Date(dateStrings[1]) < -31536000000) {
+        message.error("Khoảng thời gian thống kê không quá 1 năm");
+        return;
+      }
       setDate([dateStrings[0] + "T05:10:10.357Z", dateStrings[1] + "T23:10:10.357Z"])
     } else {
       console.log('Clear');
@@ -113,6 +92,7 @@ const StatisticsReceived = () => {
       message.error("Vui lòng chọn ngày cần thống kê");
       return;
     }
+    setLoading(true)
     const params = {
       params: {
         start_date: date[0],
@@ -127,23 +107,23 @@ const StatisticsReceived = () => {
     let day = new Date();
     let ng = day.getDate();
     if (ng < 10) {
-        ng = "0" + ng;
+      ng = "0" + ng;
     }
     let th = day.getMonth() + 1;
     if (th < 10) {
-        th = "0" + th;
+      th = "0" + th;
     }
-    let da= day.getFullYear() + "-" + th + "-" + ng + "T05:10:10.357Z";
-    setDate([da,da])
+    let da = day.getFullYear() + "-" + th + "-" + ng + "T05:10:10.357Z";
+    setDate([da, da])
     const params = {
-        params: {
-            start_date: da,
-            end_date: da,
-        }
+      params: {
+        start_date: da,
+        end_date: da,
+      }
     }
     const response = await api.statistics_received.receiving(params);
     statisticData(response.data.data.results);
-}
+  }
 
 
   const statisticData = (data) => {
@@ -159,6 +139,7 @@ const StatisticsReceived = () => {
       dataMain.push(index);
     });
     setData(dataMain);
+    setLoading(false)
   }
 
   const exportExcel = () => {
@@ -167,7 +148,7 @@ const StatisticsReceived = () => {
       return;
     }
     var ExcelJSWorkbook = new ExcelJS.Workbook();
-    var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO");
+    var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO", {views: [{showGridLines: false}]});
 
     worksheet.mergeCells("A1:F1");
 
@@ -221,7 +202,7 @@ const StatisticsReceived = () => {
     };
     customCell.alignment = { vertical: 'middle', horizontal: 'center' };
 
-    customCell.value = "BÁO CÁO NHẬP HÀNG ";
+    customCell.value = "BẢNG KÊ HÀNG HÓA MUA VÀO ";
 
     worksheet.mergeCells("A6:F6");
 
@@ -235,7 +216,7 @@ const StatisticsReceived = () => {
 
     customCell5.value = "Từ ngày: " + date[0].slice(0, 10) + "      Đến ngày: " + date[1].slice(0, 10) + " ";
 
-    let header = ["STT", "Mã sản phẩm", "Tên sản phẩm", "Số lượng thùng", "Đơn vị tính", "Tổng thành tiền"];
+    let header = ["STT", "Mã sản phẩm", "Tên sản phẩm", "Số lượng", "Đơn vị tính", "Tổng thành tiền"];
     let headerColumn = ["A", "B", "C", "D", "E", "F"];
 
     worksheet.mergeCells("A7:F7");
@@ -332,7 +313,7 @@ const StatisticsReceived = () => {
     ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
       saveAs(
         new Blob([buffer], { type: "application/octet-stream" }),
-        `BaoCaoNhapHang.xlsx`
+        `BaoCaoNhapHang${day.getDate()}${day.getMonth() + 1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
       );
     });
   }
@@ -342,7 +323,7 @@ const StatisticsReceived = () => {
       <Row style={{ marginTop: '5px' }}>
         <Col span={24}>
           <label style={{ paddingRight: '10px' }}>Ngày thống kê:</label>
-          <RangePicker onChange={onChange} defaultValue={[moment(new Date()),moment(new Date())]}/>
+          <RangePicker onChange={onChange} defaultValue={[moment(new Date()), moment(new Date())]} />
 
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={() => onThongKe()}>Thống kê</Button>
           <Button style={{ marginLeft: '10px' }} onClick={() => exportExcel()}> <DownloadOutlined /> Xuất báo cáo</Button>
@@ -355,6 +336,7 @@ const StatisticsReceived = () => {
           <Table dataSource={data}
             columns={columns}
             size="small"
+            loading={loading}
           >
           </Table>
         </Col>

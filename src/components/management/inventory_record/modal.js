@@ -71,7 +71,7 @@ const InventoryRecordModal = (props) => {
 
   const exportExcel = () => {
     var ExcelJSWorkbook = new ExcelJS.Workbook();
-    var worksheet = ExcelJSWorkbook.addWorksheet("DonViTinh");
+    var worksheet = ExcelJSWorkbook.addWorksheet("PhieuKiemKe", { views: [{ showGridLines: false }] });
 
     worksheet.mergeCells("A1:G1");
 
@@ -130,6 +130,7 @@ const InventoryRecordModal = (props) => {
     let headerColumn = ["A", "B", "C", "D", "E", "F", "G"];
 
     worksheet.getRow(8).font = { bold: true };
+    worksheet.getRow(8).height = "25";
 
     let header = ["STT", "Mã sản phẩm", "Sản phẩm", "Số lượng trước (DVT cơ bản)", "Số lượng sau (DVT cơ bản)", "Chênh lệch", "Ghi chú"];
 
@@ -161,6 +162,12 @@ const InventoryRecordModal = (props) => {
         bottom: { style: 'thin' },
         right: { style: 'thin' }
       };
+      columnn.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'ffb0e2ff' },
+        bgColor: { argb: 'ffb0e2ff' }
+      };
       if (i == 0) {
         worksheet.getColumn(i + 1).width = "10";
       } else if (i == 2 || i == 3 || i == 4) {
@@ -184,7 +191,7 @@ const InventoryRecordModal = (props) => {
     };
     let i = 1;
     dataSource.forEach(element => {
-      worksheet.addRow([i,element.product_obj.product_code, element.product, element.quantity_before, element.quantity_after, (element.quantity_after - element.quantity_before) + " " + element.product_obj.base_unit.name, element.note]);
+      worksheet.addRow([i, element.product_obj.product_code, element.product, element.quantity_before, element.quantity_after, (element.quantity_after - element.quantity_before) + " " + element.product_obj.base_unit.name, element.note]);
       for (let j = 0; j < headerColumn.length; j++) {
         const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
         columnn.border = {
@@ -211,7 +218,7 @@ const InventoryRecordModal = (props) => {
     ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
       saveAs(
         new Blob([buffer], { type: "application/octet-stream" }),
-        `PhieuKiemKeSo${props.data.id}.xlsx`
+        `PhieuKiemKeSo${props.data.id}_${day.getDate()}${day.getMonth() + 1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
       );
     });
   };

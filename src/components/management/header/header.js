@@ -17,22 +17,33 @@ const Header = (props) => {
   const [userInfo, setUserInfo] = useState({})
   const [now, setNow] = useState()
   const [welcome, setWelcome] = useState()
+  const [time, setTime] = useState()
+  const [name, setName] = useState(sessionStorage.getItem("nameStaff"))
 
   useEffect(() => {
-    
+
     store.subscribe(() => {
       setUserInfo(store.getState().user.info)
     })
 
     setInterval(() => {
       var today = new Date();
-      const hour = today.getHours() < 10 ? "0"+today.getHours() : today.getHours()
-      const minute = today.getMinutes() < 10 ? "0"+today.getMinutes() : today.getMinutes()
-      const second = today.getSeconds() < 10 ? "0"+today.getSeconds() : today.getSeconds()
-      const date = today.getDate() < 10 ? "0"+today.getDate() : today.getDate()
-      const month = today.getMonth() + 1 < 10 ? "0"+(today.getMonth()+1) : today.getMonth()+1
+      const hour = today.getHours() < 10 ? "0" + today.getHours() : today.getHours()
+      const minute = today.getMinutes() < 10 ? "0" + today.getMinutes() : today.getMinutes()
+      const second = today.getSeconds() < 10 ? "0" + today.getSeconds() : today.getSeconds()
+      const date = today.getDate() < 10 ? "0" + today.getDate() : today.getDate()
+      const month = today.getMonth() + 1 < 10 ? "0" + (today.getMonth() + 1) : today.getMonth() + 1
       var _welcome = `bây giờ là ${hour}:${minute}:${second} ngày ${date}/${month}/${today.getFullYear()}`;
-      setWelcome(_welcome)
+      setWelcome(_welcome);
+      if (today.getHours() >= 1 && today.getHours() < 11) {
+        setTime("buổi sáng");
+      } else if (today.getHours() >= 11 && today.getHours() < 13) {
+        setTime("buổi trưa");
+      } else if (today.getHours() >= 13 && today.getHours() < 18) {
+        setTime("buổi chiều");
+      } else {
+        setTime("buổi tối");
+      }
     }, 1000)
   }, [])
 
@@ -82,7 +93,7 @@ const Header = (props) => {
       }
       extra={[
         // <Typography.Text>{welcome}</Typography.Text>,
-        <Typography.Text style={{marginRight: '10px'}}>Xin chào {userInfo ? <Typography.Title level={5} style={{display: 'inline-block'}}> {userInfo.fullname}</Typography.Title> : ""}, {welcome} </Typography.Text>,
+        <Typography.Text style={{ marginRight: '10px' }}>Xin chào {time} {name ? <Typography.Title level={5} style={{ display: 'inline-block' }}> {userInfo.fullname}</Typography.Title> : ""}, {welcome} </Typography.Text>,
         <Dropdown overlay={menu} placement="bottomRight">
           <Button key="1" shape="circle" type="primary" icon={<UserOutlined />} />
         </Dropdown>

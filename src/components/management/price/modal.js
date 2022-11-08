@@ -148,7 +148,7 @@ const PriceModal = (props) => {
 
   const exportExcel = () => {
     var ExcelJSWorkbook = new ExcelJS.Workbook();
-    var worksheet = ExcelJSWorkbook.addWorksheet("BangGia");
+    var worksheet = ExcelJSWorkbook.addWorksheet("BangGia", {views: [{showGridLines: false}]});
 
     worksheet.mergeCells("A1:E1");
 
@@ -207,6 +207,7 @@ const PriceModal = (props) => {
     let headerColumn = ["A", "B", "C", "D", "E"];
 
     worksheet.getRow(9).font = { bold: true };
+    worksheet.getRow(9).height = "25";
 
     let header = ["STT", "Mã sản phẩm", "Sản phẩm", "Đơn vị tính", "Giá"];
 
@@ -249,6 +250,12 @@ const PriceModal = (props) => {
         bottom: { style: 'thin' },
         right: { style: 'thin' }
       };
+      columnn.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'ffb0e2ff' },
+        bgColor: { argb: 'ffb0e2ff' }
+    };
       if (i == 0) {
         worksheet.getColumn(i + 1).width = "10";
       } else if (i == 2) {
@@ -272,7 +279,7 @@ const PriceModal = (props) => {
     };
     let i = 1;
     dataSource.forEach(element => {
-      worksheet.addRow([i, element.product_obj.product_code, element.product, element.unit_exchange, element.price.toLocaleString()]);
+      worksheet.addRow([i, element.product_obj.product_code, element.product, element.unit_exchange, element.price?.toLocaleString()]);
       for (let j = 0; j < headerColumn.length; j++) {
         const columnn = worksheet.getCell(headerColumn[j] + (i + 9));
         columnn.border = {
@@ -296,7 +303,7 @@ const PriceModal = (props) => {
     ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
       saveAs(
         new Blob([buffer], { type: "application/octet-stream" }),
-        `BangGiaSo${props.data.price_list_id}.xlsx`
+        `BangGiaSo${props.data.price_list_id}_${day.getDate()}${day.getMonth()+1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
       );
     });
   };

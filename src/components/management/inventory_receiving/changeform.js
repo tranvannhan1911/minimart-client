@@ -1,5 +1,6 @@
 import {
-  PlusOutlined, EditOutlined, MinusCircleOutlined, HistoryOutlined, UploadOutlined, DeleteOutlined
+  PlusOutlined, EditOutlined, MinusCircleOutlined, HistoryOutlined,
+  UploadOutlined, DeleteOutlined, CheckCircleOutlined, CloseCircleOutlined
 } from '@ant-design/icons';
 import {
   Button, Form, Input, Select, message, Space, Popconfirm,
@@ -41,6 +42,7 @@ const InventoryReceivingChangeForm = (props) => {
   const [baseSupplierOptions, setBaseSupplierOptions] = useState([]);
   const [detailss, setDetailss] = useState([]); // create
   const [dataProduct, setDataProduct] = useState([]); // create
+  const [dataUnit, setDataUnit] = useState([]); // create
   let { id } = useParams();
   const [is_create, setCreate] = useState(null); // create
   const [is_status, setStatus] = useState(null);
@@ -51,13 +53,25 @@ const InventoryReceivingChangeForm = (props) => {
     document.title = "Phiếu nhập hàng - Quản lý siêu thị mini NT"
   }, [])
 
-  const onChange = (checked) => {
-    if (checked == true && is_status != "cancel") {
-      setChecked(true);
+  const saveComplete = () => {
+    if (is_status == "pending") {
       form.setFieldValue("status", "complete");
       setStatus("complete");
-      console.log("3333");
       onFinish(form.getFieldsValue());
+    } else if (is_status == "complete") {
+      message.warning("Phiếu nhập hàng này đã hoàn thành");
+    } else {
+      message.error("Phiếu nhập hàng này đã hủy không thể hoàn thành");
+    }
+  };
+
+  const saveCancel = () => {
+    if (is_status == "complete" || is_status == "pending") {
+      form.setFieldValue("status", "cancel");
+      setStatus("cancel");
+      onFinish(form.getFieldsValue());
+    } else {
+      message.warning("Phiếu nhập hàng này đã hủy");
     }
   };
 
@@ -85,24 +99,52 @@ const InventoryReceivingChangeForm = (props) => {
           let result = false;
           const element = jsonData[index];
           let loi = "";
+          let kqUnit = false;
           if ((!validNumber.test(element.soluong)) || (!validNumber.test(element.gia))) {
             loi = "Số lượng và giá phải là số,  ";
           }
+          dataUnit.forEach(ell => {
+            if (ell.code.toLowerCase() == element.maDonVi.toLowerCase()) {
+              kqUnit = true;
+            }
+          });
+          if (kqUnit == false) {
+            loi += "Mã đơn vị tính không chính xác, ";
+          }
           dataProduct.forEach(elementt => {
             if (elementt.product_code.toLowerCase() == element.maSP.toLowerCase() || elementt.barcode == element.maSP) {
-              if (validNumber.test(element.soluong) && validNumber.test(element.gia)) {
-                let unit = "";
-                let unitname = "";
+              let unit = "";
+              let unitname = "";
+              let unitname_in="";
+              let valQD = 1;
+              if (kqUnit == true) {
                 elementt.units.forEach(elm => {
-                  if (elm.is_base_unit == true) {
+                  if (elm.unit_code.toLowerCase() == element.maDonVi.toLowerCase()) {
+                    unitname_in= elm.unit_name;
                     unit = elm.id;
+                    valQD = elm.value;
+                  }
+                  if (elm.is_base_unit == true) {
                     unitname = elm.unit_name;
                   }
-                })
+                });
+              }
+              if (unit == "" && kqUnit == false) {
+                notification.open({
+                  message: 'Lỗi tải dữ liệu',
+                  description:
+                    "Không tìm thấy đơn vị tính " + element.maDonVi + " của mã sản phẩm " + element.maSP + " để thêm dữ liệu !!",
+                  // duration: 50,
+                });
+                loi += "Sản phẩm không có mã đơn vị này, ";
+                result = true;
+              }
+              if (validNumber.test(element.soluong) && validNumber.test(element.gia) && kqUnit == true && unit != "") {
+
                 let indexx = {
                   "key": elementt.id,
                   "quantity": element.soluong,
-                  "quantity_base_unit": element.soluong + " " + unitname,
+                  "quantity_base_unit": unitname == unitname_in ? element.soluong + " " + unitname : Number(element.soluong)*Number(valQD) + " " + unitname,
                   "price": element.gia,
                   "note": element.ghichu,
                   "product": elementt.name,
@@ -111,12 +153,14 @@ const InventoryReceivingChangeForm = (props) => {
                 };
                 dataerrorr.push({
                   "maSP": element.maSP,
+                  "maDonVi": element.maDonVi,
                   "soluong": element.soluong,
                   "gia": element.gia,
                   "ghichu": element.ghichu,
                   "loi": ""
                 });
-                handleDataBaseUnit(elementt.units)
+                handleDataBaseUnit(elementt.units);
+                //
                 datadetail.push(indexx);
                 result = true;
                 resultTotal++;
@@ -138,6 +182,7 @@ const InventoryReceivingChangeForm = (props) => {
           if (loi != '') {
             dataerrorr.push({
               "maSP": element.maSP,
+              "maDonVi": element.maDonVi,
               "soluong": element.soluong,
               "gia": element.gia,
               "ghichu": element.ghichu,
@@ -168,14 +213,14 @@ const InventoryReceivingChangeForm = (props) => {
     var ExcelJSWorkbook = new ExcelJS.Workbook();
     var worksheet = ExcelJSWorkbook.addWorksheet("Data");
 
-    worksheet.addRow(["maSP", "soluong", "gia", "ghichu", "loi", "", "", "", "(Số lượng theo đơn vị cơ bản)"]);
+    worksheet.addRow(["maSP","maDonVi", "soluong", "gia", "ghichu", "loi", "", "", "", "(Số lượng theo đơn vị cơ bản)"]);
     let i = 2;
     data.forEach(element => {
       if (element.loi == "") {
-        worksheet.addRow([element.maSP, element.soluong, element.gia, element.ghichu, element.loi]);
+        worksheet.addRow([element.maSP, element.maDonVi, element.soluong, element.gia, element.ghichu, element.loi]);
         i++;
       } else {
-        worksheet.addRow([element.maSP, element.soluong, element.gia, element.ghichu, element.loi]);
+        worksheet.addRow([element.maSP, element.maDonVi, element.soluong, element.gia, element.ghichu, element.loi]);
         worksheet.getRow(i).font = { color: { argb: 'ffff0000' } };
         i++;
       }
@@ -453,7 +498,17 @@ const InventoryReceivingChangeForm = (props) => {
     }
   }
 
-
+  const handleDataUnit = async () => {
+    setLoadingData(true)
+    try {
+      const response = await api.unit.list();
+      setDataUnit(response.data.data.results);
+    } catch (error) {
+      message.error(messages.ERROR)
+    } finally {
+      setLoadingData(false)
+    }
+  }
 
   useEffect(() => {
     if (is_create == null) {
@@ -462,11 +517,13 @@ const InventoryReceivingChangeForm = (props) => {
         handleData()
         handleDataBaseProduct();
         handleDataBaseSupplier()
+        handleDataUnit()
       }
       setLoadingData(false)
     }
     handleDataBaseProduct();
-    handleDataBaseSupplier()
+    handleDataBaseSupplier();
+    handleDataUnit()
   }, [])
 
   useEffect(() => {
@@ -476,6 +533,10 @@ const InventoryReceivingChangeForm = (props) => {
 
     if (is_create == false) {
       props.setBreadcrumbExtras([
+        <Button type="primary" icon={<CheckCircleOutlined />} onClick={() => saveComplete()}
+        >Hoàn thành</Button>,
+        <Button danger icon={<CloseCircleOutlined />} onClick={() => saveCancel()}
+        >Hủy</Button>,
         <ShowForPermission>
           <Popconfirm
             placement="bottomRight"
@@ -501,6 +562,7 @@ const InventoryReceivingChangeForm = (props) => {
           <ExportTemplateReactCSV csvData={[]} fileName='template_nhap_hang.xlsx'
             header={[
               { label: 'maSP', key: 'maSP' },
+              { label: 'maDonVi', key: 'maDonVi' },
               { label: 'soluong', key: 'soluong' },
               { label: 'gia', key: 'gia' },
               { label: 'ghichu', key: 'ghichu' },
@@ -512,7 +574,7 @@ const InventoryReceivingChangeForm = (props) => {
           />
         </ShowForPermission>,
         <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.inventory_receiving.list) }}
-        >Thoát</Button>
+        >Thoát</Button>,
       ])
     }
   }, [is_create])
@@ -582,22 +644,36 @@ const InventoryReceivingChangeForm = (props) => {
                 <Input value={0} />
               </Form.Item>
 
-              {is_create ? null :
-                <Row>
-                  <Col span={1}></Col>
-                  <Col span={10} style={{ backgroundColor: "white" }}>
-                    <Form.Item label="Mã id phiếu nhập hàng" name="id">
-                      <Input name="id" disabled={true} className="inputBorderDisableText" />
-                    </Form.Item>
-                  </Col>
-                  <Col span={2}></Col>
-                  <Col span={10} style={{ backgroundColor: "white" }}>
-                    <Form.Item label="Nhập hàng">
-                      <Switch checkedChildren="Hoàn thành" unCheckedChildren="Tạo mới" checked={checked} onChange={onChange} style={{ display: 'flex' }} />
-                    </Form.Item>
-                  </Col>
-                </Row>
-              }
+              {/* {is_create ? null : */}
+              <Row>
+                <Col span={1}></Col>
+                <Col span={10} style={{ backgroundColor: "white" }}>
+                  <Form.Item label="Mã id phiếu nhập hàng" name="id">
+                    <Input name="id" disabled={true} className="inputBorderDisableText" />
+                  </Form.Item>
+                </Col>
+                <Col span={2}></Col>
+                <Col span={10} style={{ backgroundColor: "white" }}>
+                  <Form.Item label="Trạng thái" name="status"
+                    style={{
+                      textAlign: 'left'
+                    }}>
+                    <Select
+                      defaultValue="pending"
+                      style={{
+                        width: '100%',
+                      }}
+                      name="status"
+                      disabled={true}
+                    >
+                      <Option value="pending">Tạo mới</Option>
+                      <Option value="complete">Hoàn thành</Option>
+                      <Option value="cancel">Đã hủy</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+              {/* } */}
               <Row>
                 <Col span={1}></Col>
                 <Col span={10}>
@@ -632,21 +708,15 @@ const InventoryReceivingChangeForm = (props) => {
                 </Col>
                 <Col span={2}></Col>
                 <Col span={10}>
-                  <Form.Item label="Trạng thái" name="status"
-                    style={{
-                      textAlign: 'left'
-                    }}>
-                    <Select
-                      defaultValue="pending"
-                      style={{
-                        width: '100%',
-                      }}
-                      name="status"
-                    >
-                      <Option value="pending">Tạo mới</Option>
-                      <Option value="complete">Hoàn thành</Option>
-                      <Option value="cancel">Đã hủy</Option>
-                    </Select>
+                  <Form.Item label="Ghi chú" name="note"
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: 'Vui lòng nhập ghi chú!',
+                  //   },
+                  // ]}
+                  >
+                    <TextArea rows={1} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -662,25 +732,16 @@ const InventoryReceivingChangeForm = (props) => {
                 <Input size="large" placeholder="Ngày nhập" prefix={<CalendarOutlined />} readOnly value={props.data} style={{ width: '200px' }} />
               </Form.Item> */}
 
-              <Row>
+              {/* <Row>
                 <Col span={1}></Col>
                 <Col span={10}>
-                  <Form.Item label="Ghi chú" name="note"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Vui lòng nhập ghi chú!',
-                  //   },
-                  // ]}
-                  >
-                    <TextArea rows={1} />
-                  </Form.Item>
+                  
                 </Col>
                 <Col span={2}></Col>
                 <Col span={10}>
 
                 </Col>
-              </Row>
+              </Row> */}
 
 
             </>

@@ -184,7 +184,7 @@ const SuccessModal = (props) => {
       >
         <div ref={componentRef}>
         <Row>
-          <Col style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold'}} span={24}>SIÊU THỊ MINI</Col>
+          <Col style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold'}} span={24}>SIÊU THỊ MINI NT</Col>
         </Row>
         <Row>
           <Col style={{ textAlign: 'center', fontSize: '17px' }} span={24}>Địa chỉ: Gò Vấp - Tp.Hồ Chí Minh</Col>
@@ -200,12 +200,12 @@ const SuccessModal = (props) => {
           <Col span={17}>Ngày mua: {dateBuy}</Col>
         </Row>
         <Row style={{ marginLeft: '10px', marginTop: '8px' }} span={24}>
-          <Col span={7}>Mã khách hàng: {props.customerId}</Col>
-          <Col span={17}>Tên khách hàng: {props.customerName}</Col>
+          <Col span={7}>Mã KH: {props.customerId}</Col>
+          <Col span={17}>Tên KH: {props.customerName}</Col>
         </Row>
         <Row style={{ marginLeft: '10px', marginTop: '8px' }} span={24}>
-          <Col span={7}>Mã nhân viên: {staffId}</Col>
-          <Col span={17}>Tên nhân viên: {staffName}</Col>
+          <Col span={7}>Mã NV: {staffId}</Col>
+          <Col span={17}>Tên NV: {staffName}</Col>
         </Row>
         <Row>
           <Col style={{ marginTop: '8px', marginRight:'10px'}} span={24}>

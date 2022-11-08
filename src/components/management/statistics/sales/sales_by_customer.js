@@ -26,14 +26,16 @@ const { RangePicker } = DatePicker;
 
 const StatisticsSalesByCustomer = () => {
 
-    const [loadings, setLoadings] = useState([]);
     const [data, setData] = useState([]);
     const [customerOptions, setCustomerOptions] = useState([]);
     const [customer, setCustomer] = useState("");
     const [date, setDate] = useState([]);
+    const [loading, setLoading] = useState(true)
+    const [manyCustomer, setManyCustomer] = useState(true)
+
 
     useEffect(() => {
-      document.title = "Thống kê bán hàng theo khách hàng - Quản lý siêu thị mini NT"
+        document.title = "Thống kê bán hàng theo khách hàng - Quản lý siêu thị mini NT"
     }, [])
 
     useEffect(() => {
@@ -41,28 +43,13 @@ const StatisticsSalesByCustomer = () => {
         onThongKeToDay()
     }, [])
 
-    // const enterLoading = (index) => {
-    //   setLoadings((prevLoadings) => {
-    //     const newLoadings = [...prevLoadings];
-    //     newLoadings[index] = true;
-    //     return newLoadings;
-    //   });
-    // };
-
-    // const stopLoading = (index) => {
-    //   setLoadings((prevLoadings) => {
-    //     const newLoadings = [...prevLoadings];
-    //     newLoadings[index] = false;
-    //     return newLoadings;
-    //   });
-    // }
-
     const onThongKe = async () => {
         if (date.length == 0) {
             message.error("Vui lòng chọn ngày cần thống kê");
             return;
         }
-
+        setManyCustomer(false)
+        setLoading(true)
         console.log(date, customer)
         const params = {
             params: {
@@ -101,13 +88,18 @@ const StatisticsSalesByCustomer = () => {
 
     const getData = (dataa) => {
         let dataMain = [];
+        let many = null;
         dataa.forEach(element => {
+            if (element.customer?.id != many && many != null) {
+                setManyCustomer(true);
+            }
+            many = element.customer?.id;
             let cus_gr = "";
             element.customer?.customer_group.forEach(elm => {
                 cus_gr += elm.name;
             });
             let index = {
-                id: element.customer == null ? "-" : element.customer?.id,
+                id: element.customer == null ? 0 : element.customer?.id,
                 name: element.customer == null ? "Khách hàng lẻ" : element.customer?.fullname,
                 address: element.customer == null ? "-" : element.customer?.address,
                 ward: element.customer == null ? "-" : element.customer?.ward?.ward.name,
@@ -116,14 +108,15 @@ const StatisticsSalesByCustomer = () => {
                 customer_group: element.customer == null ? "-" : cus_gr,
                 product_group: element.product_groups?.name,
                 product_category: element.product_category?.name,
-                moneyBefore: element.final_total,
-                moneyCK: 0,
+                moneyBefore: element.total,
+                moneyCK: element.discount,
                 moneyAfter: element.final_total
             }
             dataMain.push(index);
 
         });
-        setData(dataMain);
+        setData(dataMain.sort(function (a, b) { return a.id - b.id }));
+        setLoading(false)
     }
 
     const handleDataCustomer = async () => {
@@ -145,6 +138,11 @@ const StatisticsSalesByCustomer = () => {
         if (dates) {
             console.log('From: ', dates[0], ', to: ', dates[1]);
             console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
+            console.log(new Date(dateStrings[0]) - new Date(dateStrings[1]));
+            if (new Date(dateStrings[0]) - new Date(dateStrings[1]) < -31536000000) {
+                message.error("Khoảng thời gian thống kê không quá 1 năm");
+                return;
+            }
             setDate([dateStrings[0] + "T05:10:10.357Z", dateStrings[1] + "T23:10:10.357Z"])
         } else {
             console.log('Clear');
@@ -214,7 +212,7 @@ const StatisticsSalesByCustomer = () => {
             dataIndex: 'moneyBefore',
             key: 'address',
             render: (product, record) => (
-                <Typography>{`${record.moneyBefore.toLocaleString()}`}</Typography>
+                <Typography>{`${record.moneyBefore?.toLocaleString()}`}</Typography>
             ),
         },
         {
@@ -227,7 +225,7 @@ const StatisticsSalesByCustomer = () => {
             dataIndex: 'moneyAfter',
             key: 'address',
             render: (product, record) => (
-                <Typography>{`${record.moneyAfter.toLocaleString()}`}</Typography>
+                <Typography>{`${record.moneyAfter?.toLocaleString()}`}</Typography>
             ),
         },
 
@@ -239,7 +237,7 @@ const StatisticsSalesByCustomer = () => {
             return;
         }
         var ExcelJSWorkbook = new ExcelJS.Workbook();
-        var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO");
+        var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO", { views: [{ showGridLines: false }] });
 
         worksheet.mergeCells("A1:M1");
 
@@ -315,6 +313,7 @@ const StatisticsSalesByCustomer = () => {
         var headerRow = worksheet.addRow();
 
         worksheet.getRow(8).font = { bold: true };
+        worksheet.getRow(8).height = "25";
 
         for (let i = 0; i < headerColumn.length; i++) {
             const columnn = worksheet.getCell(headerColumn[i] + 8);
@@ -324,10 +323,16 @@ const StatisticsSalesByCustomer = () => {
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
             };
+            columnn.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'ffb0e2ff' },
+                bgColor: { argb: 'ffb0e2ff' }
+            };
             if (i == 0) {
                 worksheet.getColumn(i + 1).width = "10";
             } else {
-                worksheet.getColumn(i + 1).width = "15";
+                worksheet.getColumn(i + 1).width = "16";
             }
             columnn.alignment = { vertical: 'middle', horizontal: 'center' };
             columnn.value = header[i];
@@ -343,12 +348,28 @@ const StatisticsSalesByCustomer = () => {
                 column: 13
             }
         };
+        let stt = 1;
         let i = 1;
         let total = 0;
+        let total_ck = 0;
+        let total_final = 0;
+        let kh = null;
+        let gop = 9;
         data.forEach(element => {
-            worksheet.addRow([i, element.id, element.name, element.address, element.ward, element.district, element.city,
-                element.customer_group, element.product_group, element.product_category, element.moneyBefore.toLocaleString(),
-                element.moneyCK, element.moneyAfter.toLocaleString()]);
+            if (element.id != kh && kh != null) {
+                worksheet.mergeCells("A" + gop + ":A" + (i + 7));
+                gop = i + 8;
+                stt++;
+            }
+            if (manyCustomer == true) {
+                worksheet.addRow([stt, element.id, element.name, element.address, element.ward, element.district, element.city,
+                    element.customer_group, element.product_group, element.product_category, element.moneyBefore?.toLocaleString(),
+                    element.moneyCK?.toLocaleString(), element.moneyAfter?.toLocaleString()]);
+            } else {
+                worksheet.addRow([i, element.id, element.name, element.address, element.ward, element.district, element.city,
+                    element.customer_group, element.product_group, element.product_category, element.moneyBefore?.toLocaleString(),
+                    element.moneyCK?.toLocaleString(), element.moneyAfter?.toLocaleString()]);
+            }
             for (let j = 0; j < headerColumn.length; j++) {
                 const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
                 columnn.border = {
@@ -368,8 +389,15 @@ const StatisticsSalesByCustomer = () => {
             }
 
             i++;
-            total = total + element.moneyAfter;
+            total_final = total_final + element.moneyAfter;
+            total = total + element.moneyBefore;
+            total_ck = total_ck + element.moneyCK;
+            kh = element.id;
+
         });
+        if (manyCustomer == true) {
+            worksheet.mergeCells("A" + gop + ":A" + (i + 7));
+        }
         worksheet.mergeCells("A" + (i + 8) + ":J" + (i + 8));
         const customCellTT = worksheet.getCell("A" + (i + 8));
         customCellTT.font = {
@@ -400,7 +428,8 @@ const StatisticsSalesByCustomer = () => {
             bottom: { style: 'thin' },
             right: { style: 'thin' }
         };
-        customCellTT1.value = 0;
+        customCellTT1.alignment = { vertical: 'middle', horizontal: 'right' };
+        customCellTT1.value = total_ck?.toLocaleString();
 
         const customCellTT2 = worksheet.getCell("M" + (i + 8));
         customCellTT2.font = {
@@ -416,7 +445,7 @@ const StatisticsSalesByCustomer = () => {
             right: { style: 'thin' }
         };
         customCellTT2.alignment = { vertical: 'middle', horizontal: 'right' };
-        customCellTT2.value = total.toLocaleString();
+        customCellTT2.value = total_final?.toLocaleString();
 
         const customCellTT3 = worksheet.getCell("K" + (i + 8));
         customCellTT3.font = {
@@ -432,11 +461,11 @@ const StatisticsSalesByCustomer = () => {
             right: { style: 'thin' }
         };
         customCellTT3.alignment = { vertical: 'middle', horizontal: 'right' };
-        customCellTT3.value = total.toLocaleString();
+        customCellTT3.value = total?.toLocaleString();
         ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
             saveAs(
                 new Blob([buffer], { type: "application/octet-stream" }),
-                `BaoCaoDoanhSoTheoKhachHang.xlsx`
+                `BaoCaoDoanhSoTheoKhachHang${day.getDate()}${day.getMonth() + 1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
             );
         });
     }
@@ -457,7 +486,7 @@ const StatisticsSalesByCustomer = () => {
                             textAlign: 'left'
                         }}
                         optionFilterProp="children"
-                        onChange={(option) => { setCustomer(option); console.log(option) }}
+                        onChange={(option) => { setCustomer(option); console.log(option); console.log(customer, 111) }}
                         filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
                         key={customerOptions}
                     >
@@ -477,6 +506,7 @@ const StatisticsSalesByCustomer = () => {
                     <Table dataSource={data}
                         columns={columns}
                         size="small"
+                        loading={loading}
                     >
                     </Table>
                 </Col>

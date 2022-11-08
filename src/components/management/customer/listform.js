@@ -72,7 +72,7 @@ const CustomerListForm = (props) => {
     }
 
     useEffect(() => {
-      document.title = "Khách hàng - Quản lý siêu thị mini NT"
+        document.title = "Khách hàng - Quản lý siêu thị mini NT"
     }, [])
 
     const handleGetDataCustomerGroup = async () => {
@@ -138,7 +138,7 @@ const CustomerListForm = (props) => {
 
     const exportExcel = () => {
         var ExcelJSWorkbook = new ExcelJS.Workbook();
-        var worksheet = ExcelJSWorkbook.addWorksheet("DSKhachHang");
+        var worksheet = ExcelJSWorkbook.addWorksheet("DSKhachHang", { views: [{ showGridLines: false }] });
 
         worksheet.mergeCells("A1:H1");
 
@@ -207,6 +207,7 @@ const CustomerListForm = (props) => {
         var headerRow = worksheet.addRow();
 
         worksheet.getRow(7).font = { bold: true };
+        worksheet.getRow(7).height = "25";
 
         customCell.value = "Danh sách khách hàng";
 
@@ -219,6 +220,12 @@ const CustomerListForm = (props) => {
                 left: { style: 'thin' },
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
+            };
+            columnn.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'ffb0e2ff' },
+                bgColor: { argb: 'ffb0e2ff' }
             };
             if (i == 0) {
                 worksheet.getColumn(i + 1).width = "10";
@@ -262,7 +269,7 @@ const CustomerListForm = (props) => {
                 };
                 if (j == 0) {
                     columnn.alignment = { vertical: 'middle', horizontal: 'center' };
-                }else if(j == 1){
+                } else if (j == 1) {
                     columnn.alignment = { vertical: 'middle', horizontal: 'left' };
                 }
 
@@ -274,7 +281,7 @@ const CustomerListForm = (props) => {
         ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
             saveAs(
                 new Blob([buffer], { type: "application/octet-stream" }),
-                `DSKhachHang.xlsx`
+                `DSKhachHang${day.getDate()}${day.getMonth() + 1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
             );
         });
     };

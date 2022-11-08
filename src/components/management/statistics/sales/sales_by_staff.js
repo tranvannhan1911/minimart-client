@@ -26,14 +26,17 @@ const { RangePicker } = DatePicker;
 
 const StatisticsSalesByStaff = () => {
 
-    const [loadings, setLoadings] = useState([]);
     const [data, setData] = useState([]);
+    const [dataTable, setDataTable] = useState([]);
     const [staffOptions, setStaffOptions] = useState([]);
     const [staff, setStaff] = useState("");
     const [date, setDate] = useState([]);
+    const [loading, setLoading] = useState(true)
+    const [manyStaff, setManyStaff] = useState(true)
+
 
     useEffect(() => {
-      document.title = "Thống kê bán hàng theo nhân viên - Quản lý siêu thị mini NT"
+        document.title = "Thống kê bán hàng theo nhân viên - Quản lý siêu thị mini NT"
     }, [])
 
     useEffect(() => {
@@ -43,27 +46,13 @@ const StatisticsSalesByStaff = () => {
         onThongKeToDay();
     }, [])
 
-    // const enterLoading = (index) => {
-    //   setLoadings((prevLoadings) => {
-    //     const newLoadings = [...prevLoadings];
-    //     newLoadings[index] = true;
-    //     return newLoadings;
-    //   });
-    // };
-
-    // const stopLoading = (index) => {
-    //   setLoadings((prevLoadings) => {
-    //     const newLoadings = [...prevLoadings];
-    //     newLoadings[index] = false;
-    //     return newLoadings;
-    //   });
-    // }
-
     const onThongKe = async () => {
         if (date.length == 0) {
             message.error("Vui lòng chọn ngày cần thống kê");
             return;
         }
+        setManyStaff(false)
+        setLoading(true)
         const params = {
             params: {
                 start_date: date[0],
@@ -72,7 +61,7 @@ const StatisticsSalesByStaff = () => {
             }
         }
         const response = await api.statistics_sales.by_staff(params);
-        setData(response.data.data.results);
+        formatData(response.data.data.results);
     }
 
     const onThongKeToDay = async () => {
@@ -85,8 +74,8 @@ const StatisticsSalesByStaff = () => {
         if (th < 10) {
             th = "0" + th;
         }
-        let da= day.getFullYear() + "-" + th + "-" + ng + "T05:10:10.357Z";
-        setDate([da,da])
+        let da = day.getFullYear() + "-" + th + "-" + ng + "T05:10:10.357Z";
+        setDate([da, da])
         const params = {
             params: {
                 start_date: da,
@@ -94,8 +83,74 @@ const StatisticsSalesByStaff = () => {
             }
         }
         const response = await api.statistics_sales.by_staff(params);
-        setData(response.data.data.results);
-        console.log(data)
+        formatData(response.data.data.results);
+
+    }
+
+    const formatData = (dataa) => {
+        let many = null;
+        let da = [];
+        da = dataa.map(elm => {
+            if (elm.user_created?.id != many && many != null) {
+                setManyStaff(true);
+            }
+            many = elm.user_created?.id;
+            if (elm.user_created != null) {
+                return elm;
+            }
+        });
+        setData(da.sort(function (a, b) { return a.user_created?.id - b.user_created?.id }))
+        // let datahien=[];
+        // let kh=0;
+        let tong=0;
+        let ck=0;
+        let tongcong=0;
+        // let tong1=0;
+        // let ck1=0;
+        // let tongcong1=0;
+        data.forEach(element => {
+            // if(element.user_created?.id != kh && kh !=0 ){
+            //     datahien.push({
+            //         user_created:{
+            //             id: "Tổng cộng"
+            //         },
+            //         discount: ck1,
+            //         total: tong1,
+            //         final_total: tongcong1
+            //     })
+            //     tong1=0;
+            //     ck1=0;
+            //     tongcong1=0;
+            // }
+            // datahien.push(element);
+            tong = tong +element.total;
+            ck=ck+element.discount;
+            tongcong= tongcong+element.final_total;
+            // tong1 = tong1 +element.total;
+            // ck1=ck1+element.discount;
+            // tongcong1= tongcong1+element.final_total;
+            // kh= element.user_created?.id;
+        });
+        // if(manyStaff == true){
+        //     datahien.push({
+        //         user_created:{
+        //             id: "Tổng cộng"
+        //         },
+        //         discount: ck1,
+        //         total: tong1,
+        //         final_total: tongcong1
+        //     })
+        // }
+        // datahien.push({
+        //     user_created:{
+        //         id: "Tổng cộng"
+        //     },
+        //     discount: ck,
+        //     total: tong,
+        //     final_total: tongcong
+        // })
+        // setDataTable(datahien);
+        setLoading(false)
     }
 
     const handleDataStaff = async () => {
@@ -117,6 +172,10 @@ const StatisticsSalesByStaff = () => {
         if (dates) {
             console.log('From: ', dates[0], ', to: ', dates[1]);
             console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
+            if (new Date(dateStrings[0]) - new Date(dateStrings[1]) < -31536000000) {
+                message.error("Khoảng thời gian thống kê không quá 1 năm");
+                return;
+            }
             setDate([dateStrings[0] + "T05:10:10.357Z", dateStrings[1] + "T23:10:10.357Z"])
         } else {
             console.log('Clear');
@@ -135,7 +194,7 @@ const StatisticsSalesByStaff = () => {
             dataIndex: 'name',
             key: 'name',
             render: (product, record) => (
-                <Typography>{`${record.user_created?.code}`}</Typography>
+                <Typography>{`${record?.user_created?.id}`}</Typography>
             ),
         },
         {
@@ -143,7 +202,7 @@ const StatisticsSalesByStaff = () => {
             dataIndex: 'age',
             key: 'age',
             render: (product, record) => (
-                <Typography>{`${record.user_created?.fullname}`}</Typography>
+                <Typography>{`${record?.user_created?.fullname}`}</Typography>
             ),
         },
         {
@@ -151,7 +210,7 @@ const StatisticsSalesByStaff = () => {
             dataIndex: 'date_created',
             key: 'address',
             render: (product, record) => (
-                <Typography>{`${record.date_created.slice(0, 10)}`}</Typography>
+                <Typography>{`${record?.date_created?.slice(0, 10)}`}</Typography>
             ),
         },
         {
@@ -159,23 +218,23 @@ const StatisticsSalesByStaff = () => {
             dataIndex: 'address',
             key: 'address',
             render: (product, record) => (
-                <Typography>0</Typography>
+                <Typography>{`${record?.discount?.toLocaleString()}`}</Typography>
             ),
         },
-        {
-            title: 'Khuyến mãi',
-            dataIndex: 'discount',
-            key: 'address',
-            render: (product, record) => (
-                <Typography>{`${record.discount.toLocaleString()}`}</Typography>
-            ),
-        },
+        // {
+        //     title: 'Khuyến mãi',
+        //     dataIndex: 'discount',
+        //     key: 'address',
+        //     render: (product, record) => (
+        //         <Typography>{`${record.discount.toLocaleString()}`}</Typography>
+        //     ),
+        // },
         {
             title: 'Doanh số trước chiết khấu',
             dataIndex: 'final_total',
             key: 'address',
             render: (product, record) => (
-                <Typography>{`${record.final_total.toLocaleString()}`}</Typography>
+                <Typography>{`${record?.total?.toLocaleString()}`}</Typography>
             ),
         },
         {
@@ -183,7 +242,7 @@ const StatisticsSalesByStaff = () => {
             dataIndex: 'final_total',
             key: 'address',
             render: (product, record) => (
-                <Typography>{`${record.final_total.toLocaleString()}`}</Typography>
+                <Typography>{`${record?.final_total?.toLocaleString()}`}</Typography>
             ),
         },
 
@@ -195,7 +254,7 @@ const StatisticsSalesByStaff = () => {
             return;
         }
         var ExcelJSWorkbook = new ExcelJS.Workbook();
-        var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO");
+        var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO", { views: [{ showGridLines: false }] });
 
         worksheet.mergeCells("A1:G1");
 
@@ -270,6 +329,7 @@ const StatisticsSalesByStaff = () => {
         var headerRow = worksheet.addRow();
 
         worksheet.getRow(8).font = { bold: true };
+        worksheet.getRow(8).height = "25";
 
         for (let i = 0; i < headerColumn.length; i++) {
             const columnn = worksheet.getCell(headerColumn[i] + 8);
@@ -278,6 +338,12 @@ const StatisticsSalesByStaff = () => {
                 left: { style: 'thin' },
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
+            };
+            columnn.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'ffb0e2ff' },
+                bgColor: { argb: 'ffb0e2ff' }
             };
             if (i == 0) {
                 worksheet.getColumn(i + 1).width = "10";
@@ -298,18 +364,98 @@ const StatisticsSalesByStaff = () => {
                 column: 7
             }
         };
+        let donggop = 9;
+        let sl = 1;
         let i = 1;
         let total = 0;
+        let total_ck = 0;
+        let total_final = 0;
+        let totalnv = 0;
+        let total_cknv = 0;
+        let total_finalnv = 0;
+        let nv = 0;
         data.forEach(element => {
-            worksheet.addRow([i, element.user_created?.code, element.user_created?.fullname, element.date_created.slice(0, 10),
-                "0", element.final_total.toLocaleString(), element.final_total.toLocaleString()]);
+            if (element?.user_created.id != nv && nv != 0) {
+                worksheet.mergeCells("B" + (i + 8) + ":D" + (i + 8));
+                const customCellTT = worksheet.getCell("B" + (i + 8));
+                customCellTT.font = {
+                    name: "Times New Roman",
+                    family: 4,
+                    size: 11,
+                    bold: true,
+                };
+                customCellTT.border = {
+                    top: { style: 'dotted' },
+                    bottom: { style: 'thin' },
+                };
+                customCellTT.alignment = { vertical: 'middle', horizontal: 'right' };
+                customCellTT.value = "Tổng cộng: ";
+
+                const customCellTT1 = worksheet.getCell("E" + (i + 8));
+                customCellTT1.font = {
+                    name: "Times New Roman",
+                    family: 4,
+                    size: 11,
+                    bold: true,
+                };
+                customCellTT1.border = {
+                    top: { style: 'dotted' },
+                    bottom: { style: 'thin' },
+                };
+                customCellTT1.alignment = { vertical: 'middle', horizontal: 'right' };
+                customCellTT1.value = total_cknv?.toLocaleString();
+
+                const customCellTT2 = worksheet.getCell("F" + (i + 8));
+                customCellTT2.font = {
+                    name: "Times New Roman",
+                    family: 4,
+                    size: 11,
+                    bold: true,
+                };
+                customCellTT2.border = {
+                    top: { style: 'dotted' },
+                    bottom: { style: 'thin' },
+                };
+                customCellTT2.alignment = { vertical: 'middle', horizontal: 'right' };
+                customCellTT2.value = totalnv?.toLocaleString();
+
+                const customCellTT3 = worksheet.getCell("G" + (i + 8));
+                customCellTT3.font = {
+                    name: "Times New Roman",
+                    family: 4,
+                    size: 11,
+                    bold: true,
+                };
+                customCellTT3.border = {
+                    top: { style: 'dotted' },
+                    bottom: { style: 'thin' },
+                };
+                customCellTT3.alignment = { vertical: 'middle', horizontal: 'right' };
+                customCellTT3.value = total_finalnv?.toLocaleString();
+
+                worksheet.mergeCells("A" + donggop + ":A" + (i + 8));
+                worksheet.getCell("A" + donggop).border = {
+                    bottom: { style: 'thin' },
+                };
+                i++;
+                totalnv = 0;
+                total_cknv = 0;
+                total_finalnv = 0;
+                sl++;
+                donggop = i + 8;
+            }
+            if (manyStaff == true) {
+                worksheet.addRow([sl, element?.user_created?.id, element?.user_created?.fullname, element?.date_created?.slice(0, 10),
+                    element?.discount?.toLocaleString(), element?.total?.toLocaleString(), element?.final_total?.toLocaleString()]);
+            } else {
+                worksheet.addRow([i, element?.user_created?.id, element?.user_created?.fullname, element?.date_created?.slice(0, 10),
+                    element?.discount?.toLocaleString(), element?.total?.toLocaleString(), element?.final_total?.toLocaleString()]);
+            }
             for (let j = 0; j < headerColumn.length; j++) {
                 const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
                 columnn.border = {
-                    top: { style: 'thin' },
-                    left: { style: 'thin' },
-                    bottom: { style: 'thin' },
-                    right: { style: 'thin' }
+                    top: { style: 'dotted' },
+                    bottom: { style: 'dotted' },
                 };
                 if (j == 0 || j == 3) {
                     columnn.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -322,8 +468,81 @@ const StatisticsSalesByStaff = () => {
             }
 
             i++;
-            total = total + element.final_total;
+            if (element != null) {
+                total_final = total_final + element?.total;
+                total = total + element?.final_total;
+                total_ck = total_ck + element?.discount;
+                total_finalnv = total_finalnv + element?.total;
+                totalnv = totalnv + element?.final_total;
+                total_cknv = total_cknv + element?.discount;
+                nv = element?.user_created.id;
+            }
+
         });
+        if (manyStaff == true) {
+            worksheet.mergeCells("B" + (i + 8) + ":D" + (i + 8));
+            const customCellTT = worksheet.getCell("B" + (i + 8));
+            customCellTT.font = {
+                name: "Times New Roman",
+                family: 4,
+                size: 11,
+                bold: true,
+            };
+            customCellTT.border = {
+                top: { style: 'dotted' },
+                bottom: { style: 'thin' },
+            };
+            customCellTT.alignment = { vertical: 'middle', horizontal: 'right' };
+            customCellTT.value = "Tổng cộng: ";
+
+            const customCellTT1 = worksheet.getCell("E" + (i + 8));
+            customCellTT1.font = {
+                name: "Times New Roman",
+                family: 4,
+                size: 11,
+                bold: true,
+            };
+            customCellTT1.border = {
+                top: { style: 'dotted' },
+                bottom: { style: 'thin' },
+            };
+            customCellTT1.alignment = { vertical: 'middle', horizontal: 'right' };
+            customCellTT1.value = total_cknv?.toLocaleString();
+
+            const customCellTT2 = worksheet.getCell("F" + (i + 8));
+            customCellTT2.font = {
+                name: "Times New Roman",
+                family: 4,
+                size: 11,
+                bold: true,
+            };
+            customCellTT2.border = {
+                top: { style: 'dotted' },
+                bottom: { style: 'thin' },
+            };
+            customCellTT2.alignment = { vertical: 'middle', horizontal: 'right' };
+            customCellTT2.value = totalnv?.toLocaleString();
+
+            const customCellTT3 = worksheet.getCell("G" + (i + 8));
+            customCellTT3.font = {
+                name: "Times New Roman",
+                family: 4,
+                size: 11,
+                bold: true,
+            };
+            customCellTT3.border = {
+                top: { style: 'dotted' },
+                bottom: { style: 'thin' },
+            };
+            customCellTT3.alignment = { vertical: 'middle', horizontal: 'right' };
+            customCellTT3.value = total_finalnv?.toLocaleString();
+
+            worksheet.mergeCells("A" + donggop + ":A" + (i + 8));
+            worksheet.getCell("A" + donggop).border = {
+                bottom: { style: 'thin' },
+            };
+            i++;
+        }
         worksheet.mergeCells("A" + (i + 8) + ":D" + (i + 8));
         const customCellTT = worksheet.getCell("A" + (i + 8));
         customCellTT.font = {
@@ -334,11 +553,9 @@ const StatisticsSalesByStaff = () => {
         };
         customCellTT.border = {
             top: { style: 'thin' },
-            left: { style: 'thin' },
             bottom: { style: 'thin' },
-            right: { style: 'thin' }
         };
-        customCellTT.alignment = { vertical: 'middle', horizontal: 'right' };
+        customCellTT.alignment = { vertical: 'middle', horizontal: 'left' };
         customCellTT.value = "Tổng cộng: ";
 
         const customCellTT1 = worksheet.getCell("E" + (i + 8));
@@ -350,11 +567,10 @@ const StatisticsSalesByStaff = () => {
         };
         customCellTT1.border = {
             top: { style: 'thin' },
-            left: { style: 'thin' },
             bottom: { style: 'thin' },
-            right: { style: 'thin' }
         };
-        customCellTT1.value = 0;
+        customCellTT1.alignment = { vertical: 'middle', horizontal: 'right' };
+        customCellTT1.value = total_ck.toLocaleString();
 
         const customCellTT2 = worksheet.getCell("F" + (i + 8));
         customCellTT2.font = {
@@ -365,9 +581,7 @@ const StatisticsSalesByStaff = () => {
         };
         customCellTT2.border = {
             top: { style: 'thin' },
-            left: { style: 'thin' },
             bottom: { style: 'thin' },
-            right: { style: 'thin' }
         };
         customCellTT2.alignment = { vertical: 'middle', horizontal: 'right' };
         customCellTT2.value = total.toLocaleString();
@@ -381,16 +595,14 @@ const StatisticsSalesByStaff = () => {
         };
         customCellTT3.border = {
             top: { style: 'thin' },
-            left: { style: 'thin' },
             bottom: { style: 'thin' },
-            right: { style: 'thin' }
         };
         customCellTT3.alignment = { vertical: 'middle', horizontal: 'right' };
-        customCellTT3.value = total.toLocaleString();
+        customCellTT3.value = total_final.toLocaleString();
         ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
             saveAs(
                 new Blob([buffer], { type: "application/octet-stream" }),
-                `BaoCaoDoanhSoTheoNgay.xlsx`
+                `BaoCaoDoanhSoTheoNgay${day.getDate()}${day.getMonth() + 1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
             );
         });
     }
@@ -400,7 +612,7 @@ const StatisticsSalesByStaff = () => {
             <Row style={{ marginTop: '10px' }}>
                 <Col span={24}>
                     <label style={{ paddingRight: '10px' }}>Ngày thống kê:</label>
-                    <RangePicker onChange={onChange} defaultValue={[moment(new Date()),moment(new Date())]}/>
+                    <RangePicker onChange={onChange} defaultValue={[moment(new Date()), moment(new Date())]} />
 
                     <label style={{ paddingLeft: '10px', paddingRight: '10px' }}>Nhân viên:</label>
                     <Select
@@ -430,6 +642,7 @@ const StatisticsSalesByStaff = () => {
                     <Table dataSource={data}
                         columns={columns}
                         size="small"
+                        loading={loading}
                     >
                     </Table>
                 </Col>
