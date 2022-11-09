@@ -140,8 +140,11 @@ const InventoryRecordChangeForm = (props) => {
           }
           if (index == jsonData.length - 1) {
             if (resultTotal == jsonData.length) {
-              message.success("Xong quá trình thêm dữ liệu");
+              // message.success("Xong quá trình thêm dữ liệu");
               form.setFieldValue("details", datadetail)
+              ///
+              onFinish(form.getFieldsValue());
+              ///
             } else {
               message.error("Dữ liệu lỗi!!");
               setTimeout(() => {
@@ -461,6 +464,9 @@ const InventoryRecordChangeForm = (props) => {
       ])
     } else {
       props.setBreadcrumbExtras([
+        // <Upload showUploadList={false} {...uploadData} style={{}}>
+        //   <Button type='primary' icon={<UploadOutlined />}>Nhập Excel và Lưu</Button>
+        // </Upload>,
         <ShowForPermission>
           <ExportTemplateReactCSV csvData={[]} fileName='template_kiem_ke.xlsx'
             header={[
@@ -603,9 +609,11 @@ const InventoryRecordChangeForm = (props) => {
                           marginBottom: '20px'
                         }}
                         placeholder="Thêm sản phẩm vào phiếu kiểm kê"
-                        onSelectProduct={(value) => onSelectProduct(value, add)} /><Upload showUploadList={false} {...uploadData} style={{}}>
-                          <Button icon={<UploadOutlined />}>Nhập Excel</Button>
-                        </Upload></> : null}
+                        onSelectProduct={(value) => onSelectProduct(value, add)} />
+                        <Upload showUploadList={false} {...uploadData} style={{}}>
+                          <Button icon={<UploadOutlined />}>Nhập Excel và Lưu</Button>
+                        </Upload>
+                      </> : null}
                       <Row>
                         <Col span={1}></Col>
                         <Col span={5} style={titleCol}>

@@ -76,56 +76,41 @@ const StatisticsPromotion = () => {
 
     },
 
-    // {
-    //   title: 'Mã SP tặng',
-    //   dataIndex: 'idProduct',
-    //   key: 'address',
-    // },
-    // {
-    //   title: 'Tên SP tặng',
-    //   dataIndex: 'nameProduct',
-    //   key: 'address',
-    // },
-    // {
-    //   title: 'SL tặng',
-    //   dataIndex: 'quantity',
-    //   key: 'address',
-    // },
-    // {
-    //   title: 'Đơn vị tính',
-    //   dataIndex: 'unit',
-    //   key: 'address',
-    // },
+    {
+      title: 'Mã SP tặng',
+      dataIndex: 'idProduct',
+      key: 'address',
+    },
+    {
+      title: 'Tên SP tặng',
+      dataIndex: 'nameProduct',
+      key: 'address',
+    },
+    {
+      title: 'SL tặng',
+      dataIndex: 'quantity',
+      key: 'address',
+    },
+    {
+      title: 'Đơn vị tính',
+      dataIndex: 'unit',
+      key: 'address',
+    },
     {
       title: 'Số tiền chiết khấu',
       dataIndex: 'money',
       key: 'address',
       render: (product, record) => (
-        <Typography>{`${record.money.toLocaleString()}`}</Typography>
+        <Typography>{`${record.money?.toLocaleString()}`}</Typography>
       ),
     },
+
     {
-      title: 'Ngân sách tổng',
-      dataIndex: 'moneyTotal',
+      title: 'Tổng SL đã KM',
+      dataIndex: 'total_received',
       key: 'address',
       render: (product, record) => (
-        <Typography>{`${record.moneyTotal.toLocaleString()}`}</Typography>
-      ),
-    },
-    {
-      title: 'Ngân sách đã sử dụng',
-      dataIndex: 'moneyUsed',
-      key: 'address',
-      render: (product, record) => (
-        <Typography>{`${record.moneyUsed.toLocaleString()}`}</Typography>
-      ),
-    },
-    {
-      title: 'Ngân sách còn lại',
-      dataIndex: 'moneyRecord',
-      key: 'address',
-      render: (product, record) => (
-        <Typography>{`${record.moneyRecord.toLocaleString()}`}</Typography>
+        <Typography>{`${record.total_received?.toLocaleString()}`}</Typography>
       ),
     },
 
@@ -173,20 +158,18 @@ const StatisticsPromotion = () => {
   const statisticData = (data) => {
     let dataMain = [];
     data.forEach(element => {
-      if (type == "Product") {
+      if (element.type == "Product") {
         let index = {
           id: element.promotion_line.promotion_code,
           name: element.promotion_line.title,
           start_date: element.promotion_line.start_date.slice(0, 10),
           end_date: element.promotion_line.end_date.slice(0, 10),
-          idProduct: element.promotion_line.detail.product_received,
-          nameProduct: element.promotion_line.detail.product_received,
+          idProduct: element.promotion_line.detail.product_received.product_code,
+          nameProduct: element.promotion_line.detail.product_received.name,
           quantity: element.promotion_line.detail.quantity_received,
-          unit: element.promotion_line.detail.product_received,
-          money: 0,
-          moneyTotal: element.promotion_line.max_quantity,
-          moneyUsed: element.quantity,
-          moneyRecord: element.promotion_line.max_quantity == null ? "" : element.promotion_line.max_quantity - element.amount
+          unit: element.promotion_line.detail.product_received.base_unit.name,
+          money: "",
+          total_received: element.quantity_product_received,
         }
         dataMain.push(index);
       } else {
@@ -199,10 +182,9 @@ const StatisticsPromotion = () => {
           nameProduct: "",
           quantity: "",
           unit: "",
-          money: 0,
-          moneyTotal: element.promotion_line.max_quantity == null ? "" : element.promotion_line.max_quantity * element.promotion_line.detail.reduction_amount,
-          moneyUsed: element.amount,
-          moneyRecord: element.promotion_line.max_quantity == null ? "" : (element.promotion_line.max_quantity * element.promotion_line.detail.reduction_amount) - element.amount
+          money: element.amount,
+          total_received: element.quantity_used,
+
         }
         dataMain.push(index);
       }
@@ -217,9 +199,9 @@ const StatisticsPromotion = () => {
       return;
     }
     var ExcelJSWorkbook = new ExcelJS.Workbook();
-    var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO", {views: [{showGridLines: false}]});
+    var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO", { views: [{ showGridLines: false }] });
 
-    worksheet.mergeCells("A1:I1");
+    worksheet.mergeCells("A1:K1");
 
     const customCell1 = worksheet.getCell("A1");
     customCell1.font = {
@@ -229,7 +211,7 @@ const StatisticsPromotion = () => {
     };
     customCell1.value = "Tên cửa hàng: SIÊU THỊ MINI NT";
 
-    worksheet.mergeCells("A2:I2");
+    worksheet.mergeCells("A2:K2");
 
     const customCell2 = worksheet.getCell("A2");
     customCell2.font = {
@@ -239,7 +221,7 @@ const StatisticsPromotion = () => {
     };
     customCell2.value = "Địa chỉ: Gò Vấp - Tp.Hồ Chí Minh";
 
-    worksheet.mergeCells("A3:I3");
+    worksheet.mergeCells("A3:K3");
 
     const customCell3 = worksheet.getCell("A3");
     customCell3.font = {
@@ -250,7 +232,7 @@ const StatisticsPromotion = () => {
     const day = new Date();
     customCell3.value = "Ngày xuất báo cáo: " + day.getDate() + "/" + (day.getMonth() + 1) + "/" + day.getFullYear();
 
-    worksheet.mergeCells("A4:I4");
+    worksheet.mergeCells("A4:K4");
 
     const customCell4 = worksheet.getCell("A4");
     customCell4.font = {
@@ -260,7 +242,7 @@ const StatisticsPromotion = () => {
     };
     customCell4.value = "Người xuất báo cáo: " + sessionStorage.getItem("nameStaff") + ' - ' + sessionStorage.getItem("phoneStaff");
 
-    worksheet.mergeCells("A5:I5");
+    worksheet.mergeCells("A5:K5");
 
     const customCell = worksheet.getCell("A5");
     customCell.font = {
@@ -273,7 +255,7 @@ const StatisticsPromotion = () => {
 
     customCell.value = "BÁO CÁO TỔNG KẾT CTKM ";
 
-    worksheet.mergeCells("A6:I6");
+    worksheet.mergeCells("A6:K6");
 
     const customCell5 = worksheet.getCell("A6");
     customCell5.font = {
@@ -285,18 +267,15 @@ const StatisticsPromotion = () => {
 
     customCell5.value = "Từ ngày: " + date[0].slice(0, 10) + "      Đến ngày: " + date[1].slice(0, 10) + " ";
 
-    // let header = ["STT", "Mã CTKM", "Tên CTKM", "Ngày bắt đầu", "Ngày kết thúc", "Mã SP tặng", "Tên SP tặng",
-    //   "SL tặng", "Đơn vị tính", "Số tiền chiết khấu", "Ngân sách tổng", "Ngân sách đã sử dụng", "Ngân sách còn lại"];
-    // let headerColumn = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"];
+    let header = ["STT", "Mã CTKM", "Tên CTKM", "Ngày bắt đầu", "Ngày kết thúc", "Mã SP tặng", "Tên SP tặng"
+      , "SL tặng", "Đơn vị tính", "Số tiền chiết khấu", "Tổng SL đã khuyến mãi"];
+    let headerColumn = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"];
 
-    let header = ["STT", "Mã CTKM", "Tên CTKM", "Ngày bắt đầu", "Ngày kết thúc"
-      , "Số tiền chiết khấu", "Ngân sách tổng", "Ngân sách đã sử dụng", "Ngân sách còn lại"];
-    let headerColumn = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
-
-    worksheet.mergeCells("A7:I7");
+    worksheet.mergeCells("A7:K7");
     var headerRow = worksheet.addRow();
 
     worksheet.getRow(8).font = { bold: true };
+    worksheet.getRow(8).height = "25";
 
     for (let i = 0; i < headerColumn.length; i++) {
       const columnn = worksheet.getCell(headerColumn[i] + 8);
@@ -306,8 +285,16 @@ const StatisticsPromotion = () => {
         bottom: { style: 'thin' },
         right: { style: 'thin' }
       };
+      columnn.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'ffb0e2ff' },
+        bgColor: { argb: 'ffb0e2ff' }
+      };
       if (i == 0) {
         worksheet.getColumn(i + 1).width = "10";
+      } else if (i == 5 || i == 7 || i == 8) {
+        worksheet.getColumn(i + 1).width = "12";
       } else {
         worksheet.getColumn(i + 1).width = "20";
       }
@@ -322,15 +309,17 @@ const StatisticsPromotion = () => {
       },
       to: {
         row: 8,
-        column: 9
+        column: 11
       }
     };
     let i = 1;
     let total = 0;
+    let total_quantity_received = 0;
+    let total_money = 0;
     data.forEach(element => {
       worksheet.addRow([i, element.id, element.name, element.start_date, element.end_date,
-        element.money?.toLocaleString(), element.moneyTotal?.toLocaleString(),
-        element.moneyUsed?.toLocaleString(), element.moneyRecord?.toLocaleString()]);
+        element.idProduct, element.nameProduct, element.quantity?.toLocaleString(), element.unit,
+        element.money?.toLocaleString(), element.total_received?.toLocaleString()]);
       for (let j = 0; j < headerColumn.length; j++) {
         const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
         columnn.border = {
@@ -339,9 +328,9 @@ const StatisticsPromotion = () => {
           bottom: { style: 'thin' },
           right: { style: 'thin' }
         };
-        if (j == 0 || j == 3 || j == 4) {
+        if (j == 0 || j == 3 || j == 4 || j == 8) {
           columnn.alignment = { vertical: 'middle', horizontal: 'center' };
-        } else if (j == 1 || j == 2) {
+        } else if (j == 1 || j == 2 || j == 5) {
           columnn.alignment = { vertical: 'middle', horizontal: 'left' };
         } else {
           columnn.alignment = { vertical: 'middle', horizontal: 'right' };
@@ -350,48 +339,95 @@ const StatisticsPromotion = () => {
       }
 
       i++;
-      total = total + element.final_total;
+      total = total + element.total_received;
+      if (element.money != "") {
+        total_money = total_money + element.money;
+      }
+      if (element.quantity != "") {
+        total_quantity_received = total_quantity_received + element.quantity;
+      }
     });
-    // worksheet.mergeCells("A" + (i + 9) + ":D" + (i + 9));
-    // const customCellTT = worksheet.getCell("A" + (i + 9));
-    // customCellTT.font = {
-    //     name: "Times New Roman",
-    //     family: 4,
-    //     size: 11,
-    //     bold: true,
-    // };
+    worksheet.mergeCells("A" + (i + 8) + ":G" + (i + 8));
+    const customCellTT = worksheet.getCell("A" + (i + 8));
+    customCellTT.font = {
+      name: "Times New Roman",
+      family: 4,
+      size: 11,
+      bold: true,
+    };
+    customCellTT.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
+    };
+    customCellTT.alignment = { vertical: 'middle', horizontal: 'right' };
+    customCellTT.value = "Tổng cộng CTKM: ";
 
-    // customCellTT.value = "Tổng cộng: ";
+    const customCellTT1 = worksheet.getCell("H" + (i + 8));
+    customCellTT1.font = {
+      name: "Times New Roman",
+      family: 4,
+      size: 11,
+      bold: true,
+    };
+    customCellTT1.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
+    };
+    customCellTT1.alignment = { vertical: 'middle', horizontal: 'right' };
+    customCellTT1.value = total_quantity_received?.toLocaleString();
 
-    // const customCellTT1 = worksheet.getCell("E" + (i + 9));
-    // customCellTT1.font = {
-    //     name: "Times New Roman",
-    //     family: 4,
-    //     size: 11,
-    //     bold: true,
-    // };
+    const customCellTT2 = worksheet.getCell("I" + (i + 8));
+    customCellTT2.font = {
+      name: "Times New Roman",
+      family: 4,
+      size: 11,
+      bold: true,
+    };
+    customCellTT2.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
+    };
+    customCellTT2.alignment = { vertical: 'middle', horizontal: 'right' };
+    customCellTT2.value = "";
 
-    // customCellTT1.value = 0;
+    const customCellTT3 = worksheet.getCell("J" + (i + 8));
+    customCellTT3.font = {
+      name: "Times New Roman",
+      family: 4,
+      size: 11,
+      bold: true,
+    };
+    customCellTT3.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
+    };
+    customCellTT3.alignment = { vertical: 'middle', horizontal: 'right' };
+    customCellTT3.value = total_money?.toLocaleString();
 
-    // const customCellTT2 = worksheet.getCell("F" + (i + 9));
-    // customCellTT2.font = {
-    //     name: "Times New Roman",
-    //     family: 4,
-    //     size: 11,
-    //     bold: true,
-    // };
-    // customCellTT2.alignment = { vertical: 'middle', horizontal: 'right' };
-    // customCellTT2.value = total.toLocaleString();
+    const customCellTT4 = worksheet.getCell("K" + (i + 8));
+    customCellTT4.font = {
+      name: "Times New Roman",
+      family: 4,
+      size: 11,
+      bold: true,
+    };
+    customCellTT4.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
+    };
+    customCellTT4.alignment = { vertical: 'middle', horizontal: 'right' };
+    customCellTT4.value = total?.toLocaleString();
 
-    // const customCellTT3 = worksheet.getCell("G" + (i + 9));
-    // customCellTT3.font = {
-    //     name: "Times New Roman",
-    //     family: 4,
-    //     size: 11,
-    //     bold: true,
-    // };
-    // customCellTT3.alignment = { vertical: 'middle', horizontal: 'right' };
-    // customCellTT3.value = total.toLocaleString();
     ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
       saveAs(
         new Blob([buffer], { type: "application/octet-stream" }),

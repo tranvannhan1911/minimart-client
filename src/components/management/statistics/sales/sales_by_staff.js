@@ -469,11 +469,11 @@ const StatisticsSalesByStaff = () => {
 
             i++;
             if (element != null) {
-                total_final = total_final + element?.total;
-                total = total + element?.final_total;
+                total_final = total_final + element?.final_total;
+                total = total + element?.total;
                 total_ck = total_ck + element?.discount;
-                total_finalnv = total_finalnv + element?.total;
-                totalnv = totalnv + element?.final_total;
+                total_finalnv = total_finalnv + element?.final_total;
+                totalnv = totalnv + element?.total;
                 total_cknv = total_cknv + element?.discount;
                 nv = element?.user_created.id;
             }

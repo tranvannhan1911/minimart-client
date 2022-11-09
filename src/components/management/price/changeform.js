@@ -98,13 +98,13 @@ const PriceChangeForm = (props) => {
           dataProduct.forEach(elementt => {
             if (elementt.product_code.toLowerCase() == element.maSP.toLowerCase() || elementt.barcode == element.maSP) {
               let unit = "";
-              let unitname="";
-              let quantityQD=0;
+              let unitname = "";
+              let quantityQD = 0;
               if (kqUnit == true) {
                 elementt.units.forEach(elm => {
                   if (elm.unit_code.toLowerCase() == element.maDonVi.toLowerCase()) {
                     unit = elm.id;
-                    unitname= elm.unit_name;
+                    unitname = elm.unit_name;
                     quantityQD = elm.value;
                   }
                 });
@@ -166,8 +166,16 @@ const PriceChangeForm = (props) => {
           }
           if (index == jsonData.length - 1) {
             if (resultTotal == jsonData.length) {
-              message.success("Xong quá trình thêm dữ liệu");
-              form.setFieldValue("pricedetails", datadetail)
+              // message.success("Xong quá trình thêm dữ liệu");
+              form.setFieldValue("pricedetails", datadetail);
+              /////
+              let re = ktra(form.getFieldsValue());
+              if(re == true){
+                onFinish(form.getFieldsValue());
+              }else{
+                form.setFieldValue("pricedetails", null);
+              }
+              /////
             } else {
               message.error("Dữ liệu lỗi!!");
               setTimeout(() => {
@@ -322,6 +330,36 @@ const PriceChangeForm = (props) => {
     }
     return false
   };
+
+  const ktra = (valuess) => {
+    if(valuess.name == null || valuess.name == ""){
+      message.error('Vui lòng nhập tên bảng giá');
+      return false;
+    }
+    if(valuess.end_date == null || valuess.start_date == null){
+      message.error('Vui lòng nhập thời gian của bảng giá');
+      return false;
+    }
+    if (!validName1.test(valuess.name)) {
+      message.error('Tên không hợp lệ! Ký tự đầu của chữ đầu tiên phải viết hoa');
+      return false;
+    }
+    if (valuess.end_date < valuess.start_date) {
+      if (valuess.start_date._d - valuess.end_date._d > 1) {
+        message.error('Ngày kết thúc phải sau hoặc cùng ngày bắt đầu');
+        return false;
+      }
+    }
+    let datenow = new Date();
+    datenow = moment(datenow);
+    if (valuess.start_date < datenow) {
+      if (datenow + 0 > valuess.start_date + 24000000) {
+        message.error('Ngày bắt đầu không được sau ngày hiện tại');
+        return false;
+      }
+    }
+    return true;
+  }
 
   const onFinish = async (values) => {
     setDisableSubmit(true)
@@ -673,7 +711,7 @@ const PriceChangeForm = (props) => {
                   <Col span={1}></Col>
                   <Col span={10} style={{ backgroundColor: "white" }}>
                     <Form.Item label="Mã id bảng giá" name="price_list_id">
-                      <Input name="price_list_id" disabled={true} className="inputBorderDisableText"/>
+                      <Input name="price_list_id" disabled={true} className="inputBorderDisableText" />
                     </Form.Item>
                   </Col>
                   <Col span={2}></Col>
@@ -711,8 +749,8 @@ const PriceChangeForm = (props) => {
                       },
                     ]}
                   >
-                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} 
-                      />
+                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
@@ -749,9 +787,9 @@ const PriceChangeForm = (props) => {
                       },
                     ]}
                   >
-                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }} 
-                      // defaultValue={moment()}
-                      />
+                    <DatePicker format={dateFormat} disabled={is_create ? false : true} style={{ width: '100%' }}
+                    // defaultValue={moment()}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
@@ -782,7 +820,7 @@ const PriceChangeForm = (props) => {
                           }}
                           placeholder="Thêm sản phẩm vào bảng giá"
                           onSelectProduct={(value) => onSelectProduct(value, add)} /><Upload showUploadList={false} {...uploadData} style={{}}>
-                            <Button icon={<UploadOutlined />}>Nhập Excel</Button>
+                            <Button icon={<UploadOutlined />}>Nhập Excel và Lưu</Button>
                           </Upload></>
                         : null}
 

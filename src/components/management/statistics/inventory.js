@@ -86,7 +86,6 @@ const StatisticsInventory = () => {
       dataIndex: 'quantity',
       key: 'address',
 
-
     },
 
     {
@@ -145,17 +144,22 @@ const StatisticsInventory = () => {
     let dataMain = [];
     data.forEach(element => {
       let pr_gr = "";
-      element.product.product_groups.forEach(elm => {
+      element.product.product_groups?.forEach(elm => {
         pr_gr += elm.name;
       });
+      let slbc = Number(element.stock_base_unit) / Number(element.product.unit_exchange_report.value);
+      let slcb = Number(element.stock_base_unit) - Number(slbc);
+      if (slbc == element.stock_base_unit) {
+        slcb = element.stock_base_unit;
+      }
       let index = {
         product_group: pr_gr,
-        product_category: element.product.product_category.name,
+        product_category: element.product.product_category?.name,
         code: element.product.product_code,
         name: element.product.name,
         base_unit: element.product.base_unit.name,
-        quantity_base_unit: element.stock_base_unit,
-        quantity: "",
+        quantity_base_unit: slcb,
+        quantity: slbc,
         unit: element.product.unit_exchange_report.unit_name,
         price: element.product.price_detail?.price,
         money: element.product.price_detail == null ? "" : element.product.price_detail?.price * element.stock_base_unit

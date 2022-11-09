@@ -115,12 +115,12 @@ const InventoryReceivingChangeForm = (props) => {
             if (elementt.product_code.toLowerCase() == element.maSP.toLowerCase() || elementt.barcode == element.maSP) {
               let unit = "";
               let unitname = "";
-              let unitname_in="";
+              let unitname_in = "";
               let valQD = 1;
               if (kqUnit == true) {
                 elementt.units.forEach(elm => {
                   if (elm.unit_code.toLowerCase() == element.maDonVi.toLowerCase()) {
-                    unitname_in= elm.unit_name;
+                    unitname_in = elm.unit_name;
                     unit = elm.id;
                     valQD = elm.value;
                   }
@@ -144,7 +144,7 @@ const InventoryReceivingChangeForm = (props) => {
                 let indexx = {
                   "key": elementt.id,
                   "quantity": element.soluong,
-                  "quantity_base_unit": unitname == unitname_in ? element.soluong + " " + unitname : Number(element.soluong)*Number(valQD) + " " + unitname,
+                  "quantity_base_unit": unitname == unitname_in ? element.soluong + " " + unitname : Number(element.soluong) * Number(valQD) + " " + unitname,
                   "price": element.gia,
                   "note": element.ghichu,
                   "product": elementt.name,
@@ -191,8 +191,16 @@ const InventoryReceivingChangeForm = (props) => {
           }
           if (index == jsonData.length - 1) {
             if (resultTotal == jsonData.length) {
-              message.success("Xong quá trình thêm dữ liệu");
+              // message.success("Xong quá trình thêm dữ liệu");
               form.setFieldValue("details", datadetail)
+              ///
+              if (form.getFieldValue("supplier") == null) {
+                message.error("Vui lòng chọn nhà cung cấp");
+                form.resetFields();
+                return;
+              }
+              onFinish(form.getFieldsValue());
+              //
             } else {
               message.error("Dữ liệu lỗi!!");
               setTimeout(() => {
@@ -213,7 +221,7 @@ const InventoryReceivingChangeForm = (props) => {
     var ExcelJSWorkbook = new ExcelJS.Workbook();
     var worksheet = ExcelJSWorkbook.addWorksheet("Data");
 
-    worksheet.addRow(["maSP","maDonVi", "soluong", "gia", "ghichu", "loi", "", "", "", "(Số lượng theo đơn vị cơ bản)"]);
+    worksheet.addRow(["maSP", "maDonVi", "soluong", "gia", "ghichu", "loi", "", "", "", "(Số lượng theo đơn vị cơ bản)"]);
     let i = 2;
     data.forEach(element => {
       if (element.loi == "") {
@@ -558,6 +566,9 @@ const InventoryReceivingChangeForm = (props) => {
     } else {
 
       props.setBreadcrumbExtras([
+        // <Upload showUploadList={false} {...uploadData} style={{}}>
+        //   <Button type='primary' icon={<UploadOutlined />}>Nhập Excel và Lưu</Button>
+        // </Upload>,
         <ShowForPermission>
           <ExportTemplateReactCSV csvData={[]} fileName='template_nhap_hang.xlsx'
             header={[
@@ -758,9 +769,11 @@ const InventoryReceivingChangeForm = (props) => {
                           marginBottom: '20px'
                         }}
                         placeholder="Thêm sản phẩm vào phiếu nhập hàng"
-                        onSelectProduct={(value) => onSelectProduct(value, add)} /><Upload showUploadList={false} {...uploadData} style={{}}>
-                          <Button icon={<UploadOutlined />}>Nhập Excel</Button>
-                        </Upload></> : null}
+                        onSelectProduct={(value) => onSelectProduct(value, add)} />
+                        <Upload showUploadList={false} {...uploadData} style={{}}>
+                          <Button icon={<UploadOutlined />}>Nhập Excel và Lưu</Button>
+                        </Upload>
+                      </> : null}
                       <Row style={{ marginBottom: '20px' }}>
                         <Col span={1}></Col>
                         <Col span={5} style={titleCol}>

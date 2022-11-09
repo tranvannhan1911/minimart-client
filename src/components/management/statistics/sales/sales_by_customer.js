@@ -95,7 +95,7 @@ const StatisticsSalesByCustomer = () => {
             }
             many = element.customer?.id;
             let cus_gr = "";
-            element.customer?.customer_group.forEach(elm => {
+            element.customer?.customer_group?.forEach(elm => {
                 cus_gr += elm.name;
             });
             let index = {

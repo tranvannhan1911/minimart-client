@@ -296,7 +296,11 @@ const PriceChangeForm = (props) => {
       "is_base_unit": true,
       "unit": values.base_unit
     });
-    values.units.forEach(element => {
+    let dvbc= false;
+    if(values.base_unit == values.unit_exchange_report){
+      dvbc = true;
+    }
+    values.units?.forEach(element => {
       let unit;
       if (element.value != 1) {
         unit = {
@@ -307,9 +311,16 @@ const PriceChangeForm = (props) => {
         }
         units.push(unit);
       }
-
+      if(values.unit_exchange_report == element.unit){
+        dvbc = true;
+      }
     });
-
+    if(dvbc == false){
+      message.error('Đơn vị báo cáo phải là đơn vị cơ bản hoặc đơn vị tính của sản phẩm');
+      stopLoading(idxBtnSave)
+      setDisableSubmit(false)
+      return;
+    }
     // if (i == 0) {
     //   message.error('Vui lòng nhập đơn vị tính cơ bản cho sản phẩm');
     //   stopLoading(idxBtnSave)
