@@ -178,7 +178,7 @@ const ChangePassword = () => {
                         }} src={require('../../assets/logo.png')}></img>
                         <Title level={2} style={{
                             color: 'white'
-                        }}>Công ty Siêu thị mini NT</Title>
+                        }}>Siêu thị mini NT</Title>
                     </div>
                 </Col>
                 <Col span={8} xs={18} sm={14} md={10} lg={8} style={{ backgroundColor: "white", padding: "50px", borderRadius: "10px" }}>

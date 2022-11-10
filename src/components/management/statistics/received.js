@@ -65,14 +65,14 @@ const StatisticsReceived = () => {
     },
 
     {
-      title: 'Số lượng',
+      title: 'Số lượng báo cáo',
       dataIndex: 'quantity',
       key: 'address',
 
     },
     {
-      title: 'Đơn vị tính',
-      dataIndex: 'unit',
+      title: 'Số lượng lẻ',
+      dataIndex: 'quantity_base_unit',
       key: 'address',
 
     },
@@ -129,11 +129,16 @@ const StatisticsReceived = () => {
   const statisticData = (data) => {
     let dataMain = [];
     data.forEach(element => {
+      let slbc = Number(element.quantity_base_unit) / Number(element.product.unit_exchange_report.value);
+      let slcb = Number(element.quantity_base_unit) - Number(slbc);
+      if (slbc == element.quantity_base_unit) {
+        slcb = element.quantity_base_unit;
+      }
       let index = {
         codeProduct: element.product.product_code,
         nameProduct: element.product.name,
-        quantity: element.quantity_base_unit,
-        unit: element.product.base_unit.name,
+        quantity: slbc,
+        quantity_base_unit: slcb,
         moneyTotal: element.total,
       }
       dataMain.push(index);
@@ -148,7 +153,7 @@ const StatisticsReceived = () => {
       return;
     }
     var ExcelJSWorkbook = new ExcelJS.Workbook();
-    var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO", {views: [{showGridLines: false}]});
+    var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO", { views: [{ showGridLines: false }] });
 
     worksheet.mergeCells("A1:F1");
 
@@ -216,13 +221,14 @@ const StatisticsReceived = () => {
 
     customCell5.value = "Từ ngày: " + date[0].slice(0, 10) + "      Đến ngày: " + date[1].slice(0, 10) + " ";
 
-    let header = ["STT", "Mã sản phẩm", "Tên sản phẩm", "Số lượng", "Đơn vị tính", "Tổng thành tiền"];
+    let header = ["STT", "Mã sản phẩm", "Tên sản phẩm", "Số lượng báo cáo", "Số lượng lẻ", "Tổng thành tiền"];
     let headerColumn = ["A", "B", "C", "D", "E", "F"];
 
     worksheet.mergeCells("A7:F7");
     var headerRow = worksheet.addRow();
 
     worksheet.getRow(8).font = { bold: true };
+    worksheet.getRow(8).height = "25";
 
     for (let i = 0; i < headerColumn.length; i++) {
       const columnn = worksheet.getCell(headerColumn[i] + 8);
@@ -232,8 +238,16 @@ const StatisticsReceived = () => {
         bottom: { style: 'thin' },
         right: { style: 'thin' }
       };
+      columnn.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'ffb0e2ff' },
+        bgColor: { argb: 'ffb0e2ff' }
+      };
       if (i == 0) {
         worksheet.getColumn(i + 1).width = "10";
+      } else if (i == 2) {
+        worksheet.getColumn(i + 1).width = "35";
       } else {
         worksheet.getColumn(i + 1).width = "20";
       }
@@ -254,7 +268,7 @@ const StatisticsReceived = () => {
     let i = 1;
     let total = 0;
     data.forEach(element => {
-      worksheet.addRow([i, element.codeProduct, element.nameProduct, element.quantity, element.unit,
+      worksheet.addRow([i, element.codeProduct, element.nameProduct, element.quantity, element.quantity_base_unit,
         element.moneyTotal?.toLocaleString()]);
       for (let j = 0; j < headerColumn.length; j++) {
         const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
@@ -264,9 +278,9 @@ const StatisticsReceived = () => {
           bottom: { style: 'thin' },
           right: { style: 'thin' }
         };
-        if (j == 0 || j == 4) {
+        if (j == 0) {
           columnn.alignment = { vertical: 'middle', horizontal: 'center' };
-        } else if (j == 3 || j == 5) {
+        } else if (j == 3 || j == 5 || j == 4) {
           columnn.alignment = { vertical: 'middle', horizontal: 'right' };
         } else {
           columnn.alignment = { vertical: 'middle', horizontal: 'left' };
@@ -308,7 +322,7 @@ const StatisticsReceived = () => {
       right: { style: 'thin' }
     };
     customCellTT2.alignment = { vertical: 'middle', horizontal: 'right' };
-    customCellTT2.value = total.toLocaleString();
+    customCellTT2.value = total?.toLocaleString();
 
     ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
       saveAs(

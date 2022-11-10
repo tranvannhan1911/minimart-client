@@ -99,7 +99,7 @@ const PriceChangeForm = (props) => {
       const values = response.data.data
       values.product_groups = values.product_groups.map(elm => elm.id.toString());
       values.base_unit = values.base_unit?.id
-      // props.setDateCreatedInfo(values)
+      values.unit_exchange_report = values.unit_exchange_report?.unit
       values.units = values.units.filter(unitexchange => unitexchange.is_active && !unitexchange.is_base_unit)
       form.setFieldsValue(values)
       setImageUrl(values.image)
