@@ -303,17 +303,28 @@ const PriceChangeForm = (props) => {
     values.units?.forEach(element => {
       let unit;
       if (element.value != 1) {
-        unit = {
-          "value": element.value,
-          "allow_sale": element.allow_sale,
-          "is_base_unit": false,
-          "unit": element.unit
+        if(values.unit_exchange_report == element.unit){
+          unit = {
+            "value": element.value,
+            "allow_sale": element.allow_sale,
+            "is_base_unit": false,
+            "is_report": true,
+            "unit": element.unit
+          }
+          units.push(unit);
+          dvbc = true;
+        }else{
+          unit = {
+            "value": element.value,
+            "allow_sale": element.allow_sale,
+            "is_base_unit": false,
+            "is_report": false,
+            "unit": element.unit
+          }
+          units.push(unit);
         }
-        units.push(unit);
       }
-      if(values.unit_exchange_report == element.unit){
-        dvbc = true;
-      }
+      
     });
     if(dvbc == false){
       message.error('Đơn vị báo cáo phải là đơn vị cơ bản hoặc đơn vị tính của sản phẩm');
