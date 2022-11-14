@@ -93,7 +93,7 @@ const Header = (props) => {
       }
       extra={[
         // <Typography.Text>{welcome}</Typography.Text>,
-        <Typography.Text style={{ marginRight: '10px' }}>Xin chào {time} {name ? <Typography.Title level={5} style={{ display: 'inline-block' }}> {userInfo.fullname}</Typography.Title> : ""}, {welcome} </Typography.Text>,
+        <Typography.Text style={{ marginRight: '10px' }}>Xin chào {time} {name ? <Typography.Title level={5} style={{ display: 'inline-block' }}> {name}</Typography.Title> : ""}, {welcome} </Typography.Text>,
         <Dropdown overlay={menu} placement="bottomRight">
           <Button key="1" shape="circle" type="primary" icon={<UserOutlined />} />
         </Dropdown>
