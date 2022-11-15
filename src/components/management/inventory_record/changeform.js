@@ -476,7 +476,7 @@ const InventoryRecordChangeForm = (props) => {
               { label: '', key: '' },
               { label: '', key: '' },
               { label: '', key: '' },
-              { label: '(So luong theo don vi co ban)', key: 'note' },
+              { label: '(Số lượng theo đơn vị cơ bản)', key: 'note' },
             ]}
           />
         </ShowForPermission>,
