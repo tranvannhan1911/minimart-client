@@ -221,7 +221,7 @@ const InventoryReceivingChangeForm = (props) => {
     var ExcelJSWorkbook = new ExcelJS.Workbook();
     var worksheet = ExcelJSWorkbook.addWorksheet("Data");
 
-    worksheet.addRow(["maSP", "maDonVi", "soluong", "gia", "ghichu", "loi", "", "", "", "(Số lượng theo đơn vị cơ bản)"]);
+    worksheet.addRow(["maSP", "maDonVi", "soluong", "gia", "ghichu", "loi"]);
     let i = 2;
     data.forEach(element => {
       if (element.loi == "") {
@@ -577,10 +577,6 @@ const InventoryReceivingChangeForm = (props) => {
               { label: 'soluong', key: 'soluong' },
               { label: 'gia', key: 'gia' },
               { label: 'ghichu', key: 'ghichu' },
-              { label: '', key: '' },
-              { label: '', key: '' },
-              { label: '', key: '' },
-              { label: '(So luong theo don vi co ban)', key: 'note' },
             ]}
           />
         </ShowForPermission>,
