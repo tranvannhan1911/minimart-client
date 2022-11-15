@@ -180,11 +180,11 @@ const MyContent = (props) => {
                         <Route path={paths.customer_group.rlist} key={paths.customer_group.key}
                             element={<CustomerGroupListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
                         <Route path={paths.customer_group.radd} key={paths.customer_group.key}
-                            element={<CustomerGroupChangeForm
+                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <CustomerGroupChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
                                 setBreadcrumb={setBreadcrumb} is_create={true}  {...props} />} />
                         <Route path={paths.customer_group.rchange} key={paths.customer_group.key}
-                            element={<CustomerGroupChangeForm
+                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <CustomerGroupChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
                                 setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
 
@@ -202,11 +202,11 @@ const MyContent = (props) => {
                         <Route path={paths.product_group.rlist} key={paths.product_group.key}
                             element={<ProductGroupListForm setBreadcrumb={setBreadcrumb}  {...props} />} />
                         <Route path={paths.product_group.radd} key={paths.product_group.key}
-                            element={<ProductGroupChangeForm
+                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <ProductGroupChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
                                 setBreadcrumb={setBreadcrumb} is_create={true}  {...props} />} />
                         <Route path={paths.product_group.rchange} key={paths.product_group.key}
-                            element={<ProductGroupChangeForm
+                            element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <ProductGroupChangeForm
                                 breadcrumb_extras={breadcrumb_extras} setBreadcrumbExtras={setBreadcrumbExtras}
                                 setBreadcrumb={setBreadcrumb} is_create={false}  {...props} />} />
 

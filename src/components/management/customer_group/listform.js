@@ -2,8 +2,8 @@ import {
     PlusOutlined,
     ReloadOutlined,
     SearchOutlined, DownloadOutlined
-  } from '@ant-design/icons';
-import { Button, Input, message,Upload } from 'antd';
+} from '@ant-design/icons';
+import { Button, Input, message, Upload } from 'antd';
 import React, { useState, useEffect } from 'react';
 import ListForm from '../templates/listform';
 import CustomerGroupTable from './table';
@@ -26,17 +26,17 @@ const CustomerGroupListForm = (props) => {
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
-    
+
     const handleGetData = async () => {
         setLoading(true)
-        try{
+        try {
             const response = await api.customer_group.list()
             const _data = response.data.data.results.map(elm => {
                 return elm
             })
             setData(_data)
             setDataMain(_data)
-        }catch(error){
+        } catch (error) {
             console.log('Failed:', error)
             message.error(messages.ERROR_REFRESH)
         }
@@ -49,7 +49,7 @@ const CustomerGroupListForm = (props) => {
     }, []);
 
     useEffect(() => {
-      document.title = "Nhóm khách hàng - Quản lý siêu thị mini NT"
+        document.title = "Nhóm khách hàng - Quản lý siêu thị mini NT"
     }, [])
 
     const clearFiltersAndSort = () => {
@@ -61,22 +61,22 @@ const CustomerGroupListForm = (props) => {
         setSearchInfo([])
     };
 
-    const searchCode = (value) =>{
+    const searchCode = (value) => {
         setDataSearchCode(value);
         let data_ = [];
         dataMain.forEach(element => {
-            if(element.id.toString().toLowerCase().includes(value.toLowerCase())){
+            if (element.id.toString().toLowerCase().includes(value.toLowerCase())) {
                 data_.push(element);
             }
         });
         setData(data_);
     }
 
-    const searchName = (value) =>{
+    const searchName = (value) => {
         setDataSearchName(value);
         let data_ = [];
         dataMain.forEach(element => {
-            if(element.name.toLowerCase().includes(value.toLowerCase())){
+            if (element.name.toLowerCase().includes(value.toLowerCase())) {
                 data_.push(element);
             }
         });
@@ -131,7 +131,7 @@ const CustomerGroupListForm = (props) => {
         };
 
         data.forEach(element => {
-            
+
             worksheet.addRow([element.id, element.name, element.description, element.note]);
         });
 
@@ -146,19 +146,21 @@ const CustomerGroupListForm = (props) => {
     ////////////////
 
     return (
-        <ListForm 
-            title="Nhóm khách hàng" 
+        <ListForm
+            title="Nhóm khách hàng"
             actions={[
-                <Button onClick={() => handleGetData()} icon={<ReloadOutlined/>}>Làm mới</Button>,
+                <Button onClick={() => handleGetData()} icon={<ReloadOutlined />}>Làm mới</Button>,
                 // <ShowForPermission>
                 //     <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
                 // </ShowForPermission>,
-                <Button onClick={() => navigate(paths.customer_group.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
+                <ShowForPermission>
+                    <Button onClick={() => navigate(paths.customer_group.add)} type="primary" icon={<PlusOutlined />}>Thêm</Button>,
+                </ShowForPermission>
             ]}
             table={
-                <CustomerGroupTable 
-                    data={data} 
-                    loading={loading} 
+                <CustomerGroupTable
+                    data={data}
+                    loading={loading}
                     setLoading={setLoading}
                     filteredInfo={filteredInfo}
                     setFilteredInfo={setFilteredInfo}
@@ -172,9 +174,9 @@ const CustomerGroupListForm = (props) => {
                 />
             }
             extra_actions={[
-                <Input 
-                    placeholder="Tìm kiếm nhóm khách hàng" 
-                    allowClear value={searchInfo[0]} 
+                <Input
+                    placeholder="Tìm kiếm nhóm khách hàng"
+                    allowClear value={searchInfo[0]}
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchInfo([e.target.value])}
                 />,
