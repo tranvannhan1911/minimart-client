@@ -138,35 +138,35 @@ const Dashboard = () => {
                     <Row style={{ paddingTop: '10px' }}>
                         <Col span={11}>
                             {/* <a href='#' title='Tổng tiền' onClick={() => { navigate("/quan-ly/don-ban-hang") }}> */}
-                                <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
-                                    <Row>
-                                        <Col span={10}>
-                                            <DollarCircleOutlined style={{ fontSize: '50px' }} />
-                                        </Col>
-                                        <Col span={14}>
-                                            <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalMoney?.toLocaleString()}</div>
-                                            <div>Tổng tiền</div>
-                                        </Col>
+                            <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
+                                <Row>
+                                    <Col span={10}>
+                                        <DollarCircleOutlined style={{ fontSize: '50px' }} />
+                                    </Col>
+                                    <Col span={14}>
+                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalMoney == null ? "0" : dataTotalMoney?.toLocaleString()}</div>
+                                        <div>Tổng tiền</div>
+                                    </Col>
 
-                                    </Row>
-                                </Card>
+                                </Row>
+                            </Card>
                             {/* </a> */}
                         </Col>
                         <Col span={2}></Col>
                         <Col span={11}>
                             {/* <a href='#' title='Tổng khách hàng' onClick={() => { navigate("/quan-ly/don-ban-hang") }}> */}
-                                <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
-                                    <Row>
-                                        <Col span={10}>
-                                            <UserOutlined style={{ fontSize: '50px' }} />
-                                        </Col>
-                                        <Col span={14}>
-                                            <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalCustomer?.toLocaleString()}</div>
-                                            <div>Tổng khách hàng</div>
-                                        </Col>
+                            <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
+                                <Row>
+                                    <Col span={10}>
+                                        <UserOutlined style={{ fontSize: '50px' }} />
+                                    </Col>
+                                    <Col span={14}>
+                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalCustomer?.toLocaleString()}</div>
+                                        <div>Tổng khách hàng</div>
+                                    </Col>
 
-                                    </Row>
-                                </Card>
+                                </Row>
+                            </Card>
                             {/* </a> */}
                         </Col>
 
@@ -174,34 +174,34 @@ const Dashboard = () => {
                     <Row style={{ paddingTop: '30px' }}>
                         <Col span={11}>
                             {/* <a href='#' title='Tổng hóa đơn' onClick={() => { navigate("/quan-ly/don-ban-hang") }}> */}
-                                <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
-                                    <Row>
-                                        <Col span={10}>
-                                            <ShoppingCartOutlined style={{ fontSize: '50px' }} />
-                                        </Col>
-                                        <Col span={14}>
-                                            <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalOrder?.toLocaleString()}</div>
-                                            <div style={{ fontSize: '15px' }}>Tổng hóa đơn</div>
-                                        </Col>
+                            <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
+                                <Row>
+                                    <Col span={10}>
+                                        <ShoppingCartOutlined style={{ fontSize: '50px' }} />
+                                    </Col>
+                                    <Col span={14}>
+                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalOrder?.toLocaleString()}</div>
+                                        <div style={{ fontSize: '15px' }}>Tổng hóa đơn</div>
+                                    </Col>
 
-                                    </Row>
-                                </Card>
+                                </Row>
+                            </Card>
                             {/* </a> */}
                         </Col>
                         <Col span={2}></Col>
                         <Col span={11}>
                             {/* <a href='#' title='Tổng hóa đơn trả' onClick={() => { navigate("/quan-ly/don-tra-hang") }}> */}
-                                <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
-                                    <Row>
-                                        <Col span={10}>
-                                            <ShoppingCartOutlined style={{ fontSize: '50px' }} />
-                                        </Col>
-                                        <Col span={14}>
-                                            <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalOrderRefund?.toLocaleString()}</div>
-                                            <div>Tổng hóa đơn trả</div>
-                                        </Col>
-                                    </Row>
-                                </Card>
+                            <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
+                                <Row>
+                                    <Col span={10}>
+                                        <ShoppingCartOutlined style={{ fontSize: '50px' }} />
+                                    </Col>
+                                    <Col span={14}>
+                                        <div style={{ fontWeight: "bold", fontSize: '20px' }}>{dataTotalOrderRefund?.toLocaleString()}</div>
+                                        <div>Tổng hóa đơn trả</div>
+                                    </Col>
+                                </Row>
+                            </Card>
                             {/* </a> */}
                         </Col>
 
@@ -236,16 +236,16 @@ const Dashboard = () => {
                                 // ]
                                 datasets: [
                                     {
-                                      label: 'Bán hàng',
-                                      data: dataDTBH,
-                                      backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                                        label: 'Bán hàng',
+                                        data: dataDTBH,
+                                        backgroundColor: 'rgba(53, 162, 235, 0.5)',
                                     },
                                     {
-                                      label: 'Trả hàng',
-                                      data: dataDTTH,
-                                      backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                        label: 'Trả hàng',
+                                        data: dataDTTH,
+                                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
                                     },
-                                  ],
+                                ],
                             }}
                             options={{
                                 legend: { display: false },

@@ -60,7 +60,8 @@ const MyContent = (props) => {
     useEffect(() => {
         store.subscribe(() => {
             console.log("store.getState()", store.getState())
-            setUserInfo(store.getState().user.info)
+            setUserInfo(sessionStorage.getItem("userNow"))
+            // setUserInfo(store.getState().user.info)
             // setDateCreatedInfo(store.getState().infoCreateUpdate.info)
             if(store.getState().infoCreateUpdate?.info){
                 const createUpdateInfo = store.getState().infoCreateUpdate.info

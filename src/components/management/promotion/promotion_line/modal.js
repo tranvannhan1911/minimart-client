@@ -310,7 +310,7 @@ const PromotionLineModal = (props) => {
                 },
               ]}
             >
-              <Input placeholder='Hãy nhập mã khuyến mãi'
+              <Input placeholder='Hãy nhập mã khuyến mãi' disabled={is_create ? false : true}
               />
             </Form.Item>
           </Col>

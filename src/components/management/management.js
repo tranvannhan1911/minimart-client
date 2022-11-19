@@ -40,6 +40,7 @@ const Managememt = () => {
 
         setHasPerms(true)
         accountApi.save_user(response)
+        sessionStorage.setItem("userNow", JSON.stringify(response.data.data));
         sessionStorage.setItem("idStaff", response.data.data.id);
         sessionStorage.setItem("nameStaff", response.data.data.fullname);
         sessionStorage.setItem("phoneStaff", response.data.data.phone);
