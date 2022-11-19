@@ -133,7 +133,7 @@ const UnitChangeForm = (props) => {
         directAfterSubmit(response)
         return true
       } else if (response.data.message.code) {
-        message.error("Mã đơn vị tính bị trùng!")
+        message.error("Mã đơn vị tính bị trùng! Vui lòng chọn mã khác!")
       } else if (response.data.message.name) {
         message.error("Tên đơn vị tính bị trùng!")
       } else {
@@ -150,7 +150,7 @@ const UnitChangeForm = (props) => {
     try {
       const response = await api.unit.update(id, values)
       if (response.data.code == 1) {
-        message.success(messages.unit.SUCCESS_SAVE(id))
+        message.success(messages.unit.SUCCESS_SAVE(response.data.data.code))
         directAfterSubmit(response)
         return true
       } else if (response.data.message.code) {
@@ -171,11 +171,11 @@ const UnitChangeForm = (props) => {
     try {
       const response = await api.unit.delete(id)
       if (response.data.code == 1) {
-        message.success(messages.unit.SUCCESS_DELETE(id))
+        message.success(messages.unit.SUCCESS_DELETE(form.getFieldValue("code")))
         navigate(paths.unit.list)
         return true
       } else {
-        message.error(messages.unit.ERROR_DELETE(id))
+        message.error(messages.unit.ERROR_DELETE(form.getFieldValue("code")))
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -226,7 +226,7 @@ const UnitChangeForm = (props) => {
                   },
                 ]}
               >
-                <Input autoFocus ref={refAutoFocus} />
+                <Input autoFocus ref={refAutoFocus} disabled={is_create ? false : true} className="inputBorderDisableText"/>
               </Form.Item>
               <Form.Item label="Tên đơn vị tính" name="name" required
                 rules={[

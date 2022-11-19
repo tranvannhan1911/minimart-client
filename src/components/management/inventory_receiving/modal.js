@@ -184,6 +184,11 @@ const InventoryReceivingModal = (props) => {
 
     for (let i = 0; i < headerColumn.length; i++) {
       const columnn = worksheet.getCell(headerColumn[i] + 9);
+      columnn.font = {
+        name: "Times New Roman",
+        family: 4,
+        bold: true
+      };
       columnn.border = {
         top: { style: 'thin' },
         left: { style: 'thin' },
@@ -222,6 +227,10 @@ const InventoryReceivingModal = (props) => {
       worksheet.addRow([i, element.product.product_code, element.product.name, element.price?.toLocaleString(), element.quantity_base_unit, (element.quantity * element.price)?.toLocaleString(), element.note]);
       for (let j = 0; j < headerColumn.length; j++) {
         const columnn = worksheet.getCell(headerColumn[j] + (i + 9));
+        columnn.font = {
+          name: "Times New Roman",
+          family: 4,
+        };
         columnn.border = {
           top: { style: 'thin' },
           left: { style: 'thin' },

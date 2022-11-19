@@ -227,7 +227,7 @@ const CustomerGroupChangeForm = (props) => {
                 :
                 <Row>
                   <Col span={11} style={{ backgroundColor: "white" }}>
-                    <Form.Item label="Mã id nhóm khách hàng" name="id">
+                    <Form.Item label="Mã nhóm khách hàng" name="id">
                       <Input name="id" disabled={true} className="inputBorderDisableText" />
                     </Form.Item>
                   </Col>

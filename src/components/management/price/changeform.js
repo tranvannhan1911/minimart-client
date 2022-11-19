@@ -710,7 +710,7 @@ const PriceChangeForm = (props) => {
                 <Row>
                   <Col span={1}></Col>
                   <Col span={10} style={{ backgroundColor: "white" }}>
-                    <Form.Item label="Mã id bảng giá" name="price_list_id">
+                    <Form.Item label="Mã bảng giá" name="price_list_id">
                       <Input name="price_list_id" disabled={true} className="inputBorderDisableText" />
                     </Form.Item>
                   </Col>

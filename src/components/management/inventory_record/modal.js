@@ -156,6 +156,11 @@ const InventoryRecordModal = (props) => {
 
     for (let i = 0; i < headerColumn.length; i++) {
       const columnn = worksheet.getCell(headerColumn[i] + 8);
+      columnn.font = {
+        name: "Times New Roman",
+        family: 4,
+        bold: true
+      };
       columnn.border = {
         top: { style: 'thin' },
         left: { style: 'thin' },
@@ -194,6 +199,10 @@ const InventoryRecordModal = (props) => {
       worksheet.addRow([i, element.product_obj.product_code, element.product, element.quantity_before, element.quantity_after, (element.quantity_after - element.quantity_before) + " " + element.product_obj.base_unit.name, element.note]);
       for (let j = 0; j < headerColumn.length; j++) {
         const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
+        columnn.font = {
+          name: "Times New Roman",
+          family: 4,
+        };
         columnn.border = {
           top: { style: 'thin' },
           left: { style: 'thin' },

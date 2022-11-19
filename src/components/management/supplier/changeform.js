@@ -141,6 +141,8 @@ const SupplierChangeForm = (props) => {
         message.success(messages.supplier.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
+      } else if (response.data.message.code) {
+        message.error("Mã nhà cung cấp bị trùng! Vui lòng chọn mã khác!")
       } else {
         message.error(response.data.message.toString())
       }
@@ -156,7 +158,7 @@ const SupplierChangeForm = (props) => {
     try {
       const response = await api.supplier.update(id, values)
       if (response.data.code == 1) {
-        message.success(messages.supplier.SUCCESS_SAVE(id))
+        message.success(messages.supplier.SUCCESS_SAVE(response.data.data.code))
         directAfterSubmit(response)
         return true
       } else {
@@ -173,11 +175,11 @@ const SupplierChangeForm = (props) => {
     try {
       const response = await api.supplier.delete(id)
       if (response.data.code == 1) {
-        message.success(messages.supplier.SUCCESS_DELETE(id))
+        message.success(messages.supplier.SUCCESS_DELETE(form.getFieldValue("code")))
         navigate(paths.supplier.list)
         return true
       } else {
-        message.error(messages.supplier.ERROR_DELETE(id))
+        message.error(messages.supplier.ERROR_DELETE(form.getFieldValue("code")))
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -250,7 +252,7 @@ const SupplierChangeForm = (props) => {
                       },
                     ]}
                   >
-                    <Input autoFocus ref={refAutoFocus} />
+                    <Input autoFocus ref={refAutoFocus} disabled={is_create ? false : true} className="inputBorderDisableText"/>
                   </Form.Item>
                 </Col>
                 <Col span={2}></Col>

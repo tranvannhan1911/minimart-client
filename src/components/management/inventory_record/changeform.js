@@ -58,7 +58,7 @@ const InventoryRecordChangeForm = (props) => {
   }, [])
 
   const saveComplete = () => {
-    if (is_status == "pending") {
+    if (form.getFieldValue("status") == "pending") {
       form.setFieldValue("status", "complete");
       setStatus("complete");
       onFinish(form.getFieldsValue());
@@ -552,7 +552,7 @@ const InventoryRecordChangeForm = (props) => {
               <Row>
                 <Col span={1}></Col>
                 <Col span={10} style={{ backgroundColor: "white" }}>
-                  <Form.Item label="Mã id phiếu kiểm kê" name="id">
+                  <Form.Item label="Mã phiếu kiểm kê" name="id">
                     <Input name="id" disabled={true} className="inputBorderDisableText" />
                   </Form.Item>
                 </Col>

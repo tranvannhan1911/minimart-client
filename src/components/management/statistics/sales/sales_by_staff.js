@@ -333,6 +333,11 @@ const StatisticsSalesByStaff = () => {
 
         for (let i = 0; i < headerColumn.length; i++) {
             const columnn = worksheet.getCell(headerColumn[i] + 8);
+            columnn.font = {
+                name: "Times New Roman",
+                family: 4,
+                bold: true
+            };
             columnn.border = {
                 top: { style: 'thin' },
                 left: { style: 'thin' },
@@ -453,6 +458,10 @@ const StatisticsSalesByStaff = () => {
             }
             for (let j = 0; j < headerColumn.length; j++) {
                 const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
+                columnn.font = {
+                    name: "Times New Roman",
+                    family: 4,
+                };
                 columnn.border = {
                     top: { style: 'dotted' },
                     bottom: { style: 'dotted' },

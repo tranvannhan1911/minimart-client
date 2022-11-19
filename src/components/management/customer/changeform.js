@@ -252,7 +252,7 @@ const CustomerChangeForm = (props) => {
                 <Row>
                   <Col span={1}></Col>
                   <Col span={10} style={{ backgroundColor: "white" }}>
-                    <Form.Item label="Mã id khách hàng" name="id">
+                    <Form.Item label="Mã khách hàng" name="id">
                       <Input name="id" disabled={true} className="inputBorderDisableText"/>
                     </Form.Item>
                   </Col>

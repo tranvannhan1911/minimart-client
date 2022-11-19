@@ -54,11 +54,11 @@ const InventoryReceivingChangeForm = (props) => {
   }, [])
 
   const saveComplete = () => {
-    if (is_status == "pending") {
+    if (form.getFieldValue("status") == "pending") {
       form.setFieldValue("status", "complete");
       setStatus("complete");
       onFinish(form.getFieldsValue());
-    } else if (is_status == "complete") {
+    } else if (form.getFieldValue("status") == "complete") {
       message.warning("Phiếu nhập hàng này đã hoàn thành");
     } else {
       message.error("Phiếu nhập hàng này đã hủy không thể hoàn thành");
@@ -66,7 +66,7 @@ const InventoryReceivingChangeForm = (props) => {
   };
 
   const saveCancel = () => {
-    if (is_status == "complete" || is_status == "pending") {
+    if (form.getFieldValue("status") == "complete" || form.getFieldValue("status") == "pending") {
       form.setFieldValue("status", "cancel");
       setStatus("cancel");
       onFinish(form.getFieldsValue());
@@ -655,7 +655,7 @@ const InventoryReceivingChangeForm = (props) => {
               <Row>
                 <Col span={1}></Col>
                 <Col span={10} style={{ backgroundColor: "white" }}>
-                  <Form.Item label="Mã id phiếu nhập hàng" name="id">
+                  <Form.Item label="Mã phiếu nhập hàng" name="id">
                     <Input name="id" disabled={true} className="inputBorderDisableText" />
                   </Form.Item>
                 </Col>

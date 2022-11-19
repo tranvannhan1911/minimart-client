@@ -96,7 +96,8 @@ const Dashboard = () => {
     const [dataTotalOrder, setDataTotalOrder] = useState("");
     const [dataTotalOrderRefund, setDataTotalOrderRefund] = useState("");
     const [dataTotalCustomer, setDataTotalCustomer] = useState("");
-    const [dataDT, setDataDT] = useState([]);
+    const [dataDTBH, setDataDTBH] = useState([]);
+    const [dataDTTH, setDataDTTH] = useState([]);
     const [dataLabel, setDataLabel] = useState([]);
     const [openDetails, setOpenDetails] = useState(false);
     const [dataIndex, setDataIndex] = useState({});
@@ -114,13 +115,18 @@ const Dashboard = () => {
         setDataCustomer(response.data.data.top_5_customer)
         setDataOrder(response.data.data.top_5_order)
         let label = [];
-        let dataDuLieu = [];
+        let dataDuLieuBH = [];
+        let dataDuLieuTH = [];
         response.data.data.order_7_days.forEach(element => {
             label.push(element.date);
-            dataDuLieu.push(element.final_total);
+            dataDuLieuBH.push(element.final_total);
+        });
+        response.data.data.order_refund_7_days.forEach(element => {
+            dataDuLieuTH.push(element.total);
         });
         setDataLabel(label);
-        setDataDT(dataDuLieu)
+        setDataDTBH(dataDuLieuBH);
+        setDataDTTH(dataDuLieuTH);
     }
 
     return (
@@ -131,7 +137,7 @@ const Dashboard = () => {
                 <Col span={13}>
                     <Row style={{ paddingTop: '10px' }}>
                         <Col span={11}>
-                            <a href='#' title='Tổng tiền' onClick={() => { navigate("/quan-ly/don-ban-hang") }}>
+                            {/* <a href='#' title='Tổng tiền' onClick={() => { navigate("/quan-ly/don-ban-hang") }}> */}
                                 <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
                                     <Row>
                                         <Col span={10}>
@@ -144,11 +150,11 @@ const Dashboard = () => {
 
                                     </Row>
                                 </Card>
-                            </a>
+                            {/* </a> */}
                         </Col>
                         <Col span={2}></Col>
                         <Col span={11}>
-                            <a href='#' title='Tổng khách hàng' onClick={() => { navigate("/quan-ly/don-ban-hang") }}>
+                            {/* <a href='#' title='Tổng khách hàng' onClick={() => { navigate("/quan-ly/don-ban-hang") }}> */}
                                 <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
                                     <Row>
                                         <Col span={10}>
@@ -161,13 +167,13 @@ const Dashboard = () => {
 
                                     </Row>
                                 </Card>
-                            </a>
+                            {/* </a> */}
                         </Col>
 
                     </Row>
                     <Row style={{ paddingTop: '30px' }}>
                         <Col span={11}>
-                            <a href='#' title='Tổng hóa đơn' onClick={() => { navigate("/quan-ly/don-ban-hang") }}>
+                            {/* <a href='#' title='Tổng hóa đơn' onClick={() => { navigate("/quan-ly/don-ban-hang") }}> */}
                                 <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
                                     <Row>
                                         <Col span={10}>
@@ -180,11 +186,11 @@ const Dashboard = () => {
 
                                     </Row>
                                 </Card>
-                            </a>
+                            {/* </a> */}
                         </Col>
                         <Col span={2}></Col>
                         <Col span={11}>
-                            <a href='#' title='Tổng hóa đơn trả' onClick={() => { navigate("/quan-ly/don-tra-hang") }}>
+                            {/* <a href='#' title='Tổng hóa đơn trả' onClick={() => { navigate("/quan-ly/don-tra-hang") }}> */}
                                 <Card style={{ backgroundColor: "#95c2ec", borderRadius: "20px" }}>
                                     <Row>
                                         <Col span={10}>
@@ -196,7 +202,7 @@ const Dashboard = () => {
                                         </Col>
                                     </Row>
                                 </Card>
-                            </a>
+                            {/* </a> */}
                         </Col>
 
                     </Row>
@@ -205,7 +211,7 @@ const Dashboard = () => {
                 <Col span={10}>
                     <Card style={{ borderRadius: "20px" }}>
                         <div className="card__header">
-                            <h3>Đồ thị</h3>
+                            <h3>Doanh thu (VND)</h3>
                         </div>
                         {/* chart */}
                         <Bar
@@ -213,21 +219,33 @@ const Dashboard = () => {
                             width={200}
                             data={{
                                 labels: dataLabel,
+                                // datasets: [
+                                //     {
+                                //         label: "Doanh thu (VND)",
+                                //         backgroundColor: [
+                                //             "#3e95cd",
+                                //             "#3e95cd",
+                                //             "#3e95cd",
+                                //             "#3e95cd",
+                                //             "#3e95cd",
+                                //             "#3e95cd",
+                                //             "#3e95cd"
+                                //         ],
+                                //         data: dataDT
+                                //     }
+                                // ]
                                 datasets: [
                                     {
-                                        label: "Doanh thu (VND)",
-                                        backgroundColor: [
-                                            "#3e95cd",
-                                            "#3e95cd",
-                                            "#3e95cd",
-                                            "#3e95cd",
-                                            "#3e95cd",
-                                            "#3e95cd",
-                                            "#3e95cd"
-                                        ],
-                                        data: dataDT
-                                    }
-                                ]
+                                      label: 'Bán hàng',
+                                      data: dataDTBH,
+                                      backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                                    },
+                                    {
+                                      label: 'Trả hàng',
+                                      data: dataDTTH,
+                                      backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                    },
+                                  ],
                             }}
                             options={{
                                 legend: { display: false },

@@ -215,6 +215,11 @@ const CustomerListForm = (props) => {
 
         for (let i = 0; i < headerColumn.length; i++) {
             const columnn = worksheet.getCell(headerColumn[i] + 7);
+            columnn.font = {
+                name: "Times New Roman",
+                family: 4,
+                bold: true
+              };
             columnn.border = {
                 top: { style: 'thin' },
                 left: { style: 'thin' },
@@ -261,6 +266,10 @@ const CustomerListForm = (props) => {
             worksheet.addRow([i, element.id, element.fullname, element.phone, element.gender, nhomkh, status, element.note]);
             for (let j = 0; j < headerColumn.length; j++) {
                 const columnn = worksheet.getCell(headerColumn[j] + (i + 7));
+                columnn.font = {
+                    name: "Times New Roman",
+                    family: 4,
+                  };
                 columnn.border = {
                     top: { style: 'thin' },
                     left: { style: 'thin' },

@@ -317,6 +317,11 @@ const StatisticsSalesByCustomer = () => {
 
         for (let i = 0; i < headerColumn.length; i++) {
             const columnn = worksheet.getCell(headerColumn[i] + 8);
+            columnn.font = {
+                name: "Times New Roman",
+                family: 4,
+                bold: true
+            };
             columnn.border = {
                 top: { style: 'thin' },
                 left: { style: 'thin' },
@@ -355,11 +360,83 @@ const StatisticsSalesByCustomer = () => {
         let total_final = 0;
         let kh = null;
         let gop = 9;
+        let totalkh = 0;
+        let total_ckkh = 0;
+        let total_finalkh = 0;
         data.forEach(element => {
             if (element.id != kh && kh != null) {
-                worksheet.mergeCells("A" + gop + ":A" + (i + 7));
-                gop = i + 8;
+                // worksheet.mergeCells("A" + gop + ":A" + (i + 7));
+                // gop = i + 8;
+                // stt++;
+                //
+                worksheet.mergeCells("B" + (i + 8) + ":J" + (i + 8));
+                const customCellTT = worksheet.getCell("B" + (i + 8));
+                customCellTT.font = {
+                    name: "Times New Roman",
+                    family: 4,
+                    size: 11,
+                    bold: true,
+                };
+                customCellTT.border = {
+                    top: { style: 'dotted' },
+                    bottom: { style: 'thin' },
+                };
+                customCellTT.alignment = { vertical: 'middle', horizontal: 'right' };
+                customCellTT.value = "Tổng cộng: ";
+
+                const customCellTT1 = worksheet.getCell("K" + (i + 8));
+                customCellTT1.font = {
+                    name: "Times New Roman",
+                    family: 4,
+                    size: 11,
+                    bold: true,
+                };
+                customCellTT1.border = {
+                    top: { style: 'dotted' },
+                    bottom: { style: 'thin' },
+                };
+                customCellTT1.alignment = { vertical: 'middle', horizontal: 'right' };
+                customCellTT1.value = totalkh?.toLocaleString();
+
+                const customCellTT2 = worksheet.getCell("L" + (i + 8));
+                customCellTT2.font = {
+                    name: "Times New Roman",
+                    family: 4,
+                    size: 11,
+                    bold: true,
+                };
+                customCellTT2.border = {
+                    top: { style: 'dotted' },
+                    bottom: { style: 'thin' },
+                };
+                customCellTT2.alignment = { vertical: 'middle', horizontal: 'right' };
+                customCellTT2.value = total_ckkh?.toLocaleString();
+
+                const customCellTT3 = worksheet.getCell("M" + (i + 8));
+                customCellTT3.font = {
+                    name: "Times New Roman",
+                    family: 4,
+                    size: 11,
+                    bold: true,
+                };
+                customCellTT3.border = {
+                    top: { style: 'dotted' },
+                    bottom: { style: 'thin' },
+                };
+                customCellTT3.alignment = { vertical: 'middle', horizontal: 'right' };
+                customCellTT3.value = total_finalkh?.toLocaleString();
+
+                worksheet.mergeCells("A" + gop + ":A" + (i + 8));
+                worksheet.getCell("A" + gop).border = {
+                    bottom: { style: 'thin' },
+                };
+                i++;
+                totalkh = 0;
+                total_ckkh = 0;
+                total_finalkh = 0;
                 stt++;
+                gop = i + 8;
+                //
             }
             if (manyCustomer == true) {
                 worksheet.addRow([stt, element.id, element.name, element.address, element.ward, element.district, element.city,
@@ -372,11 +449,13 @@ const StatisticsSalesByCustomer = () => {
             }
             for (let j = 0; j < headerColumn.length; j++) {
                 const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
+                columnn.font = {
+                    name: "Times New Roman",
+                    family: 4,
+                };
                 columnn.border = {
-                    top: { style: 'thin' },
-                    left: { style: 'thin' },
-                    bottom: { style: 'thin' },
-                    right: { style: 'thin' }
+                    top: { style: 'dotted' },
+                    bottom: { style: 'dotted' },
                 };
                 if (j == 0) {
                     columnn.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -392,11 +471,75 @@ const StatisticsSalesByCustomer = () => {
             total_final = total_final + element.moneyAfter;
             total = total + element.moneyBefore;
             total_ck = total_ck + element.moneyCK;
+            total_finalkh = total_finalkh + element.moneyAfter;
+            totalkh = totalkh + element.moneyBefore;
+            total_ckkh = total_ckkh + element.moneyCK;
             kh = element.id;
 
         });
         if (manyCustomer == true) {
-            worksheet.mergeCells("A" + gop + ":A" + (i + 7));
+            worksheet.mergeCells("B" + (i + 8) + ":J" + (i + 8));
+            const customCellTT = worksheet.getCell("B" + (i + 8));
+            customCellTT.font = {
+                name: "Times New Roman",
+                family: 4,
+                size: 11,
+                bold: true,
+            };
+            customCellTT.border = {
+                top: { style: 'dotted' },
+                bottom: { style: 'thin' },
+            };
+            customCellTT.alignment = { vertical: 'middle', horizontal: 'right' };
+            customCellTT.value = "Tổng cộng: ";
+
+            const customCellTT1 = worksheet.getCell("K" + (i + 8));
+            customCellTT1.font = {
+                name: "Times New Roman",
+                family: 4,
+                size: 11,
+                bold: true,
+            };
+            customCellTT1.border = {
+                top: { style: 'dotted' },
+                bottom: { style: 'thin' },
+            };
+            customCellTT1.alignment = { vertical: 'middle', horizontal: 'right' };
+            customCellTT1.value = totalkh?.toLocaleString();
+
+            const customCellTT2 = worksheet.getCell("L" + (i + 8));
+            customCellTT2.font = {
+                name: "Times New Roman",
+                family: 4,
+                size: 11,
+                bold: true,
+            };
+            customCellTT2.border = {
+                top: { style: 'dotted' },
+                bottom: { style: 'thin' },
+            };
+            customCellTT2.alignment = { vertical: 'middle', horizontal: 'right' };
+            customCellTT2.value = total_ckkh?.toLocaleString();
+
+            const customCellTT3 = worksheet.getCell("M" + (i + 8));
+            customCellTT3.font = {
+                name: "Times New Roman",
+                family: 4,
+                size: 11,
+                bold: true,
+            };
+            customCellTT3.border = {
+                top: { style: 'dotted' },
+                bottom: { style: 'thin' },
+            };
+            customCellTT3.alignment = { vertical: 'middle', horizontal: 'right' };
+            customCellTT3.value = total_finalkh?.toLocaleString();
+
+            worksheet.mergeCells("A" + gop + ":A" + (i + 8));
+            worksheet.getCell("A" + gop).border = {
+                bottom: { style: 'thin' },
+            };
+            i++;
         }
         worksheet.mergeCells("A" + (i + 8) + ":J" + (i + 8));
         const customCellTT = worksheet.getCell("A" + (i + 8));
@@ -408,11 +551,9 @@ const StatisticsSalesByCustomer = () => {
         };
         customCellTT.border = {
             top: { style: 'thin' },
-            left: { style: 'thin' },
             bottom: { style: 'thin' },
-            right: { style: 'thin' }
         };
-        customCellTT.alignment = { vertical: 'middle', horizontal: 'right' };
+        customCellTT.alignment = { vertical: 'middle', horizontal: 'left' };
         customCellTT.value = "Tổng cộng: ";
 
         const customCellTT1 = worksheet.getCell("L" + (i + 8));
@@ -424,9 +565,7 @@ const StatisticsSalesByCustomer = () => {
         };
         customCellTT1.border = {
             top: { style: 'thin' },
-            left: { style: 'thin' },
             bottom: { style: 'thin' },
-            right: { style: 'thin' }
         };
         customCellTT1.alignment = { vertical: 'middle', horizontal: 'right' };
         customCellTT1.value = total_ck?.toLocaleString();
@@ -440,9 +579,7 @@ const StatisticsSalesByCustomer = () => {
         };
         customCellTT2.border = {
             top: { style: 'thin' },
-            left: { style: 'thin' },
             bottom: { style: 'thin' },
-            right: { style: 'thin' }
         };
         customCellTT2.alignment = { vertical: 'middle', horizontal: 'right' };
         customCellTT2.value = total_final?.toLocaleString();
@@ -456,9 +593,7 @@ const StatisticsSalesByCustomer = () => {
         };
         customCellTT3.border = {
             top: { style: 'thin' },
-            left: { style: 'thin' },
             bottom: { style: 'thin' },
-            right: { style: 'thin' }
         };
         customCellTT3.alignment = { vertical: 'middle', horizontal: 'right' };
         customCellTT3.value = total?.toLocaleString();

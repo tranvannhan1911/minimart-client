@@ -25,27 +25,62 @@ const StatisticsRefund = () => {
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState([]);
   const [date, setDate] = useState([]);
+  const [category, setCategory] = useState("")
+  const [productGroup, setProductGroup] = useState("")
+  const [product, setProduct] = useState("")
+  const [categoryOptions, setCategoryOptions] = useState([])
+  const [productGroupOptions, setProductGroupOptions] = useState([])
+  const [productOptions, setProductOptions] = useState([])
 
   useEffect(() => {
     document.title = "Thống kê trả hàng - Quản lý siêu thị mini NT"
     onThongKeToDay()
+    handleDataCategory()
+    handleDataProductGroup()
+    handleDataProduct()
   }, [])
 
-  // const enterLoading = (index) => {
-  //   setLoadings((prevLoadings) => {
-  //     const newLoadings = [...prevLoadings];
-  //     newLoadings[index] = true;
-  //     return newLoadings;
-  //   });
-  // };
+  const handleDataCategory = async () => {
+    try {
+      const response = await api.category.to_select()
+      const options = response.data.data.results.map(elm => {
+        return (
+          <Option key={elm.id} value={elm.id}>{elm.name}</Option>
+        )
+      })
+      setCategoryOptions(options);
+    } catch (error) {
+      message.error(messages.ERROR)
+    }
+  }
 
-  // const stopLoading = (index) => {
-  //   setLoadings((prevLoadings) => {
-  //     const newLoadings = [...prevLoadings];
-  //     newLoadings[index] = false;
-  //     return newLoadings;
-  //   });
-  // }
+  const handleDataProduct = async () => {
+    try {
+      const response = await api.product.list()
+      const options = response.data.data.results.map(elm => {
+        return (
+          <Option key={elm.id} value={elm.id}>{elm.name}</Option>
+        )
+      })
+      setProductOptions(options);
+    } catch (error) {
+      message.error(messages.ERROR)
+    }
+  }
+
+  const handleDataProductGroup = async () => {
+    try {
+      const response = await api.product_group.list()
+      const options = response.data.data.results.map(elm => {
+        return (
+          <Option key={elm.id} value={elm.id}>{elm.name}</Option>
+        )
+      })
+      setProductGroupOptions(options);
+    } catch (error) {
+      message.error(messages.ERROR)
+    }
+  }
 
   const onChange = (dates, dateStrings) => {
     if (dates) {
@@ -122,7 +157,7 @@ const StatisticsRefund = () => {
     },
 
     {
-      title: 'Doanh Thu',
+      title: 'Tổng tiền',
       dataIndex: 'money',
       key: 'address',
       render: (product, record) => (
@@ -130,6 +165,12 @@ const StatisticsRefund = () => {
       ),
     },
   ];
+
+  const resetFilter = () => {
+    setCategory("")
+    setProduct("")
+    setProductGroup("")
+  }
 
   const onThongKe = async () => {
     if (date.length == 0) {
@@ -141,6 +182,9 @@ const StatisticsRefund = () => {
       params: {
         start_date: date[0],
         end_date: date[1],
+        product_category_id: category,
+        product_group_id: productGroup,
+        product_id: product
       }
     }
     const response = await api.statistics_refund.refund(params);
@@ -272,7 +316,7 @@ const StatisticsRefund = () => {
     customCell5.value = "Từ ngày: " + date[0].slice(0, 10) + "      Đến ngày: " + date[1].slice(0, 10) + " ";
 
     let header = ["STT", "Hóa đơn mua", "Ngày đơn hàng mua", "Hóa đơn trả", "Ngày đơn hàng trả", "Nhóm sản phẩm", "Ngành hàng",
-      "Mã sản phẩm", "Tên sản phẩm", "DVT", "Số lượng trả", "Số lượng theo DVT lẻ", "Doanh thu"];
+      "Mã sản phẩm", "Tên sản phẩm", "DVT", "Số lượng trả", "Số lượng theo DVT lẻ", "Tổng tiền"];
     let headerColumn = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"];
 
     worksheet.mergeCells("A7:M7");
@@ -283,6 +327,11 @@ const StatisticsRefund = () => {
 
     for (let i = 0; i < headerColumn.length; i++) {
       const columnn = worksheet.getCell(headerColumn[i] + 8);
+      columnn.font = {
+        name: "Times New Roman",
+        family: 4,
+        bold: true
+      };
       columnn.border = {
         top: { style: 'thin' },
         left: { style: 'thin' },
@@ -325,6 +374,10 @@ const StatisticsRefund = () => {
         element.quantity_unit?.toLocaleString(), element.money?.toLocaleString()]);
       for (let j = 0; j < headerColumn.length; j++) {
         const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
+        columnn.font = {
+          name: "Times New Roman",
+          family: 4,
+        };
         columnn.border = {
           top: { style: 'thin' },
           left: { style: 'thin' },
@@ -441,9 +494,65 @@ const StatisticsRefund = () => {
         <Col span={24}>
           <label style={{ paddingRight: '10px' }}>Ngày thống kê:</label>
           <RangePicker onChange={onChange} defaultValue={[moment(new Date()), moment(new Date())]} />
+
+          <label style={{ paddingLeft: '10px', paddingRight: '10px' }}>Ngành hàng:</label>
+          <Select
+            allowClear
+            showSearch
+            value={category}
+            style={{
+              width: '10%',
+              textAlign: 'left'
+            }}
+            optionFilterProp="children"
+            onChange={(option) => { setCategory(option); console.log(option) }}
+            filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+            key={categoryOptions}
+          >
+            {categoryOptions}
+          </Select>
+
+          <label style={{ paddingLeft: '10px', paddingRight: '10px' }}>Nhóm sản phẩm:</label>
+          <Select
+            allowClear
+            showSearch
+            value={productGroup}
+            style={{
+              width: '10%',
+              textAlign: 'left'
+            }}
+            optionFilterProp="children"
+            onChange={(option) => { setProductGroup(option); console.log(option) }}
+            filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+          // key={productGroupOptions}
+          >
+            {productGroupOptions}
+          </Select>
+
+          <label style={{ paddingLeft: '10px', paddingRight: '10px' }}>Sản phẩm:</label>
+          <Select
+            allowClear
+            showSearch
+            value={product}
+            style={{
+              width: '15%',
+              textAlign: 'left'
+            }}
+            optionFilterProp="children"
+            onChange={(option) => { setProduct(option); console.log(option) }}
+            filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
+          // key={productOptions}
+          >
+            {productOptions}
+          </Select>
+
+        </Col>
+      </Row>
+      <Row style={{ marginTop: '5px' }}>
+        <Col span={24}>
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={() => onThongKe()}>Thống kê</Button>
           <Button style={{ marginLeft: '10px' }} onClick={() => exportExcel()}> <DownloadOutlined /> Xuất báo cáo</Button>
-
+          <Button style={{ marginLeft: '10px' }} onClick={() => resetFilter()}> Xóa lọc</Button>
         </Col>
       </Row>
       {/* <Row style={{ marginTop: '10px', marginBottom: '10px' }}><Col span={24}><h2 style={{ textAlign: 'center' }}>Đồ thị</h2></Col></Row> */}

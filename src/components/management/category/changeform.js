@@ -139,6 +139,8 @@ const CategoryChangeForm = (props) => {
         message.success(messages.category.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
+      } else if (response.data.message.code) {
+        message.error("Mã ngành hàng bị trùng! Vui lòng chọn mã khác")
       } else {
         message.error(response.data.message.toString())
       }
@@ -154,7 +156,7 @@ const CategoryChangeForm = (props) => {
     try {
       const response = await api.category.update(id, values)
       if (response.data.code == 1) {
-        message.success(messages.category.SUCCESS_SAVE(id))
+        message.success(messages.category.SUCCESS_SAVE(response.data.data.code))
         directAfterSubmit(response)
         return true
       } else {
@@ -171,11 +173,11 @@ const CategoryChangeForm = (props) => {
     try {
       const response = await api.category.delete(id)
       if (response.data.code == 1) {
-        message.success(messages.category.SUCCESS_DELETE(id))
+        message.success(messages.category.SUCCESS_DELETE(form.getFieldValue("code")))
         navigate(paths.category.list)
         return true
       } else {
-        message.error(messages.category.ERROR_DELETE(id))
+        message.error(messages.category.ERROR_DELETE(form.getFieldValue("code")))
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -220,7 +222,7 @@ const CategoryChangeForm = (props) => {
                   },
                 ]}
               >
-                <Input autoFocus ref={refAutoFocus} />
+                <Input autoFocus ref={refAutoFocus} disabled={is_create ? false : true} className="inputBorderDisableText"/>
               </Form.Item>
               <Form.Item label="Tên ngành hàng" name="name" required
                 rules={[

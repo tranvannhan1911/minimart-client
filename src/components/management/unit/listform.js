@@ -3,7 +3,7 @@ import {
     ReloadOutlined,
     SearchOutlined, DownloadOutlined
 } from '@ant-design/icons';
-import { Button, Col, Row, Space, Input, message} from 'antd';
+import { Button, Col, Row, Space, Input, message } from 'antd';
 import { Typography } from 'antd';
 import React, { useState, useEffect, useRef } from 'react';
 import ListForm from '../templates/listform';
@@ -29,10 +29,10 @@ const UnitListForm = (props) => {
     const navigate = useNavigate()
 
     useEffect(() => {
-      document.title = "Đơn vị tính - Quản lý siêu thị mini NT"
+        document.title = "Đơn vị tính - Quản lý siêu thị mini NT"
     }, [])
 
-    
+
     const handleGetData = async () => {
         setLoading(true)
         try {
@@ -74,22 +74,22 @@ const UnitListForm = (props) => {
         setSearchInfo([])
     };
 
-    const searchName = (value) =>{
+    const searchName = (value) => {
         setDataSearchName(value);
         let data_ = [];
         dataMain.forEach(element => {
-            if(element.name.toLowerCase().includes(value.toLowerCase())){
+            if (element.name.toLowerCase().includes(value.toLowerCase())) {
                 data_.push(element);
             }
         });
         setData(data_);
     }
 
-    const searchId = (value) =>{
+    const searchId = (value) => {
         setDataSearchId(value);
         let data_ = [];
         dataMain.forEach(element => {
-            if(element.code.toString().toLowerCase().includes(value.toLowerCase())){
+            if (element.code.toString().toLowerCase().includes(value.toLowerCase())) {
                 data_.push(element);
             }
         });
@@ -100,7 +100,7 @@ const UnitListForm = (props) => {
 
     const exportExcel = () => {
         var ExcelJSWorkbook = new ExcelJS.Workbook();
-        var worksheet = ExcelJSWorkbook.addWorksheet("DonViTinh", {views: [{showGridLines: false}]});
+        var worksheet = ExcelJSWorkbook.addWorksheet("DonViTinh", { views: [{ showGridLines: false }] });
 
         worksheet.mergeCells("A1:D1");
 
@@ -130,8 +130,8 @@ const UnitListForm = (props) => {
             family: 4,
             size: 8,
         };
-        const day= new Date();
-        customCell3.value = "Ngày in: "+ day.getDate()+"/"+(day.getMonth()+1)+"/"+day.getFullYear() ;
+        const day = new Date();
+        customCell3.value = "Ngày in: " + day.getDate() + "/" + (day.getMonth() + 1) + "/" + day.getFullYear();
 
         worksheet.mergeCells("A4:D4");
 
@@ -141,7 +141,7 @@ const UnitListForm = (props) => {
             family: 4,
             size: 8,
         };
-        customCell4.value = "Người xuất báo cáo: "+sessionStorage.getItem("nameStaff") + ' - ' + sessionStorage.getItem("phoneStaff") ;
+        customCell4.value = "Người xuất báo cáo: " + sessionStorage.getItem("nameStaff") + ' - ' + sessionStorage.getItem("phoneStaff");
 
         worksheet.mergeCells("A5:D5");
 
@@ -175,10 +175,15 @@ const UnitListForm = (props) => {
 
         customCell.value = "Danh sách đơn vị tính";
 
-        let header = ["STT" ,"Mã đơn vị tính", "Tên đơn vị tính", "Ghi chú"];
+        let header = ["STT", "Mã đơn vị tính", "Tên đơn vị tính", "Ghi chú"];
 
         for (let i = 0; i < headerColumn.length; i++) {
             const columnn = worksheet.getCell(headerColumn[i] + 7);
+            columnn.font = {
+                name: "Times New Roman",
+                family: 4,
+                bold: true
+            };
             columnn.border = {
                 top: { style: 'thin' },
                 left: { style: 'thin' },
@@ -215,6 +220,10 @@ const UnitListForm = (props) => {
             worksheet.addRow([i, element.code, element.name, element.note]);
             for (let j = 0; j < headerColumn.length; j++) {
                 const columnn = worksheet.getCell(headerColumn[j] + (i + 7));
+                columnn.font = {
+                    name: "Times New Roman",
+                    family: 4,
+                };
                 columnn.border = {
                     top: { style: 'thin' },
                     left: { style: 'thin' },
@@ -238,7 +247,7 @@ const UnitListForm = (props) => {
         ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
             saveAs(
                 new Blob([buffer], { type: "application/octet-stream" }),
-                `DSDonViTinh${day.getDate()}${day.getMonth()+1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
+                `DSDonViTinh${day.getDate()}${day.getMonth() + 1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
             );
         });
     };

@@ -27,6 +27,8 @@ const StatisticsPromotion = () => {
   const [type, setType] = useState("");
   const [date, setDate] = useState([]);
   const [loading, setLoading] = useState(true)
+  const [ctKM, setCTKM] = useState("");
+  const [km, setKM] = useState("");
 
   useEffect(() => {
     document.title = "Thống kê chương trình khuyến mãi - Quản lý siêu thị mini NT"
@@ -116,6 +118,12 @@ const StatisticsPromotion = () => {
 
   ];
 
+  const resetFilter = () => {
+    setCTKM('')
+    setKM('')
+    setType("")
+  }
+
   const onThongKe = async () => {
     if (date.length == 0) {
       message.error("Vui lòng chọn ngày cần thống kê");
@@ -130,7 +138,24 @@ const StatisticsPromotion = () => {
       }
     }
     const response = await api.statistics_promotion.promotion(params);
+    let data=[];
+    if(ctKM != ""){
+      response.data.data.results.forEach(element => {
+        if(element.promotion_line.promotion.id == ctKM){
+          data.push(element);
+        }
+      });
+      statisticData(data)
+    } else if (km != ""){
+      response.data.data.results.forEach(element => {
+        if(element.promotion_line.promotion_code.toLowerCase().includes(km.toLowerCase())){
+          data.push(element);
+        }
+      });
+      statisticData(data)
+    }else{
     statisticData(response.data.data.results);
+    }
   }
 
   const onThongKeToDay = async () => {
@@ -279,6 +304,11 @@ const StatisticsPromotion = () => {
 
     for (let i = 0; i < headerColumn.length; i++) {
       const columnn = worksheet.getCell(headerColumn[i] + 8);
+      columnn.font = {
+        name: "Times New Roman",
+        family: 4,
+        bold: true
+      };
       columnn.border = {
         top: { style: 'thin' },
         left: { style: 'thin' },
@@ -322,6 +352,10 @@ const StatisticsPromotion = () => {
         element.money?.toLocaleString(), element.total_received?.toLocaleString()]);
       for (let j = 0; j < headerColumn.length; j++) {
         const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
+        columnn.font = {
+          name: "Times New Roman",
+          family: 4,
+      };
         columnn.border = {
           top: { style: 'thin' },
           left: { style: 'thin' },
@@ -446,8 +480,9 @@ const StatisticsPromotion = () => {
           <Select
             allowClear
             showSearch
+            value={type}
             style={{
-              width: '200px',
+              width: '15%',
               textAlign: 'left'
             }}
             // defaultValue={type}
@@ -458,9 +493,20 @@ const StatisticsPromotion = () => {
             <Option value="Order">Chiết khấu và giảm tiền</Option>
             <Option value="Product">Tặng sản phẩm</Option>
           </Select>
+
+          <label style={{ paddingLeft: '10px', paddingRight: '10px' }}>CT khuyến mãi:</label>
+          <Input style={{width:'10%' }} value={ctKM} onChange={(e)=>{setCTKM(e.target.value); setKM("")}}/>
+
+          <label style={{ paddingLeft: '10px', paddingRight: '10px' }}>Khuyến mãi:</label>
+          <Input style={{width:'10%' }} value={km} onChange={(e)=>{setKM(e.target.value); setCTKM('')}}/>
+
+        </Col>
+      </Row>
+      <Row style={{ marginTop: '5px' }}>
+        <Col span={24}>
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={() => onThongKe()}>Thống kê</Button>
           <Button style={{ marginLeft: '10px' }} onClick={() => exportExcel()}> <DownloadOutlined /> Xuất báo cáo</Button>
-
+          <Button style={{ marginLeft: '10px' }} onClick={() => resetFilter()}> Xóa lọc</Button>
         </Col>
       </Row>
       {/* <Row style={{ marginTop: '10px', marginBottom: '10px' }}><Col span={24}><h2 style={{ textAlign: 'center' }}>Đồ thị</h2></Col></Row> */}

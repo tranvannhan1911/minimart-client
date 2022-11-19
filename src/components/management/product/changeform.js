@@ -216,6 +216,8 @@ const PriceChangeForm = (props) => {
         message.success(messages.product.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
+      } else if (response.data.message.product_code) {
+        message.error("Mã sản phẩm bị trùng! Vui lòng chọn mã khác!")
       } else {
         message.error(response.data.message.toString())
       }
@@ -232,7 +234,7 @@ const PriceChangeForm = (props) => {
     try {
       const response = await api.product.update(id, values)
       if (response.data.code == 1) {
-        message.success(messages.product.SUCCESS_SAVE(id))
+        message.success(messages.product.SUCCESS_SAVE(response.data.data.product_code))
         directAfterSubmit(response)
         return true
       } else {
@@ -249,11 +251,11 @@ const PriceChangeForm = (props) => {
     try {
       const response = await api.product.delete(id)
       if (response.data.code == 1) {
-        message.success(messages.product.SUCCESS_DELETE(id))
+        message.success(messages.product.SUCCESS_DELETE(form.getFieldValue("product_code")))
         navigate(paths.product.list)
         return true
       } else {
-        message.error(messages.product.ERROR_DELETE(id))
+        message.error(messages.product.ERROR_DELETE(form.getFieldValue("product_code")))
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -290,15 +292,25 @@ const PriceChangeForm = (props) => {
       setDisableSubmit(false)
       return;
     }
-    units.push({
-      "value": 1,
-      "allow_sale": true,
-      "is_base_unit": true,
-      "unit": values.base_unit
-    });
+    
     let dvbc= false;
     if(values.base_unit == values.unit_exchange_report){
+      units.push({
+        "value": 1,
+        "allow_sale": true,
+        "is_base_unit": true,
+        "is_report": true,
+        "unit": values.base_unit
+      });
       dvbc = true;
+    }else{
+      units.push({
+        "value": 1,
+        "allow_sale": true,
+        "is_base_unit": true,
+        "is_report": false,
+        "unit": values.base_unit
+      });
     }
     values.units?.forEach(element => {
       let unit;
@@ -444,7 +456,7 @@ const PriceChangeForm = (props) => {
                   </Col>
                   <Col span={2}></Col>
                   <Col span={10}>
-                    <Form.Item label="Code sản phẩm" name="product_code" required
+                    <Form.Item label="Mã sản phẩm" name="product_code" required
                       rules={[
                         {
                           required: true,
@@ -452,7 +464,7 @@ const PriceChangeForm = (props) => {
                         },
                       ]}
                     >
-                      <Input />
+                      <Input disabled={is_create ? false : true} className="inputBorderDisableText"/>
                     </Form.Item>
                   </Col>
                 </Row>

@@ -30,7 +30,7 @@ const PriceListForm = (props) => {
     const navigate = useNavigate()
 
     useEffect(() => {
-      document.title = "Sản phẩm - Quản lý siêu thị mini NT"
+        document.title = "Sản phẩm - Quản lý siêu thị mini NT"
     }, [])
 
     const handleGetData = async () => {
@@ -144,7 +144,7 @@ const PriceListForm = (props) => {
 
     const exportExcel = () => {
         var ExcelJSWorkbook = new ExcelJS.Workbook();
-        var worksheet = ExcelJSWorkbook.addWorksheet("SanPham", {views: [{showGridLines: false}]});
+        var worksheet = ExcelJSWorkbook.addWorksheet("SanPham", { views: [{ showGridLines: false }] });
 
         worksheet.mergeCells("A1:I1");
 
@@ -225,6 +225,11 @@ const PriceListForm = (props) => {
 
         for (let i = 0; i < headerColumn.length; i++) {
             const columnn = worksheet.getCell(headerColumn[i] + 7);
+            columnn.font = {
+                name: "Times New Roman",
+                family: 4,
+                bold: true
+            };
             columnn.border = {
                 top: { style: 'thin' },
                 left: { style: 'thin' },
@@ -268,6 +273,10 @@ const PriceListForm = (props) => {
                 element.product_category, element.description]);
             for (let j = 0; j < headerColumn.length; j++) {
                 const columnn = worksheet.getCell(headerColumn[j] + (i + 7));
+                columnn.font = {
+                    name: "Times New Roman",
+                    family: 4,
+                };
                 columnn.border = {
                     top: { style: 'thin' },
                     left: { style: 'thin' },
@@ -276,7 +285,7 @@ const PriceListForm = (props) => {
                 };
                 if (j == 0) {
                     columnn.alignment = { vertical: 'middle', horizontal: 'center' };
-                }else if(j == 5){
+                } else if (j == 5) {
                     columnn.alignment = { vertical: 'middle', horizontal: 'right' };
                 }
 
@@ -289,7 +298,7 @@ const PriceListForm = (props) => {
         ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
             saveAs(
                 new Blob([buffer], { type: "application/octet-stream" }),
-                `DSSanPham${day.getDate()}${day.getMonth()+1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
+                `DSSanPham${day.getDate()}${day.getMonth() + 1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
             );
         });
     };

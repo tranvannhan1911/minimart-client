@@ -147,8 +147,8 @@ const StatisticsInventory = () => {
       element.product.product_groups?.forEach(elm => {
         pr_gr += elm.name;
       });
-      let slbc = Number(element.stock_base_unit) / Number(element.product.unit_exchange_report.value);
-      let slcb = Number(element.stock_base_unit) - Number(slbc);
+      let slcb = Number(element.stock_base_unit) % Number(element.product.unit_exchange_report.value);
+      let slbc = (Number(element.stock_base_unit) - Number(slcb)) / Number(element.product.unit_exchange_report.value);
       if (slbc == element.stock_base_unit) {
         slcb = element.stock_base_unit;
       }
@@ -178,7 +178,7 @@ const StatisticsInventory = () => {
     }
     var ExcelJSWorkbook = new ExcelJS.Workbook();
     var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO", { views: [{ showGridLines: false }] });
-
+    
     worksheet.mergeCells("A1:K1");
 
     const customCell1 = worksheet.getCell("A1");
@@ -275,6 +275,11 @@ const StatisticsInventory = () => {
 
     for (let i = 0; i < headerColumn.length; i++) {
       const columnn = worksheet.getCell(headerColumn[i] + 8);
+      columnn.font = {
+        name: "Times New Roman",
+        family: 4,
+        bold: true
+      };
       columnn.border = {
         top: { style: 'thin' },
         left: { style: 'thin' },
@@ -319,6 +324,10 @@ const StatisticsInventory = () => {
         element.base_unit, element.price?.toLocaleString(), element.quantity?.toLocaleString(), element.quantity_base_unit?.toLocaleString(), element.money?.toLocaleString()]);
       for (let j = 0; j < headerColumn.length; j++) {
         const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
+        columnn.font = {
+          name: "Times New Roman",
+          family: 4,
+        };
         columnn.border = {
           top: { style: 'thin' },
           left: { style: 'thin' },

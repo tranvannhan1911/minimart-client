@@ -41,7 +41,7 @@ const ProductGroupForm = (props) => {
   }, [])
 
   useEffect(() => {
-    if (!props.is_modal){
+    if (!props.is_modal) {
       props.setBreadcrumb([
         { title: "Nhóm sản phẩm", href: paths.product_group.list },
         { title: is_create ? "Thêm mới" : "Chỉnh sửa" }])
@@ -116,7 +116,7 @@ const ProductGroupForm = (props) => {
   }
 
   const directAfterSubmit = (response) => {
-    if (props.is_modal){ // modal
+    if (props.is_modal) { // modal
       form.resetFields()
       props.onFinishSave()
       return;
@@ -147,6 +147,8 @@ const ProductGroupForm = (props) => {
         message.success(messages.product_group.SUCCESS_SAVE())
         directAfterSubmit(response)
         return true
+      } else if (response.data.message.product_group_code) {
+        message.error("Mã nhóm sản phẩm bị trùng! Vui lòng chọn mã khác!")
       } else {
         message.error(response.data.message.toString())
       }
@@ -161,7 +163,7 @@ const ProductGroupForm = (props) => {
     try {
       const response = await api.product_group.update(id, values)
       if (response.data.code == 1) {
-        message.success(messages.product_group.SUCCESS_SAVE(id))
+        message.success(messages.product_group.SUCCESS_SAVE(response.data.data.product_group_code))
         directAfterSubmit(response)
         return true
       } else {
@@ -178,11 +180,11 @@ const ProductGroupForm = (props) => {
     try {
       const response = await api.product_group.delete(id)
       if (response.data.code == 1) {
-        message.success(messages.product_group.SUCCESS_DELETE(id))
+        message.success(messages.product_group.SUCCESS_DELETE(form.getFieldValue("product_group_code")))
         navigate(paths.product_group.list)
         return true
       } else {
-        message.error(messages.product_group.ERROR_DELETE(id))
+        message.error(messages.product_group.ERROR_DELETE(form.getFieldValue("product_group_code")))
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -234,7 +236,7 @@ const ProductGroupForm = (props) => {
               <Row>
                 <Col span={1}></Col>
                 <Col span={10}>
-                  <Form.Item label="Tên nhóm sản phẩm" name="name" required
+                <Form.Item label="Tên nhóm sản phẩm" name="name" required
                     rules={[
                       {
                         required: true,
@@ -247,7 +249,7 @@ const ProductGroupForm = (props) => {
                 </Col>
                 <Col span={2}></Col>
                 <Col span={10}>
-                  <Form.Item label="Code nhóm sản phẩm" name="product_group_code" required
+                <Form.Item label="Mã nhóm sản phẩm" name="product_group_code" required
                     rules={[
                       {
                         required: true,
@@ -255,7 +257,7 @@ const ProductGroupForm = (props) => {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input disabled={is_create ? false : true} className="inputBorderDisableText" />
                   </Form.Item>
                 </Col>
               </Row>

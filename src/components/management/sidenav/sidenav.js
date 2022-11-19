@@ -191,7 +191,7 @@ const SideNav = (props) => {
     <div 
     >
       <div className="logo">
-        <Title level={5}>Quản lý siêu thị mini</Title>
+        <Title level={5}>Hệ thống quản lý <br></br> siêu thị</Title>
       </div>
       <Menu
         mode="inline"

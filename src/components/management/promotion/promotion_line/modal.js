@@ -63,7 +63,7 @@ const PromotionLineModal = (props) => {
     try {
       const response = await api.promotion_line.update(props.data.id, values);
       if (response.data.code == 1) {
-        message.success(messages.promotion_line.SUCCESS_SAVE(props.data.id));
+        message.success(messages.promotion_line.SUCCESS_SAVE(form.getFieldValue("promotion_code")));
         return true;
       } else {
         message.error(response.data.message.toString());

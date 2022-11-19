@@ -129,8 +129,8 @@ const StatisticsReceived = () => {
   const statisticData = (data) => {
     let dataMain = [];
     data.forEach(element => {
-      let slbc = Number(element.quantity_base_unit) / Number(element.product.unit_exchange_report.value);
-      let slcb = Number(element.quantity_base_unit) - Number(slbc);
+      let slcb = Number(element.quantity_base_unit) % Number(element.product.unit_exchange_report.value);
+      let slbc = (Number(element.quantity_base_unit) - Number(slcb)) / Number(element.product.unit_exchange_report.value);
       if (slbc == element.quantity_base_unit) {
         slcb = element.quantity_base_unit;
       }
@@ -232,6 +232,11 @@ const StatisticsReceived = () => {
 
     for (let i = 0; i < headerColumn.length; i++) {
       const columnn = worksheet.getCell(headerColumn[i] + 8);
+      columnn.font = {
+        name: "Times New Roman",
+        family: 4,
+        bold: true
+    };
       columnn.border = {
         top: { style: 'thin' },
         left: { style: 'thin' },
@@ -272,6 +277,10 @@ const StatisticsReceived = () => {
         element.moneyTotal?.toLocaleString()]);
       for (let j = 0; j < headerColumn.length; j++) {
         const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
+        columnn.font = {
+          name: "Times New Roman",
+          family: 4,
+      };
         columnn.border = {
           top: { style: 'thin' },
           left: { style: 'thin' },

@@ -253,12 +253,12 @@ const PromotionChangeForm = (props) => {
     try {
       const response = await api.promotion_line.delete(idd)
       if (response.data.code == 1) {
-        message.success(messages.promotion_line.SUCCESS_DELETE(idd))
+        message.success(messages.promotion_line.SUCCESS_DELETE())
         // navigate(paths.promotion.addline(id))
         handleData();
         return true
       } else {
-        message.error(messages.promotion_line.ERROR_DELETE(idd))
+        message.error(messages.promotion_line.ERROR_DELETE())
       }
     } catch (error) {
       message.error(messages.ERROR)
@@ -634,7 +634,7 @@ const PromotionChangeForm = (props) => {
             <Row>
               <Col span={1}></Col>
               <Col span={10} style={{ backgroundColor: "white" }}>
-                <Form.Item label="Mã id chương trình khuyến mãi" name="id">
+                <Form.Item label="Mã chương trình khuyến mãi" name="id">
                   <Input name="id" disabled={true} className="inputBorderDisableText"/>
                 </Form.Item>
               </Col>
