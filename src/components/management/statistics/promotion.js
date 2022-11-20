@@ -495,10 +495,10 @@ const StatisticsPromotion = () => {
           </Select>
 
           <label style={{ paddingLeft: '10px', paddingRight: '10px' }}>CT khuyến mãi:</label>
-          <Input style={{width:'10%' }} value={ctKM} onChange={(e)=>{setCTKM(e.target.value); setKM("")}}/>
+          <Input style={{width:'10%' }} placeholder="Nhập mã CTKM" value={ctKM} onChange={(e)=>{setCTKM(e.target.value); setKM("")}}/>
 
           <label style={{ paddingLeft: '10px', paddingRight: '10px' }}>Khuyến mãi:</label>
-          <Input style={{width:'10%' }} value={km} onChange={(e)=>{setKM(e.target.value); setCTKM('')}}/>
+          <Input style={{width:'10%' }} placeholder="Nhập mã KM" value={km} onChange={(e)=>{setKM(e.target.value); setCTKM('')}}/>
 
         </Col>
       </Row>
