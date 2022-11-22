@@ -237,7 +237,7 @@ const StaffChangeForm = (props) => {
               <Row>
                 <Col span={1}></Col>
                 <Col span={10}>
-                  <Form.Item label="Mã nhân viên" name="code">
+                  <Form.Item label="Mã nhân viên" name="id">
                     <Input disabled/>
                   </Form.Item>
                 </Col>

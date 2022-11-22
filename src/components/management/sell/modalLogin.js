@@ -63,7 +63,6 @@ const ModalLogin = (props) => {
 
                 try{
                     const response = await accountApi.get_info()
-                    console.log("account", response)
                     const action = setUser(response.data.data)
                     store.dispatch(action)
                 }catch(error){

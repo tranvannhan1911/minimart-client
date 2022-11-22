@@ -23,6 +23,7 @@ const Header = (props) => {
   useEffect(() => {
 
     store.subscribe(() => {
+      console.log(">>>>>>>>>>>>> change state user", store.getState().user.info)
       setUserInfo(store.getState().user.info)
     })
 
