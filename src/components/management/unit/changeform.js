@@ -38,6 +38,7 @@ const UnitChangeForm = (props) => {
         handleData()
       }
       setLoadingData(false)
+      store.dispatch(setInfoCreateUpdate(null))
     }
   }, [])
 

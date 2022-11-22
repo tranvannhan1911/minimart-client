@@ -86,6 +86,8 @@ const MyContent = (props) => {
                 } else {
                     setDateCreatedInfo(null)
                 }
+            }else{
+                setDateCreatedInfo(null)
             }
         })
     }, [])

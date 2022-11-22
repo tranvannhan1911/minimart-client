@@ -516,6 +516,7 @@ const PriceChangeForm = (props) => {
         handleDataUnit()
       }
       setLoadingData(false)
+      store.dispatch(setInfoCreateUpdate(null))
     }
     handleDataBaseProduct();
     handleDataUnit()

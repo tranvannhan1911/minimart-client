@@ -198,6 +198,7 @@ const CustomerChangeForm = (props) => {
         handleDataCustomer()
       }
       setLoadingData(false)
+      store.dispatch(setInfoCreateUpdate(null))
     }
   }, [])
 

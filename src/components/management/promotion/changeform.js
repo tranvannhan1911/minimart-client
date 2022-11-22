@@ -17,6 +17,7 @@ import messages from '../../../utils/messages'
 import uploadFile from '../../../utils/s3';
 import { validName1 } from '../../../resources/regexp'
 import moment from "moment";
+import store, { setInfoCreateUpdate } from '../../../store/store';
 
 const dateFormat = "YYYY/MM/DD";
 
@@ -267,6 +268,7 @@ const PromotionChangeForm = (props) => {
         handleData();
       }
       setLoadingData(false)
+      store.dispatch(setInfoCreateUpdate(null))
     }
     handleDataBaseProduct();
     handleDataCustomerGroup();

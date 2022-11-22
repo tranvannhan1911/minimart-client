@@ -187,6 +187,7 @@ const StaffChangeForm = (props) => {
         handleData()
       }
       setLoadingData(false)
+      store.dispatch(setInfoCreateUpdate(null))
     }
   }, [])
 

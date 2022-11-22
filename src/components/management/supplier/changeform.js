@@ -41,6 +41,7 @@ const SupplierChangeForm = (props) => {
         handleData()
       }
       setLoadingData(false)
+      store.dispatch(setInfoCreateUpdate(null))
     }
   }, [])
 

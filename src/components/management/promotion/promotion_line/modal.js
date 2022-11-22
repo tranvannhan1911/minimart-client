@@ -1,20 +1,16 @@
-
-import { Button, Drawer, Row, Col, 
-  Space, Form, Select, Input, DatePicker, message, } from 'antd';
+import {
+  Button, Drawer, Row, Col,
+  Space, Form, Select, Input, DatePicker, message,
+} from 'antd';
 import React, { useState, useEffect } from 'react';
 import messages from '../../../../utils/messages'
 import api from '../../../../api/apis'
-import { useNavigate } from 'react-router-dom'
-import { validCode } from '../../../../resources/regexp'
 
 const { Option } = Select;
 const dateFormat = "YYYY/MM/DD";
 
 const PromotionLineModal = (props) => {
-  const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [data, setData] = useState("");
-  const [dataSource, setDataSource] = useState('');
   const [is_create, setCreate] = useState(null); // create
   const [baseProductOptions, setBaseProductOptions] = useState([]);
   const [baseProductGroupOptions, setBaseProductGroupOptions] = useState([]);
@@ -113,7 +109,7 @@ const PromotionLineModal = (props) => {
       return;
     }
     if (form.getFieldValue("start_date") < props.start_date._d || form.getFieldValue("start_date") > props.end_date._d) {
-      if (props.start_date._d - form.getFieldValue("start_date")  > 1 || form.getFieldValue("start_date") - props.end_date._d > 1) {
+      if (props.start_date._d - form.getFieldValue("start_date") > 1 || form.getFieldValue("start_date") - props.end_date._d > 1) {
         message.error("Ngày bắt đầu phải trong thời gian chương trình khuyến mãi");
         return;
       }
@@ -170,12 +166,53 @@ const PromotionLineModal = (props) => {
       "user_updated": null
     }
     if (typ == 'Product') {
+      console.log(index.detail.applicable_product_groups)
+      if (index.detail.applicable_product_groups == null && index.detail.applicable_products == null) {
+        message.error("Vui lòng chọn nhóm sản phẩm áp dụng hoặc sản phẩm áp dụng");
+        return;
+      }
+      if (index.detail.applicable_product_groups.length == 0 && index.detail.applicable_products == null) {
+        message.error("Vui lòng chọn nhóm sản phẩm áp dụng hoặc sản phẩm áp dụng");
+        return;
+      }
+      if (index.detail.applicable_product_groups == null && index.detail.applicable_products.length == 0) {
+        message.error("Vui lòng chọn nhóm sản phẩm áp dụng hoặc sản phẩm áp dụng");
+        return;
+      }
+      if (index.detail.applicable_product_groups.length == 0 && index.detail.applicable_products.length == 0) {
+        message.error("Vui lòng chọn nhóm sản phẩm áp dụng hoặc sản phẩm áp dụng");
+        return;
+      }
+      if (index.detail.quantity_buy == null) {
+        message.error("Vui lòng nhập số lượng mua");
+        return;
+      }
+      if (index.detail.product_received == null) {
+        message.error("Vui lòng chọn sản phẩm khuyến mãi");
+        return;
+      }
+      if (index.detail.quantity_received == null) {
+        message.error("Vui lòng nhập số lượng khuyến mãi");
+        return;
+      }
       index.detail.minimum_total = null;
       index.detail.percent = null;
       index.detail.maximum_reduction_amount = null;
       index.detail.reduction_amount = null;
 
     } else if (typ == "Percent") {
+      if (index.detail.minimum_total == null) {
+        message.error("Vui lòng nhập số tiền ít nhất để được khuyến mãi");
+        return;
+      }
+      if (index.detail.percent == null) {
+        message.error("Vui lòng nhập chiết khấu (%)");
+        return;
+      }
+      // if (index.detail.maximum_reduction_amount == null) {
+      //   message.error("Vui lòng nhập số tiền giảm tối đa");
+      //   return;
+      // }
       index.detail.quantity_buy = null;
       index.detail.quantity_received = null;
       index.detail.product_received = null;
@@ -183,6 +220,14 @@ const PromotionLineModal = (props) => {
       index.detail.applicable_product_groups = [];
       index.detail.reduction_amount = null;
     } else {
+      if (index.detail.minimum_total == null) {
+        message.error("Vui lòng nhập số tiền ít nhất để được khuyến mãi");
+        return;
+      }
+      if (index.detail.reduction_amount == null) {
+        message.error("Vui lòng nhập số tiền giảm giá");
+        return;
+      }
       index.detail.quantity_buy = null;
       index.detail.quantity_received = null;
       index.detail.product_received = null;
@@ -276,7 +321,7 @@ const PromotionLineModal = (props) => {
                 },
               ]}
             >
-              <Input placeholder="Hãy nhập tiêu đề khuyến mãi" required/>
+              <Input placeholder="Hãy nhập tiêu đề khuyến mãi" required />
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -461,7 +506,7 @@ const PromotionLineModal = (props) => {
                   // width: 150,
                 }}
                 filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
-                disabled={is_create ? false : true} 
+                disabled={is_create ? false : true}
               >
                 {baseProductGroupOptions}
               </Select>
@@ -499,7 +544,7 @@ const PromotionLineModal = (props) => {
                   // width: 150,
                 }}
                 filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
-                disabled={is_create ? false : true} 
+                disabled={is_create ? false : true}
               >
                 {baseProductOptions}
               </Select>
@@ -560,13 +605,13 @@ const PromotionLineModal = (props) => {
             </Form.Item>
           </Col>
           <Col span={12}>
-            
+
           </Col>
         </Row>
 
         <Row gutter={16}>
           <Col span={12}>
-          <Form.Item
+            <Form.Item
               name='product_received' label='Sản phẩm khuyến mãi'
               style={{ display: typeIndex == 'Product' ? 'block' : "" || typeIndex == 'Fixed' ? 'none' : "" || typeIndex == 'Percent' ? 'none' : "" }}
               rules={[
@@ -593,7 +638,7 @@ const PromotionLineModal = (props) => {
                 {baseProductOptions}
               </Select>
             </Form.Item>
-            
+
           </Col>
           <Col span={12}>
             <Form.Item

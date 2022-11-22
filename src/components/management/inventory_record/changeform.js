@@ -432,6 +432,7 @@ const InventoryRecordChangeForm = (props) => {
         // handleDataBaseUnit()
       }
       setLoadingData(false)
+      store.dispatch(setInfoCreateUpdate(null))
     }
     handleDataBaseProduct();
     // handleDataBaseUnit()

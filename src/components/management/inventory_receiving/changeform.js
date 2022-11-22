@@ -528,6 +528,7 @@ const InventoryReceivingChangeForm = (props) => {
         handleDataUnit()
       }
       setLoadingData(false)
+      store.dispatch(setInfoCreateUpdate(null))
     }
     handleDataBaseProduct();
     handleDataBaseSupplier();
