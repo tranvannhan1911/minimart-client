@@ -16,6 +16,7 @@ const Managememt = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [hasPerms, setHasPerms] = useState(false);
   const [isManager, setIsManager] = useState(false);
+  const [userInfo, setUserInfo] = useState({})
 
   const handleAuthentication = async () => {
     const token = accountApi.get_token()
@@ -35,6 +36,7 @@ const Managememt = () => {
         // store.subscribe(() => console.log("store.getState", store.getState().user))
         const action = setUser(response.data.data)
         store.dispatch(action)
+        setUserInfo(response.data.data)
         // console.log("setUser", action, store.dispatch(setUser(response.data.data)))
         // console.log("store.getState", store.getState("user"))
 
@@ -60,6 +62,10 @@ const Managememt = () => {
       document.title = "Quản lý siêu thị mini NT"
   }, [])
 
+  useEffect(() => {
+    console.log("change userInfo in management", userInfo)
+  }, [userInfo]);
+
   return (
     <Layout>{ hasPerms == false ? null :(
         <>
@@ -68,15 +74,20 @@ const Managememt = () => {
             height: "100vh",
             overflow: 'auto',
           }}>
-          <SideNav collapsed={collapsed}></SideNav>
+          <SideNav collapsed={collapsed}
+            userInfo={userInfo} setUserInfo={setUserInfo}></SideNav>
         </Sider>
         <Layout className="site-layout" 
           style={{
             height: "100vh",
             overflow: 'auto',
           }}>
-          <Header collapsed={collapsed} setCollapsed={setCollapsed}></Header>
-          <MyContent isManager={isManager} setIsManager={setIsManager}></MyContent>
+          <Header 
+            collapsed={collapsed} setCollapsed={setCollapsed}
+            userInfo={userInfo} setUserInfo={setUserInfo} ></Header>
+          <MyContent 
+            isManager={isManager} setIsManager={setIsManager}
+            userInfo={userInfo} setUserInfo={setUserInfo}></MyContent>
         </Layout>
       </>
     )}

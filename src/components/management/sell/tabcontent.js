@@ -33,7 +33,7 @@ const TabContent = (props) => {
     // const [listProductAndPromotion, setListProductAndPromotion] = useState([]);
     const [order, setOrder] = useState([]);
     const [disabledCreateOrder, setDisabledCreateOrder] = useState(false);
-    const [staff, setStaff] = useState(sessionStorage.getItem("nameStaff") + ' - ' + sessionStorage.getItem("phoneStaff"));
+    // const [staff, setStaff] = useState(sessionStorage.getItem("nameStaff") + ' - ' + sessionStorage.getItem("phoneStaff"));
 
     const [orderId, setOrderId] = useState("");
     const [dateBuy, setDateBuy] = useState("");
@@ -286,7 +286,7 @@ const TabContent = (props) => {
     }
 
     const errorStaffNew = () => {
-        form.setFieldValue("user_created", staff)
+        form.setFieldValue("user_created", props.userInfo.fullname + " - " + props.userInfo.phone)
     }
 
     const handleCustomerNew = async (data) => {
@@ -351,7 +351,7 @@ const TabContent = (props) => {
                                 width: '100%',
                                 textAlign: 'left'
                             }}
-                            defaultValue={staff}
+                            defaultValue={props.userInfo?.fullname + " - " + props.userInfo?.phone}
                             onChange={(option) => onSelectStaff(option)}
                             filterOption={(input, option) => option.children.toLowerCase().includes(input.toLowerCase())}
                             key={staffOptions}
@@ -521,7 +521,9 @@ const TabContent = (props) => {
                 setOpen={setOpenModalLogin}
                 setStaff={setStaffNew}
                 errorStaff={errorStaffNew}
-                phone={phoneStaffSelect} />
+                phone={phoneStaffSelect}
+                userInfo={props.userInfo} 
+                setUserInfo={props.setUserInfo} />
             <ModalAddCustomer open={openModalAddCustomer}
                 setOpen={setOpenModalAddCustomer}
                 setCustomer={handleCustomerNew}

@@ -9,7 +9,7 @@ import TabContent from './tabcontent';
 const { Option } = Select;
 const { confirm } = Modal;
 
-const SellPage = () => {
+const SellPage = (props) => {
     const [baseUnitOptions, setBaseUnitOptions] = useState([])
     const [customerOptions, setCustomerOptions] = useState([])
     const [staffOptions, setStaffOptions] = useState([])
@@ -57,6 +57,8 @@ const SellPage = () => {
                 setCustomerOptions={setCustomerOptions}
                 staffOptions={staffOptions}
                 setStaffOptions={setStaffOptions}
+                userInfo={props.userInfo} 
+                setUserInfo={props.setUserInfo}
             />,
             key: newActiveKey,
         });

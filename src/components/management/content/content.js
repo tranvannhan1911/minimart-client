@@ -56,11 +56,19 @@ const MyContent = (props) => {
     const [userInfo, setUserInfo] = useState({})
     const [dateCreatedInfo, setDateCreatedInfo] = useState();
 
+    useEffect(() => {
+        console.log("--- change isManager", props.isManager)
+    }, [props.isManager])
+
+    useEffect(() => {
+        console.log("--- change props.userInfo", props.userInfo)
+        setUserInfo(props.userInfo)
+    }, [props.userInfo])
 
     useEffect(() => {
         store.subscribe(() => {
             console.log("store.getState()", store.getState())
-            setUserInfo(sessionStorage.getItem("userNow"))
+            // setUserInfo(sessionStorage.getItem("userNow"))
             // setUserInfo(store.getState().user.info)
             // setDateCreatedInfo(store.getState().infoCreateUpdate.info)
             if(store.getState().infoCreateUpdate?.info){
@@ -307,7 +315,7 @@ const MyContent = (props) => {
                             element={<RefundListForm setBreadcrumb={setBreadcrumb} {...props} />} />
 
                         <Route path={paths.sell.rlist} key={paths.sell.key}
-                            element={<SellPage setBreadcrumb={setBreadcrumb} {...props} />} />
+                            element={<SellPage setBreadcrumb={setBreadcrumb} {...props} userInfo={props.userInfo} setUserInfo={props.setUserInfo}/>} />
 
                         <Route path={paths.statistics_sales.rlist} key={paths.statistics_sales.key}
                             element={userInfo && userInfo.is_manager == false ? <Navigate to="/dang-nhap" /> : <StatisticsSales setBreadcrumb={setBreadcrumb} {...props} />} />

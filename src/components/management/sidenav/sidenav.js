@@ -105,6 +105,12 @@ const SideNav = (props) => {
       setUserInfo(store.getState().user.info)
     })
   }, [])
+
+  
+  useEffect(() => {
+    console.log("change props.userInfo in sidenav", props.userInfo)
+    setUserInfo(props.userInfo)
+  }, [props.userInfo])
   
   const getItem = (label, key, icon, children, required_perm, type) => {
     

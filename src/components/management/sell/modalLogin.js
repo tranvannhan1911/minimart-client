@@ -6,6 +6,7 @@ import store, { setUser } from '../../../store/store';
 const ModalLogin = (props) => {
     const [form] = Form.useForm();
     const [isModalLoginOpen, setIsModalLoginOpen] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
     const passwordRef = useRef();
 
     const showModal = () => {
@@ -38,6 +39,7 @@ const ModalLogin = (props) => {
 
     const onFinish = async (values) => {
         console.log('Success:', props.phone);
+        setConfirmLoading(true)
 
         if (form.getFieldValue("password") == null || form.getFieldValue("password") == "") {
             message.error('Vui lòng nhập mật khẩu');
@@ -63,6 +65,8 @@ const ModalLogin = (props) => {
 
                 try{
                     const response = await accountApi.get_info()
+                    console.log("set user info when switch user", response.data.data)
+                    props.setUserInfo(response.data.data)
                     const action = setUser(response.data.data)
                     store.dispatch(action)
                 }catch(error){
@@ -74,7 +78,10 @@ const ModalLogin = (props) => {
             }
         } catch (error) {
             console.log('Failed:', error)
+            message.error('Sai mật khẩu');
+            passwordRef.current.focus();
         } finally {
+            setConfirmLoading(false)
         }
       };
     
@@ -84,7 +91,7 @@ const ModalLogin = (props) => {
 
     return (
         <>
-            <Modal title="Đăng nhập" open={props.open} onOk={onFinish} onCancel={handleCancel} okText="Đăng nhập" cancelText="Thoát">
+            <Modal title="Đăng nhập" open={props.open} onOk={onFinish} onCancel={handleCancel} confirmLoading={confirmLoading} okText="Đăng nhập" cancelText="Thoát">
                 <Form
                 form={form}
                     name="basic"

@@ -19,9 +19,15 @@ const Header = (props) => {
   const [welcome, setWelcome] = useState()
   const [time, setTime] = useState()
   const [name, setName] = useState(sessionStorage.getItem("nameStaff"))
+  
+  
+  useEffect(() => {
+    console.log("change props.userInfo in header", props.userInfo)
+    setUserInfo(props.userInfo)
+  }, [props.userInfo])
 
   useEffect(() => {
-
+    console.log(">>>> state user", store.getState().user.info)
     store.subscribe(() => {
       console.log(">>>>>>>>>>>>> change state user", store.getState().user.info)
       setUserInfo(store.getState().user.info)
@@ -94,7 +100,7 @@ const Header = (props) => {
       }
       extra={[
         // <Typography.Text>{welcome}</Typography.Text>,
-        <Typography.Text style={{ marginRight: '10px' }}>Chào {time} {userInfo.fullname ? <Typography.Title level={5} style={{ display: 'inline-block' }}> {userInfo.fullname}</Typography.Title> : ""}, {welcome} </Typography.Text>,
+        <Typography.Text style={{ marginRight: '10px' }}>Chào {time} {props.userInfo && props.userInfo.fullname ? <Typography.Title level={5} style={{ display: 'inline-block' }}> {props.userInfo.fullname}</Typography.Title> : ""}, {welcome} </Typography.Text>,
         <Dropdown overlay={menu} placement="bottomRight">
           <Button key="1" shape="circle" type="primary" icon={<UserOutlined />} />
         </Dropdown>
