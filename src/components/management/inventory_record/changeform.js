@@ -91,7 +91,7 @@ const InventoryRecordChangeForm = (props) => {
           const element = jsonData[index];
           let loi = "";
           if (!validNumber.test(element.soluong)) {
-            loi = "Số lượng phải là số, ";
+            loi = "Số lượng phải là số dương, ";
           }
           dataProduct.forEach(elementt => {
             if (elementt.product_code.toLowerCase() == element.maSP.toLowerCase() || elementt.barcode == element.maSP) {

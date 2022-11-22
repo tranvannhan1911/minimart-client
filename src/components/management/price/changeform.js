@@ -85,7 +85,7 @@ const PriceChangeForm = (props) => {
           let loi = "";
           let kqUnit = false;
           if (!validNumber.test(element.gia)) {
-            loi = "Giá phải là số, "
+            loi = "Giá phải là số dương, "
           }
           dataUnit.forEach(ell => {
             if (ell.code.toLowerCase() == element.maDonVi.toLowerCase()) {

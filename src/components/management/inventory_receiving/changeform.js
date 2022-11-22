@@ -101,7 +101,7 @@ const InventoryReceivingChangeForm = (props) => {
           let loi = "";
           let kqUnit = false;
           if ((!validNumber.test(element.soluong)) || (!validNumber.test(element.gia))) {
-            loi = "Số lượng và giá phải là số,  ";
+            loi = "Số lượng và giá phải là số dương,  ";
           }
           dataUnit.forEach(ell => {
             if (ell.code.toLowerCase() == element.maDonVi.toLowerCase()) {
