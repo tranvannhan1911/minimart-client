@@ -63,10 +63,21 @@ const StatisticsReceived = () => {
       key: 'address',
 
     },
+    {
+      title: 'ĐVT báo cáo',
+      dataIndex: 'unit',
+      key: 'address',
 
+    },
     {
       title: 'Số lượng báo cáo',
       dataIndex: 'quantity',
+      key: 'address',
+
+    },
+    {
+      title: 'ĐVT lẻ',
+      dataIndex: 'unit_base',
       key: 'address',
 
     },
@@ -131,15 +142,17 @@ const StatisticsReceived = () => {
     data.forEach(element => {
       let slcb = Number(element.quantity_base_unit) % Number(element.product.unit_exchange_report.value);
       let slbc = (Number(element.quantity_base_unit) - Number(slcb)) / Number(element.product.unit_exchange_report.value);
-      if (slbc == element.quantity_base_unit) {
-        slcb = element.quantity_base_unit;
-      }
+      // if (slbc == element.quantity_base_unit) {
+      //   slcb = element.quantity_base_unit;
+      // }
       let index = {
         codeProduct: element.product.product_code,
         nameProduct: element.product.name,
         quantity: slbc,
         quantity_base_unit: slcb,
         moneyTotal: element.total,
+        unit: element.product.unit_exchange_report.unit_name,
+        unit_base: element.product.base_unit.name
       }
       dataMain.push(index);
     });
@@ -155,7 +168,7 @@ const StatisticsReceived = () => {
     var ExcelJSWorkbook = new ExcelJS.Workbook();
     var worksheet = ExcelJSWorkbook.addWorksheet("BAOCAO", { views: [{ showGridLines: false }] });
 
-    worksheet.mergeCells("A1:F1");
+    worksheet.mergeCells("A1:H1");
 
     const customCell1 = worksheet.getCell("A1");
     customCell1.font = {
@@ -165,7 +178,7 @@ const StatisticsReceived = () => {
     };
     customCell1.value = "Tên cửa hàng: SIÊU THỊ MINI NT";
 
-    worksheet.mergeCells("A2:F2");
+    worksheet.mergeCells("A2:H2");
 
     const customCell2 = worksheet.getCell("A2");
     customCell2.font = {
@@ -175,7 +188,7 @@ const StatisticsReceived = () => {
     };
     customCell2.value = "Địa chỉ: Gò Vấp - Tp.Hồ Chí Minh";
 
-    worksheet.mergeCells("A3:F3");
+    worksheet.mergeCells("A3:H3");
 
     const customCell3 = worksheet.getCell("A3");
     customCell3.font = {
@@ -186,7 +199,7 @@ const StatisticsReceived = () => {
     const day = new Date();
     customCell3.value = "Ngày xuất báo cáo: " + day.getDate() + "/" + (day.getMonth() + 1) + "/" + day.getFullYear();
 
-    worksheet.mergeCells("A4:F4");
+    worksheet.mergeCells("A4:H4");
 
     const customCell4 = worksheet.getCell("A4");
     customCell4.font = {
@@ -196,7 +209,7 @@ const StatisticsReceived = () => {
     };
     customCell4.value = "Người xuất báo cáo: " + sessionStorage.getItem("nameStaff") + ' - ' + sessionStorage.getItem("phoneStaff");
 
-    worksheet.mergeCells("A5:F5");
+    worksheet.mergeCells("A5:H5");
 
     const customCell = worksheet.getCell("A5");
     customCell.font = {
@@ -209,7 +222,7 @@ const StatisticsReceived = () => {
 
     customCell.value = "BẢNG KÊ HÀNG HÓA MUA VÀO ";
 
-    worksheet.mergeCells("A6:F6");
+    worksheet.mergeCells("A6:H6");
 
     const customCell5 = worksheet.getCell("A6");
     customCell5.font = {
@@ -221,10 +234,10 @@ const StatisticsReceived = () => {
 
     customCell5.value = "Từ ngày: " + date[0].slice(0, 10) + "      Đến ngày: " + date[1].slice(0, 10) + " ";
 
-    let header = ["STT", "Mã sản phẩm", "Tên sản phẩm", "Số lượng báo cáo", "Số lượng lẻ", "Tổng thành tiền"];
-    let headerColumn = ["A", "B", "C", "D", "E", "F"];
+    let header = ["STT", "Mã sản phẩm", "Tên sản phẩm", "ĐVT báo cáo", "Số lượng báo cáo", "ĐVT lẻ", "Số lượng lẻ", "Tổng thành tiền"];
+    let headerColumn = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
-    worksheet.mergeCells("A7:F7");
+    worksheet.mergeCells("A7:H7");
     var headerRow = worksheet.addRow();
 
     worksheet.getRow(8).font = { bold: true };
@@ -236,7 +249,7 @@ const StatisticsReceived = () => {
         name: "Times New Roman",
         family: 4,
         bold: true
-    };
+      };
       columnn.border = {
         top: { style: 'thin' },
         left: { style: 'thin' },
@@ -267,29 +280,29 @@ const StatisticsReceived = () => {
       },
       to: {
         row: 8,
-        column: 6
+        column: 8
       }
     };
     let i = 1;
     let total = 0;
     data.forEach(element => {
-      worksheet.addRow([i, element.codeProduct, element.nameProduct, element.quantity, element.quantity_base_unit,
-        element.moneyTotal?.toLocaleString()]);
+      worksheet.addRow([i, element.codeProduct, element.nameProduct, element.unit, element.quantity, element.unit_base,
+        element.quantity_base_unit, element.moneyTotal?.toLocaleString()]);
       for (let j = 0; j < headerColumn.length; j++) {
         const columnn = worksheet.getCell(headerColumn[j] + (i + 8));
         columnn.font = {
           name: "Times New Roman",
           family: 4,
-      };
+        };
         columnn.border = {
           top: { style: 'thin' },
           left: { style: 'thin' },
           bottom: { style: 'thin' },
           right: { style: 'thin' }
         };
-        if (j == 0) {
+        if (j == 0 || j == 3 || j == 5) {
           columnn.alignment = { vertical: 'middle', horizontal: 'center' };
-        } else if (j == 3 || j == 5 || j == 4) {
+        } else if (j == 4 || j == 6 || j == 7) {
           columnn.alignment = { vertical: 'middle', horizontal: 'right' };
         } else {
           columnn.alignment = { vertical: 'middle', horizontal: 'left' };
@@ -300,7 +313,7 @@ const StatisticsReceived = () => {
       i++;
       total = total + element.moneyTotal;
     });
-    worksheet.mergeCells("A" + (i + 8) + ":E" + (i + 8));
+    worksheet.mergeCells("A" + (i + 8) + ":G" + (i + 8));
     const customCellTT = worksheet.getCell("A" + (i + 8));
     customCellTT.font = {
       name: "Times New Roman",
@@ -317,7 +330,7 @@ const StatisticsReceived = () => {
     customCellTT.alignment = { vertical: 'middle', horizontal: 'right' };
     customCellTT.value = "Tổng cộng: ";
 
-    const customCellTT2 = worksheet.getCell("F" + (i + 8));
+    const customCellTT2 = worksheet.getCell("H" + (i + 8));
     customCellTT2.font = {
       name: "Times New Roman",
       family: 4,

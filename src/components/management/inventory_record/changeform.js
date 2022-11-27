@@ -1,10 +1,10 @@
 import {
   PlusOutlined, EditOutlined, CheckCircleOutlined,
-  MinusCircleOutlined, HistoryOutlined, UploadOutlined
+  MinusCircleOutlined, HistoryOutlined, UploadOutlined, DownloadOutlined
 } from '@ant-design/icons';
 import {
   Button, Form, Input, Select, message, Space, Popconfirm,
-  Col, Row, Typography, Upload, notification, Switch
+  Col, Row, Typography, Upload, notification, Switch, InputNumber
 } from 'antd';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -181,6 +181,20 @@ const InventoryRecordChangeForm = (props) => {
       saveAs(
         new Blob([buffer], { type: "application/octet-stream" }),
         `DataError.xlsx`
+      );
+    });
+  };
+
+  const exportTemplate = () => {
+    var ExcelJSWorkbook = new ExcelJS.Workbook();
+    var worksheet = ExcelJSWorkbook.addWorksheet("Data");
+
+    worksheet.addRow(["maSP", "soluong", "ghichu", "loi", "", "", "", "(Số lượng theo đơn vị cơ bản)"]);
+
+    ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+      saveAs(
+        new Blob([buffer], { type: "application/octet-stream" }),
+        `template_kiem_ke.xlsx`
       );
     });
   };
@@ -468,19 +482,21 @@ const InventoryRecordChangeForm = (props) => {
         // <Upload showUploadList={false} {...uploadData} style={{}}>
         //   <Button type='primary' icon={<UploadOutlined />}>Nhập Excel và Lưu</Button>
         // </Upload>,
-        <ShowForPermission>
-          <ExportTemplateReactCSV csvData={[]} fileName='template_kiem_ke.xlsx'
-            header={[
-              { label: 'maSP', key: 'maSP' },
-              { label: 'soluong', key: 'soluong' },
-              { label: 'ghichu', key: 'ghichu' },
-              { label: '', key: '' },
-              { label: '', key: '' },
-              { label: '', key: '' },
-              { label: '(Số lượng theo đơn vị cơ bản)', key: 'note' },
-            ]}
-          />
-        </ShowForPermission>,
+        // <ShowForPermission>
+        //   <ExportTemplateReactCSV csvData={[null]} fileName='template_kiem_ke.xlsx'
+        //     header={[
+        //       { label: 'maSP', key: 'maSP' },
+        //       { label: 'soluong', key: 'soluong' },
+        //       { label: 'ghichu', key: 'ghichu' },
+        //       { label: '', key: '' },
+        //       { label: '', key: '' },
+        //       { label: '', key: '' },
+        //       { label: '(Số lượng theo đơn vị cơ bản)', key: 'note' },
+        //     ]}
+        //   />
+        // </ShowForPermission>,
+        <Button type="info" icon={<DownloadOutlined />} onClick={() => exportTemplate()}
+        >Template</Button>,
         <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.inventory_record.list) }}
         >Thoát</Button>
       ])
@@ -714,8 +730,8 @@ const InventoryRecordChangeForm = (props) => {
                                   textAlign: 'left'
                                 }}
                               >
-                                <Input placeholder="Số lượng thực tế" min='0' type='number'
-                                  disabled={is_create ? false : true}
+                                <InputNumber placeholder="Số lượng thực tế" min='0' type='number'
+                                  disabled={is_create ? false : true} pattern="[0-9]+"
                                   onChange={() => { handleDiff(key, name) }} />
                               </Form.Item>
 

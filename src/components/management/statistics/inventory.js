@@ -149,9 +149,9 @@ const StatisticsInventory = () => {
       });
       let slcb = Number(element.stock_base_unit) % Number(element.product.unit_exchange_report.value);
       let slbc = (Number(element.stock_base_unit) - Number(slcb)) / Number(element.product.unit_exchange_report.value);
-      if (slbc == element.stock_base_unit) {
-        slcb = element.stock_base_unit;
-      }
+      // if (slbc == element.stock_base_unit) {
+      //   slcb = element.stock_base_unit;
+      // }
       let index = {
         product_group: pr_gr,
         product_category: element.product.product_category?.name,

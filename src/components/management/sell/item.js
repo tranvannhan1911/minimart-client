@@ -1,5 +1,5 @@
 import {
-    MinusCircleOutlined, TagOutlined
+    MinusCircleOutlined, TagOutlined, GiftOutlined
 } from '@ant-design/icons';
 import React, { useEffect, useRef, useState } from 'react';
 import { Form, Input, Select, message, 
@@ -495,7 +495,7 @@ const OrderItem = (props) => {
         
         var flag = true;
         form.getFieldValue("productlist").forEach(elm => {
-            if(elm.id == productData[name].id && elm._base_unit_exchange.id == elm.unit_exchange){
+            if(elm.id == productData[name].id && elm._base_unit_exchange.id == elm.unit_exchange && elm.promotion_by_product_id == true){
                 flag = false;
             }
         })
@@ -749,6 +749,7 @@ const OrderItem = (props) => {
                                         <Input type="hidden"
                                             size='small' />
                                     </Form.Item>
+                                    <GiftOutlined style={{display: !ableApplyPromotion(name) ? "block" : "none", marginTop: '4px', fontSize:'20px',color:'red'}}/>
                                     {!ableApplyPromotion(name) ? null :
                                         <>
                                             <TagOutlined

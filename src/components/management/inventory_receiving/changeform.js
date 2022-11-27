@@ -1,5 +1,5 @@
 import {
-  PlusOutlined, EditOutlined, MinusCircleOutlined, HistoryOutlined,
+  PlusOutlined, EditOutlined, MinusCircleOutlined, HistoryOutlined, DownloadOutlined,
   UploadOutlined, DeleteOutlined, CheckCircleOutlined, CloseCircleOutlined
 } from '@ant-design/icons';
 import {
@@ -66,7 +66,20 @@ const InventoryReceivingChangeForm = (props) => {
   };
 
   const saveCancel = () => {
-    if (form.getFieldValue("status") == "complete" || form.getFieldValue("status") == "pending") {
+    if (form.getFieldValue("status") == "complete") {
+      let result = true;
+      form.getFieldValue("details").forEach(element => {
+        if (element.quantity > element.product_obj.stock) {
+          message.warning(element.product + " không đủ để hủy phiếu nhập hàng này!");
+          result = false;
+        }
+      });
+      if (result == true) {
+        form.setFieldValue("status", "cancel");
+        setStatus("cancel");
+        onFinish(form.getFieldsValue());
+      }
+    } else if (form.getFieldValue("status") == "pending") {
       form.setFieldValue("status", "cancel");
       setStatus("cancel");
       onFinish(form.getFieldsValue());
@@ -238,6 +251,20 @@ const InventoryReceivingChangeForm = (props) => {
       saveAs(
         new Blob([buffer], { type: "application/octet-stream" }),
         `DataError.xlsx`
+      );
+    });
+  };
+
+  const exportTemplate = () => {
+    var ExcelJSWorkbook = new ExcelJS.Workbook();
+    var worksheet = ExcelJSWorkbook.addWorksheet("Data");
+
+    worksheet.addRow(["maSP", "maDonVi", "soluong", "gia", "ghichu"]);
+
+    ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+      saveAs(
+        new Blob([buffer], { type: "application/octet-stream" }),
+        `template_nhap_hang.xlsx`
       );
     });
   };
@@ -570,17 +597,19 @@ const InventoryReceivingChangeForm = (props) => {
         // <Upload showUploadList={false} {...uploadData} style={{}}>
         //   <Button type='primary' icon={<UploadOutlined />}>Nhập Excel và Lưu</Button>
         // </Upload>,
-        <ShowForPermission>
-          <ExportTemplateReactCSV csvData={[]} fileName='template_nhap_hang.xlsx'
-            header={[
-              { label: 'maSP', key: 'maSP' },
-              { label: 'maDonVi', key: 'maDonVi' },
-              { label: 'soluong', key: 'soluong' },
-              { label: 'gia', key: 'gia' },
-              { label: 'ghichu', key: 'ghichu' },
-            ]}
-          />
-        </ShowForPermission>,
+        // <ShowForPermission>
+        //   <ExportTemplateReactCSV csvData={[]} fileName='template_nhap_hang.xlsx'
+        //     header={[
+        //       { label: 'maSP', key: 'maSP' },
+        //       { label: 'maDonVi', key: 'maDonVi' },
+        //       { label: 'soluong', key: 'soluong' },
+        //       { label: 'gia', key: 'gia' },
+        //       { label: 'ghichu', key: 'ghichu' },
+        //     ]}
+        //   />
+        // </ShowForPermission>,
+        <Button type="info" icon={<DownloadOutlined />} onClick={() => exportTemplate()}
+        >Template</Button>,
         <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.inventory_receiving.list) }}
         >Thoát</Button>,
       ])
@@ -915,7 +944,7 @@ const InventoryReceivingChangeForm = (props) => {
                                   },
                                 ]}
                               >
-                                <Input placeholder="Giá" type='number' min='0' disabled={is_create ? false : true} />
+                                <InputNumber placeholder="Giá" type='number' min='0' disabled={is_create ? false : true} />
                               </Form.Item>
                             </Col>
                             <Col span={1}></Col>

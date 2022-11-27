@@ -138,23 +138,23 @@ const StatisticsPromotion = () => {
       }
     }
     const response = await api.statistics_promotion.promotion(params);
-    let data=[];
-    if(ctKM != ""){
+    let data = [];
+    if (ctKM != "") {
       response.data.data.results.forEach(element => {
-        if(element.promotion_line.promotion.id == ctKM){
+        if (element.promotion_line.promotion.id == ctKM) {
           data.push(element);
         }
       });
       statisticData(data)
-    } else if (km != ""){
+    } else if (km != "") {
       response.data.data.results.forEach(element => {
-        if(element.promotion_line.promotion_code.toLowerCase().includes(km.toLowerCase())){
+        if (element.promotion_line.promotion_code.toLowerCase().includes(km.toLowerCase())) {
           data.push(element);
         }
       });
       statisticData(data)
-    }else{
-    statisticData(response.data.data.results);
+    } else {
+      statisticData(response.data.data.results);
     }
   }
 
@@ -355,7 +355,7 @@ const StatisticsPromotion = () => {
         columnn.font = {
           name: "Times New Roman",
           family: 4,
-      };
+        };
         columnn.border = {
           top: { style: 'thin' },
           left: { style: 'thin' },
@@ -476,7 +476,7 @@ const StatisticsPromotion = () => {
         <Col span={24}>
           <label style={{ paddingRight: '10px' }}>Ngày thống kê:</label>
           <RangePicker onChange={onChange} defaultValue={[moment(new Date()), moment(new Date())]} />
-          <label style={{ paddingLeft: '10px', paddingRight: '10px' }}>Loại khuyến mãi:</label>
+          <label style={{ paddingLeft: '10px', paddingRight: '10px' }}>Loại KM:</label>
           <Select
             allowClear
             showSearch
@@ -495,15 +495,16 @@ const StatisticsPromotion = () => {
           </Select>
 
           <label style={{ paddingLeft: '10px', paddingRight: '10px' }}>CT khuyến mãi:</label>
-          <Input style={{width:'10%' }} placeholder="Nhập mã CTKM" value={ctKM} onChange={(e)=>{setCTKM(e.target.value); setKM("")}}/>
+          <Input style={{ width: '10%' }} placeholder="Nhập mã CTKM" value={ctKM} onChange={(e) => { setCTKM(e.target.value); setKM("") }} />
 
-          <label style={{ paddingLeft: '10px', paddingRight: '10px' }}>Khuyến mãi:</label>
-          <Input style={{width:'10%' }} placeholder="Nhập mã KM" value={km} onChange={(e)=>{setKM(e.target.value); setCTKM('')}}/>
+
 
         </Col>
       </Row>
       <Row style={{ marginTop: '5px' }}>
         <Col span={24}>
+          <label style={{ paddingLeft: '10px', paddingRight: '10px' }}>Khuyến mãi:</label>
+          <Input style={{ width: '10%' }} placeholder="Nhập mã KM" value={km} onChange={(e) => { setKM(e.target.value); setCTKM('') }} />
           <Button type="primary" style={{ marginLeft: '10px' }} onClick={() => onThongKe()}>Thống kê</Button>
           <Button style={{ marginLeft: '10px' }} onClick={() => exportExcel()}> <DownloadOutlined /> Xuất báo cáo</Button>
           <Button style={{ marginLeft: '10px' }} onClick={() => resetFilter()}> Xóa lọc</Button>

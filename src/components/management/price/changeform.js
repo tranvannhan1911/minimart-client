@@ -1,5 +1,5 @@
 import {
-  PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined, MinusCircleOutlined, UploadOutlined
+  PlusOutlined, EditOutlined, DeleteOutlined, HistoryOutlined, MinusCircleOutlined, UploadOutlined, DownloadOutlined
 } from '@ant-design/icons';
 import {
   Button, Form, Input, Select, message, Space, Popconfirm,
@@ -216,6 +216,19 @@ const PriceChangeForm = (props) => {
     });
   };
 
+  const exportTemplate = () => {
+    var ExcelJSWorkbook = new ExcelJS.Workbook();
+    var worksheet = ExcelJSWorkbook.addWorksheet("Data");
+
+    worksheet.addRow(["maSP", "maDonVi", "gia"]);
+    
+    ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
+      saveAs(
+        new Blob([buffer], { type: "application/octet-stream" }),
+        `template_bang_gia.xlsx`
+      );
+    });
+  };
 
   const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
@@ -547,15 +560,17 @@ const PriceChangeForm = (props) => {
       ])
     } else {
       props.setBreadcrumbExtras([
-        <ShowForPermission>
-          <ExportTemplateReactCSV csvData={[]} fileName='template_bang_gia.xlsx'
-            header={[
-              { label: 'maSP', key: 'maSP' },
-              { label: 'maDonVi', key: 'maDonVi' },
-              { label: 'gia', key: 'gia' },
-            ]}
-          />
-        </ShowForPermission>,
+        // <ShowForPermission>
+        //   <ExportTemplateReactCSV csvData={[]} fileName='template_bang_gia.xlsx'
+        //     header={[
+        //       { label: 'maSP', key: 'maSP' },
+        //       { label: 'maDonVi', key: 'maDonVi' },
+        //       { label: 'gia', key: 'gia' },
+        //     ]}
+        //   />
+        // </ShowForPermission>,
+        <Button type="info" icon={<DownloadOutlined />} onClick={() => exportTemplate()}
+        >Template</Button>,
         <Button type="info" icon={<HistoryOutlined />} onClick={() => { navigate(paths.price.list) }}
         >Thoát</Button>,
 

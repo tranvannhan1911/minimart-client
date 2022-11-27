@@ -239,10 +239,10 @@ const WarehouseTransactionTable = (props) => {
           text: 'Kiểm kê',
           value: 'Kiểm kê',
         },
-        {
-          text: 'Hủy kiểm kê',
-          value: 'Hủy kiểm kê',
-        },
+        // {
+        //   text: 'Hủy kiểm kê',
+        //   value: 'Hủy kiểm kê',
+        // },
       ],
       filteredValue: props.filteredInfo.type || null,
       onFilter: (value, record) => record.type.includes(value),

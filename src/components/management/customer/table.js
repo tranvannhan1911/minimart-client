@@ -201,6 +201,7 @@ const CustomerTable = (props) => {
       title: 'Nhóm khách hàng',
       dataIndex: 'customer_group',
       key: 'customer_group',
+      width: "20%",
       filters: props.data_customer_group.map(elm => {
         const _elm = {
           "text": elm.name,

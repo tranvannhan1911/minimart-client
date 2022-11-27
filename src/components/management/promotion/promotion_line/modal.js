@@ -1,5 +1,5 @@
 import {
-  Button, Drawer, Row, Col,
+  Button, Drawer, Row, Col, InputNumber,
   Space, Form, Select, Input, DatePicker, message,
 } from 'antd';
 import React, { useState, useEffect } from 'react';
@@ -171,18 +171,18 @@ const PromotionLineModal = (props) => {
         message.error("Vui lòng chọn nhóm sản phẩm áp dụng hoặc sản phẩm áp dụng");
         return;
       }
-      if (index.detail.applicable_product_groups.length == 0 && index.detail.applicable_products == null) {
-        message.error("Vui lòng chọn nhóm sản phẩm áp dụng hoặc sản phẩm áp dụng");
-        return;
-      }
-      if (index.detail.applicable_product_groups == null && index.detail.applicable_products.length == 0) {
-        message.error("Vui lòng chọn nhóm sản phẩm áp dụng hoặc sản phẩm áp dụng");
-        return;
-      }
-      if (index.detail.applicable_product_groups.length == 0 && index.detail.applicable_products.length == 0) {
-        message.error("Vui lòng chọn nhóm sản phẩm áp dụng hoặc sản phẩm áp dụng");
-        return;
-      }
+      // if (index.detail.applicable_product_groups.length == 0 && index.detail.applicable_products == null) {
+      //   message.error("Vui lòng chọn nhóm sản phẩm áp dụng hoặc sản phẩm áp dụng");
+      //   return;
+      // }
+      // if (index.detail.applicable_product_groups == null && index.detail.applicable_products.length == 0) {
+      //   message.error("Vui lòng chọn nhóm sản phẩm áp dụng hoặc sản phẩm áp dụng");
+      //   return;
+      // }
+      // if (index.detail.applicable_product_groups.length == 0 && index.detail.applicable_products.length == 0) {
+      //   message.error("Vui lòng chọn nhóm sản phẩm áp dụng hoặc sản phẩm áp dụng");
+      //   return;
+      // }
       if (index.detail.quantity_buy == null) {
         message.error("Vui lòng nhập số lượng mua");
         return;
@@ -420,7 +420,7 @@ const PromotionLineModal = (props) => {
             //   },
             // ]}
             >
-              <Input type='number' min='0' placeholder="Hãy nhập số lượng tối đa áp dụng" />
+              <InputNumber type='number' min='1' placeholder="Hãy nhập số lượng tối đa áp dụng" style={{width: '100%'}}/>
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -434,7 +434,7 @@ const PromotionLineModal = (props) => {
             //   },
             // ]}
             >
-              <Input type='number' min='0' placeholder="Hãy nhập số lượng tối đa cho 1 khách" />
+              <InputNumber type='number' min='1' placeholder="Hãy nhập số lượng tối đa cho 1 khách" style={{width: '100%'}}/>
             </Form.Item>
           </Col>
         </Row>
@@ -462,7 +462,7 @@ const PromotionLineModal = (props) => {
             //   },
             // ]}
             >
-              <Input type='number' min='0' placeholder="Hãy nhập số lượng tối đa cho 1 khách trong 1 ngày" />
+              <InputNumber type='number' min='1' placeholder="Hãy nhập số lượng tối đa cho 1 khách trong 1 ngày" style={{width: '100%'}}/>
             </Form.Item>
           </Col>
         </Row>
@@ -521,7 +521,7 @@ const PromotionLineModal = (props) => {
                 },
               ]}
             >
-              <Input placeholder="Số tiền ít nhất" type='number' min='0' disabled={is_create ? false : true} />
+              <InputNumber placeholder="Số tiền ít nhất" type='number' min='1' disabled={is_create ? false : true} style={{width: '100%'}}/>
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -559,7 +559,7 @@ const PromotionLineModal = (props) => {
                 },
               ]}
             >
-              <Input placeholder="Số lượng giảm giá" type='number' min='0' disabled={is_create ? false : true} />
+              <InputNumber placeholder="Số tiền giảm giá" type='number' min='1' disabled={is_create ? false : true} style={{width: '100%'}}/>
             </Form.Item>
             <Form.Item
               name='percent' label='Chiết khấu (%)'
@@ -571,7 +571,7 @@ const PromotionLineModal = (props) => {
                 },
               ]}
             >
-              <Input placeholder="Số chiết khấu" type='number' min='0' disabled={is_create ? false : true} />
+              <InputNumber placeholder="Số chiết khấu" type='number' min='1' disabled={is_create ? false : true} style={{width: '100%'}}/>
             </Form.Item>
           </Col>
         </Row>
@@ -588,7 +588,7 @@ const PromotionLineModal = (props) => {
                 },
               ]}
             >
-              <Input placeholder="Số lượng mua" type='number' min='0' disabled={is_create ? false : true} />
+              <InputNumber placeholder="Số lượng mua" type='number' min='1' disabled={is_create ? false : true} style={{width: '100%'}}/>
             </Form.Item>
 
             <Form.Item
@@ -601,7 +601,7 @@ const PromotionLineModal = (props) => {
                 },
               ]}
             >
-              <Input placeholder="Số tiền giảm tối đa" type='number' min='0' disabled={is_create ? false : true} />
+              <InputNumber placeholder="Số tiền giảm tối đa" type='number' min='0' disabled={is_create ? false : true} style={{width: '100%'}}/>
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -651,7 +651,7 @@ const PromotionLineModal = (props) => {
                 },
               ]}
             >
-              <Input placeholder="Số lượng nhận" type='number' min='0' disabled={is_create ? false : true} />
+              <InputNumber placeholder="Số lượng nhận" type='number' min='1' disabled={is_create ? false : true} style={{width: '100%'}}/>
             </Form.Item>
           </Col>
         </Row>
