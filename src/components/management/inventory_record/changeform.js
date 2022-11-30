@@ -189,7 +189,7 @@ const InventoryRecordChangeForm = (props) => {
     var ExcelJSWorkbook = new ExcelJS.Workbook();
     var worksheet = ExcelJSWorkbook.addWorksheet("Data");
 
-    worksheet.addRow(["maSP", "soluong", "ghichu", "loi", "", "", "", "(Số lượng theo đơn vị cơ bản)"]);
+    worksheet.addRow(["maSP", "soluong", "ghichu", "", "", "", "", "(Số lượng theo đơn vị cơ bản)"]);
 
     ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
       saveAs(

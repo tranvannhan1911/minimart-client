@@ -1,9 +1,10 @@
-import { FormOutlined,SearchOutlined } from '@ant-design/icons';
-import { Table as AntdTable,Button, Input, Space } from 'antd';
+import { FormOutlined, SearchOutlined } from '@ant-design/icons';
+import { Table as AntdTable, Button, Input, Space } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useNavigate } from 'react-router-dom';
 import paths from '../../../utils/paths'
+import ShowForPermission from '../../basic/permission';
 
 const CustomerGroupTable = (props) => {
   const navigate = useNavigate();
@@ -14,16 +15,16 @@ const CustomerGroupTable = (props) => {
 
   const handleChange = (pagination, filters, sorter, extras) => {
     console.log('Various parameters\n', pagination, filters, sorter);
-    props.setFilteredInfo(filters); 
+    props.setFilteredInfo(filters);
     props.setSortedInfo(sorter);
     SetCurrentCountData(extras.currentDataSource.length)
   };
 
-  
+
   useEffect(() => {
     SetCurrentCountData(props.data.length)
   }, [props.data]);
-  
+
   useEffect(() => {
     SetCurrentCountData(0)
   }, [props.searchInfo]);
@@ -35,7 +36,8 @@ const CustomerGroupTable = (props) => {
     navigate(paths.customer_group.change(id))
   };
 
-  const renderSearch = () => ({render: (text) =>
+  const renderSearch = () => ({
+    render: (text) =>
       <Highlighter
         highlightStyle={{
           backgroundColor: '#ffc069',
@@ -45,11 +47,11 @@ const CustomerGroupTable = (props) => {
         autoEscape
         textToHighlight={text ? text.toString() : ''}
       />
-    })
+  })
 
-    ///////////////////
+  ///////////////////
 
-   const handleSearch = (data, column) => {
+  const handleSearch = (data, column) => {
     if (column == "tên") {
       props.dataSearchName(data)
     } else if (column == "mã") {
@@ -65,7 +67,7 @@ const CustomerGroupTable = (props) => {
 
   };
   const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div
         style={{
           padding: 8,
@@ -75,8 +77,8 @@ const CustomerGroupTable = (props) => {
           ref={searchInput}
           placeholder={`Tìm kiếm ${dataIndex}`}
           value={searchText}
-          onChange={(e) => { handleSearch(e.target.value, dataIndex); setSearchText(e.target.value);setSelectedKeys(e.target.value ? [e.target.value] : []) }}
-          onPressEnter={(e) => handleSearch(e.target.value, dataIndex,selectedKeys, confirm)}
+          onChange={(e) => { handleSearch(e.target.value, dataIndex); setSearchText(e.target.value); setSelectedKeys(e.target.value ? [e.target.value] : []) }}
+          onPressEnter={(e) => handleSearch(e.target.value, dataIndex, selectedKeys, confirm)}
           style={{
             marginBottom: 8,
             display: 'block',
@@ -112,7 +114,7 @@ const CustomerGroupTable = (props) => {
   });
   //////////////////
 
-    
+
   const columns = [
     {
       title: 'Mã nhóm khách hàng',
@@ -128,7 +130,8 @@ const CustomerGroupTable = (props) => {
         return (record.name && record.name.toLowerCase().includes(value.toLowerCase()))
           || (record.id && record.id.toString().toLowerCase().includes(value.toLowerCase()))
           || (record.note && record.note.toString().toLowerCase().includes(value.toLowerCase()))
-          || (record.description && record.description.toLowerCase().includes(value.toLowerCase()))},
+          || (record.description && record.description.toLowerCase().includes(value.toLowerCase()))
+      },
       ...renderSearch(),
       ...getColumnSearchProps('mã')
     },
@@ -162,10 +165,12 @@ const CustomerGroupTable = (props) => {
       width: '10%',
       render: (id) => (
         <Space>
-          <Button
-            type="text"
-            icon={<FormOutlined title='Chỉnh sửa' />}
-            onClick={() => setIdxBtn(id)} ></Button>
+          <ShowForPermission>
+            <Button
+              type="text"
+              icon={<FormOutlined title='Chỉnh sửa' />}
+              onClick={() => setIdxBtn(id)} ></Button>
+          </ShowForPermission>
         </Space>
       ),
     },
@@ -179,19 +184,19 @@ const CustomerGroupTable = (props) => {
   };
 
   return (
-    <AntdTable 
+    <AntdTable
       // rowSelection={{
       //   selectedRowKeys,
       //   onChange: onSelectChange
       // }} 
       bordered
       size='small'
-      columns={columns} 
-      dataSource={props.data} 
+      columns={columns}
+      dataSource={props.data}
       onChange={handleChange}
       scroll={{
-          x: 'max-content',
-      }} 
+        x: 'max-content',
+      }}
       sticky
       pagination={{
         total: currentCountData,
@@ -200,19 +205,19 @@ const CustomerGroupTable = (props) => {
         showTotal: (total) => `Tất cả ${total}`,
       }}
       loading={props.loading}
-      // onRow={(record, rowIndex) => {
-      //   return {
-      //     onClick: event => {
-      //       navigate(paths.customer_group.change(record.id))
-      //     }, // click row
-      //     onDoubleClick: event => {
-      //       navigate(paths.customer_group.change(record.id))
-      //     }, // double click row
-      //     onContextMenu: event => {}, // right button click row
-      //     onMouseEnter: event => {}, // mouse enter row
-      //     onMouseLeave: event => {}, // mouse leave row
-      //   };
-      // }}
+    // onRow={(record, rowIndex) => {
+    //   return {
+    //     onClick: event => {
+    //       navigate(paths.customer_group.change(record.id))
+    //     }, // click row
+    //     onDoubleClick: event => {
+    //       navigate(paths.customer_group.change(record.id))
+    //     }, // double click row
+    //     onContextMenu: event => {}, // right button click row
+    //     onMouseEnter: event => {}, // mouse enter row
+    //     onMouseLeave: event => {}, // mouse leave row
+    //   };
+    // }}
     />
   );
 };

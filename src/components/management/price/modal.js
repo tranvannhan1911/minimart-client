@@ -5,6 +5,7 @@ import { Drawer, Row, Col, Divider, Table, Button, Typography, } from 'antd';
 import React, { useState, useEffect } from 'react';
 import ExcelJS from "exceljs";
 import saveAs from "file-saver";
+import ShowForPermission from '../../basic/permission';
 
 
 const PriceModal = (props) => {
@@ -148,7 +149,7 @@ const PriceModal = (props) => {
 
   const exportExcel = () => {
     var ExcelJSWorkbook = new ExcelJS.Workbook();
-    var worksheet = ExcelJSWorkbook.addWorksheet("BangGia", {views: [{showGridLines: false}]});
+    var worksheet = ExcelJSWorkbook.addWorksheet("BangGia", { views: [{ showGridLines: false }] });
 
     worksheet.mergeCells("A1:E1");
 
@@ -255,7 +256,7 @@ const PriceModal = (props) => {
         pattern: 'solid',
         fgColor: { argb: 'ffb0e2ff' },
         bgColor: { argb: 'ffb0e2ff' }
-    };
+      };
       if (i == 0) {
         worksheet.getColumn(i + 1).width = "10";
       } else if (i == 2) {
@@ -303,7 +304,7 @@ const PriceModal = (props) => {
     ExcelJSWorkbook.xlsx.writeBuffer().then(function (buffer) {
       saveAs(
         new Blob([buffer], { type: "application/octet-stream" }),
-        `BangGiaSo${props.data.price_list_id}_${day.getDate()}${day.getMonth()+1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
+        `BangGiaSo${props.data.price_list_id}_${day.getDate()}${day.getMonth() + 1}${day.getFullYear()}${day.getHours()}${day.getMinutes()}${day.getSeconds()}.xlsx`
       );
     });
   };
@@ -325,7 +326,9 @@ const PriceModal = (props) => {
 
       <p className="site-description-item-profile-p" style={{ fontSize: '20px', marginTop: '20px', fontWeight: 'bold' }}>Thông tin cơ bản
         <span style={{ float: 'right' }}>
-          <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
+          <ShowForPermission>
+            <Button onClick={() => exportExcel()}> <DownloadOutlined /> Xuất Excel</Button>
+          </ShowForPermission>
         </span>
       </p>
       <Row>
