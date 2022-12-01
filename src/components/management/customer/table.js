@@ -217,7 +217,7 @@ const CustomerTable = (props) => {
             let color = 'geekblue';
 
             return (
-              <Tag color={color} key={group}>
+              <Tag color={color} key={group} style={{marginBottom: '5px'}}>
                 {group.toUpperCase()}
               </Tag>
             );

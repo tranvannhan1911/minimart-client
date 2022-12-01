@@ -25,9 +25,9 @@ const ParentSelect = (props) => {
       handleData()
     }, [])
 
-    useEffect(() => {
-        document.title = "Ngành hàng - Quản lý siêu thị mini NT"
-    }, [])
+    // useEffect(() => {
+    //     document.title = "Ngành hàng - Quản lý siêu thị mini NT"
+    // }, [])
 
     useEffect(() => {
       console.log("props.value", props)

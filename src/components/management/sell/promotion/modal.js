@@ -101,6 +101,7 @@ const PromotionPicker = (props) => {
     }
 
     const searchPromotion = () => {
+        console.log("searchValue", searchValue)
         const _data = stableData.filter((elm) => {
             return elm.promotion_code.toLowerCase().includes(searchValue.toLowerCase())
                     || elm.title.toLowerCase().includes(searchValue.toLowerCase())
@@ -124,7 +125,8 @@ const PromotionPicker = (props) => {
                     enterButton
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
-                    onPressEnter={searchPromotion} />
+                    onPressEnter={searchPromotion}
+                    onSearch={searchPromotion} />
                 <List
                     itemLayout="horizontal"
                     dataSource={data}

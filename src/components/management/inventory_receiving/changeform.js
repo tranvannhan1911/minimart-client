@@ -442,7 +442,7 @@ const InventoryReceivingChangeForm = (props) => {
         // elm.unit_exchange = elm.unit_exchange.unit_name;
         // elm.product = elm.product.id;
         // return elm;
-        elm.quantity_base_unit = String(elm.quantity) + " " + elm.product.base_unit.name;
+        elm.quantity_base_unit = String(elm.quantity_base_unit) + " " + elm.product.base_unit.name;
         elm.unit_exchange_obj = elm.unit_exchange
         elm.unit_exchange = elm.unit_exchange.unit_name
         elm.product_obj = elm.product
