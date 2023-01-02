@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-REACT_APP_BASE_URL=http://13.214.169.137:8000/api
+REACT_APP_BASE_URL=https://minimart-backend.tranvannhan1911.dev/api
 sed -i "/REACT_APP_BASE_URL=/c\\REACT_APP_BASE_URL=$REACT_APP_BASE_URL" .env
 npm run build
 scp -i "~/.ssh/minimart.pem" -r ./build/ ubuntu@13.214.169.137:/home/ubuntu/minimart-client/
