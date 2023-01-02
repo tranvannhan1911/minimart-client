@@ -1,7 +1,7 @@
 import {
     PhoneOutlined, LockOutlined
 } from '@ant-design/icons'
-import { Button, Col, Row, Checkbox, Form, Input, message } from 'antd'
+import { Button, Col, Row, notification, Form, Input, message } from 'antd'
 import { Typography } from 'antd'
 import React, { useState, useRef, useEffect } from 'react'
 import { Link, Navigate } from 'react-router-dom'
@@ -20,9 +20,22 @@ const Login = () => {
     const passwordRef = useRef();
     const navigate = useNavigate();
     const [loadings, setLoadings] = useState([]);
+    var oneTime = true;
 
     useEffect(() => {
         document.title = "Đăng nhập - Quản lý siêu thị mini NT"
+        if(oneTime){
+            notification.open({
+                message: `Notification`,
+                description: <p>
+                            Thông tin tài khoản: 0987654321/nhan12345 <br/>
+                            Source code và tài liệu liên hệ: <a href='https://www.facebook.com/NHAN.30082001/'>Facebook</a>
+                        </p>,
+                placement: "bottomRight",
+                duration: 0
+            });
+            oneTime = false;
+        }
     }, [])
 
     const enterLoading = (index) => {
